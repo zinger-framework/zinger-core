@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.service.LoginService;
 import com.food.ordering.ssn.utils.Response;
-import com.food.ordering.ssn.utils.Utils;
 
 @RestController
 @RequestMapping("/user")
