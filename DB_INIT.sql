@@ -2,10 +2,13 @@ CREATE DATABASE food;
 
 USE food;
 
+DROP TABLE users_shop;
+DROP TABLE users_college;
+
 DROP TABLE shop_user;
 DROP TABLE order_item;
 DROP TABLE rating;
-DROP TABLE configuration;
+DROP TABLE configurations;
 
 DROP TABLE transactions;
 DROP TABLE orders;
@@ -47,7 +50,7 @@ CREATE TABLE users(
   access_token VARCHAR(64) NOT NULL,
   role ENUM('CUSTOMER','SELLER'),
   is_delete INT DEFAULT 0,
-  CONSTRAINT user_id_pk PRIMARY KEY(id)
+  CONSTRAINT users_id_pk PRIMARY KEY(id)
 );
 
 CREATE TABLE item (
@@ -101,12 +104,12 @@ CREATE TABLE transactions (
 ####################################################
 
 CREATE TABLE shop_user (
-   shop_id INT NOT NULL,
    user_id INT NOT NULL,
+   shop_id INT NOT NULL,
    is_delete INT DEFAULT 0,
-   CONSTRAINT shop_user_shop_user_id PRIMARY KEY(shop_id, user_id),
-   CONSTRAINT shop_user_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id),
-   CONSTRAINT shop_user_user_id_fk FOREIGN KEY(user_id) REFERENCES users(id)
+   CONSTRAINT shop_user_user_id_shop_id_pk PRIMARY KEY(user_id, shop_id),
+   CONSTRAINT shop_user_user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
+   CONSTRAINT shop_user_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
 
 CREATE TABLE order_item (
@@ -114,7 +117,7 @@ CREATE TABLE order_item (
   item_id INT NOT NULL,
   quantity INT NOT NULL,
   price DOUBLE NOT NULL,
-  CONSTRAINT order_item_order_item_id PRIMARY KEY(order_id, item_id),
+  CONSTRAINT order_item_order_id_item_id_pk PRIMARY KEY(order_id, item_id),
   CONSTRAINT order_item_order_id_fk FOREIGN KEY (order_id) REFERENCES orders(id),
   CONSTRAINT order_item_item_id_fk FOREIGN KEY (item_id) REFERENCES item(id)
 );
@@ -129,7 +132,7 @@ CREATE TABLE rating (
    CONSTRAINT rating_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
 
-CREATE TABLE configuration (
+CREATE TABLE configurations (
    shop_id INT NOT NULL,
    delivery_price DOUBLE DEFAULT NULL,
    is_delivery_available INT DEFAULT 0,
@@ -139,3 +142,20 @@ CREATE TABLE configuration (
 );
 
 ####################################################
+
+
+CREATE TABLE users_college (
+   user_id INT NOT NULL,
+   college_id INT NOT NULL,
+   CONSTRAINT users_college_user_id_college_id_pk PRIMARY KEY(user_id, college_id),
+   CONSTRAINT users_college_user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
+   CONSTRAINT users_college_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id)
+);
+
+CREATE TABLE users_shop (
+   user_id INT NOT NULL,
+   shop_id INT NOT NULL,
+   CONSTRAINT users_shop_user_id_shop_id_pk PRIMARY KEY(user_id, shop_id),
+   CONSTRAINT users_shop_user_id_fk FOREIGN KEY(user_id) REFERENCES users(id),
+   CONSTRAINT users_shop_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop(id)
+);
