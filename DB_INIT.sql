@@ -2,7 +2,6 @@ CREATE DATABASE food;
 
 USE food;
 
-DROP TABLE users_shop;
 DROP TABLE users_college;
 DROP TABLE users_shop;
 DROP TABLE orders_item;
