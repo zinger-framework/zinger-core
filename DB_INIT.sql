@@ -1,6 +1,6 @@
--- CREATE DATABASE food;
+CREATE DATABASE food;
 
--- USE food;
+USE food;
 
 DROP TABLE shop_user;
 DROP TABLE order_item;

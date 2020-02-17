@@ -72,6 +72,12 @@ public class UserModel {
 	public void setIsDelete(Integer isDelete) {
 		this.isDelete = isDelete;
 	}
+
+	@Override
+	public String toString() {
+		return "UserModel [id=" + id + ", name=" + name + ", email=" + email + ", mobile=" + mobile + ", oauthId="
+				+ oauthId + ", accessToken=" + accessToken + ", role=" + role + ", isDelete=" + isDelete + "]";
+	}
 	
 	
 }

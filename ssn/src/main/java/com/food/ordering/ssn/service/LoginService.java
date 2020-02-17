@@ -8,18 +8,38 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.food.ordering.ssn.dao.LoginDao;
 import com.food.ordering.ssn.model.UserModel;
+import com.food.ordering.ssn.utils.Response;
+import com.food.ordering.ssn.utils.Utils;
 
 @Service
 public class LoginService {
-	
+
 	@Autowired
 	LoginDao loginDao;
+	
+	public Response<UserModel> insertUser(UserModel user, String oauthId, String accessToken) {
+		return loginDao.insertUser(user, oauthId, accessToken);
+	}
 
-    public List<UserModel> getAllUser() {
-        return loginDao.getAllUser();
+	public Response<List<UserModel>> getAllUser(String oauthId, String accessToken) {
+		return loginDao.getAllUser(oauthId,accessToken);
+	}
+	
+	public Response<UserModel> getUserByOauthId(String oauthId,String oauthIdRh, String accessToken) {
+		return loginDao.getUserByOauthId(oauthId,oauthIdRh,accessToken);
     }
-    
-    public Integer deleteUser(Integer id) {
-    	return loginDao.deleteUser(id);
-    }
+	
+	public Response<UserModel> updateUserByOauthId(UserModel user,String oauthId, String accessToken) {
+		return loginDao.updateUserByOauthId(user,oauthId,accessToken);
+	}
+	
+	public Response<UserModel> deleteUserByOauthId(String oauthId,String oauthIdRh, String accessToken) {
+		return loginDao.deleteUserByOauthId(oauthId,oauthIdRh,accessToken);
+	}
+
+	
+//	public Response<UserModel> getUserByID(Integer id) {
+//	return loginDao.getUserById(id);
+//}
+
 }

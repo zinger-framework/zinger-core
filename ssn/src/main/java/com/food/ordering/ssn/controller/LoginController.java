@@ -1,5 +1,6 @@
 package com.food.ordering.ssn.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.service.LoginService;
+import com.food.ordering.ssn.utils.Response;
+import com.food.ordering.ssn.utils.Utils;
 
 @RestController
 @RequestMapping("/user")
@@ -23,34 +26,33 @@ public class LoginController {
 	@Autowired
 	LoginService loginService;
 	
+	@PostMapping(value = "/insertUser")
+    public Response<UserModel> insertUser(@RequestBody UserModel user, @RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
+		return loginService.insertUser(user, oauthId, accessToken);
+    }
+	
 	@GetMapping(value = "")
-    public List<UserModel> getAllUser() {
-        return loginService.getAllUser();
+    public Response<List<UserModel>> getAllUser(@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
+        return loginService.getAllUser(oauthId,accessToken);
     }
 	
-//	@GetMapping(value = "/secured")
-//    public List<UserModel> getAllUsersSecured(@RequestHeader(value="auth_code") String authCode, @RequestHeader(value="access_token") String accessToken) {
-//        return loginService.getAllUsers();
-//    }
-	
-	@GetMapping(value = "/{id}")
-    public UserModel getUserById(@PathVariable("id") String id) {
-        return getAllUser().get(0);
+	@GetMapping(value = "/{oauth_id}")
+    public Response<UserModel> getUserByOauthId(@PathVariable("oauth_id") String oauthId,@RequestHeader(value="oauth_id") String oauthIdRh, @RequestHeader(value="access_token") String accessToken) {
+		return loginService.getUserByOauthId(oauthId,oauthIdRh,accessToken);
     }
 	
-	@PostMapping(value = "")
-    public UserModel insertUser(@RequestBody UserModel user) {
-		System.out.println(user.getName());
-		return getAllUser().get(0);
+	@PatchMapping(value = "")
+    public Response<UserModel> updateUserByOauthId(@RequestBody UserModel user,@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
+		return loginService.updateUserByOauthId(user,oauthId,accessToken);
+	}
+	
+	@DeleteMapping(value = "/{oauth_id}")
+    public Response<UserModel> deleteUserByOauthId(@PathVariable("oauth_id") String oauthId,@RequestHeader(value="oauth_id") String oauthIdRh, @RequestHeader(value="access_token") String accessToken) {
+		return loginService.deleteUserByOauthId(oauthId,oauthIdRh,accessToken);
     }
 	
-	@PatchMapping(value = "/{id}")
-    public UserModel updateUserById(@PathVariable("id") String id, @RequestBody UserModel user) {
-        return getAllUser().get(0);
-    }
-	
-	@DeleteMapping(value = "/{id}")
-    public Integer deleteUserById(@PathVariable("id") Integer id) {
-    	return loginService.deleteUser(id);
-    }
+//	@GetMapping(value = "/id/{id}")
+//  public Response<UserModel> getUserById(@PathVariable("id") Integer id) {
+//		return loginService.getUserByID(id);
+//  }
 }
