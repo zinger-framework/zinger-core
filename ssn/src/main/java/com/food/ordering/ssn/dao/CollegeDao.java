@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import com.food.ordering.ssn.model.CollegeModel;
 import com.food.ordering.ssn.query.CollegeQuery;
-import com.food.ordering.ssn.rowMapperLambda.CollegeRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.RowMapperLambda;
 import com.food.ordering.ssn.utils.Constant;
 import com.food.ordering.ssn.utils.Response;
 
@@ -21,33 +21,6 @@ public class CollegeDao {
 	NamedParameterJdbcTemplate jdbcTemplate;
 	
 
-	public Response<CollegeModel> insertCollege(CollegeModel college,String oauthId, String accessToken){
-		Response<CollegeModel> response = new Response<>();
-		
-		try {
-			
-			if(new UtilsDao().validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
-				return response;
-			
-			
-			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue("name", college.getName())
-					.addValue("icon_url", college.getIconUrl())
-					.addValue("address",college.getAddress());
-			
-			jdbcTemplate.update(CollegeQuery.insertCollege, parameters);
-			college.setIsDelete(0);
-			
-			response.setCode(Constant.CodeSuccess);
-			response.setMessage(Constant.MessageSuccess);
-			response.setData(college);
-		}catch(Exception e) {
-			e.printStackTrace();
-		} 
-		
-		return response;
-	}
-	
 	public Response<CollegeModel> getCollegeById(Integer collegeId,String oauthIdRh, String accessToken) {
 		CollegeModel college = null;
 		Response<CollegeModel> response = new Response<>();
@@ -58,7 +31,7 @@ public class CollegeDao {
 		try {
 			SqlParameterSource parameters = new MapSqlParameterSource()
 					.addValue("college_id", collegeId);
-			college = jdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
+			college = jdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, RowMapperLambda.collegeRowMapperLambda);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -79,7 +52,7 @@ public class CollegeDao {
 			return response;
 		
 		try {
-			list = jdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
+			list = jdbcTemplate.query(CollegeQuery.getAllColleges, RowMapperLambda.collegeRowMapperLambda);
 		}
 		catch (Exception e) {
 			e.printStackTrace();

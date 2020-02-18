@@ -24,11 +24,6 @@ public class ShopController {
 	@Autowired
 	ShopService shopService;
 	
-	@PostMapping(value = "/insertShop")
-    public Response<ShopModel> insertShop(@RequestBody ShopModel shop, @RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
-		return shopService.createShop(shop, oauthId, accessToken);
-    }
-	
 	@GetMapping(value = "")
     public Response<List<ShopModel>> getAllShops(@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
         return shopService.getAllShops(oauthId,accessToken);
@@ -43,15 +38,4 @@ public class ShopController {
     public Response<ShopModel> getShopById(@PathVariable("shop_id") Integer shopId,@RequestHeader(value="oauth_id") String oauthIdRh, @RequestHeader(value="access_token") String accessToken) {
 		return shopService.getShopById(shopId, oauthIdRh, accessToken);
     }
-	
-	@PatchMapping(value = "")
-    public Response<ShopModel> updateShopById(@RequestBody ShopModel shop,@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
-		return shopService.updateShopById(shop,oauthId,accessToken);
-	}
-	
-	@DeleteMapping(value = "/{shop_id}")
-    public Response<ShopModel> deleteUserByOauthId(@PathVariable("shop_id") Integer shopId,@RequestHeader(value="oauth_id") String oauthIdRh, @RequestHeader(value="access_token") String accessToken) {
-		return shopService.deleteShopById(shopId,oauthIdRh,accessToken);
-    }
-	
 }

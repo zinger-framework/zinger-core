@@ -16,10 +16,6 @@ public class CollegeService {
 	@Autowired
 	CollegeDao collegeDao;
 	
-	public Response<CollegeModel> insertCollege(CollegeModel college,String oauthId, String accessToken){
-		return collegeDao.insertCollege(college,oauthId,accessToken);
-	}
-	
 	public Response<List<CollegeModel>> getAllColleges(String oauthId, String accessToken) {
 		return collegeDao.getAllColleges(oauthId,accessToken);
 	}

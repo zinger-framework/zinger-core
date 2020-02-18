@@ -16,10 +16,6 @@ public class ShopService {
 	@Autowired
 	ShopDao shopDao;
 	
-	public Response<ShopModel> createShop(ShopModel shop, String oauthId, String accessToken) {
-		return shopDao.createShop(shop, oauthId, accessToken);
-	}
-
 	public Response<List<ShopModel>> getAllShops(String oauthId, String accessToken) {
 		return shopDao.getAllShops(oauthId,accessToken);
 	}
@@ -32,11 +28,4 @@ public class ShopService {
 		return shopDao.getShopsByCollegeId(collegeId, oauthIdRh, accessToken);
     }
 
-	public Response<ShopModel> updateShopById(ShopModel shop,String oauthId, String accessToken) {
-		return shopDao.updateShopById(shop,oauthId,accessToken);
-	}
-	
-	public Response<ShopModel> deleteShopById(Integer shopId,String oauthIdRh, String accessToken) {
-		return shopDao.deleteShopById(shopId,oauthIdRh,accessToken);
-	}
 }

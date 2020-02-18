@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.food.ordering.ssn.dao.LoginDao;
 import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.utils.Response;
-import com.food.ordering.ssn.utils.Utils;
 
 @Service
 public class LoginService {

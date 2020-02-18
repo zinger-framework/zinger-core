@@ -2,6 +2,7 @@ package com.food.ordering.ssn.rowMapperLambda;
 
 import org.springframework.jdbc.core.RowMapper;
 
+import com.food.ordering.ssn.model.CollegeModel;
 import com.food.ordering.ssn.model.ShopModel;
 import com.food.ordering.ssn.model.UserModel;
 
@@ -29,5 +30,15 @@ public class RowMapperLambda {
 		shop.setClosingTime(rs.getTime("closing_time"));
 		shop.setOpeningTime(rs.getTime("opening_time"));
 		return shop;
+	};
+	
+	public static final RowMapper<CollegeModel> collegeRowMapperLambda = (rs, rownum) -> {
+		CollegeModel college = new CollegeModel();
+		college.setID(rs.getInt("id"));
+		college.setName(rs.getString("name"));
+		college.setIconUrl(rs.getString("icon_url"));
+		college.setAddress(rs.getString("address"));
+		college.setIsDelete(rs.getInt("is_delete"));
+		return college;
 	};
 }

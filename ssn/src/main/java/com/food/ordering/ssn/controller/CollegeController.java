@@ -22,13 +22,8 @@ public class CollegeController {
 	@Autowired
 	CollegeService collegeService;
 	
-	@PostMapping(value = "/insertCollege")
-	public Response<CollegeModel> insertCollege(@RequestBody CollegeModel college, @RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken){
-		return collegeService.insertCollege(college, oauthId, accessToken);
-	}
-	
 	@GetMapping(value = "")
-    public Response<List<CollegeModel>> getAllUser(@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
+    public Response<List<CollegeModel>> getAllColleges(@RequestHeader(value="oauth_id") String oauthId, @RequestHeader(value="access_token") String accessToken) {
         return collegeService.getAllColleges(oauthId,accessToken);
     }
 	
