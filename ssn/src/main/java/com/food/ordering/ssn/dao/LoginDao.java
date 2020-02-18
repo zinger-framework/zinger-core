@@ -1,24 +1,17 @@
 package com.food.ordering.ssn.dao;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.query.LoginQuery;
-import com.food.ordering.ssn.rowMapperLambda.LoginRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.RowMapperLambda;
 import com.food.ordering.ssn.utils.Constant;
 import com.food.ordering.ssn.utils.Response;
 
@@ -34,7 +27,7 @@ public class LoginDao {
 	public Response<UserModel> insertUser(UserModel user, String oauthId, String accessToken) {
 		Response<UserModel> response = new Response<>();
 		
-		if(validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
+		if(new UtilsDao().validateUser(oauthId, accessToken).getCode() == Constant.CodeSuccess)
 			return response;
 		
 		try {
@@ -64,11 +57,11 @@ public class LoginDao {
 		Response<List<UserModel>> response = new Response<>();
 		List<UserModel> list = null;
 		
-		if(validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
+		if(new UtilsDao().validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
 			return response;
 		
 		try {
-			list = jdbcTemplate.query(LoginQuery.getAllUser, LoginRowMapperLambda.userRowMapperLambda);
+			list = jdbcTemplate.query(LoginQuery.getAllUser, RowMapperLambda.userRowMapperLambda);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -86,12 +79,12 @@ public class LoginDao {
 		UserModel userModel = null;
 		Response<UserModel> response = new Response<>();
 		
-		if(validateUser(oauthIdRh, accessToken).getCode() != Constant.CodeSuccess)
+		if(new UtilsDao().validateUser(oauthIdRh, accessToken).getCode() != Constant.CodeSuccess)
 			return response;
 		
 		try {
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("oauth_id", oauthId);
-			userModel = namedParameterJdbcTemplate.queryForObject(LoginQuery.getUserByOauthId, parameters, LoginRowMapperLambda.userRowMapperLambda);
+			userModel = namedParameterJdbcTemplate.queryForObject(LoginQuery.getUserByOauthId, parameters, RowMapperLambda.userRowMapperLambda);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
@@ -107,7 +100,7 @@ public class LoginDao {
 	public Response<UserModel> updateUserByOauthId(UserModel user,String oauthId, String accessToken) {
 		Response<UserModel> response = new Response<>();
 		
-		if(validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
+		if(new UtilsDao().validateUser(oauthId, accessToken).getCode() != Constant.CodeSuccess)
 			return response;
 		
 		try {
@@ -135,7 +128,7 @@ public class LoginDao {
 	public Response<UserModel> deleteUserByOauthId(String oauthId,String oauthIdRh, String accessToken) {
 		Response<UserModel> response = new Response<>();
 		
-		if(validateUser(oauthIdRh, accessToken).getCode() != Constant.CodeSuccess)
+		if(new UtilsDao().validateUser(oauthIdRh, accessToken).getCode() != Constant.CodeSuccess)
 			return response;
 		
 		try {
@@ -153,27 +146,7 @@ public class LoginDao {
 		return response;
 	}
 	
-	public Response<UserModel> validateUser(String oauthId, String accessToken) {
-		UserModel userModel = null;
-		Response<UserModel> response = new Response<>();
-		
-		try {
-			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue("oauth_id", oauthId)
-					.addValue("access_token", accessToken);
-			
-			userModel = namedParameterJdbcTemplate.queryForObject(LoginQuery.validateUser, parameters, LoginRowMapperLambda.userRowMapperLambda);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if(userModel != null) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
-				response.setData(userModel);
-			}
-		}
-		return response;
-    }
+	
 }
 
 /*public Response<UserModel> getUserById(Integer id) {
