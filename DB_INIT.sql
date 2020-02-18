@@ -32,8 +32,8 @@ CREATE TABLE shop (
   photo_url VARCHAR(64) DEFAULT NULL,
   mobile VARCHAR(10) UNIQUE NOT NULL,
   college_id INT NOT NULL,
-  opening_time DATE NOT NULL,
-  closing_time DATE NOT NULL,
+  opening_time TIME NOT NULL,
+  closing_time TIME NOT NULL,
   is_delete INT DEFAULT 0,
   CONSTRAINT shop_id_pk PRIMARY KEY (id),
   CONSTRAINT shop_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id)
