@@ -21,7 +21,7 @@ public class CollegeService {
 	}
 	
 	public Response<List<CollegeModel>> getAllColleges(String oauthId, String accessToken) {
-		return collegeDao.getAllUser(oauthId,accessToken);
+		return collegeDao.getAllColleges(oauthId,accessToken);
 	}
 	
 	public Response<CollegeModel> getCollegeById(Integer collegeID,String oauthIdRh, String accessToken) {

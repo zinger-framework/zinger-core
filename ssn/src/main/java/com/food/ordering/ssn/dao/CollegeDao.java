@@ -71,7 +71,7 @@ public class CollegeDao {
 		return response;
 	}
 	
-	public Response<List<CollegeModel>> getAllUser(String oauthId, String accessToken) {
+	public Response<List<CollegeModel>> getAllColleges(String oauthId, String accessToken) {
 		Response<List<CollegeModel>> response = new Response<>();
 		List<CollegeModel> list = null;
 		
