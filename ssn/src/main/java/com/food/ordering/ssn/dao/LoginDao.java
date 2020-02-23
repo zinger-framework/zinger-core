@@ -45,17 +45,14 @@ public class LoginDao {
 		Response<?> resp = new Response<>();
 
 		try {
-			
+
 			Response<UserModel> validUser = utilsDao.validateUser(user.getOauthId());
-			if(validUser.getCode() == Constant.CodeSuccess) {
-				Response<UserModel> validateResp = new Response<>();
-				validateResp.setCode(Constant.CodeFailure);
-				validateResp.setMessage("User already exists");
-				validateResp.setData(validUser.getData());
-				return validateResp;
+			
+			if (validUser.getCode() == Constant.CodeSuccess) {
+				resp = getUserDetails(validUser.getData());
+				resp.setMessage("User already exists");
+				return resp;
 			}
-			
-			
 
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("oauth_id", user.getOauthId())
 					.addValue("name", user.getName()).addValue("email", user.getEmail())
@@ -64,35 +61,39 @@ public class LoginDao {
 			namedParameterJdbcTemplate.update(LoginQuery.insertUser, parameters);
 			user.setIsDelete(0);
 
-			if (user.getRole().equalsIgnoreCase(UserRole.customer.value())) {
-				List<CollegeModel> colleges = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges,
-						CollegeRowMapperLambda.collegeRowMapperLambda);
-
-				UserCollege userCollege = new UserCollege(user, colleges);
-
-				Response<UserCollege> response = new Response<>();
-				response.setData(userCollege);
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
-				return response;
-			} else if (user.getRole().equalsIgnoreCase(UserRole.seller.value())) {
-
-				List<ShopModel> shops = namedParameterJdbcTemplate.query(ShopQuery.getAllShops,
-						ShopRowMapperLambda.shopRowMapperLambda);
-
-				UserShop userShop = new UserShop(user, shops);
-
-				Response<UserShop> response = new Response<>();
-				response.setData(userShop);
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
-				return response;
-			}
+			return getUserDetails(user);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 		return resp;
+	}
+
+	private Response<?> getUserDetails(UserModel user) {			
+		if (UserRole.seller.value().equalsIgnoreCase(user.getRole())) {
+
+			List<ShopModel> shops = namedParameterJdbcTemplate.query(ShopQuery.getAllShops,
+					ShopRowMapperLambda.shopRowMapperLambda);
+
+			UserShop userShop = new UserShop(user, shops);
+
+			Response<UserShop> response = new Response<>();
+			response.setData(userShop);
+			response.setCode(Constant.CodeSuccess);
+			response.setMessage(Constant.MessageSuccess);
+			return response;
+		} else {
+			List<CollegeModel> colleges = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges,
+					CollegeRowMapperLambda.collegeRowMapperLambda);
+
+			UserCollege userCollege = new UserCollege(user, colleges);
+
+			Response<UserCollege> response = new Response<>();
+			response.setData(userCollege);
+			response.setCode(Constant.CodeSuccess);
+			response.setMessage(Constant.MessageSuccess);
+			return response;
+		}
 	}
 
 	public Response<List<UserModel>> getAllUser(String oauthId) {
@@ -171,7 +172,7 @@ public class LoginDao {
 			} else if (UserRole.seller.value().equalsIgnoreCase(user.getRole())) {
 				SqlParameterSource params = new MapSqlParameterSource().addValue("oauth_id", oauthId)
 						.addValue("shop_id", id);
-				
+
 				tableNotUpdated = "Users_Shop not updated";
 				namedParameterJdbcTemplate.update(UserShopQuery.insertObject, params);
 				roleUpdated = true;
@@ -180,13 +181,13 @@ public class LoginDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		if(!userUpdated && !roleUpdated) {
+
+		if (!userUpdated && !roleUpdated) {
 			response.setData(Constant.TablesNotUpdated);
-		}else if(userUpdated && !roleUpdated) {
+		} else if (userUpdated && !roleUpdated) {
 			response.setCode(Constant.CodeFailure);
 			response.setData(tableNotUpdated);
-		}else if(userUpdated && roleUpdated) {
+		} else if (userUpdated && roleUpdated) {
 			response.setCode(Constant.CodeSuccess);
 			response.setMessage(Constant.MessageSuccess);
 			response.setData(Constant.MessageSuccess);
