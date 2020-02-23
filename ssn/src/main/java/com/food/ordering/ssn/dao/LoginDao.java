@@ -45,6 +45,17 @@ public class LoginDao {
 		Response<?> resp = new Response<>();
 
 		try {
+			
+			Response<UserModel> validUser = utilsDao.validateUser(user.getOauthId());
+			if(validUser.getCode() == Constant.CodeSuccess) {
+				Response<UserModel> validateResp = new Response<>();
+				validateResp.setCode(Constant.CodeFailure);
+				validateResp.setMessage("User already exists");
+				validateResp.setData(validUser.getData());
+				return validateResp;
+			}
+			
+			
 
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("oauth_id", user.getOauthId())
 					.addValue("name", user.getName()).addValue("email", user.getEmail())
