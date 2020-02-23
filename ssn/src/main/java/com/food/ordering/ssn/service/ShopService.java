@@ -16,16 +16,8 @@ public class ShopService {
 	@Autowired
 	ShopDao shopDao;
 	
-	public Response<List<ShopModel>> getAllShops(String oauthId, String accessToken) {
-		return shopDao.getAllShops(oauthId,accessToken);
-	}
-	
-	public Response<ShopModel> getShopById(Integer shopId,String oauthIdRh, String accessToken) {
-		return shopDao.getShopById(shopId,oauthIdRh,accessToken);
-    }
-	
-	public Response<List<ShopModel>> getShopByCollegeId(Integer collegeId,String oauthIdRh, String accessToken) {
-		return shopDao.getShopsByCollegeId(collegeId, oauthIdRh, accessToken);
+	public Response<List<ShopModel>> getShopByCollegeId(Integer collegeId,String oauthIdRh) {
+		return shopDao.getShopsByCollegeId(collegeId, oauthIdRh);
     }
 
 }

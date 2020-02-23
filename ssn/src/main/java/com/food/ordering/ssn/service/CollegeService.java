@@ -16,11 +16,15 @@ public class CollegeService {
 	@Autowired
 	CollegeDao collegeDao;
 	
-	public Response<List<CollegeModel>> getAllColleges(String oauthId, String accessToken) {
-		return collegeDao.getAllColleges(oauthId,accessToken);
+	public Response<List<CollegeModel>> getAllColleges(String oauthId) {
+		return collegeDao.getAllColleges(oauthId);
 	}
 	
-	public Response<CollegeModel> getCollegeById(Integer collegeID,String oauthIdRh, String accessToken) {
-		return collegeDao.getCollegeById(collegeID,oauthIdRh,accessToken);
+	public Response<CollegeModel> getCollegeById(Integer collegeId,String oauthIdRh) {
+		return collegeDao.getCollegeById(collegeId,oauthIdRh);
     }
+	
+	public Response<CollegeModel> updateCollege(Integer collegeId, String oauthId, CollegeModel data){
+		return collegeDao.updateCollege(oauthId, collegeId, data);
+	}
 }
