@@ -8,7 +8,9 @@ import org.springframework.stereotype.Repository;
 
 import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.query.LoginQuery;
-import com.food.ordering.ssn.rowMapperLambda.RowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.LoginRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.CollegeRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.ssn.utils.Constant;
 import com.food.ordering.ssn.utils.Response;
 
@@ -18,38 +20,25 @@ public class UtilsDao {
 	@Autowired
 	NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-	public Response<UserModel> validateUser(String oauthId, String accessToken) {
+	public Response<UserModel> validateUser(String oauthId) {
 		UserModel userModel = null;
 		Response<UserModel> response = new Response<>();
 		
-		/* try {
+		try {
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue("oauth_id", oauthId)
-					.addValue("access_token", accessToken);
-			
-			System.out.println("\n ");
-			
+					.addValue("oauth_id", oauthId);
+						
 			userModel = namedParameterJdbcTemplate.queryForObject(LoginQuery.validateUser, parameters, LoginRowMapperLambda.userRowMapperLambda);
-			
-			System.out.println("\n UserModel : " + userModel);
-			
+						
 		} catch (Exception e) {
-			System.out.println("\n User does not exist. Exception");
-			System.out.println("\n Exception message : " + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if(userModel != null) {
-				System.out.println("\n User exists");
 				response.setCode(Constant.CodeSuccess);
 				response.setMessage(Constant.MessageSuccess);
 				response.setData(userModel);
-			}else {
-				System.out.println("\n User does not exist");
 			}
-		} */
-		response.setCode(Constant.CodeSuccess);
-		response.setMessage(Constant.MessageSuccess);
-		response.setData(userModel);
+		} 
 		return response;
     }
 }

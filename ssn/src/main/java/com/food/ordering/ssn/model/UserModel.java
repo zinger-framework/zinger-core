@@ -1,23 +1,23 @@
 package com.food.ordering.ssn.model;
 
 public class UserModel {
-	private Integer id;
+	private String oauthId;
 	private String name;
 	private String email;
 	private String mobile;
-	private String oauthId;
-	private String accessToken;
 	private String role;
 	private Integer isDelete;
-	
+		
 	public UserModel() {}
 	
-	public Integer getId() {
-		return id;
+	public String getOauthId() {
+		return oauthId;
 	}
-	public void setId(Integer id) {
-		this.id = id;
+
+	public void setOauthId(String oauthId) {
+		this.oauthId = oauthId;
 	}
+
 	public String getName() {
 		return name;
 	}
@@ -41,22 +41,6 @@ public class UserModel {
 		this.mobile = mobile;
 	}
 
-	public String getOauthId() {
-		return oauthId;
-	}
-
-	public void setOauthId(String oauthId) {
-		this.oauthId = oauthId;
-	}
-
-	public String getAccessToken() {
-		return accessToken;
-	}
-
-	public void setAccessToken(String accessToken) {
-		this.accessToken = accessToken;
-	}
-
 	public String getRole() {
 		return role;
 	}
@@ -72,11 +56,11 @@ public class UserModel {
 	public void setIsDelete(Integer isDelete) {
 		this.isDelete = isDelete;
 	}
+	
 
 	@Override
 	public String toString() {
-		return "UserModel [id=" + id + ", name=" + name + ", email=" + email + ", mobile=" + mobile + ", oauthId="
-				+ oauthId + ", accessToken=" + accessToken + ", role=" + role + ", isDelete=" + isDelete + "]";
+		return "UserModel [oauthId="+ oauthId + ", name=" + name + ", email=" + email + ", mobile=" + mobile + ", role=" + role + ", isDelete=" + isDelete + "]";
 	}
 	
 	

@@ -16,29 +16,24 @@ public class LoginService {
 	@Autowired
 	LoginDao loginDao;
 	
-	public Response<UserModel> insertUser(UserModel user, String oauthId, String accessToken) {
-		return loginDao.insertUser(user, oauthId, accessToken);
+	public Response<?> insertUser(UserModel user) {
+		return loginDao.insertUser(user);
 	}
 
-	public Response<List<UserModel>> getAllUser(String oauthId, String accessToken) {
-		return loginDao.getAllUser(oauthId,accessToken);
+	public Response<List<UserModel>> getAllUser(String oauthId) {
+		return loginDao.getAllUser(oauthId);
 	}
 	
-	public Response<UserModel> getUserByOauthId(String oauthId,String oauthIdRh, String accessToken) {
-		return loginDao.getUserByOauthId(oauthId,oauthIdRh,accessToken);
+	public Response<UserModel> getUserByOauthId(String oauthId,String oauthIdRh) {
+		return loginDao.getUserByOauthId(oauthId,oauthIdRh);
     }
 	
-	public Response<UserModel> updateUserByOauthId(UserModel user,String oauthId, String accessToken) {
-		return loginDao.updateUserByOauthId(user,oauthId,accessToken);
+	public Response<String> updateUserByOauthId(UserModel user,String oauthId, Integer id) {
+		return loginDao.updateUserByOauthId(user,oauthId,id);
 	}
 	
-	public Response<UserModel> deleteUserByOauthId(String oauthId,String oauthIdRh, String accessToken) {
-		return loginDao.deleteUserByOauthId(oauthId,oauthIdRh,accessToken);
+	public Response<UserModel> deleteUserByOauthId(String oauthId,String oauthIdRh) {
+		return loginDao.deleteUserByOauthId(oauthId,oauthIdRh);
 	}
-
-	
-//	public Response<UserModel> getUserByID(Integer id) {
-//	return loginDao.getUserById(id);
-//}
 
 }
