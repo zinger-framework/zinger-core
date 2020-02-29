@@ -6,4 +6,7 @@ public class Constant {
 	
 	public static final Integer CodeFailure = 0;
 	public static final String MessageFailure = "Failure";
+	
+	public static final String TablesNotUpdated = "Tables are not updated";
+	
 }
