@@ -12,6 +12,7 @@ public class ItemQuery {
 			+ tableName + " WHERE shop_id = :shop_id AND" + isDelete;
 
 	public static final String getItemsByQuery = "SELECT id,name,price,photo_url,category,shop_id,is_veg,is_available,is_delete FROM "
-			+ tableName + " WHERE shop_id = :shop_id AND name LIKE :query";
+			+ tableName + " WHERE name LIKE :query";
+	
 
 }

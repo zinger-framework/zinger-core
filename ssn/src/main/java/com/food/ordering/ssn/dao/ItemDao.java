@@ -71,7 +71,7 @@ public class ItemDao {
 		return response;
 	}
 
-	public Response<List<ItemModel>> getItemsByQuery(String oauthId, Integer shopId, String query) {
+	public Response<List<ItemModel>> getItemsByQuery(String oauthId, String query) {
 		Response<List<ItemModel>> response = new Response<>();
 		List<ItemModel> items = null;
 		try {
@@ -79,8 +79,7 @@ public class ItemDao {
 			if (utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
 				return response;
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue("query", query).addValue("shop_id",
-					shopId);
+			SqlParameterSource parameters = new MapSqlParameterSource().addValue("query","%" + query + "%");
 
 			items = jdbcTemplate.query(ItemQuery.getItemsByQuery, parameters, ItemRowMapperLambda.itemRowMapperLambda);
 
