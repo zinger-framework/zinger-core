@@ -32,9 +32,9 @@ public class ItemController {
 		return itemService.getItemById(itemId, oauthIdRh);
 	}
 
-	@GetMapping(value = "/searchMenu/{shop_id}/{query}")
+	@GetMapping(value = "/searchMenu/{query}")
 	public Response<List<ItemModel>> queryItems(@RequestHeader(value = "oauth_id") String oauthId,
-			@PathVariable("shop_id") Integer shopId, @PathVariable("query") String query) {
-		return itemService.getItemsByQuery(oauthId, shopId, query);
+			 @PathVariable("query") String query) {
+		return itemService.getItemsByQuery(oauthId, query);
 	}
 }

@@ -25,8 +25,8 @@ public class ItemService {
 		return itemDao.getItemsByShopId(shopId, oauthId);
     }
 	
-	public Response<List<ItemModel>> getItemsByQuery(String oauthId, Integer shopId, String query){
-		return itemDao.getItemsByQuery(oauthId, shopId, query);
+	public Response<List<ItemModel>> getItemsByQuery(String oauthId, String query){
+		return itemDao.getItemsByQuery(oauthId, query);
 	}
 	
 	
