@@ -22,7 +22,7 @@ CREATE TABLE configurations (
    delivery_price DOUBLE DEFAULT NULL,
    is_delivery_available INT DEFAULT 0,
    is_order_taken INT DEFAULT 0,
-   CONSTRAINT config_id_pk PRIMARY KEY (id)
+   CONSTRAINT config_id_pk PRIMARY KEY(id)
 );
 
 CREATE TABLE college (
