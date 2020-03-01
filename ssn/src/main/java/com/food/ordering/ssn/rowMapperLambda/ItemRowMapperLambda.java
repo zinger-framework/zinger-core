@@ -2,20 +2,25 @@ package com.food.ordering.ssn.rowMapperLambda;
 
 import org.springframework.jdbc.core.RowMapper;
 
-import com.food.ordering.ssn.model.ItemModel;
+import com.food.ordering.ssn.model.*;
+import static com.food.ordering.ssn.column.ItemColumn.*;
 
 public class ItemRowMapperLambda {
 	public static final RowMapper<ItemModel> itemRowMapperLambda = (rs,rownum) -> {
 		ItemModel item = new ItemModel();
-		item.setID(rs.getInt("id"));
-		item.setName(rs.getString("name"));
-		item.setPrice(rs.getDouble("price"));
-		item.setPhotoUrl(rs.getString("photo_url"));
-		item.setCategory(rs.getString("category"));
-		item.setShopId(rs.getInt("shop_id"));
-		item.setIsVeg(rs.getInt("is_veg"));
-		item.setIsAvailable(rs.getInt("is_available"));
-		item.setIsDelete(rs.getInt("is_delete"));
+		item.setId(rs.getInt(id));
+		item.setName(rs.getString(name));
+		item.setPrice(rs.getDouble(price));
+		item.setPhotoUrl(rs.getString(photoUrl));
+		item.setCategory(rs.getString(category));
+
+		ShopModel shopModel = new ShopModel();
+		shopModel.setId(rs.getInt(shopId));
+		item.setShopModel(shopModel);
+
+		item.setIsVeg(rs.getInt(isVeg));
+		item.setIsAvailable(rs.getInt(isAvailable));
+		item.setIsDelete(rs.getInt(isDelete));
 		return item;
 	};
 }

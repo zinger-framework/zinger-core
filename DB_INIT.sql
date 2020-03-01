@@ -6,6 +6,7 @@ USE food;
 -- DROP TABLE users_shop;
 -- DROP TABLE orders_item;
 -- DROP TABLE rating;
+-- DROP TABLE configurations;
 
 -- DROP TABLE orders;
 -- DROP TABLE transactions;
@@ -13,17 +14,8 @@ USE food;
 -- DROP TABLE users;
 -- DROP TABLE shop;
 -- DROP TABLE college;
--- DROP TABLE configurations;
 
 ####################################################
-
-CREATE TABLE configurations (
-   id INT NOT NULL,
-   delivery_price DOUBLE DEFAULT NULL,
-   is_delivery_available INT DEFAULT 0,
-   is_order_taken INT DEFAULT 0,
-   CONSTRAINT config_id_pk PRIMARY KEY(id)
-);
 
 CREATE TABLE college (
   id INT AUTO_INCREMENT,
@@ -36,7 +28,6 @@ CREATE TABLE college (
 
 CREATE TABLE shop (
   id INT AUTO_INCREMENT,
-  configuration_id INT UNIQUE NOT NULL,
   name VARCHAR(32) UNIQUE NOT NULL,
   photo_url VARCHAR(64) DEFAULT NULL,
   mobile VARCHAR(10) NOT NULL,
@@ -45,8 +36,7 @@ CREATE TABLE shop (
   closing_time TIME NOT NULL,
   is_delete INT DEFAULT 0,
   CONSTRAINT shop_id_pk PRIMARY KEY (id),
-  CONSTRAINT shop_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id),
-  CONSTRAINT shop_configuration_id_fk FOREIGN KEY (configuration_id) REFERENCES configurations(id)
+  CONSTRAINT shop_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id)
 );
 
 CREATE TABLE users(
@@ -54,7 +44,7 @@ CREATE TABLE users(
   name VARCHAR(32) NOT NULL,
   email VARCHAR(64) DEFAULT NULL,
   mobile VARCHAR(10) UNIQUE NOT NULL,
-  role ENUM('CUSTOMER','SELLER'),
+  role ENUM('CUSTOMER','SELLER','SHOP_OWNER'),
   is_delete INT DEFAULT 0,
   CONSTRAINT users_oauth_id_pk PRIMARY KEY(oauth_id)
 );
@@ -83,6 +73,7 @@ CREATE TABLE transactions (
   bank_name VARCHAR(500) NOT NULL,
   payment_mode VARCHAR(15) NOT NULL,
   checksum_hash VARCHAR(108) NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id)
 );
     
@@ -91,12 +82,13 @@ CREATE TABLE orders (
   oauth_id VARCHAR(64) NOT NULL,
   transaction_id VARCHAR(64) UNIQUE NOT NULL,
   shop_id INT NOT NULL,
-  date DATE NOT NULL,
+  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status ENUM('PLACED','ACCEPTED', 'COMPLETED','DELIVERED', 'CANCELLED_BY_SELLER', 'CANCELLED_BY_CUSTOMER', 'TXN_FAILURE', 'PENDING'),
+  last_status_updated_time DATETIME DEFAULT NULL,
   price DOUBLE NOT NULL,
   delivery_price DOUBLE DEFAULT NULL,
   delivery_location VARCHAR(128) DEFAULT NULL,
   cooking_info VARCHAR(128) DEFAULT NULL,
-  status ENUM('PLACED','ACCEPTED', 'COMPLETED','DELIVERED', 'CANCELLED_BY_SELLER', 'CANCELLED_BY_CUSTOMER', 'TXN_FAILURE', 'PENDING'),
   rating DOUBLE DEFAULT NULL,
   secret_key VARCHAR(10) DEFAULT NULL,
   CONSTRAINT orders_id_pk PRIMARY KEY (id),
@@ -110,13 +102,12 @@ CREATE TABLE orders (
 CREATE TABLE users_shop (
    oauth_id VARCHAR(64) NOT NULL,
    shop_id INT NOT NULL,
-   is_delete INT DEFAULT 0,
    CONSTRAINT users_shop_oauth_id_shop_id_pk PRIMARY KEY(oauth_id, shop_id),
    CONSTRAINT users_shop_oauth_id_fk FOREIGN KEY(oauth_id) REFERENCES users(oauth_id),
    CONSTRAINT users_shop_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
 
- CREATE TABLE users_college (
+CREATE TABLE users_college (
    oauth_id VARCHAR(64) NOT NULL,
    college_id INT NOT NULL,
    CONSTRAINT users_college_oauth_id_college_id_pk PRIMARY KEY(oauth_id, college_id),
@@ -142,6 +133,15 @@ CREATE TABLE rating (
    user_count INT DEFAULT NULL,
    CONSTRAINT rating_shop_id_pk PRIMARY KEY (shop_id),
    CONSTRAINT rating_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
+);
+
+CREATE TABLE configurations (
+   shop_id INT NOT NULL,
+   delivery_price DOUBLE NOT NULL,
+   is_delivery_available INT DEFAULT 1,
+   is_order_taken INT DEFAULT 1,
+   CONSTRAINT configurations_shop_id_pk PRIMARY KEY(shop_id),
+   CONSTRAINT configurations_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
 
 ####################################################

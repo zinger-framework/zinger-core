@@ -1,11 +1,12 @@
 package com.food.ordering.ssn.query;
 
+import static com.food.ordering.ssn.column.UserShopColumn.*;
+
 public class UserShopQuery {
+    public static final String insertUserShop = "INSERT INTO " + tableName + "(" + oauthId + "," + shopId + ") VALUES(:" + oauthId + ", :" + shopId + ")";
 
-	public static final String tableName = "users_shop";
-	
-	public static final String insertObject = "INSERT INTO " + tableName + "(oauth_id,shop_id) VALUES( :oauth_id, :shop_id)";
+    public static final String getUserByShopId = "SELECT " + oauthId + ", " + shopId + " WHERE " + shopId + " = :" + shopId;
+    public static final String getShopByOauthId = "SELECT " + oauthId + ", " + shopId + " WHERE " + oauthId + " = :" + oauthId;
 
-	public static final String updateUserCollege = "UPDATE " + tableName + " SET oauth_id = :oauth_id, shop_id = :shop_id WHERE oauth_id = :oauth_id AND shop_id = :shop_id";
-
+    public static final String deleteUser = "DELETE FROM " + tableName + " WHERE " + oauthId + " = :" + oauthId + " AND " + shopId + " = :" + shopId;
 }

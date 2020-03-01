@@ -5,30 +5,30 @@ import java.sql.Time;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class ShopModel {
-	private Integer ID;
-	
+	private Integer id;
 	private String name;
-	
 	private String photoUrl;
-	
 	private String mobile;
-	
-	private Integer collegeId;
-	
+	private CollegeModel collegeModel;
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "HH:mm:ss")
 	private Time openingTime;
-	
+
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "HH:mm:ss")
 	private Time closingTime;
 
 	private Integer isDelete;
-	
-	public Integer getID() {
-		return ID;
+
+	public ShopModel() {
+		this.collegeModel = new CollegeModel();
 	}
 
-	public void setID(Integer iD) {
-		ID = iD;
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -55,12 +55,12 @@ public class ShopModel {
 		this.mobile = mobile;
 	}
 
-	public Integer getCollegeId() {
-		return collegeId;
+	public CollegeModel getCollegeModel() {
+		return collegeModel;
 	}
 
-	public void setCollegeId(Integer collegeId) {
-		this.collegeId = collegeId;
+	public void setCollegeModel(CollegeModel collegeModel) {
+		this.collegeModel = collegeModel;
 	}
 
 	public Time getOpeningTime() {
@@ -86,6 +86,18 @@ public class ShopModel {
 	public void setClosingTime(Time closingTime) {
 		this.closingTime = closingTime;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "ShopModel{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", photoUrl='" + photoUrl + '\'' +
+				", mobile='" + mobile + '\'' +
+				", collegeModel=" + collegeModel +
+				", openingTime=" + openingTime +
+				", closingTime=" + closingTime +
+				", isDelete=" + isDelete +
+				'}';
+	}
 }

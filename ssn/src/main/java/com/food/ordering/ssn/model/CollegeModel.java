@@ -1,22 +1,18 @@
 package com.food.ordering.ssn.model;
 
 public class CollegeModel {
-	private Integer ID;
-	
+	private Integer id;
 	private String name;
-	
 	private String iconUrl;
-	
 	private String address;
-	
 	private Integer isDelete;
 
-	public Integer getID() {
-		return ID;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setID(Integer iD) {
-		ID = iD;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -50,6 +46,15 @@ public class CollegeModel {
 	public void setIsDelete(Integer isDelete) {
 		this.isDelete = isDelete;
 	}
-	
-	
+
+	@Override
+	public String toString() {
+		return "CollegeModel{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", iconUrl='" + iconUrl + '\'' +
+				", address='" + address + '\'' +
+				", isDelete=" + isDelete +
+				'}';
+	}
 }

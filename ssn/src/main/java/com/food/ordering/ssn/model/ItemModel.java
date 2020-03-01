@@ -2,29 +2,25 @@ package com.food.ordering.ssn.model;
 
 public class ItemModel {
 	private Integer id;
-	
 	private String name;
-	
 	private Double price;
-	
 	private String photoUrl;
-	
 	private String category;
-	
-	private Integer shopId;
-	
+	private ShopModel shopModel;
 	private Integer isVeg;
-	
 	private Integer isAvailable;
-	
 	private Integer isDelete;
 
-	public Integer getID() {
+	public ItemModel() {
+		shopModel = new ShopModel();
+	}
+
+	public Integer getId() {
 		return id;
 	}
 
-	public void setID(Integer iD) {
-		id = iD;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
@@ -59,12 +55,12 @@ public class ItemModel {
 		this.category = category;
 	}
 
-	public Integer getShopId() {
-		return shopId;
+	public ShopModel getShopModel() {
+		return shopModel;
 	}
 
-	public void setShopId(Integer shopId) {
-		this.shopId = shopId;
+	public void setShopModel(ShopModel shopModel) {
+		this.shopModel = shopModel;
 	}
 
 	public Integer getIsVeg() {
@@ -74,7 +70,7 @@ public class ItemModel {
 	public void setIsVeg(Integer isVeg) {
 		this.isVeg = isVeg;
 	}
-	
+
 	public Integer getIsAvailable() {
 		return isAvailable;
 	}
@@ -91,4 +87,18 @@ public class ItemModel {
 		this.isDelete = isDelete;
 	}
 
+	@Override
+	public String toString() {
+		return "ItemModel{" +
+				"id=" + id +
+				", name='" + name + '\'' +
+				", price=" + price +
+				", photoUrl='" + photoUrl + '\'' +
+				", category='" + category + '\'' +
+				", shopModel=" + shopModel +
+				", isVeg=" + isVeg +
+				", isAvailable=" + isAvailable +
+				", isDelete=" + isDelete +
+				'}';
+	}
 }

@@ -1,10 +1,6 @@
 package com.food.ordering.ssn.utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class Response<T>{
-
 	private Integer code;
 	private String message;
 	private T data;
@@ -37,9 +33,13 @@ public class Response<T>{
 	public void setData(T data) {
 		this.data = data;
 	}
-	
+
 	@Override
 	public String toString() {
-		return super.toString();
+		return "Response{" +
+				"code=" + code +
+				", message='" + message + '\'' +
+				", data=" + data +
+				'}';
 	}
 }
