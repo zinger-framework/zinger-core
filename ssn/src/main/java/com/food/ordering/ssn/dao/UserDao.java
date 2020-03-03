@@ -48,20 +48,15 @@ public class UserDao {
                 if (!userModel.getRole().equals(UserRole.CUSTOMER))
                     return response;
 
-                parameters = new MapSqlParameterSource()
-                        .addValue(UserCollegeColumn.mobile, user.getMobile());
-
-                UserCollegeModel userCollegeModelResponse = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
-                if (userCollegeModelResponse != null) {
+                Response<UserCollegeModel> userCollegeModelResponse = getCollegeByMobile(user.getMobile(), userModel.getOauthId(), userModel.getMobile());
+                if (userCollegeModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.CodeSuccess);
 
-                    parameters = new MapSqlParameterSource()
-                            .addValue(CollegeColumn.id, userCollegeModelResponse.getCollegeModel().getId());
-
-                    CollegeModel collegeModel = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
-                    if (collegeModel != null) {
+                    Integer id = userCollegeModelResponse.getData().getCollegeModel().getId();
+                    Response<CollegeModel> collegeModel = collegeDao.getCollegeById(id, userModel.getOauthId(), userModel.getMobile());
+                    if (collegeModel.getCode().equals(ErrorLog.CodeSuccess)) {
                         response.setMessage(ErrorLog.Success);
-                        userCollegeModel.setCollegeModel(collegeModel);
+                        userCollegeModel.setCollegeModel(collegeModel.getData());
                     } else
                         response.setMessage(ErrorLog.CollegeDetailNotAvailable);
                 } else
@@ -108,11 +103,8 @@ public class UserDao {
                 return response;
             }
 
-            parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.mobile, user.getMobile());
-
-            List<UserShopModel> userShopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByMobile, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
-            if (userShopModelList.size() == 0) {
+            Response<List<UserShopModel>> userShopModelResponse = getShopByMobile(user.getMobile(), userModel.getOauthId(), userModel.getMobile());
+            if (!userShopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.ShopDetailNotAvailable);
                 response.setData(userShopListModel);
                 return response;
@@ -122,9 +114,9 @@ public class UserDao {
                 response.setMessage(ErrorLog.Success);
 
                 List<ShopModel> shopModelList = new ArrayList<>();
-                for (UserShopModel userShopModelResponse : userShopModelList) {
+                for (UserShopModel userShopModel : userShopModelResponse.getData()) {
                     parameters = new MapSqlParameterSource()
-                            .addValue(ShopColumn.id, userShopModelResponse.getShopModel().getId());
+                            .addValue(ShopColumn.id, userShopModel.getShopModel().getId());
 
                     ShopModel shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
                     if (shopModel != null)
@@ -224,28 +216,78 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateUserByOauthId(UserModel user, String oauthId) {
-        Response<String> response = new Response<>();
-        boolean userUpdated = false;
-        boolean roleUpdated = false;
-        String tableNotUpdated = "";
+    public Response<UserCollegeModel> getCollegeByMobile(String mobile, String oauthId, String mobileRh) {
+        Response<UserCollegeModel> response = new Response<>();
+        UserCollegeModel userCollegeModel = null;
+
         try {
-            if (utilsDao.validateUser(user.getOauthId()).getCode() != ErrorLog.CodeSuccess)
+            if (!utilsDao.validateUser(oauthId, mobileRh).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
-            SqlParameterSource parameters = new MapSqlParameterSource().addValue("name", user.getName())
-                    .addValue("email", user.getEmail()).addValue("mobile", user.getMobile())
-                    .addValue("oauth_id", user.getOauthId());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserCollegeColumn.mobile, mobile);
+            userCollegeModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (userCollegeModel != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(userCollegeModel);
+            }
+        }
+        return response;
+    }
 
-            namedParameterJdbcTemplate.update(LoginQuery.updateUserByOauthId, parameters);
-            userUpdated = true;
+    public Response<List<UserShopModel>> getShopByMobile(String mobile, String oauthId, String mobileRh) {
+        Response<List<UserShopModel>> response = new Response<>();
+        List<UserShopModel> userShopModelList = null;
 
+        try {
+            if (!utilsDao.validateUser(oauthId, mobileRh).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserShopColumn.mobile, mobile);
+
+            userShopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByMobile, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (userShopModelList != null && userShopModelList.size() > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(userShopModelList);
+            }
+        }
+        return response;
+    }
+
+    public Response<String> updateUser(UserModel user, String oauthId, String mobile) {
+        Response<String> response = new Response<>();
+
+        try {
+            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.name, user.getName())
+                    .addValue(UserColumn.mobile, user.getMobile())
+                    .addValue(UserColumn.email, user.getEmail())
+                    .addValue(UserColumn.oauthId, user.getOauthId());
+
+            int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
+            if(result > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+            else
+                response.setMessage(ErrorLog.UserDetailNotUpdated);
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         try {
-
             if (UserRole.customer.value().equalsIgnoreCase(user.getRole())) {
                 SqlParameterSource params = new MapSqlParameterSource().addValue("oauth_id", user.getOauthId())
                         .addValue("college_id", id);
@@ -276,6 +318,12 @@ public class UserDao {
             response.setMessage(ErrorLog.Success);
             response.setData(ErrorLog.Success);
         }
+
+        return response;
+    }
+
+    public Response<String> updateUserCollege(UserModel user, CollegeModel collegeModel, String oauthId, String mobile) {
+        Response<String> response = updateUser(user, oauthId, mobile);
 
         return response;
     }

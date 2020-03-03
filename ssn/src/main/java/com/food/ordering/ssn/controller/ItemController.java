@@ -22,18 +22,18 @@ public class ItemController {
 
 	@GetMapping(value = "/getMenuItems/{shop_id}")
 	public Response<List<ItemModel>> getItemsByShopId(@PathVariable("shop_id") Integer shopId,
-			@RequestHeader(value = "oauth_id") String oauthIdRh) {
+			@RequestHeader(value = UserColumn.oauthId) String oauthIdRh) {
 		return itemService.getItemsByShopId(shopId, oauthIdRh);
 	}
 
 	@GetMapping(value = "/{item_id}")
 	public Response<ItemModel> getItemById(@PathVariable("item_id") Integer itemId,
-			@RequestHeader(value = "oauth_id") String oauthIdRh) {
+			@RequestHeader(value = UserColumn.oauthId) String oauthIdRh) {
 		return itemService.getItemById(itemId, oauthIdRh);
 	}
 
 	@GetMapping(value = "/searchMenu/{query}")
-	public Response<List<ItemModel>> queryItems(@RequestHeader(value = "oauth_id") String oauthId,
+	public Response<List<ItemModel>> queryItems(@RequestHeader(value = UserColumn.oauthId) String oauthId,
 			 @PathVariable("query") String query) {
 		return itemService.getItemsByQuery(oauthId, query);
 	}

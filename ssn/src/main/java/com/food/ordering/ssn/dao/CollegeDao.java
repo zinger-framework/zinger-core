@@ -2,6 +2,10 @@ package com.food.ordering.ssn.dao;
 
 import java.util.List;
 
+import com.food.ordering.ssn.column.CollegeColumn;
+import com.food.ordering.ssn.column.UserCollegeColumn;
+import com.food.ordering.ssn.column.UserColumn;
+import com.food.ordering.ssn.query.UserCollegeQuery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -9,88 +13,84 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.food.ordering.ssn.model.CollegeModel;
-import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.query.CollegeQuery;
 import com.food.ordering.ssn.rowMapperLambda.CollegeRowMapperLambda;
-import com.food.ordering.ssn.utils.Constant;
+import com.food.ordering.ssn.utils.ErrorLog;
 import com.food.ordering.ssn.utils.Response;
 
 @Repository
 public class CollegeDao {
 
-	@Autowired
-	NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-	@Autowired
-	UtilsDao utilsDao;
+    @Autowired
+    UtilsDao utilsDao;
 
-	public Response<List<CollegeModel>> getAllColleges(String oauthId) {
-		Response<List<CollegeModel>> response = new Response<>();
-		List<CollegeModel> list = null;
+    public Response<List<CollegeModel>> getAllColleges(String oauthId) {
+        Response<List<CollegeModel>> response = new Response<>();
+        List<CollegeModel> list = null;
 
-		try {
-			if (utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
-				return response;
+        try {
+            if (utilsDao.validateUser(oauthId).getCode() != ErrorLog.CodeSuccess)
+                return response;
 
-			list = jdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (list != null) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
-				response.setData(list);
-			}
-		}
-		return response;
-	}
+            list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (list != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(list);
+            }
+        }
+        return response;
+    }
 
-	public Response<CollegeModel> getCollegeById(Integer collegeId, String oauthIdRh) {
-		CollegeModel college = null;
-		Response<CollegeModel> response = new Response<>();
+    public Response<CollegeModel> getCollegeById(Integer collegeId, String oauthIdRh, String mobile) {
+        Response<CollegeModel> response = new Response<>();
+        CollegeModel college = null;
 
-		try {
+        try {
+            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
 
-			if (utilsDao.validateUser(oauthIdRh).getCode() != Constant.CodeSuccess)
-				return response;
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(CollegeColumn.id, collegeId);
+            college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (college != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(college);
+            }
+        }
+        return response;
+    }
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue("id", collegeId);
-			college = jdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters,
-					CollegeRowMapperLambda.collegeRowMapperLambda);
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (college != null) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
-				response.setData(college);
-			}
-		}
-		return response;
-	}
+    public Response<String> updateCollege(CollegeModel collegeModel, String oauthId, String mobile) {
+        Response<String> response = new Response<>();
 
-	public Response<CollegeModel> updateCollege(String oauthId, Integer collegeId, CollegeModel newCollege) {
-		Response<CollegeModel> response = new Response();
+        try {
+            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
 
-		try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(CollegeColumn.name, collegeModel.getName())
+                    .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl())
+                    .addValue(CollegeColumn.address, collegeModel.getAddress());
 
-			if (utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
-				return response;
-
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue("name", newCollege.getName())
-					.addValue("icon_url", newCollege.getIconUrl()).addValue("address", newCollege.getAddress())
-					.addValue("id", collegeId);
-
-			jdbcTemplate.update(CollegeQuery.updateCollege, parameters);
-
-			response.setCode(Constant.CodeSuccess);
-			response.setMessage(Constant.MessageSuccess);
-			response.setData(newCollege);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return response;
-	}
-
+            int result = namedParameterJdbcTemplate.update(CollegeQuery.updateCollege, parameters);
+            if (result > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
 }

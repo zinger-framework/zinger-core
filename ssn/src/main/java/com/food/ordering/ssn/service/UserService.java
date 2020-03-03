@@ -2,14 +2,11 @@ package com.food.ordering.ssn.service;
 
 import java.util.List;
 
-import com.food.ordering.ssn.model.UserCollegeModel;
-import com.food.ordering.ssn.model.UserShopListModel;
-import com.food.ordering.ssn.model.UserShopModel;
+import com.food.ordering.ssn.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.food.ordering.ssn.dao.UserDao;
-import com.food.ordering.ssn.model.UserModel;
 import com.food.ordering.ssn.utils.Response;
 
 @Service
@@ -34,8 +31,16 @@ public class UserService {
 		return userDao.getUserByOauthId(oauthId, oauthIdRh);
     }
 
-	public Response<String> updateUserByOauthId(UserModel user, String oauthId) {
-		return userDao.updateUserByOauthId(user, oauthId);
+	public Response<UserCollegeModel> getCollegeByMobile(String mobile, String oauthId, String mobileRh) {
+		return userDao.getCollegeByMobile(mobile, oauthId, mobileRh);
+	}
+
+	public Response<String> updateUser(UserModel user, String oauthId, String mobile) {
+		return userDao.updateUser(user, oauthId, mobile);
+	}
+
+	public Response<String> updateUserCollege(UserModel user, CollegeModel collegeModel, String oauthId, String mobile) {
+		return userDao.updateUserCollege(user, collegeModel, oauthId, mobile);
 	}
 
 	public Response<UserModel> deleteUserByOauthId(String oauthId, String oauthIdRh) {

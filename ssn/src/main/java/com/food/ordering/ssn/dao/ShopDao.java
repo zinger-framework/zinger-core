@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.food.ordering.ssn.model.ShopModel;
 import com.food.ordering.ssn.query.ShopQuery;
 import com.food.ordering.ssn.rowMapperLambda.ShopRowMapperLambda;
-import com.food.ordering.ssn.utils.Constant;
+import com.food.ordering.ssn.utils.ErrorLog;
 import com.food.ordering.ssn.utils.Response;
 
 @Repository
@@ -19,19 +19,19 @@ public class ShopDao {
 
 	@Autowired
 	NamedParameterJdbcTemplate jdbcTemplate;
-	
+
 	@Autowired
 	UtilsDao utilsDao;
-	
+
 	public Response<List<ShopModel>> getShopsByCollegeId(Integer collegeId, String oauthId) {
 		Response<List<ShopModel>> response = new Response<>();
 		List<ShopModel> list = null;
 
 		try {
-			
-			if(utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
+
+			if(utilsDao.validateUser(oauthId).getCode() != ErrorLog.CodeSuccess)
 				return response;
-			
+
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("college_id", collegeId);
 
 			list = jdbcTemplate.query(ShopQuery.getShopsByCollegeID, parameters, ShopRowMapperLambda.shopRowMapperLambda);
@@ -39,8 +39,8 @@ public class ShopDao {
 			e.printStackTrace();
 		} finally {
 			if (list != null && !list.isEmpty()) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
+				response.setCode(ErrorLog.CodeSuccess);
+				response.setMessage(ErrorLog.Success);
 				response.setData(list);
 			}
 		}

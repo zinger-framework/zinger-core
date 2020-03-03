@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.food.ordering.ssn.model.ItemModel;
 import com.food.ordering.ssn.query.ItemQuery;
 import com.food.ordering.ssn.rowMapperLambda.ItemRowMapperLambda;
-import com.food.ordering.ssn.utils.Constant;
+import com.food.ordering.ssn.utils.ErrorLog;
 import com.food.ordering.ssn.utils.Response;
 
 @Repository
@@ -29,7 +29,7 @@ public class ItemDao {
 
 		try {
 
-			if (utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
+			if (utilsDao.validateUser(oauthId).getCode() != ErrorLog.CodeSuccess)
 				return response;
 
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("shop_id", shopId);
@@ -39,8 +39,8 @@ public class ItemDao {
 			e.printStackTrace();
 		} finally {
 			if (list != null && !list.isEmpty()) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
+				response.setCode(ErrorLog.CodeSuccess);
+				response.setMessage(ErrorLog.Success);
 				response.setData(list);
 			}
 		}
@@ -53,7 +53,7 @@ public class ItemDao {
 
 		try {
 
-			if (utilsDao.validateUser(oauthIdRh).getCode() != Constant.CodeSuccess)
+			if (utilsDao.validateUser(oauthIdRh).getCode() != ErrorLog.CodeSuccess)
 				return response;
 
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("id", itemId);
@@ -63,8 +63,8 @@ public class ItemDao {
 			e.printStackTrace();
 		} finally {
 			if (item != null) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
+				response.setCode(ErrorLog.CodeSuccess);
+				response.setMessage(ErrorLog.Success);
 				response.setData(item);
 			}
 		}
@@ -76,7 +76,7 @@ public class ItemDao {
 		List<ItemModel> items = null;
 		try {
 
-			if (utilsDao.validateUser(oauthId).getCode() != Constant.CodeSuccess)
+			if (utilsDao.validateUser(oauthId).getCode() != ErrorLog.CodeSuccess)
 				return response;
 
 			SqlParameterSource parameters = new MapSqlParameterSource().addValue("query","%" + query + "%");
@@ -87,8 +87,8 @@ public class ItemDao {
 			e.printStackTrace();
 		} finally {
 			if (items != null && !items.isEmpty()) {
-				response.setCode(Constant.CodeSuccess);
-				response.setMessage(Constant.MessageSuccess);
+				response.setCode(ErrorLog.CodeSuccess);
+				response.setMessage(ErrorLog.Success);
 				response.setData(items);
 			}
 		}
