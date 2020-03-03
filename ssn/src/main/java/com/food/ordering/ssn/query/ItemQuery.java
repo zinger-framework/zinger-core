@@ -9,7 +9,8 @@ public class ItemQuery {
 
     public static final String getItemById = "SELECT " + id + "," + name + "," + price + "," + photoUrl + "," + category + "," + shopId + "," + isVeg + "," + isAvailable + "," + isDelete + " FROM " + tableName + " WHERE " + id + " = :" + id;
     public static final String getItemsByShopId = "SELECT " + id + "," + name + "," + price + "," + photoUrl + "," + category + "," + shopId + "," + isVeg + "," + isAvailable + "," + isDelete + " FROM " + tableName + " WHERE " + shopId + " = :" + shopId + " AND " + notDeleted;
-    public static final String getItemsByName = "SELECT " + id + "," + name + "," + price + "," + photoUrl + "," + category + "," + shopId + "," + isVeg + "," + isAvailable + "," + isDelete + " FROM " + tableName + " WHERE " + name + " LIKE :" + name + " AND " + notDeleted;
+    // TODO add college ID
+    public static final String getItemsByName = "SELECT " + id + "," + name + "," + price + "," + photoUrl + "," + category + "," + shopId + "," + isVeg + "," + isAvailable + "," + isDelete + " FROM " + tableName + " WHERE " + name + " LIKE %:" + name + "% AND " + notDeleted;
 
     public static final String updateItem = "UPDATE " + tableName + " SET " + name + " = :" + name + ", " + price + " = :" + price + ", " + photoUrl + " = :" + photoUrl + ", " + category + " = :" + category + ", " + isVeg + " = :" + isVeg + ", " + isAvailable + " = :" + isAvailable + " WHERE " + id + " = :" + id;
 
