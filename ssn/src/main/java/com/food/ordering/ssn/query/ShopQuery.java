@@ -8,6 +8,7 @@ public class ShopQuery {
     public static final String insertShop = "INSERT INTO " + tableName + " (" + name + ", " + photoUrl + ", " + mobile + ", " + collegeId + ", " + openingTime + ", " + closingTime + ") VALUES(:" + name + ", :" + photoUrl + ", :" + mobile + ", :" + collegeId + ", :" + openingTime + ", :" + closingTime + ")";
 
     public static final String getShopByCollegeId = "SELECT " + id + ", " + name + ", " + photoUrl + ", " + mobile + ", " + collegeId + ", " + openingTime + ", " + closingTime + ", " + isDelete + " FROM " + tableName + " WHERE " + collegeId + " = :" + collegeId + " AND " + notDeleted;
+    public static final String getShopIdByCollegeId = "SELECT " + id +" FROM " + tableName + " WHERE " + collegeId + " = :" + collegeId + " AND " + notDeleted;
     public static final String getShopById = "SELECT " + id + ", " + name + ", " + photoUrl + ", " + mobile + ", " + collegeId + ", " + openingTime + ", " + closingTime + ", " + isDelete + " FROM " + tableName + " WHERE " + id + " = :" + id;
 
     public static final String updateShop = "UPDATE " + tableName + " SET " + name + " = :" + name + ", " + photoUrl + " = :" + photoUrl + ", " + mobile + " = :" + mobile + ", " + openingTime + " = :" + openingTime + ", " + closingTime + " = :" + closingTime + " WHERE " + id + " = :" + id;
