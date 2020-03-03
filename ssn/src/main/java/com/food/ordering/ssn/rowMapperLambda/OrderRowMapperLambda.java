@@ -11,7 +11,7 @@ public class OrderRowMapperLambda {
 		orderModel.setId(rs.getInt(id));
 
 		UserModel userModel = new UserModel();
-		userModel.setOauthId(rs.getString(oauthId));
+		userModel.setMobile(rs.getString(mobile));
 		orderModel.setUserModel(userModel);
 
 		TransactionModel transactionModel = new TransactionModel();

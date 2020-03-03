@@ -4,7 +4,7 @@ public class OrderColumn {
     public static final String tableName = "orders";
 
     public static final String id = "id";
-    public static final String oauthId = "oauth_id";
+    public static final String mobile = "mobile";
     public static final String transactionId = "transaction_id";
     public static final String shopId = "shop_id";
     public static final String date = "date";

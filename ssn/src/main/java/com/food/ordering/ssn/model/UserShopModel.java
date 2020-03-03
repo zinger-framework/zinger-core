@@ -1,7 +1,5 @@
 package com.food.ordering.ssn.model;
 
-import java.util.List;
-
 public class UserShopModel {
 	private UserModel userModel;
 	private ShopModel shopModel;

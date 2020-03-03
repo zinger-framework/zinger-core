@@ -6,8 +6,8 @@ public class Response<T>{
 	private T data;
 
 	public Response() {
-		code = Constant.CodeFailure;
-		message = Constant.MessageFailure;
+		code = ErrorLog.CodeFailure;
+		message = ErrorLog.Failure;
 	}
 
 	public Integer getCode() {

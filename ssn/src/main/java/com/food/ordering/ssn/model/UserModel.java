@@ -3,21 +3,21 @@ package com.food.ordering.ssn.model;
 import com.food.ordering.ssn.enums.*;
 
 public class UserModel {
-	private String oauthId;
+	private String mobile;
 	private String name;
 	private String email;
-	private String mobile;
+	private String oauthId;
 	private UserRole role;
 	private Integer isDelete;
 
 	public UserModel() {}
 
-	public String getOauthId() {
-		return oauthId;
+	public String getMobile() {
+		return mobile;
 	}
 
-	public void setOauthId(String oauthId) {
-		this.oauthId = oauthId;
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 
 	public String getName() {
@@ -36,12 +36,12 @@ public class UserModel {
 		this.email = email;
 	}
 
-	public String getMobile() {
-		return mobile;
+	public String getOauthId() {
+		return oauthId;
 	}
 
-	public void setMobile(String mobile) {
-		this.mobile = mobile;
+	public void setOauthId(String oauthId) {
+		this.oauthId = oauthId;
 	}
 
 	public UserRole getRole() {
@@ -63,10 +63,10 @@ public class UserModel {
 	@Override
 	public String toString() {
 		return "UserModel{" +
-				"oauthId='" + oauthId + '\'' +
+				"mobile='" + mobile + '\'' +
 				", name='" + name + '\'' +
 				", email='" + email + '\'' +
-				", mobile='" + mobile + '\'' +
+				", oauthId='" + oauthId + '\'' +
 				", role=" + role +
 				", isDelete=" + isDelete +
 				'}';

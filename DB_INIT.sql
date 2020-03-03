@@ -40,13 +40,13 @@ CREATE TABLE shop (
 );
 
 CREATE TABLE users(
-  oauth_id VARCHAR(64),
-  name VARCHAR(32) NOT NULL,
+  mobile VARCHAR(10),
+  name VARCHAR(32) DEFAULT NULL,
   email VARCHAR(64) DEFAULT NULL,
-  mobile VARCHAR(10) UNIQUE NOT NULL,
+  oauth_id VARCHAR(64) UNIQUE DEFAULT NULL,
   role ENUM('CUSTOMER','SELLER','SHOP_OWNER'),
   is_delete INT DEFAULT 0,
-  CONSTRAINT users_oauth_id_pk PRIMARY KEY(oauth_id)
+  CONSTRAINT users_mobile_pk PRIMARY KEY(mobile)
 );
 
 CREATE TABLE item (
@@ -79,7 +79,7 @@ CREATE TABLE transactions (
     
 CREATE TABLE orders (
   id INT AUTO_INCREMENT,
-  oauth_id VARCHAR(64) NOT NULL,
+  mobile VARCHAR(10) NOT NULL,
   transaction_id VARCHAR(64) UNIQUE NOT NULL,
   shop_id INT NOT NULL,
   date DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -92,7 +92,7 @@ CREATE TABLE orders (
   rating DOUBLE DEFAULT NULL,
   secret_key VARCHAR(10) DEFAULT NULL,
   CONSTRAINT orders_id_pk PRIMARY KEY (id),
-  CONSTRAINT orders_oauth_id_fk FOREIGN KEY (oauth_id) REFERENCES users(oauth_id),
+  CONSTRAINT orders_mobile_fk FOREIGN KEY (mobile) REFERENCES users(mobile),
   CONSTRAINT orders_transaction_id_fk FOREIGN KEY (transaction_id) REFERENCES transactions(transaction_id),
   CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop(id)
 );
@@ -100,18 +100,18 @@ CREATE TABLE orders (
 ####################################################
 
 CREATE TABLE users_shop (
-   oauth_id VARCHAR(64) NOT NULL,
+   mobile VARCHAR(10) NOT NULL,
    shop_id INT NOT NULL,
-   CONSTRAINT users_shop_oauth_id_shop_id_pk PRIMARY KEY(oauth_id, shop_id),
-   CONSTRAINT users_shop_oauth_id_fk FOREIGN KEY(oauth_id) REFERENCES users(oauth_id),
+   CONSTRAINT users_shop_mobile_shop_id_pk PRIMARY KEY(mobile, shop_id),
+   CONSTRAINT users_shop_mobile_fk FOREIGN KEY(mobile) REFERENCES users(mobile),
    CONSTRAINT users_shop_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
 
 CREATE TABLE users_college (
-   oauth_id VARCHAR(64) NOT NULL,
+   mobile VARCHAR(10) NOT NULL,
    college_id INT NOT NULL,
-   CONSTRAINT users_college_oauth_id_college_id_pk PRIMARY KEY(oauth_id, college_id),
-   CONSTRAINT users_college_oauth_id_fk FOREIGN KEY(oauth_id) REFERENCES users(oauth_id),
+   CONSTRAINT users_college_mobile_college_id_pk PRIMARY KEY(mobile, college_id),
+   CONSTRAINT users_college_mobile_fk FOREIGN KEY(mobile) REFERENCES users(mobile),
    CONSTRAINT users_college_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id)
 );
 

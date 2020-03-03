@@ -10,7 +10,7 @@ public class UserShopRowMapperLambda {
 		UserShopModel userShopModel = new UserShopModel();
 
 		UserModel userModel = new UserModel();
-		userModel.setOauthId(rs.getString(oauthId));
+		userModel.setMobile(rs.getString(mobile));
 		userShopModel.setUserModel(userModel);
 
 		ShopModel shopModel = new ShopModel();

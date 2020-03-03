@@ -10,7 +10,7 @@ public class UserCollegeRowMapperLambda {
 		UserCollegeModel userCollegeModel = new UserCollegeModel();
 
 		UserModel userModel = new UserModel();
-		userModel.setOauthId(rs.getString(oauthId));
+		userModel.setMobile(rs.getString(mobile));
 		userCollegeModel.setUserModel(userModel);
 
 		CollegeModel collegeModel = new CollegeModel();
