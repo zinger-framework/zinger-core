@@ -5,7 +5,9 @@ import com.food.ordering.ssn.model.OrderItemListModel;
 import com.food.ordering.ssn.model.OrderModel;
 import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class OrderService {
 
     @Autowired
