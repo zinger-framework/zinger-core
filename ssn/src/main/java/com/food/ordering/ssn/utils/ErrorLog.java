@@ -10,4 +10,6 @@ public class ErrorLog {
 	public static final String ShopDetailNotAvailable = "Shop detail not available";
 	public static final String UserDetailNotUpdated = "User detail not updated";
 	public static final String CollegeDetailNotUpdated = "College detail not updated";
+	public static final String OrderDetailsNotAvailable="Order with given ID not found";
+	public static final String OrderStateChangeNotValid="Order status change not valid";
 }

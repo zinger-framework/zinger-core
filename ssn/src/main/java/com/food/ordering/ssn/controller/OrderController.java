@@ -28,6 +28,10 @@ public class OrderController {
         return orderService.updateOrderDetails(orderModel,oauthIdRh,mobile);
     }
 
+    @PatchMapping(value = "/status")
+    public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
+        return orderService.updateOrderStatus(orderModel,oauthIdRH,mobile);
+    }
 
 
 }

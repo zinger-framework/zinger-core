@@ -1,23 +1,19 @@
 package com.food.ordering.ssn.dao;
 
 import com.food.ordering.ssn.column.OrderColumn;
-import com.food.ordering.ssn.column.OrderItemColumn;
+import com.food.ordering.ssn.enums.OrderStatus;
 import com.food.ordering.ssn.model.OrderItemListModel;
 import com.food.ordering.ssn.model.OrderItemModel;
 import com.food.ordering.ssn.model.OrderModel;
 import com.food.ordering.ssn.model.TransactionModel;
 import com.food.ordering.ssn.query.OrderQuery;
-import com.food.ordering.ssn.query.TransactionQuery;
 import com.food.ordering.ssn.rowMapperLambda.OrderRowMapperLambda;
-import com.food.ordering.ssn.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.ssn.utils.ErrorLog;
 import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
 
 import static com.food.ordering.ssn.column.OrderColumn.*;
@@ -139,6 +135,82 @@ public class OrderDao {
 
         return response;
     }
+
+
+    public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
+
+        Response<String> response=new Response<>();
+        MapSqlParameterSource parameter;
+        OrderModel currentOrderDetails;
+
+        try{
+             if(!utilsDao.validateUser(oauthIdRH,mobile).getCode().equals(ErrorLog.CodeSuccess))
+                 return response;
+
+
+            parameter=new MapSqlParameterSource().addValue(id,orderModel.getId());
+            currentOrderDetails=jdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId,parameter,OrderRowMapperLambda.orderRowMapperLambda);
+
+            if(currentOrderDetails!=null){
+
+                if(checkOrderStatusValidity(currentOrderDetails.getOrderStatus(),orderModel.getOrderStatus()))
+                {
+                    parameter=new MapSqlParameterSource().addValue(status,orderModel.getOrderStatus())
+                                                         .addValue(id,orderModel.getId());
+
+                    int result=jdbcTemplate.update(OrderQuery.updateOrderStatus,parameter);
+
+                    if(result>0){
+                        response.setMessage(ErrorLog.Success);
+                        response.setCode(ErrorLog.CodeSuccess);
+                    }
+
+
+                }else{
+                    response.setMessage(ErrorLog.OrderStateChangeNotValid);
+                }
+
+            }else{
+                response.setMessage(ErrorLog.OrderDetailsNotAvailable);
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
+    boolean checkOrderStatusValidity(OrderStatus currentStatus,OrderStatus newStatus){
+
+            // discuss and fill the results below
+
+            // starting states -> failure,pending,placed
+            // terminal states -> cancelled by seller or user, delivered, completed
+
+            // pending -> failure ,placed
+            // placed  -> cancelled by user or seller , accepted
+            // cancelled by user or seller -> refund table entry must be added
+            // accepted -> ready, out_for_delivery , cancelled by seller -> refund table entry must be added
+            // ready -> secret key must be updated in table, completed
+            // out_for_delivery -> secret key must be updated in table, delivered
+
+
+        boolean result=false;
+
+        if(currentStatus.equals(newStatus))
+            return true;
+        else if(currentStatus.equals(OrderStatus.PLACED)){
+            if(newStatus.equals(OrderStatus.ACCEPTED)||newStatus.equals(OrderStatus.CANCELLED_BY_USER)) ;
+        }
+
+
+        return false;
+    }
+
+
 
 
 

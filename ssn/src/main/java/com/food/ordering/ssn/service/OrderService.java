@@ -18,4 +18,8 @@ public class OrderService {
     public Response<String> updateOrderDetails(OrderModel orderModel,String oauthIdRh,String mobile){
         return orderDao.updateOrderDetails(orderModel,oauthIdRh,mobile);
     }
+
+    public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
+        return orderDao.updateOrderDetails(orderModel,oauthIdRH,mobile);
+    }
 }
