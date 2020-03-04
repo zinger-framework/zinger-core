@@ -4,10 +4,7 @@ public class UserCollegeModel {
 	private UserModel userModel;
 	private CollegeModel collegeModel;
 
-	public UserCollegeModel() {
-		userModel = new UserModel();
-		collegeModel = new CollegeModel();
-	}
+	public UserCollegeModel() {}
 
 	public UserModel getUserModel() {
 		return userModel;
