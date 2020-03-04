@@ -155,6 +155,14 @@ public class OrderDao {
 
                 if(checkOrderStatusValidity(currentOrderDetails.getOrderStatus(),orderModel.getOrderStatus()))
                 {
+                    if(orderModel.getSecretKey()!=null){
+                        if(orderModel.getSecretKey()!=currentOrderDetails.getSecretKey()){
+                            response.setData(ErrorLog.SecretKeyMismatch);
+                            return response;
+                        }
+                    }
+
+
                     parameter=new MapSqlParameterSource().addValue(status,orderModel.getOrderStatus())
                                                          .addValue(id,orderModel.getId());
 
