@@ -28,8 +28,11 @@ public class OrderItemDao {
 
             int result=jdbcTemplate.update(OrderItemQuery.insertOrderItem,parameter);
 
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.Success);
+            if(result>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+
 
         }catch (Exception e){
             e.printStackTrace();
