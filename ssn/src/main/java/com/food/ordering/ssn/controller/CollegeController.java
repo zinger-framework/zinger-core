@@ -2,6 +2,7 @@ package com.food.ordering.ssn.controller;
 
 import java.util.List;
 
+import com.food.ordering.ssn.column.CollegeColumn;
 import com.food.ordering.ssn.column.UserColumn;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,17 +25,12 @@ public class CollegeController {
     CollegeService collegeService;
 
     @GetMapping(value = "")
-    public Response<List<CollegeModel>> getAllColleges(@RequestHeader(value = "oauth_id") String oauthId) {
+    public Response<List<CollegeModel>> getAllColleges(@RequestHeader(value = UserColumn.oauthId) String oauthId) {
         return collegeService.getAllColleges(oauthId);
     }
 
-    @GetMapping(value = "/{college_id}")
-    public Response<CollegeModel> getCollegeById(@PathVariable("college_id") Integer collegeId, @RequestHeader(value = "oauth_id") String oauthIdRh, @RequestHeader(value = UserColumn.mobile) String mobile) {
+    @GetMapping(value = "/{" + CollegeColumn.id + "}")
+    public Response<CollegeModel> getCollegeById(@PathVariable(CollegeColumn.id) Integer collegeId, @RequestHeader(value = UserColumn.oauthId) String oauthIdRh, @RequestHeader(value = UserColumn.mobile) String mobile) {
         return collegeService.getCollegeById(collegeId, oauthIdRh, mobile);
-    }
-
-    @PatchMapping
-    public Response<String> updateCollege(@RequestBody CollegeModel collegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile) {
-        return collegeService.updateCollege(collegeModel, oauthId, mobile);
     }
 }

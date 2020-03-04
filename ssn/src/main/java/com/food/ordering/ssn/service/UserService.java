@@ -23,27 +23,9 @@ public class UserService {
 		return userDao.insertSeller(user);
 	}
 
-	public Response<List<UserModel>> getAllUser(String oauthId) {
-		return userDao.getAllUser(oauthId);
-	}
+	/**************************************************/
 
-	public Response<UserModel> getUserByOauthId(String oauthId, String oauthIdRh) {
-		return userDao.getUserByOauthId(oauthId, oauthIdRh);
-    }
-
-	public Response<UserCollegeModel> getCollegeByMobile(String mobile, String oauthId, String mobileRh) {
-		return userDao.getCollegeByMobile(mobile, oauthId, mobileRh);
-	}
-
-	public Response<String> updateUser(UserModel user, String oauthId, String mobile) {
-		return userDao.updateUser(user, oauthId, mobile);
-	}
-
-	public Response<String> updateUserCollege(UserModel user, CollegeModel collegeModel, String oauthId, String mobile) {
-		return userDao.updateUserCollege(user, collegeModel, oauthId, mobile);
-	}
-
-	public Response<UserModel> deleteUserByOauthId(String oauthId, String oauthIdRh) {
-		return userDao.deleteUserByOauthId(oauthId, oauthIdRh);
+	public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile) {
+		return userDao.updateUserCollegeData(userCollegeModel, oauthId, mobile);
 	}
 }

@@ -27,12 +27,12 @@ public class CollegeDao {
     @Autowired
     UtilsDao utilsDao;
 
-    public Response<List<CollegeModel>> getAllColleges(String oauthId) {
+    public Response<List<CollegeModel>> getAllColleges(String oauthId, String mobile) {
         Response<List<CollegeModel>> response = new Response<>();
         List<CollegeModel> list = null;
 
         try {
-            if (utilsDao.validateUser(oauthId).getCode() != ErrorLog.CodeSuccess)
+            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
             list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
