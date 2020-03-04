@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
+import com.food.ordering.ssn.enums.OrderStatus.*;
 import static com.food.ordering.ssn.column.OrderColumn.*;
 
 @Repository
@@ -185,25 +187,42 @@ public class OrderDao {
 
     boolean checkOrderStatusValidity(OrderStatus currentStatus,OrderStatus newStatus){
 
-            // discuss and fill the results below
 
-            // starting states -> failure,pending,placed
-            // terminal states -> cancelled by seller or user, delivered, completed
+        // starting states -> failure,pending,placed
+        // terminal states -> cancelled by seller or user, delivered, completed
 
-            // pending -> failure ,placed
-            // placed  -> cancelled by user or seller , accepted
-            // cancelled by user or seller -> refund table entry must be added
-            // accepted -> ready, out_for_delivery , cancelled by seller -> refund table entry must be added
-            // ready -> secret key must be updated in table, completed
-            // out_for_delivery -> secret key must be updated in table, delivered
-
-
-        boolean result=false;
+        // pending -> failure ,placed
+        // placed  -> cancelled by user or seller , accepted
+        // cancelled by user or seller -> refund table entry must be added
+        // accepted -> ready, out_for_delivery , cancelled by seller -> refund table entry must be added
+        // ready -> secret key must be updated in table, completed
+        // out_for_delivery -> secret key must be updated in table, delivered
 
         if(currentStatus.equals(newStatus))
             return true;
+
+        else if(currentStatus.equals(OrderStatus.PENDING)){
+            if(newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED))
+                return true;
+        }
         else if(currentStatus.equals(OrderStatus.PLACED)){
-            if(newStatus.equals(OrderStatus.ACCEPTED)||newStatus.equals(OrderStatus.CANCELLED_BY_USER)) ;
+            if(newStatus.equals(OrderStatus.CANCELLED_BY_SELLER)||newStatus.equals(OrderStatus.CANCELLED_BY_USER)||newStatus.equals(OrderStatus.ACCEPTED))
+                return true;
+        }
+        else if(currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER)){
+            // TODO update the refund table
+        }
+        else if(currentStatus.equals(OrderStatus.ACCEPTED)){
+            if(newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER))
+                return true;
+        }
+        else if(currentStatus.equals(OrderStatus.READY)){
+            if(newStatus.equals(OrderStatus.COMPLETED))
+                return true;
+        }
+        else if(currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY)){
+            if(newStatus.equals(OrderStatus.DELIVERED))
+                return true;
         }
 
 

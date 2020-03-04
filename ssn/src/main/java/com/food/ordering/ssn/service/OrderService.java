@@ -20,6 +20,6 @@ public class OrderService {
     }
 
     public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
-        return orderDao.updateOrderDetails(orderModel,oauthIdRH,mobile);
+        return orderDao.updateOrderStatus(orderModel,oauthIdRH,mobile);
     }
 }
