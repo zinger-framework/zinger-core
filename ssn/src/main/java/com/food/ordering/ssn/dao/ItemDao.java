@@ -2,7 +2,9 @@ package com.food.ordering.ssn.dao;
 
 import java.util.List;
 
+import com.food.ordering.ssn.column.CollegeColumn;
 import com.food.ordering.ssn.column.ItemColumn;
+import com.food.ordering.ssn.column.ShopColumn;
 import com.food.ordering.ssn.utils.ErrorLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -80,7 +82,9 @@ public class ItemDao {
 			if (utilsDao.validateUser(oauthId,mobile).getCode() != ErrorLog.CodeSuccess)
 				return response;
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name,itemName);
+			SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name,itemName)
+																		.addValue(ShopColumn.collegeId,collegeId);
+
 
 			items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
 
