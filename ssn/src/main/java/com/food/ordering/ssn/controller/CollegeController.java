@@ -25,8 +25,8 @@ public class CollegeController {
     CollegeService collegeService;
 
     @GetMapping(value = "")
-    public Response<List<CollegeModel>> getAllColleges(@RequestHeader(value = UserColumn.oauthId) String oauthId) {
-        return collegeService.getAllColleges(oauthId);
+    public Response<List<CollegeModel>> getAllColleges(@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile) {
+        return collegeService.getAllColleges(oauthId, mobile);
     }
 
     @GetMapping(value = "/{" + CollegeColumn.id + "}")

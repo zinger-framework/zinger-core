@@ -13,21 +13,19 @@ import com.food.ordering.ssn.utils.Response;
 
 @Service
 public class ItemService {
-		
-	@Autowired
-	ItemDao itemDao;
-	
-	public Response<ItemModel> getItemById(Integer itemId,String oauthId) {
-		return itemDao.getItemById(itemId,oauthId);
+
+    @Autowired
+    ItemDao itemDao;
+
+    public Response<ItemModel> getItemById(Integer itemId, String oauthId, String mobile) {
+        return itemDao.getItemById(itemId, oauthId, mobile);
     }
-	
-	public Response<List<ItemModel>> getItemsByShopId(Integer shopId,String oauthId) {
-		return itemDao.getItemsByShopId(shopId, oauthId);
+
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile) {
+        return itemDao.getItemsByShopId(shopId, oauthId, mobile);
     }
-	
-	public Response<List<ItemModel>> getItemsByQuery(String oauthId, String query){
-		return itemDao.getItemsByQuery(oauthId, query);
-	}
-	
-	
+
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile) {
+        return itemDao.getItemsByName(collegeId, itemName, oauthId, mobile);
+    }
 }

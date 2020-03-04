@@ -31,8 +31,8 @@ public class ItemController {
         return itemService.getItemById(itemId, oauthIdRh, mobile);
     }
 
-    @GetMapping(value = "/searchMenu/{query}")
-    public Response<List<ItemModel>> getItemsByQuery(@RequestHeader(value = UserColumn.oauthId) String oauthId, @PathVariable("query") String query) {
-        return itemService.getItemsByQuery(oauthId, query);
+    @GetMapping(value = "/menu/{college_id}/{item_name}")
+    public Response<List<ItemModel>> getItemsByName(@PathVariable("college_id") Integer collegeId, @PathVariable("item_name") String itemName, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile) {
+        return itemService.getItemsByName(collegeId, itemName, oauthId, mobile);
     }
 }

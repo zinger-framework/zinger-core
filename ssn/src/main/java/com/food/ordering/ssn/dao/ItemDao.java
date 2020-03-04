@@ -20,84 +20,82 @@ import com.food.ordering.ssn.utils.Response;
 @Repository
 public class ItemDao {
 
-	@Autowired
-	NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired
+    NamedParameterJdbcTemplate jdbcTemplate;
 
-	@Autowired
-	UtilsDao utilsDao;
+    @Autowired
+    UtilsDao utilsDao;
 
-	public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId,String mobile) {
-		Response<List<ItemModel>> response = new Response<>();
-		List<ItemModel> list = null;
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile) {
+        Response<List<ItemModel>> response = new Response<>();
+        List<ItemModel> list = null;
 
-		try {
+        try {
 
-			if (utilsDao.validateUser(oauthId,mobile).getCode() != ErrorLog.CodeSuccess)
-				return response;
+            if (utilsDao.validateUser(oauthId, mobile).getCode() != ErrorLog.CodeSuccess)
+                return response;
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.shopId, shopId);
-			list = jdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.shopId, shopId);
+            list = jdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (list != null && !list.isEmpty()) {
-				response.setCode(ErrorLog.CodeSuccess);
-				response.setMessage(ErrorLog.Success);
-				response.setData(list);
-			}
-		}
-		return response;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (list != null && !list.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(list);
+            }
+        }
+        return response;
+    }
 
-	public Response<ItemModel> getItemById(Integer itemId, String oauthIdRh,String mobile) {
-		ItemModel item = null;
-		Response<ItemModel> response = new Response<>();
+    public Response<ItemModel> getItemById(Integer itemId, String oauthIdRh, String mobile) {
+        ItemModel item = null;
+        Response<ItemModel> response = new Response<>();
 
-		try {
+        try {
 
-			if (utilsDao.validateUser(oauthIdRh,mobile).getCode() != ErrorLog.CodeSuccess)
-				return response;
+            if (utilsDao.validateUser(oauthIdRh, mobile).getCode() != ErrorLog.CodeSuccess)
+                return response;
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.id, itemId);
-			item = jdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.id, itemId);
+            item = jdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
 
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (item != null) {
-				response.setCode(ErrorLog.CodeSuccess);
-				response.setMessage(ErrorLog.Success);
-				response.setData(item);
-			}
-		}
-		return response;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (item != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(item);
+            }
+        }
+        return response;
+    }
 
-	public Response<List<ItemModel>> getItemsByName(Integer collegeId,String itemName,String oauthId,String mobile) {
-		Response<List<ItemModel>> response = new Response<>();
-		List<ItemModel> items = null;
-		try {
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile) {
+        Response<List<ItemModel>> response = new Response<>();
+        List<ItemModel> items = null;
+        try {
+            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
 
-			if (utilsDao.validateUser(oauthId,mobile).getCode() != ErrorLog.CodeSuccess)
-				return response;
+            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name, itemName)
+                    .addValue(ShopColumn.collegeId, collegeId);
 
-			SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name,itemName)
-																		.addValue(ShopColumn.collegeId,collegeId);
+            items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
 
-
-			items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			if (items != null && !items.isEmpty()) {
-				response.setCode(ErrorLog.CodeSuccess);
-				response.setMessage(ErrorLog.Success);
-				response.setData(items);
-			}
-		}
-		return response;
-	}
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (items != null && !items.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(items);
+            }
+        }
+        return response;
+    }
 
 }
