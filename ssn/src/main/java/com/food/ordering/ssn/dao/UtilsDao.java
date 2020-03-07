@@ -1,16 +1,16 @@
 package com.food.ordering.ssn.dao;
 
+import com.food.ordering.ssn.column.UserColumn;
+import com.food.ordering.ssn.model.UserModel;
+import com.food.ordering.ssn.query.UserQuery;
+import com.food.ordering.ssn.rowMapperLambda.UserRowMapperLambda;
+import com.food.ordering.ssn.utils.ErrorLog;
+import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
-import com.food.ordering.ssn.model.*;
-import com.food.ordering.ssn.query.*;
-import com.food.ordering.ssn.rowMapperLambda.*;
-import com.food.ordering.ssn.utils.*;
-import com.food.ordering.ssn.column.*;
 
 @Repository
 public class UtilsDao {

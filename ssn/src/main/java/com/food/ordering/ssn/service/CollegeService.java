@@ -1,14 +1,12 @@
 package com.food.ordering.ssn.service;
 
-import java.util.List;
-
+import com.food.ordering.ssn.dao.CollegeDao;
+import com.food.ordering.ssn.model.CollegeModel;
+import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.food.ordering.ssn.dao.CollegeDao;
-import com.food.ordering.ssn.model.CollegeModel;
-import com.food.ordering.ssn.model.UserModel;
-import com.food.ordering.ssn.utils.Response;
+import java.util.List;
 
 @Service
 public class CollegeService {

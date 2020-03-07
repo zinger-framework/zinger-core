@@ -15,7 +15,7 @@ public class TransactionModel {
     private String paymentMode;
     private String checksumHash;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private Date date;
 
     public TransactionModel() {

@@ -1,13 +1,11 @@
 package com.food.ordering.ssn.query;
 
-import com.food.ordering.ssn.column.OrderColumn;
-
 import static com.food.ordering.ssn.column.OrderColumn.*;
 
 public class OrderQuery {
     public static final String orderByDesc = " ORDER BY " + date + " DESC";
 
-    public static final String insertOrder = "INSERT INTO " + tableName + "(" + mobile + ", " + transactionId + ", " + shopId + ", " + status + ", " + price + ", " + deliveryPrice + ", " + deliveryLocation + ", " + cookingInfo + ") VALUES(:" + mobile + ", :" + transactionId + ", :" + shopId + ", :" + status + ", :" +  price + ", :" + deliveryPrice + ", :" + deliveryLocation + ", :" + cookingInfo + ")";
+    public static final String insertOrder = "INSERT INTO " + tableName + "(" + mobile + ", " + transactionId + ", " + shopId + ", " + status + ", " + price + ", " + deliveryPrice + ", " + deliveryLocation + ", " + cookingInfo + ") VALUES(:" + mobile + ", :" + transactionId + ", :" + shopId + ", :" + status + ", :" + price + ", :" + deliveryPrice + ", :" + deliveryLocation + ", :" + cookingInfo + ")";
 
     public static final String getOrderByOrderId = "SELECT " + id + ", " + mobile + ", " + transactionId + ", " + shopId + ", " + date + ", " + status + ", " + lastStatusUpdatedTime + ", " + price + ", " + deliveryPrice + ", " + deliveryLocation + ", " + cookingInfo + ", " + rating + ", " + secretKey + " WHERE " + id + " = :" + id;
     public static final String getOrderByMobile = "SELECT " + id + ", " + mobile + ", " + transactionId + ", " + shopId + ", " + date + ", " + status + ", " + lastStatusUpdatedTime + ", " + price + ", " + deliveryPrice + ", " + deliveryLocation + ", " + cookingInfo + ", " + rating + ", " + secretKey + " WHERE " + mobile + " = :" + mobile + orderByDesc;

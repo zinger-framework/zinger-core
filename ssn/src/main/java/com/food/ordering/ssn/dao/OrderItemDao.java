@@ -16,22 +16,22 @@ public class OrderItemDao {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
-    public Response<String> insertOrderItem(OrderItemModel orderItemModel, int orderId){
+    public Response<String> insertOrderItem(OrderItemModel orderItemModel, int orderId) {
 
-        Response<String> response=new Response<>();
+        Response<String> response = new Response<>();
 
-        try{
-            MapSqlParameterSource parameter=new MapSqlParameterSource().addValue(OrderItemColumn.orderId,orderId)
-                    .addValue(OrderItemColumn.itemId,orderItemModel.getItemModel().getId())
-                    .addValue(OrderItemColumn.quantity,orderItemModel.getQuantity())
-                    .addValue(OrderItemColumn.price,orderItemModel.getPrice());
+        try {
+            MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(OrderItemColumn.orderId, orderId)
+                    .addValue(OrderItemColumn.itemId, orderItemModel.getItemModel().getId())
+                    .addValue(OrderItemColumn.quantity, orderItemModel.getQuantity())
+                    .addValue(OrderItemColumn.price, orderItemModel.getPrice());
 
-            int result=jdbcTemplate.update(OrderItemQuery.insertOrderItem,parameter);
+            int result = jdbcTemplate.update(OrderItemQuery.insertOrderItem, parameter);
 
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

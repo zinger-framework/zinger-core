@@ -1,23 +1,21 @@
 package com.food.ordering.ssn.dao;
 
-import java.util.List;
-
 import com.food.ordering.ssn.column.ShopColumn;
-import com.food.ordering.ssn.column.UserColumn;
 import com.food.ordering.ssn.model.ItemModel;
+import com.food.ordering.ssn.model.ShopModel;
 import com.food.ordering.ssn.query.ItemQuery;
+import com.food.ordering.ssn.query.ShopQuery;
 import com.food.ordering.ssn.rowMapperLambda.ItemRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.ssn.utils.ErrorLog;
+import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import com.food.ordering.ssn.model.ShopModel;
-import com.food.ordering.ssn.query.ShopQuery;
-import com.food.ordering.ssn.rowMapperLambda.ShopRowMapperLambda;
-import com.food.ordering.ssn.utils.Response;
+import java.util.List;
 
 @Repository
 public class ShopDao {

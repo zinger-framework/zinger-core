@@ -14,10 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
-import com.food.ordering.ssn.enums.OrderStatus.*;
+
 import static com.food.ordering.ssn.column.OrderColumn.*;
 
 @Repository
@@ -35,103 +34,100 @@ public class OrderDao {
     @Autowired
     OrderItemDao orderItemDao;
 
-    public Response<String> insertOrderDetails(OrderItemListModel orderItemListModel,String oauthIdRh,String mobile){
+    public Response<String> insertOrderDetails(OrderItemListModel orderItemListModel, String oauthIdRh, String mobile) {
 
-        Response<String> response=new Response<>();
+        Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
 
-        Response<String> transactionResult,orderItemResult=new Response<>();
+        Response<String> transactionResult, orderItemResult = new Response<>();
 
-        try{
+        try {
 
-            if(!utilsDao.validateUser(oauthIdRh,mobile).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess)) {
                 return response;
             }
 
-            List<OrderItemModel> orderList=orderItemListModel.getOrderItemsList();
-            OrderModel order=orderItemListModel.getOrderModel();
-            TransactionModel transaction=order.getTransactionModel();
+            List<OrderItemModel> orderList = orderItemListModel.getOrderItemsList();
+            OrderModel order = orderItemListModel.getOrderModel();
+            TransactionModel transaction = order.getTransactionModel();
 
             // inserting into the transaction table
-            transactionResult=transactionDao.insertTransactionDetails(transaction);
+            transactionResult = transactionDao.insertTransactionDetails(transaction);
 
             // TODO replace with correct paytm response code and response message
-            if(transaction.getResponseCode().equals("1") && transaction.getResponseMessage().equals("success"))
-            {
+            if (transaction.getResponseCode().equals("1") && transaction.getResponseMessage().equals("success")) {
                 // insert into orders table
-                parameter =  new MapSqlParameterSource().addValue(OrderColumn.mobile,mobile)
-                                                        .addValue(transactionId,transaction.getTransactionId())
-                                                        .addValue(shopId,order.getShopModel().getId())
-                                                        .addValue(status,order.getOrderStatus())
-                                                        .addValue(price,order.getPrice())
-                                                        .addValue(deliveryPrice,order.getPrice())
-                                                        .addValue(deliveryLocation,order.getDeliveryLocation())
-                                                        .addValue(cookingInfo,order.getCookingInfo());
+                parameter = new MapSqlParameterSource().addValue(OrderColumn.mobile, mobile)
+                        .addValue(transactionId, transaction.getTransactionId())
+                        .addValue(shopId, order.getShopModel().getId())
+                        .addValue(status, order.getOrderStatus())
+                        .addValue(price, order.getPrice())
+                        .addValue(deliveryPrice, order.getPrice())
+                        .addValue(deliveryLocation, order.getDeliveryLocation())
+                        .addValue(cookingInfo, order.getCookingInfo());
 
-                int orderResult=jdbcTemplate.update(OrderQuery.insertOrder,parameter);
+                int orderResult = jdbcTemplate.update(OrderQuery.insertOrder, parameter);
 
                 // insert into order items table
-                for(OrderItemModel orderItem:orderItemListModel.getOrderItemsList()){
+                for (OrderItemModel orderItem : orderItemListModel.getOrderItemsList()) {
 
-                    orderItemResult=orderItemDao.insertOrderItem(orderItem,orderItemListModel.getOrderModel().getId());
+                    orderItemResult = orderItemDao.insertOrderItem(orderItem, orderItemListModel.getOrderModel().getId());
 
                     // TODO check if the condition is handled properly
-                    if(orderItemResult.getCode().equals(ErrorLog.CodeFailure) && orderItemResult.getMessage().equals(ErrorLog.Failure))
+                    if (orderItemResult.getCode().equals(ErrorLog.CodeFailure) && orderItemResult.getMessage().equals(ErrorLog.Failure))
                         break;
                 }
 
-                if(orderItemResult.getCode().equals(ErrorLog.CodeFailure) || orderResult<0 || transactionResult.getCode().equals(ErrorLog.CodeFailure))
-                {
+                if (orderItemResult.getCode().equals(ErrorLog.CodeFailure) || orderResult < 0 || transactionResult.getCode().equals(ErrorLog.CodeFailure)) {
 
-                    String data="Order Item insertion Result : "+orderItemResult.getCode() +" "+orderItemResult.getMessage()+"\n";
+                    String data = "Order Item insertion Result : " + orderItemResult.getCode() + " " + orderItemResult.getMessage() + "\n";
 
-                    if(orderResult<0)
-                        data+="Order insertion Result: "+ErrorLog.CodeFailure+" "+ErrorLog.Failure+"\n";
+                    if (orderResult < 0)
+                        data += "Order insertion Result: " + ErrorLog.CodeFailure + " " + ErrorLog.Failure + "\n";
                     else
-                        data+="Order insertion Result: "+ErrorLog.CodeSuccess+" "+ErrorLog.Success+"\n";
+                        data += "Order insertion Result: " + ErrorLog.CodeSuccess + " " + ErrorLog.Success + "\n";
 
-                    data+="Transaction insertion result "+transactionResult.getCode()+" "+transactionResult.getMessage();
+                    data += "Transaction insertion result " + transactionResult.getCode() + " " + transactionResult.getMessage();
 
                     response.setData(data);
-                }
-                else{
+                } else {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
 
                 }
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return response;
     }
 
-    public Response<String> updateOrderDetails(OrderModel orderModel,String oauthIdRh,String mobile){
+    public Response<String> updateOrderDetails(OrderModel orderModel, String oauthIdRh, String mobile) {
 
-        Response<String> response=new Response<>();
+        Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
 
-        try{
+        try {
 
-            if(!utilsDao.validateUser(oauthIdRh,mobile).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess)) {
                 return response;
             }
 
-            parameter=new MapSqlParameterSource().addValue(cookingInfo,orderModel.getCookingInfo())
-                                                 .addValue(rating,orderModel.getRating())
-                                                 .addValue(secretKey,orderModel.getSecretKey())
-                                                 .addValue(id,orderModel.getId());
+            parameter = new MapSqlParameterSource().addValue(cookingInfo, orderModel.getCookingInfo())
+                    .addValue(rating, orderModel.getRating())
+                    .addValue(secretKey, orderModel.getSecretKey())
+                    .addValue(id, orderModel.getId());
 
-            int updateStatus=jdbcTemplate.update(OrderQuery.updateOrder,parameter);
+            int updateStatus = jdbcTemplate.update(OrderQuery.updateOrder, parameter);
 
-            if(updateStatus>0){
+            if (updateStatus > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -139,45 +135,44 @@ public class OrderDao {
     }
 
 
-    public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
+    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthIdRH, String mobile) {
 
-        Response<String> response=new Response<>();
+        Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
         OrderModel currentOrderDetails;
 
-        try{
-             if(!utilsDao.validateUser(oauthIdRH,mobile).getCode().equals(ErrorLog.CodeSuccess))
-                 return response;
+        try {
+            if (!utilsDao.validateUser(oauthIdRH, mobile).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
 
 
-            parameter=new MapSqlParameterSource().addValue(id,orderModel.getId());
-            currentOrderDetails=jdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId,parameter,OrderRowMapperLambda.orderRowMapperLambda);
+            parameter = new MapSqlParameterSource().addValue(id, orderModel.getId());
+            currentOrderDetails = jdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
 
-            if(currentOrderDetails!=null){
+            if (currentOrderDetails != null) {
 
-                if(checkOrderStatusValidity(currentOrderDetails.getOrderStatus(),orderModel.getOrderStatus()))
-                {
-                    parameter=new MapSqlParameterSource().addValue(status,orderModel.getOrderStatus())
-                                                         .addValue(id,orderModel.getId());
+                if (checkOrderStatusValidity(currentOrderDetails.getOrderStatus(), orderModel.getOrderStatus())) {
+                    parameter = new MapSqlParameterSource().addValue(status, orderModel.getOrderStatus())
+                            .addValue(id, orderModel.getId());
 
-                    int result=jdbcTemplate.update(OrderQuery.updateOrderStatus,parameter);
+                    int result = jdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
 
-                    if(result>0){
+                    if (result > 0) {
                         response.setMessage(ErrorLog.Success);
                         response.setCode(ErrorLog.CodeSuccess);
                     }
 
 
-                }else{
+                } else {
                     response.setMessage(ErrorLog.OrderStateChangeNotValid);
                 }
 
-            }else{
+            } else {
                 response.setMessage(ErrorLog.OrderDetailsNotAvailable);
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -185,7 +180,7 @@ public class OrderDao {
     }
 
 
-    boolean checkOrderStatusValidity(OrderStatus currentStatus,OrderStatus newStatus){
+    boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus) {
 
 
         // starting states -> failure,pending,placed
@@ -198,40 +193,26 @@ public class OrderDao {
         // ready -> secret key must be updated in table, completed
         // out_for_delivery -> secret key must be updated in table, delivered
 
-        if(currentStatus.equals(newStatus))
+        if (currentStatus.equals(newStatus))
             return true;
 
-        else if(currentStatus.equals(OrderStatus.PENDING)){
-            if(newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED))
-                return true;
-        }
-        else if(currentStatus.equals(OrderStatus.PLACED)){
-            if(newStatus.equals(OrderStatus.CANCELLED_BY_SELLER)||newStatus.equals(OrderStatus.CANCELLED_BY_USER)||newStatus.equals(OrderStatus.ACCEPTED))
-                return true;
-        }
-        else if(currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER)){
+        else if (currentStatus.equals(OrderStatus.PENDING)) {
+            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
+        } else if (currentStatus.equals(OrderStatus.PLACED)) {
+            return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
+        } else if (currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER)) {
             // TODO update the refund table
-        }
-        else if(currentStatus.equals(OrderStatus.ACCEPTED)){
-            if(newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER))
-                return true;
-        }
-        else if(currentStatus.equals(OrderStatus.READY)){
-            if(newStatus.equals(OrderStatus.COMPLETED))
-                return true;
-        }
-        else if(currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY)){
-            if(newStatus.equals(OrderStatus.DELIVERED))
-                return true;
+        } else if (currentStatus.equals(OrderStatus.ACCEPTED)) {
+            return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
+        } else if (currentStatus.equals(OrderStatus.READY)) {
+            return newStatus.equals(OrderStatus.COMPLETED);
+        } else if (currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY)) {
+            return newStatus.equals(OrderStatus.DELIVERED);
         }
 
 
         return false;
     }
-
-
-
-
 
 
 }

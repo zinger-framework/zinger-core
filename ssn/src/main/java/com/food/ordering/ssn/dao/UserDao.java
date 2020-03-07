@@ -1,21 +1,27 @@
 package com.food.ordering.ssn.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.food.ordering.ssn.column.*;
-import com.food.ordering.ssn.enums.*;
-import com.food.ordering.ssn.query.*;
-import com.food.ordering.ssn.rowMapperLambda.*;
+import com.food.ordering.ssn.column.UserCollegeColumn;
+import com.food.ordering.ssn.column.UserColumn;
+import com.food.ordering.ssn.column.UserShopColumn;
+import com.food.ordering.ssn.enums.UserRole;
 import com.food.ordering.ssn.model.*;
-import com.food.ordering.ssn.utils.*;
-
+import com.food.ordering.ssn.query.UserCollegeQuery;
+import com.food.ordering.ssn.query.UserQuery;
+import com.food.ordering.ssn.query.UserShopQuery;
+import com.food.ordering.ssn.rowMapperLambda.UserCollegeRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.UserRowMapperLambda;
+import com.food.ordering.ssn.rowMapperLambda.UserShopRowMapperLambda;
+import com.food.ordering.ssn.utils.ErrorLog;
+import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Repository
 public class UserDao {
@@ -39,28 +45,28 @@ public class UserDao {
         Response<UserCollegeModel> response = new Response<>();
         UserCollegeModel userCollegeModel = new UserCollegeModel();
 
+        if (!user.getRole().equals(UserRole.CUSTOMER))
+            return response;
+
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(UserColumn.mobile, user.getMobile());
 
         UserModel userModel = null;
         try {
             userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         if (userModel != null) {
-            response.setCode(ErrorLog.CodeSuccess);
-            userCollegeModel.setUserModel(userModel);
-
             if (!userModel.getRole().equals(UserRole.CUSTOMER))
                 return response;
 
+            response.setCode(ErrorLog.CodeSuccess);
+            userCollegeModel.setUserModel(userModel);
+
             Response<UserCollegeModel> userCollegeModelResponse = getCollegeByMobile(userModel.getMobile(), userModel.getOauthId(), userModel.getMobile());
             if (userCollegeModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.CodeSuccess);
-
                 Integer id = userCollegeModelResponse.getData().getCollegeModel().getId();
                 Response<CollegeModel> collegeModel = collegeDao.getCollegeById(id, userModel.getOauthId(), userModel.getMobile());
                 if (collegeModel.getCode().equals(ErrorLog.CodeSuccess)) {
@@ -68,10 +74,8 @@ public class UserDao {
                     userCollegeModel.setCollegeModel(collegeModel.getData());
                 } else
                     response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-            } else {
+            } else
                 response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-            }
-
             response.setData(userCollegeModel);
         } else {
             parameters = new MapSqlParameterSource()
@@ -151,8 +155,7 @@ public class UserDao {
 
         try {
             userCollegeModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -201,8 +204,7 @@ public class UserDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.name, user.getName())
                     .addValue(UserColumn.mobile, user.getMobile())
-                    .addValue(UserColumn.email, user.getEmail())
-                    .addValue(UserColumn.oauthId, user.getOauthId());
+                    .addValue(UserColumn.email, user.getEmail());
 
             int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
             if (result > 0) {
@@ -217,8 +219,8 @@ public class UserDao {
         return response;
     }
 
-    public Response<CollegeModel> updateCollegeByMobile(UserCollegeModel userCollegeModel, String oauthId, String mobile) {
-        Response<CollegeModel> response = new Response<>();
+    public Response<String> updateCollegeByMobile(UserCollegeModel userCollegeModel, String oauthId, String mobile) {
+        Response<String> response = new Response<>();
 
         try {
             if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
@@ -229,19 +231,11 @@ public class UserDao {
                     .addValue(UserCollegeColumn.collegeId, userCollegeModel.getCollegeModel().getId());
 
             int result = namedParameterJdbcTemplate.update(UserCollegeQuery.updateCollegeByMobile, parameters);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                return collegeDao.getCollegeById(userCollegeModel.getCollegeModel().getId(), oauthId, mobile);
-            } else {
-                result = namedParameterJdbcTemplate.update(UserCollegeQuery.insertUserCollege, parameters);
-                if (result > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    return collegeDao.getCollegeById(userCollegeModel.getCollegeModel().getId(), oauthId, mobile);
-                } else
-                    response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-            }
+            if (result <= 0)
+                namedParameterJdbcTemplate.update(UserCollegeQuery.insertUserCollege, parameters);
+
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -273,18 +267,16 @@ public class UserDao {
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile) {
         Response<String> response = new Response<>();
         Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), oauthId, mobile);
-        Response<CollegeModel> responseCollege = updateCollegeByMobile(userCollegeModel, oauthId, mobile);
-        if(responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)){
+        Response<String> responseCollege = updateCollegeByMobile(userCollegeModel, oauthId, mobile);
+        if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
-        }
-        else if(!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)){
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.CollegeDetailNotUpdated);
-        }
-        else if(responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responseCollege.getCode().equals(ErrorLog.CodeSuccess)){
+        } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.UserDetailNotUpdated);
+        } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.CollegeDetailNotUpdated);
         }
         return response;
     }

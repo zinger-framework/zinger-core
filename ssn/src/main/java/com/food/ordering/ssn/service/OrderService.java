@@ -13,15 +13,15 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
-    public Response<String> insertOrderDetails(OrderItemListModel orderItemListModel,String oauthIdRh,String mobile){
-        return orderDao.insertOrderDetails(orderItemListModel,oauthIdRh,mobile);
+    public Response<String> insertOrderDetails(OrderItemListModel orderItemListModel, String oauthIdRh, String mobile) {
+        return orderDao.insertOrderDetails(orderItemListModel, oauthIdRh, mobile);
     }
 
-    public Response<String> updateOrderDetails(OrderModel orderModel,String oauthIdRh,String mobile){
-        return orderDao.updateOrderDetails(orderModel,oauthIdRh,mobile);
+    public Response<String> updateOrderDetails(OrderModel orderModel, String oauthIdRh, String mobile) {
+        return orderDao.updateOrderDetails(orderModel, oauthIdRh, mobile);
     }
 
-    public Response<String> updateOrderStatus(OrderModel orderModel,String oauthIdRH,String mobile){
-        return orderDao.updateOrderStatus(orderModel,oauthIdRH,mobile);
+    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthIdRH, String mobile) {
+        return orderDao.updateOrderStatus(orderModel, oauthIdRH, mobile);
     }
 }

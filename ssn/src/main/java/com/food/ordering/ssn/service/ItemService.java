@@ -1,15 +1,12 @@
 package com.food.ordering.ssn.service;
 
-import java.util.List;
-
+import com.food.ordering.ssn.dao.ItemDao;
+import com.food.ordering.ssn.model.ItemModel;
+import com.food.ordering.ssn.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
-import com.food.ordering.ssn.dao.ItemDao;
-import com.food.ordering.ssn.model.ItemModel;
-import com.food.ordering.ssn.model.UserModel;
-import com.food.ordering.ssn.utils.Response;
+import java.util.List;
 
 @Service
 public class ItemService {

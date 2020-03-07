@@ -16,31 +16,30 @@ public class TransactionDao {
     @Autowired
     NamedParameterJdbcTemplate jdbcTemplate;
 
-    public Response<String> insertTransactionDetails(TransactionModel transactionModel){
+    public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
 
 
-        Response<String> response=new Response<>();
+        Response<String> response = new Response<>();
 
-        try{
+        try {
 
-            MapSqlParameterSource parameter=new MapSqlParameterSource().addValue(TransactionColumn.transactionId,transactionModel.getTransactionId())
-                    .addValue(TransactionColumn.currency,transactionModel.getCurrency())
-                    .addValue(TransactionColumn.responseCode,transactionModel.getResponseCode())
-                    .addValue(TransactionColumn.responseMessage,transactionModel.getResponseMessage())
-                    .addValue(TransactionColumn.gatewayName,transactionModel.getGatewayName())
-                    .addValue(TransactionColumn.bankName,transactionModel.getBankName())
-                    .addValue(TransactionColumn.paymentMode,transactionModel.getPaymentMode())
-                    .addValue(TransactionColumn.checksumHash,transactionModel.getChecksumHash());
+            MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
+                    .addValue(TransactionColumn.currency, transactionModel.getCurrency())
+                    .addValue(TransactionColumn.responseCode, transactionModel.getResponseCode())
+                    .addValue(TransactionColumn.responseMessage, transactionModel.getResponseMessage())
+                    .addValue(TransactionColumn.gatewayName, transactionModel.getGatewayName())
+                    .addValue(TransactionColumn.bankName, transactionModel.getBankName())
+                    .addValue(TransactionColumn.paymentMode, transactionModel.getPaymentMode())
+                    .addValue(TransactionColumn.checksumHash, transactionModel.getChecksumHash());
 
-            int transactionResult=jdbcTemplate.update(TransactionQuery.insertTransaction,parameter);
+            int transactionResult = jdbcTemplate.update(TransactionQuery.insertTransaction, parameter);
 
-            if(transactionResult>0)
-            {
+            if (transactionResult > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

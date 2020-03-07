@@ -1,17 +1,13 @@
 package com.food.ordering.ssn.controller;
 
 import com.food.ordering.ssn.column.UserColumn;
-import com.food.ordering.ssn.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.food.ordering.ssn.model.UserCollegeModel;
+import com.food.ordering.ssn.model.UserModel;
+import com.food.ordering.ssn.model.UserShopListModel;
 import com.food.ordering.ssn.service.UserService;
 import com.food.ordering.ssn.utils.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")

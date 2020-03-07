@@ -11,12 +11,12 @@ public class OrderModel {
     private TransactionModel transactionModel;
     private ShopModel shopModel;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private Date date;
 
     private OrderStatus orderStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern= "dd/MM/yyyy HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private Date lastStatusUpdatedTime;
 
     private Double price;
