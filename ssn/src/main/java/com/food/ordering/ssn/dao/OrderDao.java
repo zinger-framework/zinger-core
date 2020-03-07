@@ -53,9 +53,13 @@ public class OrderDao {
 
             // inserting into the transaction table
             transactionResult = transactionDao.insertTransactionDetails(transaction);
+            if (!transactionResult.getCode().equals(ErrorLog.CodeSuccess)) {
+                // handle in log class
+            }
+
 
             // TODO replace with correct paytm response code and response message
-            if (transaction.getResponseCode().equals("1") && transaction.getResponseMessage().equals("success")) {
+            if (transaction.getResponseCode().equals("1") && transaction.getResponseMessage().equals("success") && checkOrderStatusValidity(null, order.getOrderStatus())) {
                 // insert into orders table
                 parameter = new MapSqlParameterSource().addValue(OrderColumn.mobile, mobile)
                         .addValue(transactionId, transaction.getTransactionId())
@@ -68,33 +72,27 @@ public class OrderDao {
 
                 int orderResult = jdbcTemplate.update(OrderQuery.insertOrder, parameter);
 
+                if (orderResult <= 0) {
+                    // handle in log
+                }
+
+
                 // insert into order items table
                 for (OrderItemModel orderItem : orderItemListModel.getOrderItemsList()) {
 
                     orderItemResult = orderItemDao.insertOrderItem(orderItem, orderItemListModel.getOrderModel().getId());
 
-                    // TODO check if the condition is handled properly
-                    if (orderItemResult.getCode().equals(ErrorLog.CodeFailure) && orderItemResult.getMessage().equals(ErrorLog.Failure))
-                        break;
-                }
 
-                if (orderItemResult.getCode().equals(ErrorLog.CodeFailure) || orderResult < 0 || transactionResult.getCode().equals(ErrorLog.CodeFailure)) {
-
-                    String data = "Order Item insertion Result : " + orderItemResult.getCode() + " " + orderItemResult.getMessage() + "\n";
-
-                    if (orderResult < 0)
-                        data += "Order insertion Result: " + ErrorLog.CodeFailure + " " + ErrorLog.Failure + "\n";
-                    else
-                        data += "Order insertion Result: " + ErrorLog.CodeSuccess + " " + ErrorLog.Success + "\n";
-
-                    data += "Transaction insertion result " + transactionResult.getCode() + " " + transactionResult.getMessage();
-
-                    response.setData(data);
-                } else {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
+                    if (!orderItemResult.getCode().equals(ErrorLog.CodeSuccess)) {
+                        // TODO handle in audit class
+                    }
 
                 }
+
+
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
             }
 
         } catch (Exception e) {
@@ -152,16 +150,21 @@ public class OrderDao {
             if (currentOrderDetails != null) {
 
                 if (checkOrderStatusValidity(currentOrderDetails.getOrderStatus(), orderModel.getOrderStatus())) {
+                    if (orderModel.getSecretKey() != null) {
+                        if (orderModel.getSecretKey() != currentOrderDetails.getSecretKey()) {
+                            response.setData(ErrorLog.SecretKeyMismatch);
+                            return response;
+                        }
+                    }
+
+
                     parameter = new MapSqlParameterSource().addValue(status, orderModel.getOrderStatus())
                             .addValue(id, orderModel.getId());
 
-                    int result = jdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
+                    jdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
 
-                    if (result > 0) {
-                        response.setMessage(ErrorLog.Success);
-                        response.setCode(ErrorLog.CodeSuccess);
-                    }
-
+                    response.setMessage(ErrorLog.Success);
+                    response.setCode(ErrorLog.CodeSuccess);
 
                 } else {
                     response.setMessage(ErrorLog.OrderStateChangeNotValid);
@@ -193,6 +196,10 @@ public class OrderDao {
         // ready -> secret key must be updated in table, completed
         // out_for_delivery -> secret key must be updated in table, delivered
 
+        if (currentStatus == null) {
+            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
+        }
+
         if (currentStatus.equals(newStatus))
             return true;
 
@@ -200,8 +207,6 @@ public class OrderDao {
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
         } else if (currentStatus.equals(OrderStatus.PLACED)) {
             return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
-        } else if (currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER)) {
-            // TODO update the refund table
         } else if (currentStatus.equals(OrderStatus.ACCEPTED)) {
             return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
         } else if (currentStatus.equals(OrderStatus.READY)) {

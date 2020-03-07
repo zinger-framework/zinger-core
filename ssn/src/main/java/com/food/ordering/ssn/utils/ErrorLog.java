@@ -12,4 +12,5 @@ public class ErrorLog {
     public static final String CollegeDetailNotUpdated = "College detail not updated";
     public static final String OrderDetailsNotAvailable = "Order with given ID not found";
     public static final String OrderStateChangeNotValid = "Order status change not valid";
+    public static final String SecretKeyMismatch = "Secret key mismatch";
 }
