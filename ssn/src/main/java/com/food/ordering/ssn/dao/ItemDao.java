@@ -3,6 +3,7 @@ package com.food.ordering.ssn.dao;
 import com.food.ordering.ssn.column.ItemColumn;
 import com.food.ordering.ssn.column.ShopColumn;
 import com.food.ordering.ssn.model.ItemModel;
+import com.food.ordering.ssn.model.ShopModel;
 import com.food.ordering.ssn.query.ItemQuery;
 import com.food.ordering.ssn.rowMapperLambda.ItemRowMapperLambda;
 import com.food.ordering.ssn.utils.ErrorLog;
@@ -19,12 +20,15 @@ import java.util.List;
 public class ItemDao {
 
     @Autowired
-    NamedParameterJdbcTemplate jdbcTemplate;
+    NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     UtilsDao utilsDao;
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
+    @Autowired
+    ShopDao shopDao;
+
+    public Response<List<ItemModel>> getItemsByShopId(ShopModel shopModel, String oauthId, String mobile, String role) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
 
@@ -34,9 +38,9 @@ public class ItemDao {
                 return response;
 
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.shopId, shopId);
+                    .addValue(ItemColumn.shopId, shopModel.getId());
             try {
-                list = jdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+                list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -46,6 +50,8 @@ public class ItemDao {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                for (int i = 0; i < list.size(); i++)
+                    list.get(i).setShopModel(shopModel);
                 response.setData(list);
             }
         }
@@ -59,11 +65,12 @@ public class ItemDao {
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
-            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name, itemName)
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name, "%" + itemName + "%")
                     .addValue(ShopColumn.collegeId, collegeId);
 
             try {
-                items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+                items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -73,21 +80,25 @@ public class ItemDao {
             if (items != null && !items.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                for (int i = 0; i < items.size(); i++) {
+                    Response<ShopModel> shopModelResponse = shopDao.getShopById(items.get(i).getShopModel().getId());
+                    items.get(i).setShopModel(shopModelResponse.getData());
+                }
                 response.setData(items);
             }
         }
         return response;
     }
 
-    public Response<ItemModel> getItemById(Integer itemId) {
+    public Response<ItemModel> getItemById(Integer id) {
         ItemModel item = null;
         Response<ItemModel> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id, itemId);
+                    .addValue(ItemColumn.id, id);
             try {
-                item = jdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+                item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -97,6 +108,8 @@ public class ItemDao {
             if (item != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getId());
+                item.setShopModel(shopModelResponse.getData());
                 response.setData(item);
             }
         }

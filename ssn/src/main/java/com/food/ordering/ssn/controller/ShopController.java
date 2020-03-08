@@ -1,7 +1,7 @@
 package com.food.ordering.ssn.controller;
 
-import com.food.ordering.ssn.column.CollegeColumn;
 import com.food.ordering.ssn.column.UserColumn;
+import com.food.ordering.ssn.model.CollegeModel;
 import com.food.ordering.ssn.model.ShopModel;
 import com.food.ordering.ssn.service.ShopService;
 import com.food.ordering.ssn.utils.Response;
@@ -17,8 +17,8 @@ public class ShopController {
     @Autowired
     ShopService shopService;
 
-    @GetMapping(value = "/{" + CollegeColumn.id + "}")
-    public Response<List<ShopModel>> getShopsByCollegeId(@PathVariable(CollegeColumn.id) Integer collegeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByCollegeId(collegeId, oauthId, mobile, role);
+    @GetMapping(value = "/college")
+    public Response<List<ShopModel>> getShopsByCollegeId(@RequestBody CollegeModel collegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.getShopByCollegeId(collegeModel, oauthId, mobile, role);
     }
 }

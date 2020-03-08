@@ -32,14 +32,19 @@ insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
 insert into users_college values("9176786582",1);
-insert into users_shop values("9176786583",1);
+insert into users_shop values("9176786581",1);
 
 select * from users;
 select * from college;
 select * from shop;
+select * from item;
 select * from users_college;
 select * from users_shop;
 
 SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786583' AND role = 'SELLER' AND is_delete = 0;
 SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';
 SELECT id, name, photo_url, photo_url, college_id, opening_time, closing_time, is_delete FROM shop WHERE id = 1;
+
+SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786581' AND role = 'SELLER' AND is_delete = 0;
+
+SELECT id,name,price,photo_url,category,shop_id,is_veg,is_available,is_delete FROM item WHERE name LIKE %:name% AND is_delete = 0 AND shop_id IN (SELECT id FROM shop WHERE college_id = :college_id AND is_delete = 0);

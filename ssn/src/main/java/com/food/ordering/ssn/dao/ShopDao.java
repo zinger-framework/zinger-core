@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 @Repository
@@ -26,7 +27,7 @@ public class ShopDao {
     @Autowired
     CollegeDao collegeDao;
 
-    public Response<List<ShopModel>> getShopsByCollegeId(Integer collegeId, String oauthId, String mobile, String role) {
+    public Response<List<ShopModel>> getShopsByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
         Response<List<ShopModel>> response = new Response<>();
         List<ShopModel> list = null;
 
@@ -34,7 +35,8 @@ public class ShopDao {
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
-            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ShopColumn.collegeId, collegeId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.collegeId, collegeModel.getId());
             try {
                 list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
             } catch (Exception e) {
@@ -46,6 +48,8 @@ public class ShopDao {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                for (int i = 0; i < list.size(); i++)
+                    list.get(i).setCollegeModel(collegeModel);
                 response.setData(list);
             }
         }
@@ -71,7 +75,7 @@ public class ShopDao {
             if (shopModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                if(shopModel.getCollegeModel().getName() == null || shopModel.getCollegeModel().getName().isEmpty()) {
+                if (shopModel.getCollegeModel().getName() == null || shopModel.getCollegeModel().getName().isEmpty()) {
                     Response<CollegeModel> collegeModelResponse = collegeDao.getCollegeById(shopModel.getCollegeModel().getId());
                     shopModel.setCollegeModel(collegeModelResponse.getData());
                 }

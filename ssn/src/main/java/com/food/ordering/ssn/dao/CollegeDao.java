@@ -67,24 +67,4 @@ public class CollegeDao {
         }
         return response;
     }
-
-    public Response<String> updateCollege(CollegeModel collegeModel, String oauthId, String mobile) {
-        Response<String> response = new Response<>();
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(CollegeColumn.name, collegeModel.getName())
-                    .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl())
-                    .addValue(CollegeColumn.address, collegeModel.getAddress());
-
-            int result = namedParameterJdbcTemplate.update(CollegeQuery.updateCollege, parameters);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return response;
-    }
 }
