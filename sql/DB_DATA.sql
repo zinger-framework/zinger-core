@@ -40,6 +40,9 @@ select * from shop;
 select * from item;
 select * from users_college;
 select * from users_shop;
+select * from transactions;
+select * from orders;
+select * from orders_item;
 
 SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786583' AND role = 'SELLER' AND is_delete = 0;
 SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';
@@ -47,4 +50,5 @@ SELECT id, name, photo_url, photo_url, college_id, opening_time, closing_time, i
 
 SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786581' AND role = 'SELLER' AND is_delete = 0;
 SELECT id FROM shop WHERE college_id = 2 AND is_delete = 0;
+SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE id = 'O0005';
 SELECT id, name, price, photo_url, category, shop_id, is_veg, is_available, is_delete FROM item WHERE name LIKE '%pa%' AND is_delete = 0 AND shop_id IN (SELECT id FROM shop WHERE college_id = 2 AND is_delete = 0);

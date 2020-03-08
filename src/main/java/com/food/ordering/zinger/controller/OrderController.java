@@ -26,7 +26,7 @@ public class OrderController {
     }
 
     @PatchMapping(value = "/status")
-    public Response<String> updateOrderStatus(OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+    public Response<String> updateOrderStatus(@RequestBody OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.updateOrderStatus(orderModel, oauthId, mobile, role);
     }
 }

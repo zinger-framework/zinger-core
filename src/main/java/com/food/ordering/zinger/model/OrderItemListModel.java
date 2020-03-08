@@ -22,4 +22,12 @@ public class OrderItemListModel {
     public void setOrderItemsList(List<OrderItemModel> orderItemsList) {
         this.orderItemsList = orderItemsList;
     }
+
+    @Override
+    public String toString() {
+        return "OrderItemListModel{" +
+                "orderModel=" + orderModel +
+                ", orderItemsList=" + orderItemsList +
+                '}';
+    }
 }

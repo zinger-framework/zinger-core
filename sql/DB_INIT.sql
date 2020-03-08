@@ -78,7 +78,7 @@ CREATE TABLE transactions (
 );
     
 CREATE TABLE orders (
-  id INT AUTO_INCREMENT,
+  id VARCHAR(16) NOT NULL,
   mobile VARCHAR(10) NOT NULL,
   transaction_id VARCHAR(64) UNIQUE NOT NULL,
   shop_id INT NOT NULL,
@@ -116,7 +116,7 @@ CREATE TABLE users_college (
 );
 
 CREATE TABLE orders_item (
-  order_id INT NOT NULL,
+  order_id VARCHAR(16) NOT NULL,
   item_id INT NOT NULL,
   quantity INT NOT NULL,
   price DOUBLE NOT NULL,

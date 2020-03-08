@@ -6,7 +6,7 @@ import com.food.ordering.zinger.enums.OrderStatus;
 import java.sql.Date;
 
 public class OrderModel {
-    private Integer id;
+    private String id;
     private UserModel userModel;
     private TransactionModel transactionModel;
     private ShopModel shopModel;
@@ -32,11 +32,11 @@ public class OrderModel {
         shopModel = new ShopModel();
     }
 
-    public Integer getId() {
+    public String  getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

@@ -17,13 +17,11 @@ public class TransactionDao {
     NamedParameterJdbcTemplate jdbcTemplate;
 
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
-
-
         Response<String> response = new Response<>();
-
         try {
-
-            MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
+                    .addValue(TransactionColumn.bankTransactionId, transactionModel.getBankTransactionId())
                     .addValue(TransactionColumn.currency, transactionModel.getCurrency())
                     .addValue(TransactionColumn.responseCode, transactionModel.getResponseCode())
                     .addValue(TransactionColumn.responseMessage, transactionModel.getResponseMessage())
@@ -38,14 +36,9 @@ public class TransactionDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
         return response;
-
     }
-
 }

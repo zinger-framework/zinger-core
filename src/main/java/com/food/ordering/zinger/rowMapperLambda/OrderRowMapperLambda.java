@@ -12,7 +12,7 @@ import static com.food.ordering.zinger.column.OrderColumn.*;
 public class OrderRowMapperLambda {
     public static final RowMapper<OrderModel> orderRowMapperLambda = (rs, rownum) -> {
         OrderModel orderModel = new OrderModel();
-        orderModel.setId(rs.getInt(id));
+        orderModel.setId(rs.getString(id));
 
         UserModel userModel = new UserModel();
         userModel.setMobile(rs.getString(mobile));
