@@ -250,7 +250,7 @@ public class UserDao {
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
 
-        if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+        if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER))
             return response;
 
         Response<String> responseUser = updateUser(userCollegeModel.getUserModel());

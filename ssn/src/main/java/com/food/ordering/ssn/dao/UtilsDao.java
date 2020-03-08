@@ -18,14 +18,15 @@ public class UtilsDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public Response<UserModel> validateUser(String oauthId, String mobile) {
+    public Response<UserModel> validateUser(String oauthId, String mobile, String role) {
         UserModel userModel = null;
         Response<UserModel> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.oauthId, oauthId)
-                    .addValue(UserColumn.mobile, mobile);
+                    .addValue(UserColumn.mobile, mobile)
+                    .addValue(UserColumn.role, role);
 
             userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
         } catch (Exception e) {
