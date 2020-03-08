@@ -55,21 +55,9 @@ public class UserDao {
             }
 
             if (userModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
                 userCollegeModel.setUserModel(userModel);
-
-                Response<UserCollegeModel> userCollegeModelResponse = getCollegeByMobile(userModel.getMobile());
-                if (userCollegeModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    Integer id = userCollegeModelResponse.getData().getCollegeModel().getId();
-                    Response<CollegeModel> collegeModel = collegeDao.getCollegeById(id);
-                    if (collegeModel.getCode().equals(ErrorLog.CodeSuccess)) {
-                        response.setMessage(ErrorLog.Success);
-                        userCollegeModel.setCollegeModel(collegeModel.getData());
-                    } else
-                        response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-                } else
-                    response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-                response.setData(userCollegeModel);
+                response = getCollegeByMobile(userModel);
+                response.setCode(ErrorLog.CodeSuccess);
             } else {
                 parameters = new MapSqlParameterSource()
                         .addValue(UserColumn.mobile, user.getMobile())
@@ -123,12 +111,12 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<UserCollegeModel> getCollegeByMobile(String mobile) {
+    public Response<UserCollegeModel> getCollegeByMobile(UserModel userModel) {
         Response<UserCollegeModel> response = new Response<>();
         UserCollegeModel userCollegeModel = null;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue(UserCollegeColumn.mobile, mobile);
+                .addValue(UserCollegeColumn.mobile, userModel.getMobile());
 
         try {
             userCollegeModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
@@ -138,8 +126,16 @@ public class UserDao {
             if (userCollegeModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+
+                if (userCollegeModel.getCollegeModel().getName() == null || userCollegeModel.getCollegeModel().getName().isEmpty()) {
+                    Response<CollegeModel> collegeModelResponse = collegeDao.getCollegeById(userCollegeModel.getCollegeModel().getId());
+                    userCollegeModel.setCollegeModel(collegeModelResponse.getData());
+                }
+                userCollegeModel.setUserModel(userModel);
                 response.setData(userCollegeModel);
             }
+            else
+                response.setMessage(ErrorLog.CollegeDetailNotAvailable);
         }
 
         return response;
