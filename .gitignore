@@ -21,7 +21,6 @@ target/
 build/
 
 .vscode/
-.mvn
 lib
 src/main/resources/static/
 src/main/resources/templates/
