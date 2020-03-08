@@ -25,5 +25,3 @@ lib
 src/main/resources/static/
 src/main/resources/templates/
 src/test
-mvnw.cmd
-mvnw
