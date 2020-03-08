@@ -34,7 +34,7 @@ public class OrderDao {
     @Autowired
     OrderItemDao orderItemDao;
 
-    public Response<String> insertOrderDetails(OrderItemListModel orderItemListModel, String oauthIdRh, String mobile) {
+    public Response<String> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
 
         Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
@@ -43,9 +43,8 @@ public class OrderDao {
 
         try {
 
-            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
-            }
 
             List<OrderItemModel> orderList = orderItemListModel.getOrderItemsList();
             OrderModel order = orderItemListModel.getOrderModel();
@@ -102,14 +101,14 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> updateOrderDetails(OrderModel orderModel, String oauthIdRh, String mobile) {
+    public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
 
         Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
 
         try {
 
-            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 return response;
             }
 
@@ -117,7 +116,6 @@ public class OrderDao {
                     .addValue(rating, orderModel.getRating())
                     .addValue(secretKey, orderModel.getSecretKey())
                     .addValue(id, orderModel.getId());
-
             int updateStatus = jdbcTemplate.update(OrderQuery.updateOrder, parameter);
 
             if (updateStatus > 0) {
@@ -133,14 +131,14 @@ public class OrderDao {
     }
 
 
-    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthIdRH, String mobile) {
+    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
 
         Response<String> response = new Response<>();
         MapSqlParameterSource parameter;
         OrderModel currentOrderDetails;
 
         try {
-            if (!utilsDao.validateUser(oauthIdRH, mobile).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
 

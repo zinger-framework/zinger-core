@@ -14,7 +14,7 @@ insert into shop values(7,'SRM sathyas main','shop.com',9176019344,3,'09:00:00',
 insert into shop values(8,'SRM Snow Qube','shop.com',9176019344,3,'09:00:00','21:00:00',0);
 insert into shop values(9,'SRM sathyas small','shop.com',9176019344,3,'09:00:00','21:00:00',0);
 
-insert into users values(9176019344,'harshavardhan','harshavardhan98@yahoo.co.in','12oauthid34','CUSTOMER',0);
+insert into users values(9176786583,'harshavardhan','harshavardhan98@yahoo.co.in','auth_9176786583','SELLER',0);
 insert into users values(9176019345,'logesh','harshavardhan98@yahoo.co.in','12oauthid35','SELLER',0);
 insert into users values(9176019346,'shrikanth','harshavardhan98@yahoo.co.in','12oauthid36','SHOP_OWNER',0);
 
@@ -32,5 +32,14 @@ insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
 insert into users_college values("9176786582",1);
+insert into users_shop values("9176786583",1);
 
 select * from users;
+select * from college;
+select * from shop;
+select * from users_college;
+select * from users_shop;
+
+SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786583' AND role = 'SELLER' AND is_delete = 0;
+SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';
+SELECT id, name, photo_url, photo_url, college_id, opening_time, closing_time, is_delete FROM shop WHERE id = 1;

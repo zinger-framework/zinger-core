@@ -29,7 +29,7 @@ public class UserController {
     /**************************************************/
 
     @PatchMapping(value = "/college")
-    public Response<String> updateUserCollegeData(@RequestBody UserCollegeModel userCollegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile) {
-        return userService.updateUserCollegeData(userCollegeModel, oauthId, mobile);
+    public Response<String> updateUserCollegeData(@RequestBody UserCollegeModel userCollegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.updateUserCollegeData(userCollegeModel, oauthId, mobile, role);
     }
 }

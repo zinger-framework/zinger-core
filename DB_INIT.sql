@@ -110,7 +110,7 @@ CREATE TABLE users_shop (
 CREATE TABLE users_college (
    mobile VARCHAR(10) NOT NULL,
    college_id INT NOT NULL,
-   CONSTRAINT users_college_mobile_college_id_pk PRIMARY KEY(mobile, college_id),
+   CONSTRAINT users_college_mobile_pk PRIMARY KEY(mobile),
    CONSTRAINT users_college_mobile_fk FOREIGN KEY(mobile) REFERENCES users(mobile),
    CONSTRAINT users_college_college_id_fk FOREIGN KEY (college_id) REFERENCES college(id)
 );

@@ -3,10 +3,10 @@ package com.food.ordering.ssn.rowMapperLambda;
 import com.food.ordering.ssn.model.CollegeModel;
 import com.food.ordering.ssn.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
-
 import static com.food.ordering.ssn.column.ShopColumn.*;
 
 public class ShopRowMapperLambda {
+
     public static final RowMapper<ShopModel> shopRowMapperLambda = (rs, rownum) -> {
         ShopModel shop = new ShopModel();
         shop.setId(rs.getInt(id));

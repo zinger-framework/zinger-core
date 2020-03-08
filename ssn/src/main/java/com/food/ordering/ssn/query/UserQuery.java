@@ -8,7 +8,7 @@ public class UserQuery {
     public static final String insertUser = "INSERT INTO " + tableName + "(" + oauthId + ", " + mobile + ", " + role + ") VALUES( :" + oauthId + ",:" + mobile + ", :" + role + ")";
 
     public static final String getUserByMobile = "SELECT " + oauthId + ", " + name + ", " + email + ", " + mobile + ", " + role + ", " + isDelete + " FROM " + tableName + " WHERE " + mobile + " = :" + mobile;
-    public static final String loginUserByMobile = getUserByMobile + " AND " + notDeleted;
+    public static final String loginUserByMobile = getUserByMobile + " AND " + role + " = :" + role + " AND " + notDeleted;
     public static final String validateUser = loginUserByMobile + " AND " + oauthId + " = :" + oauthId;
 
     public static final String updateUser = "UPDATE " + tableName + " SET " + name + " = :" + name + ", " + email + " = :" + email + " WHERE " + mobile + " = :" + mobile;

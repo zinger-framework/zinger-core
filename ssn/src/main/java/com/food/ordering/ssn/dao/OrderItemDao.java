@@ -28,7 +28,7 @@ public class OrderItemDao {
 
             int result = jdbcTemplate.update(OrderItemQuery.insertOrderItem, parameter);
 
-            if(result>0){
+            if (result > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }

@@ -23,19 +23,19 @@ public class CollegeDao {
     @Autowired
     UtilsDao utilsDao;
 
-    public Response<List<CollegeModel>> getAllColleges(String oauthId, String mobile) {
+    public Response<List<CollegeModel>> getAllColleges(String oauthId, String mobile, String role) {
         Response<List<CollegeModel>> response = new Response<>();
         List<CollegeModel> list = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
             list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if (list != null) {
+            if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
@@ -44,17 +44,18 @@ public class CollegeDao {
         return response;
     }
 
-    public Response<CollegeModel> getCollegeById(Integer collegeId, String oauthIdRh, String mobile) {
+    public Response<CollegeModel> getCollegeById(Integer collegeId) {
         Response<CollegeModel> response = new Response<>();
         CollegeModel college = null;
 
         try {
-            if (!utilsDao.validateUser(oauthIdRh, mobile).getCode().equals(ErrorLog.CodeSuccess))
-                return response;
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.id, collegeId);
-            college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
+            try {
+                college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -71,9 +72,6 @@ public class CollegeDao {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
-                return response;
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.name, collegeModel.getName())
                     .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl())

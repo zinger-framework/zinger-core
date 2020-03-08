@@ -24,18 +24,22 @@ public class ItemDao {
     @Autowired
     UtilsDao utilsDao;
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
 
         try {
 
-            if (utilsDao.validateUser(oauthId, mobile).getCode() != ErrorLog.CodeSuccess)
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
-            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.shopId, shopId);
-            list = jdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.shopId, shopId);
+            try {
+                list = jdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -48,42 +52,21 @@ public class ItemDao {
         return response;
     }
 
-    public Response<ItemModel> getItemById(Integer itemId, String oauthIdRh, String mobile) {
-        ItemModel item = null;
-        Response<ItemModel> response = new Response<>();
-
-        try {
-
-            if (utilsDao.validateUser(oauthIdRh, mobile).getCode() != ErrorLog.CodeSuccess)
-                return response;
-
-            SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.id, itemId);
-            item = jdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (item != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(item);
-            }
-        }
-        return response;
-    }
-
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile) {
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         try {
-            if (!utilsDao.validateUser(oauthId, mobile).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
             SqlParameterSource parameters = new MapSqlParameterSource().addValue(ItemColumn.name, itemName)
                     .addValue(ShopColumn.collegeId, collegeId);
 
-            items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-
+            try {
+                items = jdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -96,4 +79,27 @@ public class ItemDao {
         return response;
     }
 
+    public Response<ItemModel> getItemById(Integer itemId) {
+        ItemModel item = null;
+        Response<ItemModel> response = new Response<>();
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id, itemId);
+            try {
+                item = jdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (item != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(item);
+            }
+        }
+        return response;
+    }
 }

@@ -9,6 +9,7 @@ import static com.food.ordering.ssn.column.UserCollegeColumn.collegeId;
 import static com.food.ordering.ssn.column.UserCollegeColumn.mobile;
 
 public class UserCollegeRowMapperLambda {
+
     public static final RowMapper<UserCollegeModel> userCollegeRowMapperLambda = (rs, rownum) -> {
         UserCollegeModel userCollegeModel = new UserCollegeModel();
 

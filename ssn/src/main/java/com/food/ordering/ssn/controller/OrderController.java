@@ -1,6 +1,7 @@
 package com.food.ordering.ssn.controller;
 
 import com.food.ordering.ssn.column.OrderColumn;
+import com.food.ordering.ssn.column.UserColumn;
 import com.food.ordering.ssn.model.OrderItemListModel;
 import com.food.ordering.ssn.model.OrderModel;
 import com.food.ordering.ssn.service.OrderService;
@@ -15,20 +16,18 @@ public class OrderController {
     @Autowired
     OrderService orderService;
 
-    @PostMapping
-    public Response<String> insertOrderDetails(@RequestBody OrderItemListModel orderItemList, @RequestHeader(value = OrderColumn.oauthId) String oauthIdRh, @RequestHeader(value = OrderColumn.mobile) String mobile) {
-        return orderService.insertOrderDetails(orderItemList, oauthIdRh, mobile);
+    @PostMapping(value = "")
+    public Response<String> insertOrder(@RequestBody OrderItemListModel orderItemList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.insertOrder(orderItemList, oauthId, mobile, role);
     }
 
-    @PatchMapping
-    public Response<String> updateOrderDetails(@RequestBody OrderModel orderModel, @RequestHeader(value = OrderColumn.oauthId) String oauthIdRh, @RequestHeader(value = OrderColumn.mobile) String mobile) {
-        return orderService.updateOrderDetails(orderModel, oauthIdRh, mobile);
+    @PatchMapping(value = "")
+    public Response<String> updateOrder(@RequestBody OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.updateOrder(orderModel, oauthId, mobile, role);
     }
 
     @PatchMapping(value = "/status")
-    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthIdRH, String mobile) {
-        return orderService.updateOrderStatus(orderModel, oauthIdRH, mobile);
+    public Response<String> updateOrderStatus(OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.updateOrderStatus(orderModel, oauthId, mobile, role);
     }
-
-
 }

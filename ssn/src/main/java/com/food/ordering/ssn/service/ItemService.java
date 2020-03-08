@@ -14,15 +14,11 @@ public class ItemService {
     @Autowired
     ItemDao itemDao;
 
-    public Response<ItemModel> getItemById(Integer itemId, String oauthId, String mobile) {
-        return itemDao.getItemById(itemId, oauthId, mobile);
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
+        return itemDao.getItemsByShopId(shopId, oauthId, mobile, role);
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile) {
-        return itemDao.getItemsByShopId(shopId, oauthId, mobile);
-    }
-
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile) {
-        return itemDao.getItemsByName(collegeId, itemName, oauthId, mobile);
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {
+        return itemDao.getItemsByName(collegeId, itemName, oauthId, mobile, role);
     }
 }
