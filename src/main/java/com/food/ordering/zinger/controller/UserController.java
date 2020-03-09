@@ -21,7 +21,6 @@ public class UserController {
         return userService.insertCustomer(user);
     }
 
-    //TODO: Test later
     @PostMapping(value = "/seller")
     public Response<UserShopListModel> insertSeller(@RequestBody UserModel user) {
         return userService.insertSeller(user);

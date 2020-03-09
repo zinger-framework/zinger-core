@@ -176,8 +176,8 @@ public class UserDao {
                 for (int i = 0; i < shopModelList.size(); i++) {
                     if (shopModelList.get(i).getName() == null || shopModelList.get(i).getName().isEmpty()) {
                         Response<ShopModel> shopModelResponse = shopDao.getShopById(shopModelList.get(i).getId());
-                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelList.get(i));
-                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelList.get(i));
+                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
+                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
 
                         ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
                         shopConfigurationModel.setShopModel(shopModelResponse.getData());
