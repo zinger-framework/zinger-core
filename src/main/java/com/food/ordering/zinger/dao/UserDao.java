@@ -19,6 +19,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -32,6 +33,12 @@ public class UserDao {
 
     @Autowired
     ShopDao shopDao;
+
+    @Autowired
+    ConfigurationDao configurationDao;
+
+    @Autowired
+    RatingDao ratingDao;
 
     @Autowired
     UtilsDao utilsDao;
@@ -144,6 +151,7 @@ public class UserDao {
     public Response<UserShopListModel> getShopByMobile(UserModel userModel) {
         Response<UserShopListModel> response = new Response<>();
         List<ShopModel> shopModelList = null;
+        List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -161,15 +169,24 @@ public class UserDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
+                shopConfigurationModelList = new ArrayList<>();
                 UserShopListModel userShopListModel = new UserShopListModel();
                 userShopListModel.setUserModel(userModel);
+
                 for (int i = 0; i < shopModelList.size(); i++) {
                     if (shopModelList.get(i).getName() == null || shopModelList.get(i).getName().isEmpty()) {
                         Response<ShopModel> shopModelResponse = shopDao.getShopById(shopModelList.get(i).getId());
-                        shopModelList.set(i, shopModelResponse.getData());
+                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelList.get(i));
+                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelList.get(i));
+
+                        ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
+                        shopConfigurationModel.setShopModel(shopModelResponse.getData());
+                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+                        shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+                        shopConfigurationModelList.add(shopConfigurationModel);
                     }
                 }
-                userShopListModel.setShopModelList(shopModelList);
+                userShopListModel.setShopModelList(shopConfigurationModelList);
                 response.setData(userShopListModel);
             } else
                 response.setMessage(ErrorLog.ShopDetailNotAvailable);

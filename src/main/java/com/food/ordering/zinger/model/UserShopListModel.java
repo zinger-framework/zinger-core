@@ -5,7 +5,7 @@ import java.util.List;
 
 public class UserShopListModel {
     private UserModel userModel;
-    private List<ShopModel> shopModelList;
+    private List<ShopConfigurationModel> shopModelList;
 
     public UserShopListModel() {
         userModel = new UserModel();
@@ -20,11 +20,11 @@ public class UserShopListModel {
         this.userModel = userModel;
     }
 
-    public List<ShopModel> getShopModelList() {
+    public List<ShopConfigurationModel> getShopModelList() {
         return shopModelList;
     }
 
-    public void setShopModelList(List<ShopModel> shopModelList) {
+    public void setShopModelList(List<ShopConfigurationModel> shopModelList) {
         this.shopModelList = shopModelList;
     }
 

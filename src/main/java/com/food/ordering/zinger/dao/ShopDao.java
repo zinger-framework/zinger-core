@@ -1,8 +1,7 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.ShopColumn;
-import com.food.ordering.zinger.model.CollegeModel;
-import com.food.ordering.zinger.model.ShopModel;
+import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.query.ShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
@@ -13,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -25,11 +25,21 @@ public class ShopDao {
     UtilsDao utilsDao;
 
     @Autowired
+    ShopDao shopDao;
+
+    @Autowired
+    ConfigurationDao configurationDao;
+
+    @Autowired
+    RatingDao ratingDao;
+
+    @Autowired
     CollegeDao collegeDao;
 
-    public Response<List<ShopModel>> getShopsByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
-        Response<List<ShopModel>> response = new Response<>();
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
+        Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
+        List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
@@ -48,9 +58,23 @@ public class ShopDao {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                for (int i = 0; i < list.size(); i++)
+
+                shopConfigurationModelList = new ArrayList<>();
+                for (int i = 0; i < list.size(); i++) {
                     list.get(i).setCollegeModel(collegeModel);
-                response.setData(list);
+
+                    Response<ShopModel> shopModelResponse = shopDao.getShopById(list.get(i).getId());
+                    Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));
+                    Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
+
+                    ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
+                    shopConfigurationModel.setShopModel(shopModelResponse.getData());
+                    shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+                    shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+                    shopConfigurationModelList.add(shopConfigurationModel);
+                }
+
+                response.setData(shopConfigurationModelList);
             }
         }
         return response;

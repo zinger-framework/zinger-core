@@ -226,7 +226,7 @@ public class OrderDao {
         OrderModel order = orderItemListModel.getOrderModel();
 
         if (order.getDeliveryPrice() != null) {
-            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfiguration(order.getShopModel());
+            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(order.getShopModel());
             if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess) && configurationModelResponse.getData().getDeliveryPrice().equals(order.getDeliveryPrice()))
                 deliveryPrice = order.getDeliveryPrice();
             else
