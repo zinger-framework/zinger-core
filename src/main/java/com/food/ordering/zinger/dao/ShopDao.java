@@ -25,9 +25,6 @@ public class ShopDao {
     UtilsDao utilsDao;
 
     @Autowired
-    ShopDao shopDao;
-
-    @Autowired
     ConfigurationDao configurationDao;
 
     @Autowired
@@ -63,7 +60,7 @@ public class ShopDao {
                 for (int i = 0; i < list.size(); i++) {
                     list.get(i).setCollegeModel(collegeModel);
 
-                    Response<ShopModel> shopModelResponse = shopDao.getShopById(list.get(i).getId());
+                    Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
                     Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));
                     Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
 
