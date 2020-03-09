@@ -5,7 +5,6 @@ public class ConfigurationModel {
     private Double deliveryPrice;
     private Integer isDeliveryAvailable;
     private Integer isOrderTaken;
-    private Integer isDelete;
 
     public ConfigurationModel() {
         shopModel = new ShopModel();
@@ -43,14 +42,6 @@ public class ConfigurationModel {
         this.isOrderTaken = isOrderTaken;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "ConfigurationModel{" +
@@ -58,7 +49,6 @@ public class ConfigurationModel {
                 ", deliveryPrice=" + deliveryPrice +
                 ", isDeliveryAvailable=" + isDeliveryAvailable +
                 ", isOrderTaken=" + isOrderTaken +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

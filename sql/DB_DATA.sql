@@ -31,8 +31,12 @@ insert into item values(10,'channa samosa',75,'food.com','fast food',7,0,0,0);
 insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
+insert into rating values(1,2.8,23);
+insert into configurations(shop_id, delivery_price) values(1,5.0);
+
 insert into users_college values("9176786582",1);
 insert into users_shop values("9176786581",1);
+insert into users_shop values("9176786581",2);
 
 select * from users;
 select * from college;
