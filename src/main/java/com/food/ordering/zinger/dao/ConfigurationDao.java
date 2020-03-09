@@ -23,6 +23,9 @@ public class ConfigurationDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Autowired
+    UtilsDao utilsDao;
+
     public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
         Response<ConfigurationModel> response = new Response<>();
         ConfigurationModel configurationModel = null;
@@ -48,4 +51,83 @@ public class ConfigurationDao {
         }
         return response;
     }
+
+    public Response<String> updateConfigurationModel(ConfigurationModel configurationModel,String oauthId, String mobile,String role){
+
+        Response<String> response=new Response<>();
+        MapSqlParameterSource parameters;
+
+
+        try{
+
+            if(role.equals(("CUSTOMER"))){
+                response.setData(ErrorLog.INVALIDHEADER);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setData(ErrorLog.INVALIDHEADER);
+                return response;
+            }
+
+
+            parameters=new MapSqlParameterSource()
+                            .addValue(ConfigurationColumn.deliveryPrice,configurationModel.getDeliveryPrice())
+                            .addValue(ConfigurationColumn.isDeliveryAvailable,configurationModel.getIsDeliveryAvailable())
+                            .addValue(ConfigurationColumn.isOrderTaken,configurationModel.getIsOrderTaken())
+                            .addValue(ConfigurationColumn.shopId,configurationModel.getShopModel().getId());
+
+
+            int responseResult=namedParameterJdbcTemplate.update(ConfigurationQuery.updateConfiguration,parameters);
+
+            if(responseResult>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
+    public Response<String> deleteConfiguration(ConfigurationModel configurationModel,String oauthId, String mobile,String role){
+
+        Response<String> response=new Response<>();
+        MapSqlParameterSource parameters;
+
+        try{
+
+            if(role.equals(("CUSTOMER"))){
+                response.setData(ErrorLog.INVALIDHEADER);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setData(ErrorLog.INVALIDHEADER);
+                return response;
+            }
+
+            parameters=new MapSqlParameterSource()
+                    .addValue(ConfigurationColumn.shopId,configurationModel.getShopModel().getId());
+
+            int responseResult=namedParameterJdbcTemplate.update(ConfigurationQuery.deleteConfiguration,parameters);
+
+            if(responseResult>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
 }
