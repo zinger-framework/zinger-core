@@ -15,6 +15,9 @@ public class ConfigurationService {
     @Autowired
     ConfigurationDao configurationDao;
 
+    public Response<ConfigurationModel> getConfiguration(ConfigurationModel configurationModel,String oauthId, String mobile,String role){
+        return configurationDao.getConfigurationByShopId(configurationModel.getShopModel(),oauthId,mobile,role);
+    }
     public Response<String> updateConfiguration(ConfigurationModel configurationModel,String oauthId, String mobile,String role){
         return configurationDao.updateConfigurationModel(configurationModel,oauthId,mobile,role);
     }

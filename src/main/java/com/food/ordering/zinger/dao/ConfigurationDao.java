@@ -26,11 +26,21 @@ public class ConfigurationDao {
     @Autowired
     UtilsDao utilsDao;
 
-    public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
+    public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel,String oauthId, String mobile,String role) {
         Response<ConfigurationModel> response = new Response<>();
         ConfigurationModel configurationModel = null;
 
+
         try {
+
+            if(role.equals(("CUSTOMER"))){
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                return response;
+            }
+
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ConfigurationColumn.shopId, shopModel.getId());
 

@@ -18,6 +18,12 @@ public class ConfigurationController {
     @Autowired
     ConfigurationService configurationService;
 
+    @GetMapping(value = "")
+    public Response<ConfigurationModel> getConfiguration(@RequestBody ConfigurationModel configurationModel,@RequestHeader String oauthId,@RequestHeader String mobile,@RequestHeader String role){
+        return configurationService.getConfiguration(configurationModel,oauthId,mobile,role);
+    }
+
+
     @PatchMapping(value = "")
     Response<String> updateConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
         return configurationService.updateConfiguration(configurationModel,oauthId,mobile,role);
