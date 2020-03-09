@@ -13,17 +13,18 @@ public class ConfigurationDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    UtilsDao utilsDao;
-
     //TODO: Finish configuration
-    public Response<ConfigurationModel> getConfiguration(ShopModel shopModel) {
+    public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
         Response<ConfigurationModel> response = new Response<>();
         response.setCode(ErrorLog.CodeSuccess);
         response.setMessage(ErrorLog.Success);
 
         ConfigurationModel configurationModel = new ConfigurationModel();
         configurationModel.setDeliveryPrice(5.0);
+        configurationModel.setShopModel(shopModel);
+        configurationModel.setIsDeliveryAvailable(1);
+        configurationModel.setIsOrderTaken(1);
+        configurationModel.setIsDelete(0);
         response.setData(configurationModel);
 
         return response;
