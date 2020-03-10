@@ -49,21 +49,11 @@ public class ConfigurationDao {
         return response;
     }
 
-    public Response<String> updateConfigurationModel(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
+    public Response<String> updateConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
 
         try {
-            if (role.equals((UserRole.CUSTOMER))) {
-                response.setData(ErrorLog.InvalidHeader);
-                return response;
-            }
-
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
-                return response;
-            }
-
             parameters = new MapSqlParameterSource()
                     .addValue(ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice())
                     .addValue(ConfigurationColumn.isDeliveryAvailable, configurationModel.getIsDeliveryAvailable())
@@ -80,26 +70,6 @@ public class ConfigurationDao {
             e.printStackTrace();
         }
 
-        return response;
-    }
-
-    public Response<String> deleteConfiguration(ConfigurationModel configurationModel) {
-        Response<String> response = new Response<>();
-        MapSqlParameterSource parameters;
-
-        try {
-            parameters = new MapSqlParameterSource()
-                    .addValue(ConfigurationColumn.shopId, configurationModel.getShopModel().getId());
-
-            int responseResult = namedParameterJdbcTemplate.update(ConfigurationQuery.deleteConfiguration, parameters);
-            if (responseResult > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
         return response;
     }
 }

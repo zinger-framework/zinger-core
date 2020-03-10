@@ -1,7 +1,10 @@
 package com.food.ordering.zinger.dao;
 
+import com.food.ordering.zinger.column.ConfigurationColumn;
 import com.food.ordering.zinger.column.ShopColumn;
+import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.query.ConfigurationQuery;
 import com.food.ordering.zinger.query.ShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
@@ -103,6 +106,44 @@ public class ShopDao {
                 response.setData(shopModel);
             }
         }
+        return response;
+    }
+
+    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
+        MapSqlParameterSource parameters;
+
+        try {
+            if (!role.equals((UserRole.SHOP_OWNER))) {
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
+
+            parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
+                    .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
+                    .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
+                    .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
+                    .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
+                    .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
+
+            int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
+            if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return response;
     }
 }
