@@ -48,8 +48,10 @@ public class OrderDao {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             OrderModel order = orderItemListModel.getOrderModel();
             TransactionModel transaction = order.getTransactionModel();
@@ -57,12 +59,6 @@ public class OrderDao {
             Response<String> transactionResult = transactionDao.insertTransactionDetails(transaction);
             if (!transactionResult.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setData(ErrorLog.TransactionDetailNotUpdated);
-                return response;
-            }
-
-            String deliveryResponse = verifyDeliveryPrice(orderItemListModel);
-            if (!deliveryResponse.equals(ErrorLog.Success)) {
-                response.setData(deliveryResponse);
                 return response;
             }
 
@@ -117,10 +113,51 @@ public class OrderDao {
             if (result > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return response;
+    }
+
+    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
+
+        try {
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            OrderModel order = orderItemListModel.getOrderModel();
+            ShopModel shopModel = order.getShopModel();
+
+            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModel);
+            if (!configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                return response;
+            }
+
+            ConfigurationModel configurationModel = configurationModelResponse.getData();
+            if (configurationModel.getIsOrderTaken() != 1) {
+                response.setMessage(ErrorLog.OrderNotTaken);
+                return response;
+            }
+
+            String deliveryResponse = verifyPricing(orderItemListModel, configurationModel);
+            if (!deliveryResponse.equals(ErrorLog.Success)) {
+                response.setData(deliveryResponse);
+                return response;
+            }
+
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+            response.setData(ErrorLog.Success);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return response;
     }
 
@@ -136,15 +173,21 @@ public class OrderDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobileRh, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobileRh, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(OrderColumn.mobile, mobile)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            try {
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -155,6 +198,7 @@ public class OrderDao {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
+
                     if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         return response;
@@ -180,15 +224,21 @@ public class OrderDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(OrderColumn.shopId, shopId)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            try {
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -224,15 +274,21 @@ public class OrderDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(OrderColumn.shopId, shopId);
 
-            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e1) {
+            e1.printStackTrace();
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -256,13 +312,58 @@ public class OrderDao {
         return response;
     }
 
+    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role) {
+        Response<OrderModel> response = new Response<>();
+        OrderModel orderModel = null;
+
+        try {
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.id, id);
+
+            try {
+                orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (orderModel != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
+                Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
+                Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
+                Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
+                if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                    return response;
+                }
+
+                orderModel.setTransactionModel(transactionModelResponse.getData());
+                orderModel.setUserModel(userModelResponse.getData());
+                orderModel.setShopModel(shopModelResponse.getData());
+                response.setData(orderModel);
+            }
+        }
+
+        return response;
+    }
+
     /**************************************************/
 
     public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(cookingInfo, orderModel.getCookingInfo())
@@ -271,13 +372,11 @@ public class OrderDao {
                     .addValue(id, orderModel.getId());
 
             int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrder, parameter);
-
             if (updateStatus > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -287,31 +386,36 @@ public class OrderDao {
 
     public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
-        OrderModel currentOrderDetails = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
-
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(id, orderModel.getId());
-
-            try {
-                currentOrderDetails = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
 
-            if (currentOrderDetails != null) {
-                if (checkOrderStatusValidity(currentOrderDetails.getOrderStatus(), orderModel.getOrderStatus())) {
-                    if (orderModel.getSecretKey() != null) {
-                        if (!orderModel.getSecretKey().equals(currentOrderDetails.getSecretKey())) {
+            Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), oauthId, mobile, role);
+            if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
+
+                    if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
+                        OrderModel updatedOrderModel = orderModelResponse.getData();
+                        updatedOrderModel.setSecretKey(orderModel.getSecretKey());
+
+                        Response<String> updateResponse = updateOrder(updatedOrderModel, oauthId, mobile, role);
+                        if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            response.setData(ErrorLog.OrderDetailNotUpdated);
+                            return response;
+                        }
+                    }
+
+                    if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+                        if (!orderModel.getSecretKey().equals(orderModelResponse.getData().getSecretKey())) {
                             response.setData(ErrorLog.SecretKeyMismatch);
                             return response;
                         }
                     }
 
-                    parameter = new MapSqlParameterSource()
+                    MapSqlParameterSource parameter = new MapSqlParameterSource()
                             .addValue(status, orderModel.getOrderStatus().name())
                             .addValue(id, orderModel.getId());
 
@@ -363,16 +467,18 @@ public class OrderDao {
         return false;
     }
 
-    public String verifyDeliveryPrice(OrderItemListModel orderItemListModel) {
+    public String verifyPricing(OrderItemListModel orderItemListModel, ConfigurationModel configurationModel) {
         Double deliveryPrice = 0.0;
         OrderModel order = orderItemListModel.getOrderModel();
 
         if (order.getDeliveryPrice() != null) {
-            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(order.getShopModel());
-            if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess) && configurationModelResponse.getData().getDeliveryPrice().equals(order.getDeliveryPrice()))
-                deliveryPrice = order.getDeliveryPrice();
-            else
+            if (configurationModel.getIsDeliveryAvailable() != 1)
+                return ErrorLog.DeliveryNotAvailable;
+
+            if (!configurationModel.getDeliveryPrice().equals(order.getDeliveryPrice()))
                 return ErrorLog.OrderDeliveryPriceMismatch;
+
+            deliveryPrice = order.getDeliveryPrice();
         }
 
         Double totalPrice = calculatePricing(orderItemListModel.getOrderItemsList());

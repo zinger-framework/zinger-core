@@ -34,12 +34,12 @@ public class ItemDao {
 
         try {
             if (role.equals(UserRole.CUSTOMER.name())) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
@@ -69,8 +69,10 @@ public class ItemDao {
         List<ItemModel> list = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemColumn.shopId, shopModel.getId());
@@ -100,8 +102,10 @@ public class ItemDao {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemColumn.name, "%" + itemName + "%")
@@ -135,6 +139,7 @@ public class ItemDao {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemColumn.id, id);
+
             try {
                 item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
@@ -158,12 +163,12 @@ public class ItemDao {
         Response<String> response = new Response<>();
         try {
             if (role.equals(UserRole.CUSTOMER.name())) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
@@ -194,12 +199,12 @@ public class ItemDao {
 
         try {
             if (role.equals(UserRole.CUSTOMER.name())) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
@@ -224,12 +229,12 @@ public class ItemDao {
 
         try {
             if (role.equals(UserRole.CUSTOMER.name())) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 

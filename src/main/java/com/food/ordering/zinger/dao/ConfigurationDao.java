@@ -1,7 +1,6 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.ConfigurationColumn;
-import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.query.ConfigurationQuery;
@@ -23,30 +22,23 @@ public class ConfigurationDao {
     @Autowired
     UtilsDao utilsDao;
 
+    public Response<String> insertConfiguration(ConfigurationModel configurationModel) {
+        Response<String> response = new Response<>();
 
-    public Response<String> insertConfiguration(ConfigurationModel configurationModel){
+        try {
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ConfigurationColumn.shopId, configurationModel.getShopModel().getId())
+                    .addValue(ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice());
 
-        Response<String> response=new Response<>();
-        MapSqlParameterSource parameters;
-
-        try{
-
-            parameters=new MapSqlParameterSource()
-                            .addValue(ConfigurationColumn.shopId,configurationModel.getShopModel().getId())
-                            .addValue(ConfigurationColumn.deliveryPrice,configurationModel.getDeliveryPrice());
-
-            int responseResult=namedParameterJdbcTemplate.update(ConfigurationQuery.insertConfiguration,parameters);
-
-            if(responseResult>0){
+            int responseResult = namedParameterJdbcTemplate.update(ConfigurationQuery.insertConfiguration, parameters);
+            if (responseResult > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
         return response;
     }

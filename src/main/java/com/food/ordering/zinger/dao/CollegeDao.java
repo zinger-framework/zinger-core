@@ -61,10 +61,17 @@ public class CollegeDao {
         List<CollegeModel> list = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
-            list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
+            try {
+                list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -84,6 +91,7 @@ public class CollegeDao {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.id, collegeId);
+
             try {
                 college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
             } catch (Exception e) {

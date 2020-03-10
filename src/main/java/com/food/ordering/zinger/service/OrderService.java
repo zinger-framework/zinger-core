@@ -22,6 +22,10 @@ public class OrderService {
         return orderDao.insertOrder(orderItemListModel, oauthId, mobile, role);
     }
 
+    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
+        return orderDao.verifyOrder(orderItemListModel, oauthId, mobile, role);
+    }
+
     public Response<List<OrderModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role){
         return orderDao.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
@@ -32,6 +36,10 @@ public class OrderService {
 
     public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role){
         return orderDao.getOrderByShopId(shopId, oauthId, mobile, role);
+    }
+
+    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role){
+        return orderDao.getOrderById(id, oauthId, mobile, role);
     }
 
     public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {

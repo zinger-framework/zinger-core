@@ -24,4 +24,7 @@ public class ErrorLog {
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String ItemPriceMismatch = "Item price mismatch";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
+
+    public static final String OrderNotTaken = "Order not taken";
+    public static final String DeliveryNotAvailable = "Delivery not available";
 }

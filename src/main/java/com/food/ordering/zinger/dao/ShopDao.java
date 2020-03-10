@@ -43,15 +43,13 @@ public class ShopDao {
         MapSqlParameterSource parameters;
 
         try{
-
-            if(!role.equals(UserRole.SHOP_OWNER.name()))
-            {
-                response.setData(ErrorLog.InvalidHeader);
+            if(!role.equals(UserRole.SHOP_OWNER.name())) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
@@ -64,14 +62,11 @@ public class ShopDao {
                                 .addValue(ShopColumn.closingTime,shopModel.getClosingTime());
 
             int responseValue=namedParameterJdbcTemplate.update(ShopQuery.insertShop,parameters);
-
             if(responseValue>0){
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -85,11 +80,14 @@ public class ShopDao {
         List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.collegeId, collegeModel.getId());
+
             try {
                 list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
             } catch (Exception e) {
@@ -158,12 +156,12 @@ public class ShopDao {
 
         try {
             if (!role.equals((UserRole.SHOP_OWNER).name())) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 

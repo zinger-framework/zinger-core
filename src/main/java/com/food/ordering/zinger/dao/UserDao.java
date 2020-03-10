@@ -222,8 +222,10 @@ public class UserDao {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
                 return response;
+            }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.name, user.getName())
@@ -288,8 +290,10 @@ public class UserDao {
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
 
-        if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER))
+        if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+            response.setMessage(ErrorLog.InvalidHeader);
             return response;
+        }
 
         Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), oauthId, mobile, role);
         Response<String> responseCollege = updateCollege(userCollegeModel);
