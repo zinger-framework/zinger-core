@@ -23,6 +23,34 @@ public class ConfigurationDao {
     @Autowired
     UtilsDao utilsDao;
 
+
+    public Response<String> insertConfiguration(ConfigurationModel configurationModel){
+
+        Response<String> response=new Response<>();
+        MapSqlParameterSource parameters;
+
+        try{
+
+            parameters=new MapSqlParameterSource()
+                            .addValue(ConfigurationColumn.shopId,configurationModel.getShopModel().getId())
+                            .addValue(ConfigurationColumn.deliveryPrice,configurationModel.getDeliveryPrice());
+
+            int responseResult=namedParameterJdbcTemplate.update(ConfigurationQuery.insertConfiguration,parameters);
+
+            if(responseResult>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
+
+        return response;
+    }
+
     public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
         Response<ConfigurationModel> response = new Response<>();
         ConfigurationModel configurationModel = null;
