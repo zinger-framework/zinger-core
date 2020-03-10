@@ -19,6 +19,10 @@ public class ShopService {
     @Autowired
     ShopDao shopDao;
 
+    public Response<String> insertShop(ShopModel shopModel,String oauthId, String mobile, String role) {
+        return shopDao.insertShop(shopModel,oauthId,mobile,role);
+    }
+
     public Response<List<ShopConfigurationModel>> getShopByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
         return shopDao.getShopsByCollegeId(collegeModel, oauthId, mobile, role);
     }
