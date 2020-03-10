@@ -114,7 +114,7 @@ public class ShopDao {
         MapSqlParameterSource parameters;
 
         try {
-            if (!role.equals((UserRole.SHOP_OWNER))) {
+            if (!role.equals((UserRole.SHOP_OWNER).name())) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }

@@ -24,7 +24,7 @@ public class ShopController {
         return shopService.getShopByCollegeId(collegeModel, oauthId, mobile, role);
     }
 
-    @PatchMapping(value = "")
+    @PatchMapping(value = "/config")
     Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
         return shopService.updateShopConfiguration(configurationModel,oauthId,mobile,role);
     }
