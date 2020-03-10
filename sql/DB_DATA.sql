@@ -14,9 +14,10 @@ insert into shop values(7,'SRM sathyas main','shop.com',9176019344,3,'09:00:00',
 insert into shop values(8,'SRM Snow Qube','shop.com',9176019344,3,'09:00:00','21:00:00',0);
 insert into shop values(9,'SRM sathyas small','shop.com',9176019344,3,'09:00:00','21:00:00',0);
 
-insert into users values(9176786581,'Harshavardhan','harshavardhan98@yahoo.co.in','auth_9176786581','SELLER',0);
 insert into users values(9176019345,'logesh','harshavardhan98@yahoo.co.in','12oauthid35','SELLER',0);
 insert into users values(9176019346,'shrikanth','harshavardhan98@yahoo.co.in','12oauthid36','SHOP_OWNER',0);
+insert into users values(9176019347,'spider-man','harshavardhan98@yahoo.co.in','12oauthid37','CUSTOMER',0);
+insert into users values(9176019348,'Harshavardhan','harshavardhan98@yahoo.co.in','12oauthid38','SELLER',0);
 
 insert into item values(1,'chicken fried rice',75,'food.com','fast food',1,0,0,0);
 insert into item values(2,'chicken noodles',75,'food.com','fast food',1,0,0,0);

@@ -2,6 +2,7 @@ package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.ItemColumn;
 import com.food.ordering.zinger.column.ShopColumn;
+import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.query.ItemQuery;
@@ -27,6 +28,50 @@ public class ItemDao {
 
     @Autowired
     ShopDao shopDao;
+
+
+    public Response<String> insertItem(ItemModel itemModel,String oauthId, String mobile, String role){
+
+        Response<String> response=new Response<>();
+        SqlParameterSource parameters;
+
+        try{
+
+            if(role.equals(UserRole.CUSTOMER.name())){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+
+            parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name,itemModel.getName())
+                    .addValue(ItemColumn.price,itemModel.getPrice())
+                    .addValue(ItemColumn.photoUrl,itemModel.getPhotoUrl())
+                    .addValue(ItemColumn.category,itemModel.getCategory())
+                    .addValue(ItemColumn.shopId,itemModel.getShopModel().getId())
+                    .addValue(ItemColumn.isVeg,itemModel.getIsVeg());
+
+
+            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.insertItem,parameters);
+
+            if(responseValue>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 
     public Response<List<ItemModel>> getItemsByShopId(ShopModel shopModel, String oauthId, String mobile, String role) {
         Response<List<ItemModel>> response = new Response<>();
@@ -113,6 +158,129 @@ public class ItemDao {
                 response.setData(item);
             }
         }
+        return response;
+    }
+
+
+    public Response<String> updateItemById(ItemModel itemModel,String oauthId,String mobile,String role){
+
+        Response<String> response=new Response<>();
+        SqlParameterSource parameters;
+
+
+        try{
+
+            if(role.equals(UserRole.CUSTOMER.name())){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+
+            parameters = new MapSqlParameterSource()
+                                                .addValue(ItemColumn.name,itemModel.getName())
+                                                .addValue(ItemColumn.price,itemModel.getPrice())
+                                                .addValue(ItemColumn.photoUrl,itemModel.getPhotoUrl())
+                                                .addValue(ItemColumn.category,itemModel.getCategory())
+                                                .addValue(ItemColumn.isVeg,itemModel.getIsVeg())
+                                                .addValue(ItemColumn.isAvailable,itemModel.getIsAvailable())
+                                                .addValue(ItemColumn.id,itemModel.getId());
+
+            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.updateItem,parameters);
+
+            if(responseValue>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+
+
+    public Response<String> deleteItemById(ItemModel itemModel,String oauthId,String mobile,String role){
+
+        Response<String> response=new Response<>();
+        SqlParameterSource parameters;
+
+        try{
+
+            if(role.equals(UserRole.CUSTOMER.name())){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+
+            parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id,itemModel.getId());
+
+            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.deleteItem,parameters);
+
+
+            if(responseValue>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public Response<String> unDeleteItemById(ItemModel itemModel,String oauthId,String mobile,String role){
+
+        Response<String> response=new Response<>();
+        SqlParameterSource parameters;
+
+        try{
+
+            if(role.equals(UserRole.CUSTOMER.name())){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+
+            parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id,itemModel.getId());
+
+            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem,parameters);
+
+
+            if(responseValue>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         return response;
     }
 }
