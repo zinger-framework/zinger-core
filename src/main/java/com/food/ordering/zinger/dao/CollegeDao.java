@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.CollegeColumn;
+import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.query.CollegeQuery;
 import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
@@ -22,6 +23,38 @@ public class CollegeDao {
 
     @Autowired
     UtilsDao utilsDao;
+
+    public Response<String> insertCollege(CollegeModel collegeModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
+
+        try {
+            if (!role.equals((UserRole.SUPER_ADMIN).name())) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(CollegeColumn.name, collegeModel.getName())
+                    .addValue(CollegeColumn.address, collegeModel.getAddress())
+                    .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl());
+
+            int responseValue = namedParameterJdbcTemplate.update(CollegeQuery.insertCollege, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
 
     public Response<List<CollegeModel>> getAllColleges(String oauthId, String mobile, String role) {
         Response<List<CollegeModel>> response = new Response<>();

@@ -1,5 +1,5 @@
 package com.food.ordering.zinger.enums;
 
 public enum UserRole {
-    CUSTOMER, SELLER, SHOP_OWNER
+    CUSTOMER, SELLER, SHOP_OWNER, SUPER_ADMIN
 }

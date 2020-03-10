@@ -28,14 +28,18 @@ public class UtilsDao {
                     .addValue(UserColumn.mobile, mobile)
                     .addValue(UserColumn.role, role);
 
-            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
+            try {
+                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (userModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                // todo check if role parameter from header is same as that in table -> edge casese needs to be checked
                 response.setData(userModel);
             }
         }
