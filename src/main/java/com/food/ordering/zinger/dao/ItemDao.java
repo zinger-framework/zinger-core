@@ -29,44 +29,35 @@ public class ItemDao {
     @Autowired
     ShopDao shopDao;
 
+    public Response<String> insertItem(ItemModel itemModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
 
-    public Response<String> insertItem(ItemModel itemModel,String oauthId, String mobile, String role){
-
-        Response<String> response=new Response<>();
-        SqlParameterSource parameters;
-
-        try{
-
-            if(role.equals(UserRole.CUSTOMER.name())){
+        try {
+            if (role.equals(UserRole.CUSTOMER.name())) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name, itemModel.getName())
+                    .addValue(ItemColumn.price, itemModel.getPrice())
+                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                    .addValue(ItemColumn.category, itemModel.getCategory())
+                    .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
+                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
 
-            parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.name,itemModel.getName())
-                    .addValue(ItemColumn.price,itemModel.getPrice())
-                    .addValue(ItemColumn.photoUrl,itemModel.getPhotoUrl())
-                    .addValue(ItemColumn.category,itemModel.getCategory())
-                    .addValue(ItemColumn.shopId,itemModel.getShopModel().getId())
-                    .addValue(ItemColumn.isVeg,itemModel.getIsVeg());
-
-
-            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.insertItem,parameters);
-
-            if(responseValue>0){
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.insertItem, parameters);
+            if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -78,12 +69,12 @@ public class ItemDao {
         List<ItemModel> list = null;
 
         try {
-
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemColumn.shopId, shopModel.getId());
+
             try {
                 list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
@@ -95,8 +86,10 @@ public class ItemDao {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+
                 for (int i = 0; i < list.size(); i++)
                     list.get(i).setShopModel(shopModel);
+
                 response.setData(list);
             }
         }
@@ -161,126 +154,97 @@ public class ItemDao {
         return response;
     }
 
-
-    public Response<String> updateItemById(ItemModel itemModel,String oauthId,String mobile,String role){
-
-        Response<String> response=new Response<>();
-        SqlParameterSource parameters;
-
-
-        try{
-
-            if(role.equals(UserRole.CUSTOMER.name())){
+    public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
+        try {
+            if (role.equals(UserRole.CUSTOMER.name())) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
-
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name, itemModel.getName())
+                    .addValue(ItemColumn.price, itemModel.getPrice())
+                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                    .addValue(ItemColumn.category, itemModel.getCategory())
+                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg())
+                    .addValue(ItemColumn.isAvailable, itemModel.getIsAvailable())
+                    .addValue(ItemColumn.id, itemModel.getId());
 
-            parameters = new MapSqlParameterSource()
-                                                .addValue(ItemColumn.name,itemModel.getName())
-                                                .addValue(ItemColumn.price,itemModel.getPrice())
-                                                .addValue(ItemColumn.photoUrl,itemModel.getPhotoUrl())
-                                                .addValue(ItemColumn.category,itemModel.getCategory())
-                                                .addValue(ItemColumn.isVeg,itemModel.getIsVeg())
-                                                .addValue(ItemColumn.isAvailable,itemModel.getIsAvailable())
-                                                .addValue(ItemColumn.id,itemModel.getId());
-
-            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.updateItem,parameters);
-
-            if(responseValue>0){
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.updateItem, parameters);
+            if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return response;
     }
 
+    public Response<String> deleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
 
-
-    public Response<String> deleteItemById(ItemModel itemModel,String oauthId,String mobile,String role){
-
-        Response<String> response=new Response<>();
-        SqlParameterSource parameters;
-
-        try{
-
-            if(role.equals(UserRole.CUSTOMER.name())){
+        try {
+            if (role.equals(UserRole.CUSTOMER.name())) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id, itemModel.getId());
 
-            parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id,itemModel.getId());
-
-            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.deleteItem,parameters);
-
-
-            if(responseValue>0){
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
+            if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return response;
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel,String oauthId,String mobile,String role){
+    public Response<String> unDeleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+        Response<String> response = new Response<>();
 
-        Response<String> response=new Response<>();
-        SqlParameterSource parameters;
-
-        try{
-
-            if(role.equals(UserRole.CUSTOMER.name())){
+        try {
+            if (role.equals(UserRole.CUSTOMER.name())) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setData(ErrorLog.InvalidHeader);
                 return response;
             }
 
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id, itemModel.getId());
 
-            parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id,itemModel.getId());
-
-            int responseValue=namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem,parameters);
-
-
-            if(responseValue>0){
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
+            if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
             }
-
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
         return response;
     }
 }
