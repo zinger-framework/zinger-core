@@ -15,9 +15,6 @@ public class TransactionModel {
     private String paymentMode;
     private String checksumHash;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date date;
-
     public TransactionModel() {
     }
 
@@ -93,14 +90,6 @@ public class TransactionModel {
         this.bankName = bankName;
     }
 
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
-    }
-
     @Override
     public String toString() {
         return "TransactionModel{" +
@@ -113,7 +102,6 @@ public class TransactionModel {
                 ", bankName='" + bankName + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +
                 ", checksumHash='" + checksumHash + '\'' +
-                ", date=" + date +
                 '}';
     }
 }

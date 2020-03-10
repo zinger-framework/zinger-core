@@ -58,6 +58,11 @@ SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = 
 SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';
 SELECT id, name, photo_url, photo_url, college_id, opening_time, closing_time, is_delete FROM shop WHERE id = 1;
 
+SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE shop_id = 2 AND (status = 'PLACED' || status = 'ACCEPTED' || status = 'READY' || status = 'OUT_FOR_DELIVERY') ORDER BY date DESC;
+
+SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE mobile = '9176786580' ORDER BY date DESC LIMIT 2 OFFSET 2;
+SELECT transaction_id, bank_transaction_id, currency, response_code, response_message, gateway_name, bank_name, payment_mode, checksum_hash FROM transactions WHERE transaction_id = 'T0013';
+
 SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786581' AND role = 'SELLER' AND is_delete = 0;
 SELECT id FROM shop WHERE college_id = 2 AND is_delete = 0;
 SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE id = 'O0005';

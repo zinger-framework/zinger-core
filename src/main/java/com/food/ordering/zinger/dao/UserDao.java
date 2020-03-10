@@ -148,6 +148,28 @@ public class UserDao {
         return response;
     }
 
+    public Response<UserModel> getUserByMobile(String mobile) {
+        Response<UserModel> response = new Response<>();
+        UserModel userModel = null;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue(UserColumn.mobile, mobile);
+
+        try {
+            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (userModel != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(userModel);
+            }
+        }
+
+        return response;
+    }
+
     public Response<UserShopListModel> getShopByMobile(UserModel userModel) {
         Response<UserShopListModel> response = new Response<>();
         List<ShopModel> shopModelList = null;
