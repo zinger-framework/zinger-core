@@ -218,10 +218,13 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<String> updateUser(UserModel user) {
+    public Response<String> updateUser(UserModel user, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
 
         try {
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.name, user.getName())
                     .addValue(UserColumn.mobile, user.getMobile())
@@ -288,7 +291,7 @@ public class UserDao {
         if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER))
             return response;
 
-        Response<String> responseUser = updateUser(userCollegeModel.getUserModel());
+        Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), oauthId, mobile, role);
         Response<String> responseCollege = updateCollege(userCollegeModel);
 
         if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {

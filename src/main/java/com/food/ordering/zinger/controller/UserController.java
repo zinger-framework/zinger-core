@@ -28,6 +28,11 @@ public class UserController {
 
     /**************************************************/
 
+    @PatchMapping(value = "")
+    public Response<String> updateUser(@RequestBody UserModel userModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.updateUser(userModel, oauthId, mobile, role);
+    }
+
     @PatchMapping(value = "/college")
     public Response<String> updateUserCollegeData(@RequestBody UserCollegeModel userCollegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return userService.updateUserCollegeData(userCollegeModel, oauthId, mobile, role);

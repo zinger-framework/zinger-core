@@ -24,6 +24,10 @@ public class UserService {
 
     /**************************************************/
 
+    public Response<String> updateUser(UserModel userModel, String oauthId, String mobile, String role) {
+        return userDao.updateUser(userModel, oauthId, mobile, role);
+    }
+
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
         return userDao.updateUserCollegeData(userCollegeModel, oauthId, mobile, role);
     }
