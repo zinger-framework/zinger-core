@@ -26,8 +26,12 @@ public class OrderService {
         return orderDao.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
 
-    public Response<List<OrderModel>> getOrderByShop(Integer shopId, String oauthId, String mobile, String role){
-        return orderDao.getOrderByShop(shopId, oauthId, mobile, role);
+    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role){
+        return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount, oauthId, mobile, role);
+    }
+
+    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role){
+        return orderDao.getOrderByShopId(shopId, oauthId, mobile, role);
     }
 
     public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {

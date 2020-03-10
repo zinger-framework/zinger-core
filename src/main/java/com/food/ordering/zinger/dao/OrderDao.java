@@ -3,6 +3,7 @@ package com.food.ordering.zinger.dao;
 import com.food.ordering.zinger.column.OrderColumn;
 import com.food.ordering.zinger.column.OrderItemColumn;
 import com.food.ordering.zinger.enums.OrderStatus;
+import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.query.OrderItemQuery;
 import com.food.ordering.zinger.query.OrderQuery;
@@ -33,6 +34,12 @@ public class OrderDao {
 
     @Autowired
     ItemDao itemDao;
+
+    @Autowired
+    ShopDao shopDao;
+
+    @Autowired
+    UserDao userDao;
 
     @Autowired
     ConfigurationDao configurationDao;
@@ -121,31 +128,129 @@ public class OrderDao {
 
     public Response<List<OrderModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
         Response<List<OrderModel>> response = new Response<>();
+        List<OrderModel> orderModelList = null;
 
-        try{
+        try {
+            if (!role.equals((UserRole.CUSTOMER).name())) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
             if (!utilsDao.validateUser(oauthId, mobileRh, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.mobile, mobile)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
 
-        }
-        catch (Exception e){
+            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
+                for (OrderModel orderModel : orderModelList) {
+                    Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
+                    Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                        return response;
+                    }
+
+                    orderModel.setTransactionModel(transactionModelResponse.getData());
+                    orderModel.setShopModel(shopModelResponse.getData());
+                }
+                response.setData(orderModelList);
+            }
         }
 
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShop(Integer shopId, String oauthId, String mobile, String role) {
+    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
         Response<List<OrderModel>> response = new Response<>();
+        List<OrderModel> orderModelList = null;
 
-        try{
+        try {
+            if (role.equals((UserRole.CUSTOMER).name())) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
                 return response;
 
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.shopId, shopId)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
 
-        }
-        catch (Exception e){
+            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+        } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
+                for (OrderModel orderModel : orderModelList) {
+                    Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
+                    Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                        return response;
+                    }
+
+                    orderModel.setTransactionModel(transactionModelResponse.getData());
+                    orderModel.setUserModel(userModelResponse.getData());
+                }
+                response.setData(orderModelList);
+            }
+        }
+
+        return response;
+    }
+
+    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
+        Response<List<OrderModel>> response = new Response<>();
+        List<OrderModel> orderModelList = null;
+
+        try {
+            if (role.equals((UserRole.CUSTOMER).name())) {
+                response.setMessage(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.shopId, shopId);
+
+            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
+                for (OrderModel orderModel : orderModelList) {
+                    Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
+                    Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                        return response;
+                    }
+
+                    orderModel.setTransactionModel(transactionModelResponse.getData());
+                    orderModel.setUserModel(userModelResponse.getData());
+                }
+                response.setData(orderModelList);
+            }
         }
 
         return response;

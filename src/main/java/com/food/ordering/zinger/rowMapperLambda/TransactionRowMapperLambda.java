@@ -17,7 +17,6 @@ public class TransactionRowMapperLambda {
         transactionModel.setBankName(rs.getString(bankName));
         transactionModel.setPaymentMode(rs.getString(paymentMode));
         transactionModel.setChecksumHash(rs.getString(checksumHash));
-        transactionModel.setDate(rs.getDate(date));
         return transactionModel;
     };
 }

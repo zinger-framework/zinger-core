@@ -27,9 +27,14 @@ public class OrderController {
        return orderService.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
 
+    @GetMapping(value = "/seller/{shopId}/{pageNum}/{pageCount}")
+    public Response<List<OrderModel>> getOrderByShopIdPagination(@PathVariable("shopId") Integer shopId, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
+        return orderService.getOrderByShopIdPagination(shopId, pageNum, pageCount, oauthId, mobile, role);
+    }
+
     @GetMapping(value = "/seller/{shopId}")
-    public Response<List<OrderModel>> getOrderByShop(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
-        return orderService.getOrderByShop(shopId, oauthId, mobile, role);
+    public Response<List<OrderModel>> getOrderByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
+        return orderService.getOrderByShopId(shopId, oauthId, mobile, role);
     }
 
     @PatchMapping(value = "")
