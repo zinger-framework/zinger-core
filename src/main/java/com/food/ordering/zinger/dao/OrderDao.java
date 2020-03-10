@@ -117,6 +117,42 @@ public class OrderDao {
         return response;
     }
 
+    /**************************************************/
+
+    public Response<List<OrderModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
+        Response<List<OrderModel>> response = new Response<>();
+
+        try{
+            if (!utilsDao.validateUser(oauthId, mobileRh, role).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public Response<List<OrderModel>> getOrderByShop(Integer shopId, String oauthId, String mobile, String role) {
+        Response<List<OrderModel>> response = new Response<>();
+
+        try{
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess))
+                return response;
+
+
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    /**************************************************/
+
     public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
         try {
@@ -157,8 +193,7 @@ public class OrderDao {
 
             try {
                 currentOrderDetails = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -189,6 +224,8 @@ public class OrderDao {
         }
         return response;
     }
+
+    /**************************************************/
 
     boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus) {
         // starting states -> failure,pending,placed
