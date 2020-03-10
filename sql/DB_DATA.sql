@@ -32,7 +32,11 @@ insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
 insert into rating values(1,2.8,23);
+insert into rating values(2,4.8,5);
+insert into rating values(3,3.7,98);
 insert into configurations(shop_id, delivery_price) values(1,5.0);
+insert into configurations(shop_id, delivery_price) values(2,15.0);
+insert into configurations(shop_id, delivery_price) values(3,20.0);
 
 insert into users_college values("9176786582",1);
 insert into users_shop values("9176786581",1);
@@ -47,6 +51,8 @@ select * from users_shop;
 select * from transactions;
 select * from orders;
 select * from orders_item;
+select * from rating;
+select * from configurations;
 
 SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786583' AND role = 'SELLER' AND is_delete = 0;
 SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';

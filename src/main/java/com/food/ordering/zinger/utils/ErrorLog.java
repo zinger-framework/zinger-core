@@ -7,7 +7,7 @@ public class ErrorLog {
     public static final String Success = "Success";
     public static final String Failure = "Failure";
 
-    public static final String INVALIDHEADER = "Invalid Header Values";
+    public static final String InvalidHeader = "Invalid Header Values";
 
     public static final String CollegeDetailNotAvailable = "College detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";

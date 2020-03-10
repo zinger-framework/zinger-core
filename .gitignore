@@ -25,3 +25,4 @@ lib
 src/main/resources/static/
 src/main/resources/templates/
 src/test
+src/main/resources/application.properties
