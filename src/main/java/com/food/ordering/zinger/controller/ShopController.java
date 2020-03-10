@@ -19,6 +19,12 @@ public class ShopController {
     @Autowired
     ShopService shopService;
 
+    @PostMapping(value = "")
+    public Response<String> insertShop(@RequestBody ShopModel shopModel,@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.insertShop(shopModel,oauthId,mobile,role);
+    }
+
+
     @GetMapping(value = "/college")
     public Response<List<ShopConfigurationModel>> getShopsByCollegeId(@RequestBody CollegeModel collegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return shopService.getShopByCollegeId(collegeModel, oauthId, mobile, role);

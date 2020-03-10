@@ -36,6 +36,49 @@ public class ShopDao {
     @Autowired
     CollegeDao collegeDao;
 
+
+    public Response<String> insertShop(ShopModel shopModel,String oauthId, String mobile, String role){
+
+        Response<String> response=new Response<>();
+        MapSqlParameterSource parameters;
+
+        try{
+
+            if(!role.equals(UserRole.SHOP_OWNER.name()))
+            {
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setData(ErrorLog.InvalidHeader);
+                return response;
+            }
+
+            parameters = new MapSqlParameterSource()
+                                .addValue(ShopColumn.name,shopModel.getName())
+                                .addValue(ShopColumn.photoUrl,shopModel.getPhotoUrl())
+                                .addValue(ShopColumn.mobile,shopModel.getMobile())
+                                .addValue(ShopColumn.collegeId,shopModel.getCollegeModel().getId())
+                                .addValue(ShopColumn.openingTime,shopModel.getOpeningTime())
+                                .addValue(ShopColumn.closingTime,shopModel.getClosingTime());
+
+            int responseValue=namedParameterJdbcTemplate.update(ShopQuery.insertShop,parameters);
+
+            if(responseValue>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
     public Response<List<ShopConfigurationModel>> getShopsByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
