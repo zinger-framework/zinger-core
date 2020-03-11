@@ -1,18 +1,22 @@
 package com.food.ordering.zinger.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.food.ordering.zinger.enums.AuditEnum;
+import com.food.ordering.zinger.enums.Priority;
 
 import java.sql.Date;
 
-public class IntegerAuditModel {
+public class AuditModel {
     private Integer id;
+    private String sid;
     private String mobile;
-    private AuditEnum message;
+    private Integer errCode;
+    private String message;
     private String updatedValue;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
     private Date date;
+
+    private Priority priority;
 
     public Integer getId() {
         return id;
@@ -20,6 +24,14 @@ public class IntegerAuditModel {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public String getSid() {
+        return sid;
+    }
+
+    public void setSid(String sid) {
+        this.sid = sid;
     }
 
     public String getMobile() {
@@ -30,11 +42,19 @@ public class IntegerAuditModel {
         this.mobile = mobile;
     }
 
-    public AuditEnum getMessage() {
+    public Integer getErrCode() {
+        return errCode;
+    }
+
+    public void setErrCode(Integer errCode) {
+        this.errCode = errCode;
+    }
+
+    public String getMessage() {
         return message;
     }
 
-    public void setMessage(AuditEnum message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -54,14 +74,25 @@ public class IntegerAuditModel {
         this.date = date;
     }
 
+    public Priority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Priority priority) {
+        this.priority = priority;
+    }
+
     @Override
     public String toString() {
-        return "IntegerAuditModel{" +
+        return "AuditModel{" +
                 "id=" + id +
+                ", sid='" + sid + '\'' +
                 ", mobile='" + mobile + '\'' +
-                ", message=" + message +
+                ", errCode=" + errCode +
+                ", message='" + message + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
                 ", date=" + date +
+                ", priority=" + priority +
                 '}';
     }
 }
