@@ -17,6 +17,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Random;
 
 import static com.food.ordering.zinger.column.OrderColumn.*;
 
@@ -394,14 +395,15 @@ public class OrderDao {
             }
 
             Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), oauthId, mobile, role);
+
             if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
 
                     if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
-                        OrderModel updatedOrderModel = orderModelResponse.getData();
-                        updatedOrderModel.setSecretKey(orderModel.getSecretKey());
+                        String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
+                        orderModelResponse.getData().setSecretKey(secretKey);
 
-                        Response<String> updateResponse = updateOrder(updatedOrderModel, oauthId, mobile, role);
+                        Response<String> updateResponse = updateOrder(orderModelResponse.getData(), oauthId, mobile, role);
                         if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             response.setData(ErrorLog.OrderDetailNotUpdated);
                             return response;
@@ -449,9 +451,6 @@ public class OrderDao {
 
         if (currentStatus == null)
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
-
-        if (currentStatus.equals(newStatus))
-            return true;
 
         else if (currentStatus.equals(OrderStatus.PENDING))
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
