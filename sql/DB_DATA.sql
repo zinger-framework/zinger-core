@@ -35,6 +35,7 @@ insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 insert into rating values(1,2.8,23);
 insert into rating values(2,4.8,5);
 insert into rating values(3,3.7,98);
+
 insert into configurations(shop_id, delivery_price) values(1,5.0);
 insert into configurations(shop_id, delivery_price) values(2,15.0);
 insert into configurations(shop_id, delivery_price) values(3,20.0);

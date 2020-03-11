@@ -73,7 +73,7 @@ CREATE TABLE transactions (
   bank_name VARCHAR(500) NOT NULL,
   payment_mode VARCHAR(15) NOT NULL,
   checksum_hash VARCHAR(108) NOT NULL,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id)
 );
     
@@ -82,7 +82,7 @@ CREATE TABLE orders (
   mobile VARCHAR(10) NOT NULL,
   transaction_id VARCHAR(64) UNIQUE NOT NULL,
   shop_id INT NOT NULL,
-  date DATETIME DEFAULT CURRENT_TIMESTAMP,
+  date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   status ENUM('PENDING', 'TXN_FAILURE', 'PLACED', 'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER', 'READY', 'OUT_FOR_DELIVERY', 'COMPLETED', 'DELIVERED'),
   last_status_updated_time DATETIME DEFAULT NULL,
   price DOUBLE NOT NULL,
@@ -145,4 +145,3 @@ CREATE TABLE configurations (
 );
 
 ####################################################
-
