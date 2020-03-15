@@ -1,12 +1,17 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.ItemColumn;
+import com.food.ordering.zinger.column.OrderItemColumn;
 import com.food.ordering.zinger.column.ShopColumn;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.ItemModel;
+import com.food.ordering.zinger.model.OrderItemModel;
+import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.query.ItemQuery;
+import com.food.ordering.zinger.query.OrderItemQuery;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.OrderItemRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
 import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +20,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -158,6 +164,45 @@ public class ItemDao {
         }
         return response;
     }
+
+
+    public Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel) {
+
+        Response<List<OrderItemModel>> response = new Response<>();
+        List<OrderItemModel> orderItemModelList = null;
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(OrderItemColumn.orderId, orderModel.getId());
+
+            try {
+                orderItemModelList = namedParameterJdbcTemplate.query(OrderItemQuery.getItemByOrderId, parameters, OrderItemRowMapperLambda.orderItemRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (orderItemModelList != null && orderItemModelList.size() > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    orderItemModelList.stream().forEach(s->{
+                        s.setOrderModel(null);
+                        Response<ItemModel> itemModelResponse=getItemById(s.getItemModel().getId());
+                        if(itemModelResponse.getCode().equals(ErrorLog.CodeSuccess)&& itemModelResponse.getMessage().equals(ErrorLog.Success)){
+                            s.setItemModel(itemModelResponse.getData());
+                        }else{
+                            s.setItemModel(null);
+                        }
+                    });
+                    response.setData(orderItemModelList);
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
 
     public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
