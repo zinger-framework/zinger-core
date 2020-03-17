@@ -26,7 +26,7 @@ public class OrderService {
         return orderDao.verifyOrder(orderItemListModel, oauthId, mobile, role);
     }
 
-    public Response<List<OrderModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role){
+    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role){
         return orderDao.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
 

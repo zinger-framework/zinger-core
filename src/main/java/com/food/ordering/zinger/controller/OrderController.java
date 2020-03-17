@@ -28,7 +28,7 @@ public class OrderController {
     }
 
     @GetMapping(value = "/customer/{mobile}/{pageNum}/{pageCount}")
-    public Response<List<OrderModel>> getOrderByMobile(@PathVariable("mobile") String mobile, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role){
+    public Response<List<OrderItemListModel>> getOrderByMobile(@PathVariable("mobile") String mobile, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role){
        return orderService.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
 

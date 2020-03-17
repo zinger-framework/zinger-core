@@ -20,7 +20,7 @@ USE ifJlo6XgsN;
 CREATE TABLE college (
   id INT AUTO_INCREMENT,
   name VARCHAR(32) NOT NULL,
-  icon_url VARCHAR(128) NOT NULL,
+  icon_url VARCHAR(64) NOT NULL,
   address VARCHAR(256) NOT NULL,
   is_delete INT DEFAULT 0,
   CONSTRAINT college_id_pk PRIMARY KEY (id)
@@ -76,7 +76,7 @@ CREATE TABLE transactions (
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id)
 );
-    
+
 CREATE TABLE orders (
   id VARCHAR(16) NOT NULL,
   mobile VARCHAR(10) NOT NULL,

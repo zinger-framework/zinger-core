@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -164,9 +165,10 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<List<OrderModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
-        Response<List<OrderModel>> response = new Response<>();
+    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
+        Response<List<OrderItemListModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
+        List<OrderItemListModel> orderItemListByMobile=null;
 
         try {
             if (!role.equals((UserRole.CUSTOMER).name())) {
@@ -196,19 +198,41 @@ public class OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
+                orderItemListByMobile=new ArrayList<>();
+
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
+                    Response<List<OrderItemModel>> orderItemsListResponse=itemDao.getItemsByOrderId(orderModel);
 
-                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    if(!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
+                        response.setMessage(ErrorLog.TransactionDetailNotAvailable);
+                        return response;
+                    }
+
+                    if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         return response;
                     }
 
+                    if(!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)){
+                        response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
+                        return response;
+                    }
+
+
+
                     orderModel.setTransactionModel(transactionModelResponse.getData());
                     orderModel.setShopModel(shopModelResponse.getData());
+
+
+                    OrderItemListModel orderItemListModel=new OrderItemListModel();
+                    orderItemListModel.setOrderModel(orderModel);
+                    orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
+
+                    orderItemListByMobile.add(orderItemListModel);
                 }
-                response.setData(orderModelList);
+                response.setData(orderItemListByMobile);
             }
         }
 

@@ -12,6 +12,9 @@ public class ErrorLog {
     public static final String CollegeDetailNotAvailable = "College detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";
     public static final String OrderDetailNotAvailable = "Order detail not available";
+    public static final String OrderItemDetailNotAvailable = "Order item detail not available";
+    public static final String TransactionDetailNotAvailable = "Transaction detail not available";
+
 
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String CollegeDetailNotUpdated = "College detail not updated";
