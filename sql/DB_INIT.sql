@@ -1,6 +1,6 @@
-CREATE DATABASE sql12326583;
+CREATE DATABASE ifJlo6XgsN;
 
-USE sql12326583;
+USE ifJlo6XgsN;
 
 -- DROP TABLE users_college;
 -- DROP TABLE users_shop;
@@ -20,7 +20,7 @@ USE sql12326583;
 CREATE TABLE college (
   id INT AUTO_INCREMENT,
   name VARCHAR(32) NOT NULL,
-  icon_url VARCHAR(64) NOT NULL,
+  icon_url VARCHAR(128) NOT NULL,
   address VARCHAR(256) NOT NULL,
   is_delete INT DEFAULT 0,
   CONSTRAINT college_id_pk PRIMARY KEY (id)
