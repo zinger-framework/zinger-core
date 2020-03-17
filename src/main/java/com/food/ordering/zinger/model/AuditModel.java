@@ -3,7 +3,7 @@ package com.food.ordering.zinger.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.food.ordering.zinger.enums.Priority;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class AuditModel {
     private Integer id;
@@ -13,8 +13,8 @@ public class AuditModel {
     private String message;
     private String updatedValue;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
+    private Timestamp date;
 
     private Priority priority;
 
@@ -66,11 +66,11 @@ public class AuditModel {
         this.updatedValue = updatedValue;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
