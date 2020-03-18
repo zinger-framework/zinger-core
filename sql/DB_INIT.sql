@@ -1,6 +1,6 @@
 CREATE DATABASE sql12326583;
 
-USE sql12326583;
+USE ifJlo6XgsN;
 USE food;
 
 -- DROP TABLE users_college;
