@@ -1,7 +1,10 @@
-CREATE DATABASE sql12326583;
+CREATE DATABASE ifJlo6XgsN;
 
 USE ifJlo6XgsN;
+<<<<<<< HEAD
 USE food;
+=======
+>>>>>>> 9a30e262dfe3bdc5c555cda7012971823b062317
 
 -- DROP TABLE users_college;
 -- DROP TABLE users_shop;
@@ -77,7 +80,7 @@ CREATE TABLE transactions (
   date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id)
 );
-    
+
 CREATE TABLE orders (
   id VARCHAR(16) NOT NULL,
   mobile VARCHAR(10) NOT NULL,

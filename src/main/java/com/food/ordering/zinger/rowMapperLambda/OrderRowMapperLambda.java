@@ -26,9 +26,9 @@ public class OrderRowMapperLambda {
         shopModel.setId(rs.getInt(shopId));
         orderModel.setShopModel(shopModel);
 
-        orderModel.setDate(rs.getDate(date));
+        orderModel.setDate(rs.getTimestamp(date));
         orderModel.setOrderStatus(OrderStatus.valueOf(rs.getString(status)));
-        orderModel.setLastStatusUpdatedTime(rs.getDate(lastStatusUpdatedTime));
+        orderModel.setLastStatusUpdatedTime(rs.getTimestamp(lastStatusUpdatedTime));
         orderModel.setPrice(rs.getDouble(price));
         orderModel.setDeliveryPrice(rs.getDouble(deliveryPrice));
         orderModel.setDeliveryLocation(rs.getString(deliveryLocation));

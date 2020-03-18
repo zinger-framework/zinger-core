@@ -3,7 +3,7 @@ package com.food.ordering.zinger.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.food.ordering.zinger.enums.OrderStatus;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 public class OrderModel {
     private String id;
@@ -11,13 +11,13 @@ public class OrderModel {
     private TransactionModel transactionModel;
     private ShopModel shopModel;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date date;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
+    private Timestamp date;
 
     private OrderStatus orderStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss")
-    private Date lastStatusUpdatedTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
+    private Timestamp lastStatusUpdatedTime;
 
     private Double price;
     private Double deliveryPrice;
@@ -64,11 +64,11 @@ public class OrderModel {
         this.shopModel = shopModel;
     }
 
-    public Date getDate() {
+    public Timestamp getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(Timestamp date) {
         this.date = date;
     }
 
@@ -80,11 +80,11 @@ public class OrderModel {
         this.orderStatus = orderStatus;
     }
 
-    public Date getLastStatusUpdatedTime() {
+    public Timestamp getLastStatusUpdatedTime() {
         return lastStatusUpdatedTime;
     }
 
-    public void setLastStatusUpdatedTime(Date lastStatusUpdatedTime) {
+    public void setLastStatusUpdatedTime(Timestamp lastStatusUpdatedTime) {
         this.lastStatusUpdatedTime = lastStatusUpdatedTime;
     }
 
