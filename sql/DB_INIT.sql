@@ -1,10 +1,6 @@
 CREATE DATABASE ifJlo6XgsN;
 
 USE ifJlo6XgsN;
-<<<<<<< HEAD
-USE food;
-=======
->>>>>>> 9a30e262dfe3bdc5c555cda7012971823b062317
 
 -- DROP TABLE users_college;
 -- DROP TABLE users_shop;
