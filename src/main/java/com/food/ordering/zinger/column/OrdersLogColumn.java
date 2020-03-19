@@ -1,7 +1,7 @@
 package com.food.ordering.zinger.column;
 
-public class ItemLog {
-	public static final String tableName = "item_log";
+public class OrdersLogColumn {
+	public static final String tableName = "orders_log";
 	
 	public static final String id = "id";
 	public static final String errorCode = "error_code";

@@ -1,6 +1,6 @@
 package com.food.ordering.zinger.column;
 
-public class TransactionsLog {
+public class TransactionsLogColumn {
 	public static final String tableName = "transactions_log";
 	
 	public static final String transactionId = "transaction_id";
