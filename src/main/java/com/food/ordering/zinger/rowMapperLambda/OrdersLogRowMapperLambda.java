@@ -19,5 +19,4 @@ public class OrdersLogRowMapperLambda {
 	        orders.setPriority(Priority.valueOf(rs.getString(priority)));
 	        return orders;
 	    };
-
 }

@@ -18,7 +18,6 @@ public class ShopLogModel {
 
     private Priority priority;
     
-    
 	public Integer getId() {
 		return id;
 	}
@@ -61,4 +60,17 @@ public class ShopLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
+	
+	 @Override
+	    public String toString() {
+	        return "ShopLogModel{" +
+	                "id=" + id +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

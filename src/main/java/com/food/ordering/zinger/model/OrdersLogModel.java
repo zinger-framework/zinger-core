@@ -18,7 +18,6 @@ public class OrdersLogModel {
 
     private Priority priority;
     
-    
 	public Integer getId() {
 		return id;
 	}
@@ -61,6 +60,16 @@ public class OrdersLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-    
-    
+	 @Override
+	    public String toString() {
+	        return "OrdersLogModel{" +
+	                "id=" + id +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    } 
 }

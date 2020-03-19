@@ -18,7 +18,6 @@ public class ItemLogModel {
 
     private Priority priority;
     
-    
 	public Integer getId() {
 		return id;
 	}
@@ -61,5 +60,17 @@ public class ItemLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-    
+	
+	 @Override
+	    public String toString() {
+	        return "ItemLogModel{" +
+	                "id=" + id +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

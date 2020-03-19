@@ -18,7 +18,6 @@ public class UsersShopLogModel {
 
     private Priority priority;
     
-    
 	public String getUsersMobile() {
 		return usersMobile;
 	}
@@ -62,5 +61,16 @@ public class UsersShopLogModel {
 		this.priority = priority;
 	}
     
-    
+	 @Override
+	    public String toString() {
+	        return "UsersShopLogModel{" +
+	                "usersMobile='" + usersMobile + '\'' +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }   
 }

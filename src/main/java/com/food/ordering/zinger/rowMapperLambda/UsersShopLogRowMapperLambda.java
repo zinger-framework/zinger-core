@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.rowMapperLambda;
 
-
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.model.UsersShopLogModel;
 import org.springframework.jdbc.core.RowMapper;

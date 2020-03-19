@@ -18,7 +18,6 @@ public class UsersCollegeLogModel {
 
     private Priority priority;
     
-    
 	public String getUsersMobile() {
 		return usersMobile;
 	}
@@ -61,5 +60,16 @@ public class UsersCollegeLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-    
+	 @Override
+	    public String toString() {
+	        return "UsersCollegeLogModel{" +
+	                "usersMobile='" + usersMobile + '\'' +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

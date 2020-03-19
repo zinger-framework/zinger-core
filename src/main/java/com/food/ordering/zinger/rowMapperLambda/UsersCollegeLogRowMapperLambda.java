@@ -18,5 +18,4 @@ public class UsersCollegeLogRowMapperLambda {
 	        usersCollege.setPriority(Priority.valueOf(rs.getString(priority)));
 	        return usersCollege;
 	    };
-
 }

@@ -18,5 +18,4 @@ public class ConfigurationsLogRowMapperLambda {
 	        configuration.setPriority(Priority.valueOf(rs.getString(priority)));
 	        return configuration;
 	    };
-
 }

@@ -18,7 +18,6 @@ public class ConfigurationsLogModel {
 
     private Priority priority;
     
-    
 	public Integer getShopId() {
 		return shopId;
 	}
@@ -61,5 +60,16 @@ public class ConfigurationsLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-    
+	 @Override
+	    public String toString() {
+	        return "ConfigurationsLogModel{" +
+	                "shopId=" + shopId +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

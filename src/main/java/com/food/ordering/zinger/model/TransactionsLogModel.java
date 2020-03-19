@@ -18,7 +18,6 @@ public class TransactionsLogModel {
 
     private Priority priority;
     
-    
 	public String getTransactionId() {
 		return transactionId;
 	}
@@ -61,5 +60,17 @@ public class TransactionsLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
-    
+	
+	 @Override
+	    public String toString() {
+	        return "TransactionsLogModel{" +
+	                "transactionId='" + transactionId + '\'' +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

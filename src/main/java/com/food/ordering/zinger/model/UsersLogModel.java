@@ -61,5 +61,16 @@ public class UsersLogModel {
 		this.priority = priority;
 	}
     
-    
+	 @Override
+	    public String toString() {
+	        return "UsersLogModel{" +
+	                "usersMobile='" + usersMobile + '\'' +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }

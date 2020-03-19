@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class CollegeLogModel {
 	private Integer id;
-	private Integer errorCode;
+	private Integer errorCode = 1;
     private String mobile;
     private String message;
     private String updatedValue;
@@ -16,7 +16,7 @@ public class CollegeLogModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
     private Timestamp date;
 
-    private Priority priority;
+    private Priority priority = Priority.LOW;
  
 	public Integer getId() {
 		return id;
@@ -61,5 +61,16 @@ public class CollegeLogModel {
 		this.priority = priority;
 	}
 	
-	
+	 @Override
+	    public String toString() {
+	        return "CollegeLogModel{" +
+	                "id=" + id +
+	                ", errorCode=" + errorCode +
+	                ", mobile='" + mobile + '\'' +
+	                ", message='" + message + '\'' +
+	                ", updatedValue='" + updatedValue + '\'' +
+	                ", date=" + date +
+	                ", priority='" + priority + '\'' +
+	                '}';
+	    }
 }
