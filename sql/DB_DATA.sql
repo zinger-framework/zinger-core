@@ -1,9 +1,6 @@
-insert into college values(1,'SSN','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg
-','kelambakkam',0);
-insert into college values(2,'VIT','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg
-','vandaloor',0);
-insert into college values(3,'SRM','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg
-','ramapuram',0);
+insert into college values(1,'SSN College of Enginering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','kelambakkam',0);
+insert into college values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','vandaloor',0);
+insert into college values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','ramapuram',0);
 
 insert into shop values(1,'sathyas main','shop.com',9176019344,1,'09:00:00','21:00:00',0);
 insert into shop values(2,'Snow Qube','shop.com',9176019344,1,'09:00:00','21:00:00',0);
@@ -46,10 +43,6 @@ insert into configurations(shop_id, delivery_price) values(3,20.0);
 -- insert into users_college values("9176786582",1);
 -- insert into users_shop values("9176786581",1);
 -- insert into users_shop values("9176786581",2);
-
-ALTER table college 
-MODIFY icon_url varchar(128) NOT NULL;
-
 select * from users;
 select * from college;
 select * from shop;

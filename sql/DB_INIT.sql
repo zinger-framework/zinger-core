@@ -20,7 +20,7 @@ USE ifJlo6XgsN;
 CREATE TABLE college (
   id INT AUTO_INCREMENT,
   name VARCHAR(32) NOT NULL,
-  icon_url VARCHAR(64) NOT NULL,
+  icon_url VARCHAR(128) NOT NULL,
   address VARCHAR(256) NOT NULL,
   is_delete INT DEFAULT 0,
   CONSTRAINT college_id_pk PRIMARY KEY (id)
@@ -29,7 +29,7 @@ CREATE TABLE college (
 CREATE TABLE shop (
   id INT AUTO_INCREMENT,
   name VARCHAR(32) UNIQUE NOT NULL,
-  photo_url VARCHAR(64) DEFAULT NULL,
+  photo_url VARCHAR(128) DEFAULT NULL,
   mobile VARCHAR(10) NOT NULL,
   college_id INT NOT NULL,
   opening_time TIME NOT NULL,
