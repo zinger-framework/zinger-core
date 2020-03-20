@@ -245,7 +245,6 @@ public class ShopDao {
         catch (Exception e){
             e.printStackTrace();
         }
-        
         return response;
     }
 
@@ -322,7 +321,6 @@ public class ShopDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         try {
             auditLogDao.insertShopLog(shopLogModel);
         }

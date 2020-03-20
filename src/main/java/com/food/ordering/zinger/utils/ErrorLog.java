@@ -42,4 +42,14 @@ public class ErrorLog {
     public static final Integer InvalidHeader1006 = 1006;
     public static final Integer InvalidHeader1007 = 1007;
     public static final Integer InvalidHeader1008 = 1008;
+    public static final Integer InvalidHeader1009 = 1009;
+    public static final Integer InvalidHeader1010 = 1010;
+    public static final Integer InvalidHeader1011 = 1011;
+    public static final Integer InvalidHeader1012 = 1012;
+    public static final Integer InvalidHeader1013 = 1013;
+    public static final Integer InvalidHeader1014 = 1014;
+    public static final Integer InvalidHeader1015 = 1015;
+    public static final Integer InvalidHeader1016 = 1016;
+    public static final Integer InvalidHeader1017 = 1017;
+    public static final Integer InvalidHeader1018 = 1018;
 }
