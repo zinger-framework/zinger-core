@@ -16,6 +16,10 @@ public class OrderLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public OrderLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public Integer getId() {
         return id;

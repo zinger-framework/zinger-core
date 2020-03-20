@@ -16,6 +16,10 @@ public class ConfigurationLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public ConfigurationLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public Integer getShopId() {
         return shopId;

@@ -17,8 +17,6 @@ public class CollegeLogModel {
 
     private Priority priority;
 
-    //TODO: Put it in default constructor
-	//TODO: Default should be MEDIUM
 	public CollegeLogModel() {
 		this.priority = Priority.MEDIUM;
 	}
@@ -78,7 +76,7 @@ public class CollegeLogModel {
     public void setPriority(Priority priority) {
         this.priority = priority;
     }
-
+    
 	@Override
 	public String toString() {
 		return "CollegeLogModel{" +

@@ -16,6 +16,10 @@ public class ShopLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public ShopLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public Integer getId() {
         return id;

@@ -35,4 +35,8 @@ public class ErrorLog {
 
     public static final Integer InvalidHeader1000 = 1000;
     public static final Integer InvalidHeader1001 = 1001;
+    public static final Integer InvalidHeader1002 = 1002;
+    public static final Integer InvalidHeader1003 = 1003;
+      
+
 }

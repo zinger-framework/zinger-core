@@ -21,8 +21,6 @@ public class AuditLogDao {
         Response<String> response = new Response<>();
 
         try {
-
-            //TODO Use .name()
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeLogColumn.id, collegeLogModel.getId())
                     .addValue(CollegeLogColumn.errorCode, collegeLogModel.getErrorCode())
@@ -55,7 +53,7 @@ public class AuditLogDao {
                     .addValue(ShopLogColumn.mobile, ShopLogModel.getMobile())
                     .addValue(ShopLogColumn.message, ShopLogModel.getMessage())
                     .addValue(ShopLogColumn.updatedValue, ShopLogModel.getUpdatedValue())
-                    .addValue(ShopLogColumn.priority, ShopLogModel.getPriority());
+                    .addValue(ShopLogColumn.priority, ShopLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertShopLog, parameters);
             if (responseValue > 0) {
@@ -81,7 +79,7 @@ public class AuditLogDao {
                     .addValue(UserLogColumn.mobile, UserLogModel.getMobile())
                     .addValue(UserLogColumn.message, UserLogModel.getMessage())
                     .addValue(UserLogColumn.updatedValue, UserLogModel.getUpdatedValue())
-                    .addValue(UserLogColumn.priority, UserLogModel.getPriority());
+                    .addValue(UserLogColumn.priority, UserLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserLog, parameters);
             if (responseValue > 0) {
@@ -107,7 +105,7 @@ public class AuditLogDao {
                     .addValue(ItemLogColumn.mobile, ItemLogModel.getMobile())
                     .addValue(ItemLogColumn.message, ItemLogModel.getMessage())
                     .addValue(ItemLogColumn.updatedValue, ItemLogModel.getUpdatedValue())
-                    .addValue(ItemLogColumn.priority, ItemLogModel.getPriority());
+                    .addValue(ItemLogColumn.priority, ItemLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertItemLog, parameters);
             if (responseValue > 0) {
@@ -133,7 +131,7 @@ public class AuditLogDao {
                     .addValue(TransactionLogColumn.mobile, TransactionLogModel.getMobile())
                     .addValue(TransactionLogColumn.message, TransactionLogModel.getMessage())
                     .addValue(TransactionLogColumn.updatedValue, TransactionLogModel.getUpdatedValue())
-                    .addValue(TransactionLogColumn.priority, TransactionLogModel.getPriority());
+                    .addValue(TransactionLogColumn.priority, TransactionLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertTransactionLog, parameters);
             if (responseValue > 0) {
@@ -159,7 +157,7 @@ public class AuditLogDao {
                     .addValue(OrderLogColumn.mobile, OrderLogModel.getMobile())
                     .addValue(OrderLogColumn.message, OrderLogModel.getMessage())
                     .addValue(OrderLogColumn.updatedValue, OrderLogModel.getUpdatedValue())
-                    .addValue(OrderLogColumn.priority, OrderLogModel.getPriority());
+                    .addValue(OrderLogColumn.priority, OrderLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertOrderLog, parameters);
             if (responseValue > 0) {
@@ -185,7 +183,7 @@ public class AuditLogDao {
                     .addValue(UserShopLogColumn.mobile, UserShopLogModel.getMobile())
                     .addValue(UserShopLogColumn.message, UserShopLogModel.getMessage())
                     .addValue(UserShopLogColumn.updatedValue, UserShopLogModel.getUpdatedValue())
-                    .addValue(UserShopLogColumn.priority, UserShopLogModel.getPriority());
+                    .addValue(UserShopLogColumn.priority, UserShopLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserShopLog, parameters);
             if (responseValue > 0) {
@@ -211,7 +209,7 @@ public class AuditLogDao {
                     .addValue(UserCollegeLogColumn.mobile, UserCollegeLogModel.getMobile())
                     .addValue(UserCollegeLogColumn.message, UserCollegeLogModel.getMessage())
                     .addValue(UserCollegeLogColumn.updatedValue, UserCollegeLogModel.getUpdatedValue())
-                    .addValue(UserCollegeLogColumn.priority, UserCollegeLogModel.getPriority());
+                    .addValue(UserCollegeLogColumn.priority, UserCollegeLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserCollegeLog, parameters);
             if (responseValue > 0) {
@@ -237,7 +235,7 @@ public class AuditLogDao {
                     .addValue(ConfigurationLogColumn.mobile, ConfigurationLogModel.getMobile())
                     .addValue(ConfigurationLogColumn.message, ConfigurationLogModel.getMessage())
                     .addValue(ConfigurationLogColumn.updatedValue, ConfigurationLogModel.getUpdatedValue())
-                    .addValue(ConfigurationLogColumn.priority, ConfigurationLogModel.getPriority());
+                    .addValue(ConfigurationLogColumn.priority, ConfigurationLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertConfigurationLog, parameters);
             if (responseValue > 0) {

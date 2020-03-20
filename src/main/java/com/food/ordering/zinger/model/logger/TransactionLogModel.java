@@ -16,6 +16,10 @@ public class TransactionLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public TransactionLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public String getTransactionId() {
         return transactionId;

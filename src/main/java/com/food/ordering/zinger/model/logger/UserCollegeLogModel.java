@@ -16,6 +16,10 @@ public class UserCollegeLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public UserCollegeLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public String getUsersMobile() {
         return usersMobile;

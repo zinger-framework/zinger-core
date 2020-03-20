@@ -16,6 +16,10 @@ public class UserShopLogModel {
     private Timestamp date;
 
     private Priority priority;
+    
+    public UserShopLogModel() {
+		this.priority = Priority.MEDIUM;
+	}
 
     public String getUsersMobile() {
         return usersMobile;
