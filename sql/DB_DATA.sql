@@ -45,6 +45,7 @@ insert into configurations(shop_id, delivery_price) values(3,20.0);
 -- insert into users_shop values("9176786581",2);
 select * from users;
 select * from college;
+select * from college_log;
 select * from shop;
 select * from item;
 select * from users_college;

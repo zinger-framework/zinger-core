@@ -20,7 +20,7 @@ create table college_log (
 );
 
 create table shop_log (
-	id INT NOT NULL,
+	id INT DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -30,7 +30,7 @@ create table shop_log (
 );
 
 create table users_log (
-	users_mobile VARCHAR(10) NOT NULL,
+	users_mobile VARCHAR(10) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -40,7 +40,7 @@ create table users_log (
 );
 
 create table item_log (
-	id INT NOT NULL,
+	id INT DEFAULT NULL,
 	error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -50,7 +50,7 @@ create table item_log (
 );
 
 create table transactions_log (
-	transaction_id VARCHAR(64) NOT NULL,
+	transaction_id VARCHAR(64) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -60,7 +60,7 @@ create table transactions_log (
 );
 
 create table orders_log (
-	id VARCHAR(16) NOT NULL,
+	id VARCHAR(16) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -70,7 +70,7 @@ create table orders_log (
 );
 
 create table users_shop_log (
-	users_mobile VARCHAR(10) NOT NULL,
+	users_mobile VARCHAR(10) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -80,7 +80,7 @@ create table users_shop_log (
 );
 
 create table users_college_log (
-	users_mobile VARCHAR(10) NOT NULL,
+	users_mobile VARCHAR(10) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
@@ -90,7 +90,7 @@ create table users_college_log (
 );
 
 create table configurations_log (
-	shop_id INT NOT NULL,
+	shop_id INT DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
