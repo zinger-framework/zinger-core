@@ -23,9 +23,9 @@ public class ItemController {
         return itemService.insertItem(itemModel,oauthId,mobile,role);
     }
 
-    @GetMapping(value = "/shop")
-    public Response<List<ItemModel>> getItemsByShopId(@RequestBody ShopModel shopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.getItemsByShopId(shopModel, oauthId, mobile, role);
+    @GetMapping(value = "/shop/{shopId}")
+    public Response<List<ItemModel>> getItemsByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return itemService.getItemsByShopId(shopId, oauthId, mobile, role);
     }
 
     @GetMapping(value = "/{collegeId}/{itemName}")

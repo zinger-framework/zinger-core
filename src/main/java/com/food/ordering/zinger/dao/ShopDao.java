@@ -76,7 +76,7 @@ public class ShopDao {
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, String oauthId, String mobile, String role) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
@@ -88,7 +88,7 @@ public class ShopDao {
             }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.collegeId, collegeModel.getId());
+                    .addValue(ShopColumn.collegeId, collegeId);
 
             try {
                 list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
@@ -104,7 +104,7 @@ public class ShopDao {
 
                 shopConfigurationModelList = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++) {
-                    list.get(i).setCollegeModel(collegeModel);
+                    list.get(i).setCollegeModel(null);
 
                     Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
                     Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));

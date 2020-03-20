@@ -24,10 +24,9 @@ public class ShopController {
         return shopService.insertShop(shopModel,oauthId,mobile,role);
     }
 
-
-    @GetMapping(value = "/college")
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(@RequestBody CollegeModel collegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByCollegeId(collegeModel, oauthId, mobile, role);
+    @GetMapping(value = "/college/{collegeId}")
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(@PathVariable("collegeId") Integer collegeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.getShopByCollegeId(collegeId, oauthId, mobile, role);
     }
 
     @PatchMapping(value = "/config")

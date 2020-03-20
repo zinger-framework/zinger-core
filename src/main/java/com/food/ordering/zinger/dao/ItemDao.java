@@ -70,7 +70,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(ShopModel shopModel, String oauthId, String mobile, String role) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
 
@@ -81,7 +81,7 @@ public class ItemDao {
             }
 
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.shopId, shopModel.getId());
+                    .addValue(ItemColumn.shopId, shopId);
 
             try {
                 list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
@@ -96,7 +96,7 @@ public class ItemDao {
                 response.setMessage(ErrorLog.Success);
 
                 for (int i = 0; i < list.size(); i++)
-                    list.get(i).setShopModel(shopModel);
+                    list.get(i).setShopModel(null);
 
                 response.setData(list);
             }
@@ -165,7 +165,6 @@ public class ItemDao {
         return response;
     }
 
-
     public Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel) {
 
         Response<List<OrderItemModel>> response = new Response<>();
@@ -202,7 +201,6 @@ public class ItemDao {
 
         return response;
     }
-
 
     public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();

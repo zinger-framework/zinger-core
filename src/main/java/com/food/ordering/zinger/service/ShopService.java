@@ -23,8 +23,8 @@ public class ShopService {
         return shopDao.insertShop(shopModel,oauthId,mobile,role);
     }
 
-    public Response<List<ShopConfigurationModel>> getShopByCollegeId(CollegeModel collegeModel, String oauthId, String mobile, String role) {
-        return shopDao.getShopsByCollegeId(collegeModel, oauthId, mobile, role);
+    public Response<List<ShopConfigurationModel>> getShopByCollegeId(Integer collegeId, String oauthId, String mobile, String role) {
+        return shopDao.getShopsByCollegeId(collegeId, oauthId, mobile, role);
     }
 
     public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {

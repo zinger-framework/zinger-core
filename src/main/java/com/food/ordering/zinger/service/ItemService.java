@@ -20,8 +20,8 @@ public class ItemService {
         return itemDao.insertItem(itemModel,oauthId,mobile,role);
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(ShopModel shopModel, String oauthId, String mobile, String role) {
-        return itemDao.getItemsByShopId(shopModel, oauthId, mobile, role);
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
+        return itemDao.getItemsByShopId(shopId, oauthId, mobile, role);
     }
 
     public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {

@@ -30,4 +30,9 @@ public class ErrorLog {
 
     public static final String OrderNotTaken = "Order not taken";
     public static final String DeliveryNotAvailable = "Delivery not available";
+
+    /**********************************************************************/
+
+    public static final Integer InvalidHeader1000 = 1000;
+    public static final Integer InvalidHeader1001 = 1001;
 }

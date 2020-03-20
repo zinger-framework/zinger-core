@@ -10,7 +10,7 @@
 -- DROP TABLE college_log;
 
 create table college_log (
-	id INT NOT NULL,
+	id INT DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,

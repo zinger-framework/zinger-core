@@ -1,8 +1,11 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.CollegeColumn;
+import com.food.ordering.zinger.column.logger.CollegeLogColumn;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.CollegeModel;
+import com.food.ordering.zinger.model.logger.CollegeLogModel;
 import com.food.ordering.zinger.query.CollegeQuery;
 import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
@@ -24,17 +27,57 @@ public class CollegeDao {
     @Autowired
     UtilsDao utilsDao;
 
+    @Autowired
+    AuditLogDao auditLogDao;
+
     public Response<String> insertCollege(CollegeModel collegeModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
+        CollegeLogModel collegeLogModel = new CollegeLogModel();
+        collegeLogModel.setId(collegeLogModel.getId());
+        collegeLogModel.setMobile(mobile);
+
+        collegeLogModel.setErrorCode(response.getCode());
+        collegeLogModel.setMessage(response.getMessage());
+        collegeLogModel.setUpdatedValue(collegeModel.toString());
 
         try {
             if (!role.equals((UserRole.SUPER_ADMIN).name())) {
+                //TODO: HIGH
+                response.setCode(ErrorLog.InvalidHeader1000);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                collegeLogModel.setErrorCode(response.getCode());
+                collegeLogModel.setMessage(response.getMessage());
+                collegeLogModel.setPriority(Priority.HIGH);
+                collegeLogModel.setUpdatedValue(collegeModel.toString());
+
+                try {
+                    auditLogDao.insertCollegeLog(collegeLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                //TODO: HIGH
+                response.setCode(ErrorLog.InvalidHeader1001);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                collegeLogModel.setErrorCode(response.getCode());
+                collegeLogModel.setMessage(response.getMessage());
+                collegeLogModel.setPriority(Priority.HIGH);
+                collegeLogModel.setUpdatedValue(collegeModel.toString());
+
+                try {
+                    auditLogDao.insertCollegeLog(collegeLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return response;
             }
 
@@ -48,11 +91,22 @@ public class CollegeDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
+
+                collegeLogModel.setErrorCode(response.getCode());
+                collegeLogModel.setMessage(response.getMessage());
+                collegeLogModel.setPriority(Priority.LOW);
+                collegeLogModel.setUpdatedValue(collegeModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        try {
+            auditLogDao.insertCollegeLog(collegeLogModel);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return response;
     }
 
