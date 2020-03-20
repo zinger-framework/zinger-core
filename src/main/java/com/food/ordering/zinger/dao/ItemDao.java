@@ -177,7 +177,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(mobile.toString());
+                itemLogModel.setUpdatedValue(shopId.toString());
 
             }
         }
@@ -238,7 +238,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(collegeId.toString());
             }
         }
         try {
@@ -281,7 +281,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(item.toString());
+                itemLogModel.setUpdatedValue(id.toString());
             }
         }
         try {
@@ -331,7 +331,7 @@ public class ItemDao {
                     itemLogModel.setErrorCode(response.getCode());
                     itemLogModel.setMessage(response.getMessage());
                     itemLogModel.setPriority(Priority.LOW);
-                    itemLogModel.setUpdatedValue(response.toString());
+                    itemLogModel.setUpdatedValue(orderModel.toString());
                 }
             }
 
@@ -382,7 +382,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(itemModel.toString());
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
@@ -411,7 +411,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(itemModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -433,7 +433,7 @@ public class ItemDao {
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(itemLogModel.toString());
+        itemLogModel.setUpdatedValue(itemModel.toString());
 
         try {
             if (role.equals(UserRole.CUSTOMER.name())) {
@@ -443,7 +443,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(itemModel.toString());
                 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
@@ -517,7 +517,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(itemModel.toString());
                 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
@@ -558,7 +558,7 @@ public class ItemDao {
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                itemLogModel.setUpdatedValue(itemModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();

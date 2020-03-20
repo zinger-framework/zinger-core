@@ -316,7 +316,7 @@ public class ShopDao {
                 shopLogModel.setErrorCode(response.getCode());
                 shopLogModel.setMessage(response.getMessage());
                 shopLogModel.setPriority(Priority.LOW);
-                shopLogModel.setUpdatedValue(shopLogModel.toString());
+                shopLogModel.setUpdatedValue(configurationModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
