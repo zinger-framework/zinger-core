@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.model;
+package com.food.ordering.zinger.model.logger;
 
 import java.sql.Timestamp;
 
@@ -6,23 +6,23 @@ import com.food.ordering.zinger.enums.Priority;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public class ConfigurationsLogModel {
-	private Integer shopId;
-	private Integer errorCode;
+public class CollegeLogModel {
+	private Integer id;
+	private Integer errorCode = 1;
     private String mobile;
     private String message;
     private String updatedValue;
-    
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
     private Timestamp date;
 
-    private Priority priority;
-    
-	public Integer getShopId() {
-		return shopId;
+    private Priority priority = Priority.LOW;
+
+	public Integer getId() {
+		return id;
 	}
-	public void setShopId(Integer shopId) {
-		this.shopId = shopId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 	public Integer getErrorCode() {
 		return errorCode;
@@ -60,10 +60,11 @@ public class ConfigurationsLogModel {
 	public void setPriority(Priority priority) {
 		this.priority = priority;
 	}
+
 	 @Override
 	    public String toString() {
-	        return "ConfigurationsLogModel{" +
-	                "shopId=" + shopId +
+	        return "CollegeLogModel{" +
+	                "id=" + id +
 	                ", errorCode=" + errorCode +
 	                ", mobile='" + mobile + '\'' +
 	                ", message='" + message + '\'' +

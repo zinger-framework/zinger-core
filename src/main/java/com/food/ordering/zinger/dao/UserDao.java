@@ -6,6 +6,7 @@ import com.food.ordering.zinger.column.UserShopColumn;
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.query.UserCollegeQuery;
 import com.food.ordering.zinger.query.UserQuery;
 import com.food.ordering.zinger.query.UserShopQuery;
@@ -44,14 +45,14 @@ public class UserDao {
 
     @Autowired
     UtilsDao utilsDao;
-    
+
     @Autowired
     AuditLogDao auditLogDao;
 
     public Response<UserCollegeModel> insertCustomer(UserModel user) {
         Response<UserCollegeModel> response = new Response<>();
         UserCollegeModel userCollegeModel = new UserCollegeModel();
-        UsersLogModel userLogModel = new UsersLogModel();
+        UserLogModel userLogModel = new UserLogModel();
         try {
             if (!user.getRole().equals(UserRole.CUSTOMER))
                 return response;
@@ -76,7 +77,7 @@ public class UserDao {
                         .addValue(UserColumn.mobile, user.getMobile())
                         .addValue(UserColumn.oauthId, user.getOauthId())
                         .addValue(UserColumn.role, user.getRole().name());
-                
+
                 userLogModel.setMobile(user.getMobile());
                 userLogModel.setUsersMobile(user.getMobile());
                 userLogModel.setDate(new Timestamp(System.currentTimeMillis()));
@@ -100,7 +101,7 @@ public class UserDao {
 
     public Response<UserShopListModel> insertSeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
-        UsersLogModel userLogModel = new UsersLogModel();
+        UserLogModel userLogModel = new UserLogModel();
         try {
             if (user.getRole().equals(UserRole.CUSTOMER))
                 return response;

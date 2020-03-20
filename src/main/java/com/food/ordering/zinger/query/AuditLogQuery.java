@@ -1,15 +1,14 @@
 package com.food.ordering.zinger.query;
 
-import com.food.ordering.zinger.column.CollegeLogColumn;
-import com.food.ordering.zinger.column.ShopLogColumn;
-import com.food.ordering.zinger.column.UsersLogColumn;
-import com.food.ordering.zinger.column.ItemLogColumn;
-import com.food.ordering.zinger.column.TransactionsLogColumn;
-import com.food.ordering.zinger.column.OrdersLogColumn;
-import com.food.ordering.zinger.column.UsersShopLogColumn;
-import com.food.ordering.zinger.column.UsersCollegeLogColumn;
-import com.food.ordering.zinger.column.ConfigurationsLogColumn;
-
+import com.food.ordering.zinger.column.logger.CollegeLogColumn;
+import com.food.ordering.zinger.column.logger.ShopLogColumn;
+import com.food.ordering.zinger.column.logger.UserLogColumn;
+import com.food.ordering.zinger.column.logger.ItemLogColumn;
+import com.food.ordering.zinger.column.logger.TransactionLogColumn;
+import com.food.ordering.zinger.column.logger.OrderLogColumn;
+import com.food.ordering.zinger.column.logger.UserShopLogColumn;
+import com.food.ordering.zinger.column.logger.UserCollegeLogColumn;
+import com.food.ordering.zinger.column.logger.ConfigurationLogColumn;
 
 public class AuditLogQuery {
 	public static final String insertCollegeLog = "INSERT INTO" + CollegeLogColumn.tableName + "(" + CollegeLogColumn.id
@@ -22,38 +21,38 @@ public class AuditLogQuery {
 			+ ") VALUES(:" + ShopLogColumn.id + ", :" + ShopLogColumn.errorCode + " , :" + ShopLogColumn.mobile + ", :" + ShopLogColumn.message + ", :" + ShopLogColumn.updatedValue + ", :"
 			+ ShopLogColumn.priority + ")";
 
-	public static final String insertUsersLog = "INSERT INTO" + UsersLogColumn.tableName + "(" + UsersLogColumn.usersMobile
-			+ ", " + UsersLogColumn.errorCode + ", " + UsersLogColumn.mobile + ", " + UsersLogColumn.message + ", " + UsersLogColumn.updatedValue + ", " + UsersLogColumn.date + ", " + UsersLogColumn.priority
-			+ ") VALUES(:" + UsersLogColumn.usersMobile + ", :" + UsersLogColumn.errorCode + " , :" + UsersLogColumn.mobile + ", :" + UsersLogColumn.message + ", :" + UsersLogColumn.updatedValue + ", :"
-		    + UsersLogColumn.priority + ")";
-	
+	public static final String insertUserLog = "INSERT INTO" + UserLogColumn.tableName + "(" + UserLogColumn.usersMobile
+			+ ", " + UserLogColumn.errorCode + ", " + UserLogColumn.mobile + ", " + UserLogColumn.message + ", " + UserLogColumn.updatedValue + ", " + UserLogColumn.date + ", " + UserLogColumn.priority
+			+ ") VALUES(:" + UserLogColumn.usersMobile + ", :" + UserLogColumn.errorCode + " , :" + UserLogColumn.mobile + ", :" + UserLogColumn.message + ", :" + UserLogColumn.updatedValue + ", :"
+		    + UserLogColumn.priority + ")";
+
 	public static final String insertItemLog = "INSERT INTO" + ItemLogColumn.tableName + "(" + ItemLogColumn.id
 			+ ", " + ItemLogColumn.errorCode + ", " + ItemLogColumn.mobile + ", " + ItemLogColumn.message + ", " + ItemLogColumn.updatedValue + ", " + ItemLogColumn.date + ", " + ItemLogColumn.priority
 			+ ") VALUES(:" + ItemLogColumn.id + ", :" + ItemLogColumn.errorCode + " , :" + ItemLogColumn.mobile + ", :" + ItemLogColumn.message + ", :" + ItemLogColumn.updatedValue + ", :"
 		    + ItemLogColumn.priority + ")";
-	
-	public static final String insertTransactionsLog = "INSERT INTO" + TransactionsLogColumn.tableName + "(" + TransactionsLogColumn.transactionId
-			+ ", " + TransactionsLogColumn.errorCode + ", " + TransactionsLogColumn.mobile + ", " + TransactionsLogColumn.message + ", " + TransactionsLogColumn.updatedValue + ", " + TransactionsLogColumn.date + ", " + TransactionsLogColumn.priority
-			+ ") VALUES(:" + TransactionsLogColumn.transactionId + ", :" + TransactionsLogColumn.errorCode + " , :" + TransactionsLogColumn.mobile + ", :" + TransactionsLogColumn.message + ", :" + TransactionsLogColumn.updatedValue + ", :"
-		    + TransactionsLogColumn.priority + ")";
-	
-	public static final String insertOrdersLog = "INSERT INTO" + OrdersLogColumn.tableName + "(" + OrdersLogColumn.id
-			+ ", " + OrdersLogColumn.errorCode + ", " + OrdersLogColumn.mobile + ", " + OrdersLogColumn.message + ", " + OrdersLogColumn.updatedValue + ", " + OrdersLogColumn.date + ", " + OrdersLogColumn.priority
-			+ ") VALUES(:" + OrdersLogColumn.id + ", :" + OrdersLogColumn.errorCode + " , :" + OrdersLogColumn.mobile + ", :" + OrdersLogColumn.message + ", :" + OrdersLogColumn.updatedValue + ", :"
-		    + OrdersLogColumn.priority + ")";
-	
-	public static final String insertUsersShopLog = "INSERT INTO" + UsersShopLogColumn.tableName + "(" +UsersShopLogColumn.usersMobile
-			+ ", " + UsersShopLogColumn.errorCode + ", " + UsersShopLogColumn.mobile + ", " + UsersShopLogColumn.message + ", " + UsersShopLogColumn.updatedValue + ", " + UsersShopLogColumn.date + ", " + UsersShopLogColumn.priority
-			+ ") VALUES(:" + UsersShopLogColumn.usersMobile + ", :" + UsersShopLogColumn.errorCode + " , :" + UsersShopLogColumn.mobile + ", :" + UsersShopLogColumn.message + ", :" + UsersShopLogColumn.updatedValue + ", :"
-	        + UsersShopLogColumn.priority + ")";
-	
-	public static final String insertUsersCollegeLog = "INSERT INTO" + UsersCollegeLogColumn.tableName + "(" +UsersCollegeLogColumn.usersMobile
-			+ ", " + UsersCollegeLogColumn.errorCode + ", " + UsersCollegeLogColumn.mobile + ", " + UsersCollegeLogColumn.message + ", " + UsersCollegeLogColumn.updatedValue + ", " + UsersCollegeLogColumn.date + ", " + UsersCollegeLogColumn.priority
-			+ ") VALUES(:" + UsersCollegeLogColumn.usersMobile + ", :" + UsersCollegeLogColumn.errorCode + " , :" + UsersCollegeLogColumn.mobile + ", :" + UsersCollegeLogColumn.message + ", :" + UsersCollegeLogColumn.updatedValue + ", :"
-		    + UsersCollegeLogColumn.priority + ")";
 
-	public static final String insertConfigurationsLog = "INSERT INTO" + ConfigurationsLogColumn.tableName + "(" + ConfigurationsLogColumn.shopId
-			+ ", " + ConfigurationsLogColumn.errorCode + ", " + ConfigurationsLogColumn.mobile + ", " + ConfigurationsLogColumn.message + ", " + ConfigurationsLogColumn.updatedValue + ", " + ConfigurationsLogColumn.date + ", " + ConfigurationsLogColumn.priority
-			+ ") VALUES(:" + ConfigurationsLogColumn.shopId + ", :" + ConfigurationsLogColumn.errorCode + " , :" + ConfigurationsLogColumn.mobile + ", :" + ConfigurationsLogColumn.message + ", :" + ConfigurationsLogColumn.updatedValue + ", :"
-		    + ConfigurationsLogColumn.priority + ")";
+	public static final String insertTransactionLog = "INSERT INTO" + TransactionLogColumn.tableName + "(" + TransactionLogColumn.transactionId
+			+ ", " + TransactionLogColumn.errorCode + ", " + TransactionLogColumn.mobile + ", " + TransactionLogColumn.message + ", " + TransactionLogColumn.updatedValue + ", " + TransactionLogColumn.date + ", " + TransactionLogColumn.priority
+			+ ") VALUES(:" + TransactionLogColumn.transactionId + ", :" + TransactionLogColumn.errorCode + " , :" + TransactionLogColumn.mobile + ", :" + TransactionLogColumn.message + ", :" + TransactionLogColumn.updatedValue + ", :"
+		    + TransactionLogColumn.priority + ")";
+
+	public static final String insertOrderLog = "INSERT INTO" + OrderLogColumn.tableName + "(" + OrderLogColumn.id
+			+ ", " + OrderLogColumn.errorCode + ", " + OrderLogColumn.mobile + ", " + OrderLogColumn.message + ", " + OrderLogColumn.updatedValue + ", " + OrderLogColumn.date + ", " + OrderLogColumn.priority
+			+ ") VALUES(:" + OrderLogColumn.id + ", :" + OrderLogColumn.errorCode + " , :" + OrderLogColumn.mobile + ", :" + OrderLogColumn.message + ", :" + OrderLogColumn.updatedValue + ", :"
+		    + OrderLogColumn.priority + ")";
+
+	public static final String insertUserShopLog = "INSERT INTO" + UserShopLogColumn.tableName + "(" + UserShopLogColumn.usersMobile
+			+ ", " + UserShopLogColumn.errorCode + ", " + UserShopLogColumn.mobile + ", " + UserShopLogColumn.message + ", " + UserShopLogColumn.updatedValue + ", " + UserShopLogColumn.date + ", " + UserShopLogColumn.priority
+			+ ") VALUES(:" + UserShopLogColumn.usersMobile + ", :" + UserShopLogColumn.errorCode + " , :" + UserShopLogColumn.mobile + ", :" + UserShopLogColumn.message + ", :" + UserShopLogColumn.updatedValue + ", :"
+	        + UserShopLogColumn.priority + ")";
+
+	public static final String insertUserCollegeLog = "INSERT INTO" + UserCollegeLogColumn.tableName + "(" + UserCollegeLogColumn.usersMobile
+			+ ", " + UserCollegeLogColumn.errorCode + ", " + UserCollegeLogColumn.mobile + ", " + UserCollegeLogColumn.message + ", " + UserCollegeLogColumn.updatedValue + ", " + UserCollegeLogColumn.date + ", " + UserCollegeLogColumn.priority
+			+ ") VALUES(:" + UserCollegeLogColumn.usersMobile + ", :" + UserCollegeLogColumn.errorCode + " , :" + UserCollegeLogColumn.mobile + ", :" + UserCollegeLogColumn.message + ", :" + UserCollegeLogColumn.updatedValue + ", :"
+		    + UserCollegeLogColumn.priority + ")";
+
+	public static final String insertConfigurationLog = "INSERT INTO" + ConfigurationLogColumn.tableName + "(" + ConfigurationLogColumn.shopId
+			+ ", " + ConfigurationLogColumn.errorCode + ", " + ConfigurationLogColumn.mobile + ", " + ConfigurationLogColumn.message + ", " + ConfigurationLogColumn.updatedValue + ", " + ConfigurationLogColumn.date + ", " + ConfigurationLogColumn.priority
+			+ ") VALUES(:" + ConfigurationLogColumn.shopId + ", :" + ConfigurationLogColumn.errorCode + " , :" + ConfigurationLogColumn.mobile + ", :" + ConfigurationLogColumn.message + ", :" + ConfigurationLogColumn.updatedValue + ", :"
+		    + ConfigurationLogColumn.priority + ")";
 }

@@ -15,7 +15,6 @@ import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
-import com.food.ordering.zinger.model.ShopLogModel;
 import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.query.ShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;

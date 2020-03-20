@@ -1,10 +1,10 @@
-package com.food.ordering.zinger.rowMapperLambda;
+package com.food.ordering.zinger.rowMapperLambda.logger;
 
 import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.model.CollegeLogModel;
+import com.food.ordering.zinger.model.logger.CollegeLogModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.CollegeLogColumn.*;
+import static com.food.ordering.zinger.column.logger.CollegeLogColumn.*;
 
 public class CollegeLogRowMapperLambda {
 	 public static final RowMapper<CollegeLogModel> collegeLogRowMapperLambda = (rs, rownum) -> {

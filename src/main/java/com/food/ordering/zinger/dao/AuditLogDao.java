@@ -6,24 +6,24 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import com.food.ordering.zinger.column.CollegeLogColumn;
-import com.food.ordering.zinger.column.ConfigurationsLogColumn;
-import com.food.ordering.zinger.column.ItemLogColumn;
-import com.food.ordering.zinger.column.OrdersLogColumn;
-import com.food.ordering.zinger.column.ShopLogColumn;
-import com.food.ordering.zinger.column.TransactionsLogColumn;
-import com.food.ordering.zinger.column.UsersCollegeLogColumn;
-import com.food.ordering.zinger.column.UsersLogColumn;
-import com.food.ordering.zinger.column.UsersShopLogColumn;
-import com.food.ordering.zinger.model.CollegeLogModel;
-import com.food.ordering.zinger.model.ConfigurationsLogModel;
-import com.food.ordering.zinger.model.ItemLogModel;
-import com.food.ordering.zinger.model.OrdersLogModel;
-import com.food.ordering.zinger.model.ShopLogModel;
-import com.food.ordering.zinger.model.TransactionsLogModel;
-import com.food.ordering.zinger.model.UsersCollegeLogModel;
-import com.food.ordering.zinger.model.UsersLogModel;
-import com.food.ordering.zinger.model.UsersShopLogModel;
+import com.food.ordering.zinger.column.logger.CollegeLogColumn;
+import com.food.ordering.zinger.column.logger.ConfigurationLogColumn;
+import com.food.ordering.zinger.column.logger.ItemLogColumn;
+import com.food.ordering.zinger.column.logger.OrderLogColumn;
+import com.food.ordering.zinger.column.logger.ShopLogColumn;
+import com.food.ordering.zinger.column.logger.TransactionLogColumn;
+import com.food.ordering.zinger.column.logger.UserCollegeLogColumn;
+import com.food.ordering.zinger.column.logger.UserLogColumn;
+import com.food.ordering.zinger.column.logger.UserShopLogColumn;
+import com.food.ordering.zinger.model.logger.CollegeLogModel;
+import com.food.ordering.zinger.model.logger.ConfigurationLogModel;
+import com.food.ordering.zinger.model.logger.ItemLogModel;
+import com.food.ordering.zinger.model.logger.OrderLogModel;
+import com.food.ordering.zinger.model.logger.ShopLogModel;
+import com.food.ordering.zinger.model.logger.TransactionLogModel;
+import com.food.ordering.zinger.model.logger.UserCollegeLogModel;
+import com.food.ordering.zinger.model.logger.UserLogModel;
+import com.food.ordering.zinger.model.logger.UserShopLogModel;
 import com.food.ordering.zinger.query.AuditLogQuery;
 import com.food.ordering.zinger.utils.ErrorLog;
 import com.food.ordering.zinger.utils.Response;
@@ -38,7 +38,7 @@ public class AuditLogDao {
 
 	public Response<String> insertCollegeLog(CollegeLogModel collegeLogModel) {
 		Response<String> response = new Response<>();
-		
+
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
@@ -59,7 +59,7 @@ public class AuditLogDao {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		return response;
 	}
 
@@ -89,21 +89,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertUsersLog(UsersLogModel UsersLogModel) {
+	public Response<String> insertUserLog(UserLogModel UserLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(UsersLogColumn.usersMobile, UsersLogModel.getUsersMobile())
-					.addValue(UsersLogColumn.errorCode, UsersLogModel.getErrorCode())
-					.addValue(UsersLogColumn.mobile, UsersLogModel.getMobile())
-					.addValue(UsersLogColumn.message, UsersLogModel.getMessage())
-					.addValue(UsersLogColumn.updatedValue, UsersLogModel.getUpdatedValue())
-					.addValue(UsersLogColumn.date, UsersLogModel.getDate())
-					.addValue(UsersLogColumn.priority, UsersLogModel.getPriority());
+					.addValue(UserLogColumn.usersMobile, UserLogModel.getUsersMobile())
+					.addValue(UserLogColumn.errorCode, UserLogModel.getErrorCode())
+					.addValue(UserLogColumn.mobile, UserLogModel.getMobile())
+					.addValue(UserLogColumn.message, UserLogModel.getMessage())
+					.addValue(UserLogColumn.updatedValue, UserLogModel.getUpdatedValue())
+					.addValue(UserLogColumn.date, UserLogModel.getDate())
+					.addValue(UserLogColumn.priority, UserLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUsersLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);
@@ -142,21 +142,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertTransactionsLog(TransactionsLogModel TransactionsLogModel) {
+	public Response<String> insertTransactionLog(TransactionLogModel TransactionLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(TransactionsLogColumn.transactionId, TransactionsLogModel.getTransactionId())
-					.addValue(TransactionsLogColumn.errorCode, TransactionsLogModel.getErrorCode())
-					.addValue(TransactionsLogColumn.mobile, TransactionsLogModel.getMobile())
-					.addValue(TransactionsLogColumn.message, TransactionsLogModel.getMessage())
-					.addValue(TransactionsLogColumn.updatedValue, TransactionsLogModel.getUpdatedValue())
-					.addValue(TransactionsLogColumn.date, TransactionsLogModel.getDate())
-					.addValue(TransactionsLogColumn.priority, TransactionsLogModel.getPriority());
+					.addValue(TransactionLogColumn.transactionId, TransactionLogModel.getTransactionId())
+					.addValue(TransactionLogColumn.errorCode, TransactionLogModel.getErrorCode())
+					.addValue(TransactionLogColumn.mobile, TransactionLogModel.getMobile())
+					.addValue(TransactionLogColumn.message, TransactionLogModel.getMessage())
+					.addValue(TransactionLogColumn.updatedValue, TransactionLogModel.getUpdatedValue())
+					.addValue(TransactionLogColumn.date, TransactionLogModel.getDate())
+					.addValue(TransactionLogColumn.priority, TransactionLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertTransactionsLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertTransactionLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);
@@ -169,21 +169,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertOrdersLog(OrdersLogModel OrdersLogModel) {
+	public Response<String> insertOrderLog(OrderLogModel OrderLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(OrdersLogColumn.id, OrdersLogModel.getId())
-					.addValue(OrdersLogColumn.errorCode, OrdersLogModel.getErrorCode())
-					.addValue(OrdersLogColumn.mobile, OrdersLogModel.getMobile())
-					.addValue(OrdersLogColumn.message, OrdersLogModel.getMessage())
-					.addValue(OrdersLogColumn.updatedValue, OrdersLogModel.getUpdatedValue())
-					.addValue(OrdersLogColumn.date, OrdersLogModel.getDate())
-					.addValue(OrdersLogColumn.priority, OrdersLogModel.getPriority());
+					.addValue(OrderLogColumn.id, OrderLogModel.getId())
+					.addValue(OrderLogColumn.errorCode, OrderLogModel.getErrorCode())
+					.addValue(OrderLogColumn.mobile, OrderLogModel.getMobile())
+					.addValue(OrderLogColumn.message, OrderLogModel.getMessage())
+					.addValue(OrderLogColumn.updatedValue, OrderLogModel.getUpdatedValue())
+					.addValue(OrderLogColumn.date, OrderLogModel.getDate())
+					.addValue(OrderLogColumn.priority, OrderLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertOrdersLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertOrderLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);
@@ -196,21 +196,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertUsersShopLog(UsersShopLogModel UsersShopLogModel) {
+	public Response<String> insertUserShopLog(UserShopLogModel UserShopLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(UsersShopLogColumn.usersMobile, UsersShopLogModel.getUsersMobile())
-					.addValue(UsersShopLogColumn.errorCode, UsersShopLogModel.getErrorCode())
-					.addValue(UsersShopLogColumn.mobile, UsersShopLogModel.getMobile())
-					.addValue(UsersShopLogColumn.message, UsersShopLogModel.getMessage())
-					.addValue(UsersShopLogColumn.updatedValue, UsersShopLogModel.getUpdatedValue())
-					.addValue(UsersShopLogColumn.date, UsersShopLogModel.getDate())
-					.addValue(UsersShopLogColumn.priority, UsersShopLogModel.getPriority());
+					.addValue(UserShopLogColumn.usersMobile, UserShopLogModel.getUsersMobile())
+					.addValue(UserShopLogColumn.errorCode, UserShopLogModel.getErrorCode())
+					.addValue(UserShopLogColumn.mobile, UserShopLogModel.getMobile())
+					.addValue(UserShopLogColumn.message, UserShopLogModel.getMessage())
+					.addValue(UserShopLogColumn.updatedValue, UserShopLogModel.getUpdatedValue())
+					.addValue(UserShopLogColumn.date, UserShopLogModel.getDate())
+					.addValue(UserShopLogColumn.priority, UserShopLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUsersShopLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserShopLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);
@@ -223,21 +223,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertUsersCollegeLog(UsersCollegeLogModel UsersCollegeLogModel) {
+	public Response<String> insertUserCollegeLog(UserCollegeLogModel UserCollegeLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(UsersCollegeLogColumn.usersMobile, UsersCollegeLogModel.getUsersMobile())
-					.addValue(UsersCollegeLogColumn.errorCode, UsersCollegeLogModel.getErrorCode())
-					.addValue(UsersCollegeLogColumn.mobile, UsersCollegeLogModel.getMobile())
-					.addValue(UsersCollegeLogColumn.message, UsersCollegeLogModel.getMessage())
-					.addValue(UsersCollegeLogColumn.updatedValue, UsersCollegeLogModel.getUpdatedValue())
-					.addValue(UsersCollegeLogColumn.date, UsersCollegeLogModel.getDate())
-					.addValue(UsersCollegeLogColumn.priority, UsersCollegeLogModel.getPriority());
+					.addValue(UserCollegeLogColumn.usersMobile, UserCollegeLogModel.getUsersMobile())
+					.addValue(UserCollegeLogColumn.errorCode, UserCollegeLogModel.getErrorCode())
+					.addValue(UserCollegeLogColumn.mobile, UserCollegeLogModel.getMobile())
+					.addValue(UserCollegeLogColumn.message, UserCollegeLogModel.getMessage())
+					.addValue(UserCollegeLogColumn.updatedValue, UserCollegeLogModel.getUpdatedValue())
+					.addValue(UserCollegeLogColumn.date, UserCollegeLogModel.getDate())
+					.addValue(UserCollegeLogColumn.priority, UserCollegeLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUsersCollegeLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserCollegeLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);
@@ -250,21 +250,21 @@ public class AuditLogDao {
 		return response;
 	}
 
-	public Response<String> insertConfigurationsLog(ConfigurationsLogModel ConfigurationsLogModel) {
+	public Response<String> insertConfigurationLog(ConfigurationLogModel ConfigurationLogModel) {
 		Response<String> response = new Response<>();
 
 		try {
 
 			SqlParameterSource parameters = new MapSqlParameterSource()
-					.addValue(ConfigurationsLogColumn.shopId, ConfigurationsLogModel.getShopId())
-					.addValue(ConfigurationsLogColumn.errorCode, ConfigurationsLogModel.getErrorCode())
-					.addValue(ConfigurationsLogColumn.mobile, ConfigurationsLogModel.getMobile())
-					.addValue(ConfigurationsLogColumn.message, ConfigurationsLogModel.getMessage())
-					.addValue(ConfigurationsLogColumn.updatedValue, ConfigurationsLogModel.getUpdatedValue())
-					.addValue(ConfigurationsLogColumn.date, ConfigurationsLogModel.getDate())
-					.addValue(ConfigurationsLogColumn.priority, ConfigurationsLogModel.getPriority());
+					.addValue(ConfigurationLogColumn.shopId, ConfigurationLogModel.getShopId())
+					.addValue(ConfigurationLogColumn.errorCode, ConfigurationLogModel.getErrorCode())
+					.addValue(ConfigurationLogColumn.mobile, ConfigurationLogModel.getMobile())
+					.addValue(ConfigurationLogColumn.message, ConfigurationLogModel.getMessage())
+					.addValue(ConfigurationLogColumn.updatedValue, ConfigurationLogModel.getUpdatedValue())
+					.addValue(ConfigurationLogColumn.date, ConfigurationLogModel.getDate())
+					.addValue(ConfigurationLogColumn.priority, ConfigurationLogModel.getPriority());
 
-			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertConfigurationsLog, parameters);
+			int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertConfigurationLog, parameters);
 			if (responseValue > 0) {
 				response.setCode(ErrorLog.CodeSuccess);
 				response.setMessage(ErrorLog.Success);

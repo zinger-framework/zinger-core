@@ -1,9 +1,9 @@
-package com.food.ordering.zinger.column;
+package com.food.ordering.zinger.column.logger;
 
-public class OrdersLogColumn {
-	public static final String tableName = "orders_log";
-	
-	public static final String id = "id";
+public class UserLogColumn {
+	public static final String tableName = "users_log";
+
+	public static final String usersMobile = "users_mobile";
 	public static final String errorCode = "error_code";
 	public static final String mobile = "mobile";
 	public static final String message = "message";

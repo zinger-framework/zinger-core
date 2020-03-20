@@ -1,14 +1,14 @@
-package com.food.ordering.zinger.rowMapperLambda;
+package com.food.ordering.zinger.rowMapperLambda.logger;
 
 import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.model.UsersLogModel;
+import com.food.ordering.zinger.model.logger.UserLogModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.UsersLogColumn.*;
+import static com.food.ordering.zinger.column.logger.UserLogColumn.*;
 
-public class UsersLogRowMapperLambda {
-	public static final RowMapper<UsersLogModel> usersLogRowMapperLambda = (rs, rownum) -> {
-        UsersLogModel users = new UsersLogModel();
+public class UserLogRowMapperLambda {
+	public static final RowMapper<UserLogModel> usersLogRowMapperLambda = (rs, rownum) -> {
+        UserLogModel users = new UserLogModel();
         users.setUsersMobile(rs.getString(usersMobile));
         users.setErrorCode(rs.getInt(errorCode));
         users.setMobile(rs.getString(mobile));
