@@ -37,6 +37,9 @@ public class ErrorLog {
     public static final Integer InvalidHeader1001 = 1001;
     public static final Integer InvalidHeader1002 = 1002;
     public static final Integer InvalidHeader1003 = 1003;
-      
-
+    public static final Integer InvalidHeader1004 = 1004;
+    public static final Integer InvalidHeader1005 = 1005;
+    public static final Integer InvalidHeader1006 = 1006;
+    public static final Integer InvalidHeader1007 = 1007;
+    public static final Integer InvalidHeader1008 = 1008;
 }

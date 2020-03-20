@@ -10,12 +10,14 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import com.food.ordering.zinger.column.ShopColumn;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
-import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
 import com.food.ordering.zinger.model.ShopModel;
+import com.food.ordering.zinger.model.CollegeModel;
+import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.query.ShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
@@ -38,20 +40,57 @@ public class ShopDao {
 
     @Autowired
     CollegeDao collegeDao;
+   
+    @Autowired
+    AuditLogDao auditLogDao;
 
     public Response<String> insertShop(ShopModel shopModel,String oauthId, String mobile, String role){
 
         Response<String> response=new Response<>();
         MapSqlParameterSource parameters;
+        ShopLogModel shopLogModel = new ShopLogModel();
+        shopLogModel.setId(shopLogModel.getId());
+        shopLogModel.setMobile(shopLogModel.getMobile());
 
+        shopLogModel.setErrorCode(response.getCode());
+        shopLogModel.setMessage(response.getMessage());
+        shopLogModel.setUpdatedValue(shopModel.toString());
+        
         try{
             if(!role.equals(UserRole.SHOP_OWNER.name())) {
+                response.setCode(ErrorLog.InvalidHeader1004);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.HIGH);
+                shopLogModel.setUpdatedValue(shopModel.toString());
+
+                try {
+                    auditLogDao.insertShopLog(shopLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)){
+                response.setCode(ErrorLog.InvalidHeader1005);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.HIGH);
+                shopLogModel.setUpdatedValue(shopModel.toString());
+
+                try {
+                    auditLogDao.insertShopLog(shopLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 return response;
             }
 
@@ -68,8 +107,20 @@ public class ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
+                
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.LOW);
+                shopLogModel.setUpdatedValue(shopModel.toString());
             }
         }catch (Exception e){
+            e.printStackTrace();
+        }
+        
+        try {
+            auditLogDao.insertShopLog(shopLogModel);
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
 
@@ -80,10 +131,31 @@ public class ShopDao {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
+        ShopLogModel shopLogModel = new ShopLogModel();
+        shopLogModel.setId(shopLogModel.getId());
+        shopLogModel.setMobile(mobile);
+
+        shopLogModel.setErrorCode(response.getCode());
+        shopLogModel.setMessage(response.getMessage());
+        shopLogModel.setUpdatedValue(mobile.toString());
 
         try {
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.InvalidHeader1006);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.HIGH);
+                shopLogModel.setUpdatedValue(mobile.toString());
+
+                try {
+                    auditLogDao.insertShopLog(shopLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return response;
             }
 
@@ -120,12 +192,25 @@ public class ShopDao {
                 response.setData(shopConfigurationModelList);
             }
         }
+        try {
+            auditLogDao.insertShopLog(shopLogModel);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return response;
     }
 
     public Response<ShopModel> getShopById(Integer shopId) {
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
+        ShopLogModel shopLogModel = new ShopLogModel();
+        
+        shopLogModel.setId(shopLogModel.getId());
+        shopLogModel.setErrorCode(response.getCode());
+        shopLogModel.setMessage(response.getMessage());
+        shopLogModel.setUpdatedValue(shopId.toString());
+
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -147,23 +232,69 @@ public class ShopDao {
                     shopModel.setCollegeModel(collegeModelResponse.getData());
                 }
                 response.setData(shopModel);
+                
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.LOW);
+                shopLogModel.setUpdatedValue(shopId.toString());
             }
         }
+        try {
+            auditLogDao.insertShopLog(shopLogModel);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        
         return response;
     }
 
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
+        ShopLogModel shopLogModel = new ShopLogModel();
+        shopLogModel.setId(shopLogModel.getId());
+        shopLogModel.setMobile(mobile);
+
+        shopLogModel.setErrorCode(response.getCode());
+        shopLogModel.setMessage(response.getMessage());
+        shopLogModel.setUpdatedValue(shopLogModel.toString());
 
         try {
             if (!role.equals((UserRole.SHOP_OWNER).name())) {
+                response.setCode(ErrorLog.InvalidHeader1007);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.HIGH);
+                shopLogModel.setUpdatedValue(shopLogModel.toString());
+                
+                try {
+                    auditLogDao.insertShopLog(shopLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
                 return response;
             }
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.InvalidHeader1008);
                 response.setMessage(ErrorLog.InvalidHeader);
+
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.HIGH);
+                shopLogModel.setUpdatedValue(shopLogModel.toString());
+
+                try {
+                    auditLogDao.insertShopLog(shopLogModel);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
                 return response;
             }
 
@@ -182,11 +313,22 @@ public class ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
+                
+                shopLogModel.setErrorCode(response.getCode());
+                shopLogModel.setMessage(response.getMessage());
+                shopLogModel.setPriority(Priority.LOW);
+                shopLogModel.setUpdatedValue(shopLogModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
+        try {
+            auditLogDao.insertShopLog(shopLogModel);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
         return response;
     }
 }
