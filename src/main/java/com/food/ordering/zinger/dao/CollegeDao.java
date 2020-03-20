@@ -26,13 +26,9 @@ public class CollegeDao {
 
     @Autowired
     UtilsDao utilsDao;
-    
-    @Autowired
-    AuditLogDao auditLogDao;
 
     public Response<String> insertCollege(CollegeModel collegeModel, String oauthId, String mobile, String role) {
         Response<String> response = new Response<>();
-        CollegeLogModel collegeLogModel = new CollegeLogModel();
 
         try {
             if (!role.equals((UserRole.SUPER_ADMIN).name())) {
@@ -42,11 +38,8 @@ public class CollegeDao {
 
             if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
-                collegeLogModel.setPriority(Priority.HIGH);
                 return response;
             }
-            
-            collegeLogModel.setMobile(mobile);
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.name, collegeModel.getName())
@@ -58,16 +51,11 @@ public class CollegeDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                collegeLogModel.setMessage("College successfully created");
-                collegeLogModel.setDate(new Timestamp(System.currentTimeMillis()));
             }
         } catch (Exception e) {
-        	collegeLogModel.setErrorCode(0);
-        	collegeLogModel.setMessage(ErrorLog.Failure);
             e.printStackTrace();
         }
-
-        auditLogDao.insertCollegeLog(collegeLogModel);
+        
         return response;
     }
 

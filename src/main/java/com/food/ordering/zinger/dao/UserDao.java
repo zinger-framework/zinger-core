@@ -3,6 +3,7 @@ package com.food.ordering.zinger.dao;
 import com.food.ordering.zinger.column.UserCollegeColumn;
 import com.food.ordering.zinger.column.UserColumn;
 import com.food.ordering.zinger.column.UserShopColumn;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.query.UserCollegeQuery;
@@ -19,6 +20,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,10 +44,14 @@ public class UserDao {
 
     @Autowired
     UtilsDao utilsDao;
+    
+    @Autowired
+    AuditLogDao auditLogDao;
 
     public Response<UserCollegeModel> insertCustomer(UserModel user) {
         Response<UserCollegeModel> response = new Response<>();
         UserCollegeModel userCollegeModel = new UserCollegeModel();
+        UsersLogModel userLogModel = new UsersLogModel();
         try {
             if (!user.getRole().equals(UserRole.CUSTOMER))
                 return response;
@@ -70,6 +76,10 @@ public class UserDao {
                         .addValue(UserColumn.mobile, user.getMobile())
                         .addValue(UserColumn.oauthId, user.getOauthId())
                         .addValue(UserColumn.role, user.getRole().name());
+                
+                userLogModel.setMobile(user.getMobile());
+                userLogModel.setUsersMobile(user.getMobile());
+                userLogModel.setDate(new Timestamp(System.currentTimeMillis()));
 
                 int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
                 if (result > 0) {
@@ -77,9 +87,12 @@ public class UserDao {
                     response.setMessage(ErrorLog.CollegeDetailNotAvailable);
                     userCollegeModel.setUserModel(user);
                     response.setData(userCollegeModel);
+                    userLogModel.setMessage("Customer created successfully");
                 }
             }
         } catch (Exception e) {
+        	userLogModel.setMessage(ErrorLog.UserDetailNotUpdated);
+        	userLogModel.setPriority(Priority.HIGH);
             e.printStackTrace();
         }
         return response;
@@ -87,6 +100,7 @@ public class UserDao {
 
     public Response<UserShopListModel> insertSeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
+        UsersLogModel userLogModel = new UsersLogModel();
         try {
             if (user.getRole().equals(UserRole.CUSTOMER))
                 return response;
