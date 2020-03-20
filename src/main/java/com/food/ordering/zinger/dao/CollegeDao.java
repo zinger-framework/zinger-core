@@ -1,7 +1,9 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.CollegeColumn;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.model.CollegeLogModel;
 import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.query.CollegeQuery;
 import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
@@ -13,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Repository
@@ -52,7 +55,7 @@ public class CollegeDao {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
+        
         return response;
     }
 

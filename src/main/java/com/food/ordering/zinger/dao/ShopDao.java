@@ -1,22 +1,26 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.ConfigurationColumn;
-import com.food.ordering.zinger.column.ShopColumn;
-import com.food.ordering.zinger.enums.UserRole;
-import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.query.ConfigurationQuery;
-import com.food.ordering.zinger.query.ShopQuery;
-import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.food.ordering.zinger.column.ShopColumn;
+import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.model.CollegeModel;
+import com.food.ordering.zinger.model.ConfigurationModel;
+import com.food.ordering.zinger.model.RatingModel;
+import com.food.ordering.zinger.model.ShopConfigurationModel;
+import com.food.ordering.zinger.model.ShopLogModel;
+import com.food.ordering.zinger.model.ShopModel;
+import com.food.ordering.zinger.query.ShopQuery;
+import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
+import com.food.ordering.zinger.utils.ErrorLog;
+import com.food.ordering.zinger.utils.Response;
 
 @Repository
 public class ShopDao {
@@ -35,7 +39,6 @@ public class ShopDao {
 
     @Autowired
     CollegeDao collegeDao;
-
 
     public Response<String> insertShop(ShopModel shopModel,String oauthId, String mobile, String role){
 

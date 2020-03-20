@@ -21,7 +21,7 @@ public class UtilsDao {
     public Response<UserModel> validateUser(String oauthId, String mobile, String role) {
         UserModel userModel = null;
         Response<UserModel> response = new Response<>();
-
+System.out.println("\n OAuthID : " + oauthId + "\n Mobile :  " + mobile + "\n Role : " + role);
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.oauthId, oauthId)
