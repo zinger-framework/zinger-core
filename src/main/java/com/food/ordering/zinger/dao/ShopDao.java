@@ -10,11 +10,18 @@ import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
 import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -94,12 +101,21 @@ public class ShopDao {
                     .addValue(ShopColumn.mobile, shopModel.getMobile())
                     .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
                     .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
-                    .addValue(ShopColumn.closingTime, shopModel.getClosingTime());
+                    .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
+                    .addValue(ShopColumn.isDelete, shopModel.getIsDelete());
 
-            int responseValue = namedParameterJdbcTemplate.update(ShopQuery.insertShop, parameters);
+            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+            simpleJdbcInsert
+                    .withTableName(ShopColumn.tableName)
+                    .usingGeneratedKeyColumns(ShopColumn.id);
+
+            Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
+            configurationModel.getShopModel().setId(responseValue.intValue());
+
+            //int responseValue = namedParameterJdbcTemplate.update(ShopQuery.insertShop, parameters);
             Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
 
-            if (responseValue > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
@@ -109,7 +125,7 @@ public class ShopDao {
                 shopLogModel.setPriority(Priority.LOW);
                 shopLogModel.setUpdatedValue(shopModel.toString());
             }
-            else if(responseValue <= 0)
+            else if(responseValue.intValue() <= 0)
                 response.setData(ErrorLog.ShopDetailNotUpdated);
             else
                 response.setData(ErrorLog.ConfigurationDetailNotUpdated);
