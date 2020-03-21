@@ -8,6 +8,7 @@ public class ErrorLog {
 
     public static final String InvalidHeader = "Invalid Header Values";
 
+    public static final String UserDetailNotAvailable = "User detail not available";
     public static final String CollegeDetailNotAvailable = "College detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";
     public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";
@@ -64,6 +65,12 @@ public class ErrorLog {
     public static final Integer IH1050 = 1050;
     public static final Integer IH1051 = 1051;
     public static final Integer IH1052 = 1052;
+    public static final Integer IH1053 = 1053;
+    public static final Integer IH1054 = 1054;
+    public static final Integer IH1055 = 1055;
+    public static final Integer IH1056 = 1056;
+    public static final Integer IH1057 = 1057;
+    public static final Integer IH1058 = 1058;
 
     /**********************************************************************/
     /* College Controller Error Code 1100-1150
@@ -127,6 +134,25 @@ public class ErrorLog {
     public static final Integer OIDNU1262 = 1262;
     public static final Integer ODNU1263 = 1263;
     public static final Integer TDNU1264 = 1264;
+    public static final Integer SDNA1265 = 1265;
+    public static final Integer ONT1266 = 1266;
+    public static final Integer OPM1267 = 1267;
+    public static final Integer CE1268 = 1268;
+    public static final Integer CE1269 = 1269;
+    public static final Integer CE1270 = 1270;
+    public static final Integer TDNA1271 = 1271;
+    public static final Integer SDNA1272 = 1272;
+    public static final Integer OIDNA1273 = 1273;
+    public static final Integer CE1274 = 1274;
+    public static final Integer CE1275 = 1275;
+    public static final Integer TDNA1276 = 1276;
+    public static final Integer UDNA1277 = 1277;
+    public static final Integer CE1278 = 1278;
+    public static final Integer CE1279 = 1279;
+    public static final Integer TDNA1280 = 1280;
+    public static final Integer UDNA1281 = 1281;
+    public static final Integer SDNA1282 = 1282;
+
 
     public static final Integer ODNU1280=1280;
     public static final Integer SKM1281=1281;

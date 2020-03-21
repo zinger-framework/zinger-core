@@ -94,7 +94,7 @@ public class OrderDao {
                                 break;
                             }
                         }
-                        if(i == orderItemListModel.getOrderItemsList().size()) {
+                        if (i == orderItemListModel.getOrderItemsList().size()) {
                             priority = Priority.LOW;
                             response.setCode(ErrorLog.CodeSuccess);
                             response.setMessage(ErrorLog.Success);
@@ -136,41 +136,46 @@ public class OrderDao {
 
     public Response<String> verifyOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
+        Priority priority = Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1053);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+            } else {
+                OrderModel order = orderItemListModel.getOrderModel();
+                ShopModel shopModel = order.getShopModel();
+
+                Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModel);
+                if (!configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.SDNA1265);
+                    response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                } else {
+                    ConfigurationModel configurationModel = configurationModelResponse.getData();
+                    if (configurationModel.getIsOrderTaken() != 1) {
+                        response.setCode(ErrorLog.ONT1266);
+                        response.setMessage(ErrorLog.OrderNotTaken);
+                    } else {
+                        String deliveryResponse = verifyPricing(orderItemListModel, configurationModel);
+                        if (!deliveryResponse.equals(ErrorLog.Success)) {
+                            response.setCode(ErrorLog.OPM1267);
+                            response.setMessage(ErrorLog.OrderPriceMismatch);
+                            response.setData(deliveryResponse);
+                        } else {
+                            priority = Priority.LOW;
+                            response.setCode(ErrorLog.CodeSuccess);
+                            response.setMessage(ErrorLog.Success);
+                            response.setData(ErrorLog.Success);
+                        }
+                    }
+                }
             }
-
-            OrderModel order = orderItemListModel.getOrderModel();
-            ShopModel shopModel = order.getShopModel();
-
-            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModel);
-            if (!configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                return response;
-            }
-
-            ConfigurationModel configurationModel = configurationModelResponse.getData();
-            if (configurationModel.getIsOrderTaken() != 1) {
-                response.setMessage(ErrorLog.OrderNotTaken);
-                return response;
-            }
-
-            String deliveryResponse = verifyPricing(orderItemListModel, configurationModel);
-            if (!deliveryResponse.equals(ErrorLog.Success)) {
-                response.setData(deliveryResponse);
-                return response;
-            }
-
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.Success);
-            response.setData(ErrorLog.Success);
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1268);
             e.printStackTrace();
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
 
@@ -178,34 +183,38 @@ public class OrderDao {
 
     public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderItemListModel>> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
         List<OrderModel> orderModelList = null;
         List<OrderItemListModel> orderItemListByMobile = null;
 
         try {
             if (!requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
+                response.setCode(ErrorLog.IH1054);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1055);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
-            }
+                priority = Priority.HIGH;
+            } else {
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(OrderColumn.mobile, mobile)
+                        .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                        .addValue(OrderQuery.pageCount, pageCount);
 
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.mobile, mobile)
-                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                    .addValue(OrderQuery.pageCount, pageCount);
-
-            try {
-                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+                } catch (Exception e) {
+                    response.setCode(ErrorLog.CE1269);
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1270);
             e.printStackTrace();
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
+                priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
@@ -217,85 +226,103 @@ public class OrderDao {
                     Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(orderModel);
 
                     if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.TDNA1271);
                         response.setMessage(ErrorLog.TransactionDetailNotAvailable);
-                        return response;
-                    }
+                        break;
+                    } else
+                        orderModel.setTransactionModel(transactionModelResponse.getData());
 
                     if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.SDNA1272);
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                        return response;
-                    }
+                        break;
+                    } else
+                        orderModel.setShopModel(shopModelResponse.getData());
 
                     if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.OIDNA1273);
                         response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
-                        return response;
+                        break;
+                    } else {
+                        OrderItemListModel orderItemListModel = new OrderItemListModel();
+                        orderItemListModel.setOrderModel(orderModel);
+                        orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
+                        orderItemListByMobile.add(orderItemListModel);
                     }
-
-
-                    orderModel.setTransactionModel(transactionModelResponse.getData());
-                    orderModel.setShopModel(shopModelResponse.getData());
-
-
-                    OrderItemListModel orderItemListModel = new OrderItemListModel();
-                    orderItemListModel.setOrderModel(orderModel);
-                    orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
-
-                    orderItemListByMobile.add(orderItemListModel);
                 }
                 response.setData(orderItemListByMobile);
             }
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
         return response;
     }
 
     public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
+                response.setCode(ErrorLog.IH1056);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1057);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+                priority = Priority.HIGH;
             }
+            else {
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(OrderColumn.shopId, shopId)
+                        .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                        .addValue(OrderQuery.pageCount, pageCount);
 
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.shopId, shopId)
-                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                    .addValue(OrderQuery.pageCount, pageCount);
-
-            try {
-                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+                } catch (Exception e) {
+                    response.setCode(ErrorLog.CE1274);
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1275);
             e.printStackTrace();
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
+                priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
-                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                        return response;
-                    }
 
-                    orderModel.setTransactionModel(transactionModelResponse.getData());
-                    orderModel.setUserModel(userModelResponse.getData());
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.TDNA1276);
+                        response.setMessage(ErrorLog.TransactionDetailNotAvailable);
+                        break;
+                    } else
+                        orderModel.setTransactionModel(transactionModelResponse.getData());
+
+                    if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.UDNA1277);
+                        response.setMessage(ErrorLog.UserDetailNotAvailable);
+                        break;
+                    } else
+                        orderModel.setUserModel(userModelResponse.getData());
                 }
                 response.setData(orderModelList);
             }
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
         return response;
     }
 
@@ -356,43 +383,66 @@ public class OrderDao {
     public Response<OrderModel> getOrderById(String id, RequestHeaderModel requestHeaderModel) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1058);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+                priority = Priority.HIGH;
             }
+            else {
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(OrderColumn.id, id);
 
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.id, id);
-
-            try {
-                orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
+                try {
+                    orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+                } catch (Exception e) {
+                    response.setCode(ErrorLog.CE1278);
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1279);
             e.printStackTrace();
         } finally {
             if (orderModel != null) {
+                priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
                 Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                 Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
                 Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
-                if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                    return response;
-                }
 
-                orderModel.setTransactionModel(transactionModelResponse.getData());
-                orderModel.setUserModel(userModelResponse.getData());
-                orderModel.setShopModel(shopModelResponse.getData());
+                if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    orderModel.setTransactionModel(transactionModelResponse.getData());
+                    if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        orderModel.setUserModel(userModelResponse.getData());
+                        if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess))
+                            orderModel.setShopModel(shopModelResponse.getData());
+                        else{
+                            priority = Priority.MEDIUM;
+                            response.setCode(ErrorLog.SDNA1282);
+                            response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                        }
+                    }
+                    else{
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.UDNA1281);
+                        response.setMessage(ErrorLog.UserDetailNotAvailable);
+                    }
+                }
+                else{
+                    priority = Priority.MEDIUM;
+                    response.setCode(ErrorLog.TDNA1280);
+                    response.setMessage(ErrorLog.TransactionDetailNotAvailable);
+                }
                 response.setData(orderModel);
             }
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), id,null, priority));
         return response;
     }
 
