@@ -18,6 +18,9 @@ public class UserLogModel {
 
     private Priority priority;
 
+    public UserLogModel() {
+    }
+
     public UserLogModel(Response response, String mobile, String id, String updatedValue, Priority priority) {
         this.usersMobile = id;
         this.errorCode = response.getCode();

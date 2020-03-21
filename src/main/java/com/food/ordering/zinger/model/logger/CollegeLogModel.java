@@ -18,7 +18,10 @@ public class CollegeLogModel {
 
     private Priority priority;
 
-    public CollegeLogModel(Response response, String mobile, Integer id, String updatedValue,Priority priority) {
+    public CollegeLogModel() {
+    }
+
+    public CollegeLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
         this.mobile = mobile;

@@ -18,6 +18,9 @@ public class ShopLogModel {
 
     private Priority priority;
 
+    public ShopLogModel() {
+    }
+
     public ShopLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
