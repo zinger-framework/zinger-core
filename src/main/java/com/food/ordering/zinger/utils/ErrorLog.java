@@ -12,6 +12,7 @@ public class ErrorLog {
     public static final String ShopDetailNotAvailable = "Shop detail not available";
     public static final String OrderDetailNotAvailable = "Order detail not available";
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
+    public static final String ItemDetailNotAvailable = "Item detail not available";
     public static final String TransactionDetailNotAvailable = "Transaction detail not available";
 
     public static final String UserDetailNotUpdated = "User detail not updated";
@@ -95,6 +96,17 @@ public class ErrorLog {
     // Item Controller Error Code 1200-1250
     public static final Integer IDNU1201=1201;
     public static final Integer CE1202=1202;
+    public static final Integer IDNA1203=1203;
+    public static final Integer CE1204=1204;
+    public static final Integer IDNA1205=1205;
+    public static final Integer CE1206=1206;
+    public static final Integer IDNU1207=1207;
+    public static final Integer CE1208=1208;
+    public static final Integer CE1209=1209;
+    public static final Integer IDNU1210=1210;
+    public static final Integer IDNU1211=1211;
+    public static final Integer CE1212=1212;
+
 
 
 

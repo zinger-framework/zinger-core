@@ -19,7 +19,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+
 import static com.food.ordering.zinger.utils.ErrorLog.*;
 
 @Repository
@@ -40,25 +42,25 @@ public class ItemDao {
     public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
-        Priority priority=Priority.MEDIUM;
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1010);
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else{
+                priority = Priority.HIGH;
+            } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                                                    .addValue(ItemColumn.name, itemModel.getName())
-                                                    .addValue(ItemColumn.price, itemModel.getPrice())
-                                                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
-                                                    .addValue(ItemColumn.category, itemModel.getCategory())
-                                                    .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
-                                                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
+                        .addValue(ItemColumn.name, itemModel.getName())
+                        .addValue(ItemColumn.price, itemModel.getPrice())
+                        .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                        .addValue(ItemColumn.category, itemModel.getCategory())
+                        .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
+                        .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
 
                 int responseValue = namedParameterJdbcTemplate.update(ItemQuery.insertItem, parameters);
 
@@ -66,7 +68,8 @@ public class ItemDao {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
                     response.setData(ErrorLog.Success);
-                }else{
+                    priority = Priority.LOW;
+                } else {
                     response.setCode(IDNU1201);
                     response.setMessage(ItemDetailNotUpdated);
                 }
@@ -77,109 +80,75 @@ public class ItemDao {
         }
 
 
-        auditLogDao.insertItemLog(new ItemLogModel(response,requestHeaderModel.getMobile(),itemModel.getId(),itemModel.toString(),priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
     public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(requestHeaderModel.getMobile());
-
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(requestHeaderModel.getMobile());
-
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1011);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(requestHeaderModel.getMobile());
-
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ItemColumn.shopId, shopId);
                 try {
-                    auditLogDao.insertItemLog(itemLogModel);
+                    list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
                 } catch (Exception e) {
+                    response.setCode(IDNA1203);
+                    response.setMessage(ItemDetailNotAvailable);
                     e.printStackTrace();
                 }
-
-                return response;
-            }
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.shopId, shopId);
-
-            try {
-                list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         } catch (Exception e) {
+            response.setCode(CE1204);
             e.printStackTrace();
         } finally {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-
                 for (int i = 0; i < list.size(); i++)
                     list.get(i).setShopModel(null);
-
                 response.setData(list);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(shopId.toString());
-
+                priority = Priority.LOW;
             }
         }
+
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), shopId, shopId.toString(), priority));
         return response;
     }
 
     public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
-        ItemLogModel itemLogModel = new ItemLogModel();
-
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(collegeId.toString());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1012);
                 response.setMessage(ErrorLog.InvalidHeader);
+            } else {
 
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ItemColumn.name, "%" + itemName + "%")
+                        .addValue(ShopColumn.collegeId, collegeId);
 
                 try {
-                    auditLogDao.insertItemLog(itemLogModel);
+                    items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
                 } catch (Exception e) {
+                    response.setCode(IDNA1205);
+                    response.setMessage(ItemDetailNotAvailable);
                     e.printStackTrace();
                 }
-                return response;
-            }
 
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.name, "%" + itemName + "%")
-                    .addValue(ShopColumn.collegeId, collegeId);
-
-            try {
-                items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         } catch (Exception e) {
+            response.setCode(CE1206);
             e.printStackTrace();
         } finally {
             if (items != null && !items.isEmpty()) {
@@ -190,34 +159,20 @@ public class ItemDao {
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
                 response.setData(items);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(collegeId.toString());
+                priority = Priority.LOW;
             }
         }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), null, itemName, priority));
         return response;
     }
 
     public Response<ItemModel> getItemById(Integer id) {
         ItemModel item = null;
         Response<ItemModel> response = new Response<>();
-        ItemLogModel itemLogModel = new ItemLogModel();
-
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(id.toString());
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemColumn.id, id);
-
             try {
                 item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
@@ -232,17 +187,7 @@ public class ItemDao {
                 Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getId());
                 item.setShopModel(shopModelResponse.getData());
                 response.setData(item);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(id.toString());
             }
-        }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return response;
     }
@@ -251,13 +196,6 @@ public class ItemDao {
 
         Response<List<OrderItemModel>> response = new Response<>();
         List<OrderItemModel> orderItemModelList = null;
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(itemLogModel.getMobile());
-
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(orderModel.toString());
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -281,238 +219,131 @@ public class ItemDao {
                         }
                     });
                     response.setData(orderItemModelList);
-
-                    itemLogModel.setErrorCode(response.getCode());
-                    itemLogModel.setMessage(response.getMessage());
-                    itemLogModel.setPriority(Priority.LOW);
-                    itemLogModel.setUpdatedValue(orderModel.toString());
                 }
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         return response;
     }
 
     public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(requestHeaderModel.getMobile());
+        Priority priority = Priority.MEDIUM;
 
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(itemLogModel.toString());
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.IH1013);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1014);
                 response.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ItemColumn.name, itemModel.getName())
+                        .addValue(ItemColumn.price, itemModel.getPrice())
+                        .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                        .addValue(ItemColumn.category, itemModel.getCategory())
+                        .addValue(ItemColumn.isVeg, itemModel.getIsVeg())
+                        .addValue(ItemColumn.isAvailable, itemModel.getIsAvailable())
+                        .addValue(ItemColumn.id, itemModel.getId());
 
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.updateItem, parameters);
+                if (responseValue > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(IDNU1207);
+                    response.setMessage(ItemDetailNotUpdated);
                 }
-                return response;
-            }
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.name, itemModel.getName())
-                    .addValue(ItemColumn.price, itemModel.getPrice())
-                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
-                    .addValue(ItemColumn.category, itemModel.getCategory())
-                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg())
-                    .addValue(ItemColumn.isAvailable, itemModel.getIsAvailable())
-                    .addValue(ItemColumn.id, itemModel.getId());
-
-            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.updateItem, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemModel.toString());
             }
         } catch (Exception e) {
+            response.setCode(CE1208);
             e.printStackTrace();
         }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
     public Response<String> deleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(requestHeaderModel.getMobile());
-
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(itemModel.toString());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.IH1015);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1016);
                 response.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ItemColumn.id, itemModel.getId());
 
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
+                if (responseValue > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(IDNU1210);
+                    response.setMessage(ItemDetailNotUpdated);
                 }
-                return response;
-            }
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id, itemModel.getId());
-
-            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
             }
         } catch (Exception e) {
+            response.setCode(CE1209);
             e.printStackTrace();
         }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
     public Response<String> unDeleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(requestHeaderModel.getMobile());
-
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(itemLogModel.toString());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.IH1017);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1018);
                 response.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ItemColumn.id, itemModel.getId());
 
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemLogModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
+                if (responseValue > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(IDNU1211);
+                    response.setMessage(ItemDetailNotUpdated);
                 }
-                return response;
             }
 
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id, itemModel.getId());
-
-            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemModel.toString());
-            }
         } catch (Exception e) {
+            response.setCode(CE1212);
             e.printStackTrace();
         }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 }
