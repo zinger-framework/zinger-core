@@ -15,6 +15,7 @@ public class ErrorLog {
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
     public static final String ItemDetailNotAvailable = "Item detail not available";
     public static final String TransactionDetailNotAvailable = "Transaction detail not available";
+    public static final String DeliveryNotAvailable = "Delivery not available";
 
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
@@ -30,12 +31,11 @@ public class ErrorLog {
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String ItemPriceMismatch = "Item price mismatch";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
-
     public static final String OrderNotTaken = "Order not taken";
-    public static final String DeliveryNotAvailable = "Delivery not available";
 
     /**********************************************************************/
     // IH - Invalid Header
+
     public static final Integer IH1000 = 1000;
     public static final Integer IH1001 = 1001;
     public static final Integer IH1002 = 1002;
@@ -56,17 +56,15 @@ public class ErrorLog {
     public static final Integer IH1017 = 1017;
     public static final Integer IH1018 = 1018;
 
-    // Harsha 1019-1050
-
-
     // Logesh 1050-1100
+
     public static final Integer IH1050 = 1050;
     public static final Integer IH1051 = 1051;
     public static final Integer IH1052 = 1052;
 
     /**********************************************************************/
-    // College Controller Error Code 1100-1150
-    /*
+    /* College Controller Error Code 1100-1150
+     *
      *   CE -> Catch Exception
      * */
 
@@ -105,8 +103,6 @@ public class ErrorLog {
     public static final Integer IDNU1211=1211;
     public static final Integer CE1212=1212;
 
-
-
     /**********************************************************************/
     // Shop Controller Error Code 1251-1260
 
@@ -121,4 +117,11 @@ public class ErrorLog {
     public static final Integer CE1259 = 1259;
     public static final Integer CDNU1260 = 1260;
 
+    /**********************************************************************/
+    // Order Controller Error Code 1261-1300
+
+    public static final Integer CE1261 = 1261;
+    public static final Integer OIDNU1262 = 1262;
+    public static final Integer ODNU1263 = 1263;
+    public static final Integer TDNU1264 = 1264;
 }

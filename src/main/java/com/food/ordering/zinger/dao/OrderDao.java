@@ -3,8 +3,10 @@ package com.food.ordering.zinger.dao;
 import com.food.ordering.zinger.column.OrderColumn;
 import com.food.ordering.zinger.column.OrderItemColumn;
 import com.food.ordering.zinger.enums.OrderStatus;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.query.OrderItemQuery;
 import com.food.ordering.zinger.query.OrderQuery;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
@@ -44,60 +46,69 @@ public class OrderDao {
     UserDao userDao;
 
     @Autowired
+    AuditLogDao auditLogDao;
+
+    @Autowired
     ConfigurationDao configurationDao;
 
     public Response<String> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
+        Priority priority = Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setMessage(ErrorLog.InvalidHeader);
-                return response;
-            }
+                response.setCode(ErrorLog.IH1003);
+                response.setData(ErrorLog.InvalidHeader);
+            } else {
+                OrderModel order = orderItemListModel.getOrderModel();
+                TransactionModel transaction = order.getTransactionModel();
 
-            OrderModel order = orderItemListModel.getOrderModel();
-            TransactionModel transaction = order.getTransactionModel();
+                Response<String> transactionResult = transactionDao.insertTransactionDetails(transaction);
+                if (!transactionResult.getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.TDNU1264);
+                    response.setData(ErrorLog.TransactionDetailNotUpdated);
+                } else if (transaction.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode) && transaction.getResponseMessage().equals(PaytmResponseLog.TxnSuccessful) && checkOrderStatusValidity(null, order.getOrderStatus())) {
+                    MapSqlParameterSource parameter = new MapSqlParameterSource()
+                            .addValue(OrderColumn.id, order.getId())
+                            .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
+                            .addValue(transactionId, transaction.getTransactionId())
+                            .addValue(shopId, order.getShopModel().getId())
+                            .addValue(status, order.getOrderStatus().name())
+                            .addValue(price, order.getPrice())
+                            .addValue(deliveryPrice, order.getDeliveryPrice())
+                            .addValue(deliveryLocation, order.getDeliveryLocation())
+                            .addValue(cookingInfo, order.getCookingInfo());
 
-            Response<String> transactionResult = transactionDao.insertTransactionDetails(transaction);
-            if (!transactionResult.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setData(ErrorLog.TransactionDetailNotUpdated);
-                return response;
-            }
-
-            if (transaction.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode) && transaction.getResponseMessage().equals(PaytmResponseLog.TxnSuccessful) && checkOrderStatusValidity(null, order.getOrderStatus())) {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.id, order.getId())
-                        .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
-                        .addValue(transactionId, transaction.getTransactionId())
-                        .addValue(shopId, order.getShopModel().getId())
-                        .addValue(status, order.getOrderStatus().name())
-                        .addValue(price, order.getPrice())
-                        .addValue(deliveryPrice, order.getDeliveryPrice())
-                        .addValue(deliveryLocation, order.getDeliveryLocation())
-                        .addValue(cookingInfo, order.getCookingInfo());
-
-                int orderResult = namedParameterJdbcTemplate.update(OrderQuery.insertOrder, parameter);
-                if (orderResult <= 0) {
-                    response.setData(ErrorLog.OrderDetailNotUpdated);
-                    return response;
-                }
-
-                for (OrderItemModel orderItem : orderItemListModel.getOrderItemsList()) {
-                    Response<String> orderItemResult = insertOrderItem(orderItem, orderItemListModel.getOrderModel().getId());
-                    if (!orderItemResult.getCode().equals(ErrorLog.CodeSuccess)) {
-                        response.setData(ErrorLog.OrderItemDetailNotUpdated + " : " + orderItem);
-                        return response;
+                    int orderResult = namedParameterJdbcTemplate.update(OrderQuery.insertOrder, parameter);
+                    if (orderResult <= 0) {
+                        response.setCode(ErrorLog.ODNU1263);
+                        response.setData(ErrorLog.OrderDetailNotUpdated);
+                    } else {
+                        int i;
+                        for (i = 0; i < orderItemListModel.getOrderItemsList().size(); i++) {
+                            OrderItemModel orderItem = orderItemListModel.getOrderItemsList().get(i);
+                            Response<String> orderItemResult = insertOrderItem(orderItem, orderItemListModel.getOrderModel().getId());
+                            if (!orderItemResult.getCode().equals(ErrorLog.CodeSuccess)) {
+                                response.setCode(ErrorLog.OIDNU1262);
+                                response.setData(ErrorLog.OrderItemDetailNotUpdated + " : " + orderItem);
+                                break;
+                            }
+                        }
+                        if(i == orderItemListModel.getOrderItemsList().size()) {
+                            priority = Priority.LOW;
+                            response.setCode(ErrorLog.CodeSuccess);
+                            response.setMessage(ErrorLog.Success);
+                            response.setData(ErrorLog.Success);
+                        }
                     }
                 }
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-                return response;
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1261);
             e.printStackTrace();
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
 

@@ -27,9 +27,7 @@ public class ItemLogModel {
         this.priority=priority;
     }
 
-
     public ItemLogModel() {
-		this.priority = Priority.MEDIUM;
 	}
 
     public Integer getId() {
