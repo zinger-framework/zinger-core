@@ -1,7 +1,9 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.TransactionColumn;
+import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.model.TransactionModel;
+import com.food.ordering.zinger.model.logger.TransactionLogModel;
 import com.food.ordering.zinger.query.TransactionQuery;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
@@ -16,9 +18,19 @@ public class TransactionDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    
+    @Autowired
+    AuditLogDao auditLogDao;
 
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
         Response<String> response = new Response<>();
+        TransactionLogModel transactionLogModel = new TransactionLogModel();
+        transactionLogModel.setTransactionId(transactionLogModel.getTransactionId());
+        transactionLogModel.setMobile(transactionLogModel.getMobile());
+
+        transactionLogModel.setErrorCode(response.getCode());
+        transactionLogModel.setMessage(response.getMessage());
+        transactionLogModel.setUpdatedValue(transactionModel.toString());
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
@@ -36,8 +48,20 @@ public class TransactionDao {
             if (transactionResult > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
+                
+                transactionLogModel.setErrorCode(response.getCode());
+                transactionLogModel.setMessage(response.getMessage());
+                transactionLogModel.setPriority(Priority.LOW);
+                transactionLogModel.setUpdatedValue(transactionModel.toString());
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
+        try {
+            auditLogDao.insertTransactionLog(transactionLogModel);
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
         return response;
@@ -46,6 +70,13 @@ public class TransactionDao {
     public Response<TransactionModel> getTransactionDetails(String id) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
+        TransactionLogModel transactionLogModel = new TransactionLogModel();
+        transactionLogModel.setTransactionId(transactionLogModel.getTransactionId());
+        transactionLogModel.setMobile(transactionLogModel.getMobile());
+
+        transactionLogModel.setErrorCode(response.getCode());
+        transactionLogModel.setMessage(response.getMessage());
+        transactionLogModel.setUpdatedValue(transactionModel.toString());
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -62,8 +93,19 @@ public class TransactionDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(transactionModel);
+                
+                transactionLogModel.setErrorCode(response.getCode());
+                transactionLogModel.setMessage(response.getMessage());
+                transactionLogModel.setPriority(Priority.LOW);
+                transactionLogModel.setUpdatedValue(id.toString());
             }
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+        try {
+            auditLogDao.insertTransactionLog(transactionLogModel);
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
         return response;
