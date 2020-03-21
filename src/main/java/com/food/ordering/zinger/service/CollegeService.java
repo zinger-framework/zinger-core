@@ -16,12 +16,12 @@ public class CollegeService {
     CollegeDao collegeDao;
 
     public Response<String> insertCollege(CollegeModel collegeModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return collegeDao.insertCollege(collegeModel, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return collegeDao.insertCollege(collegeModel, requestHeaderModel);
     }
 
     public Response<List<CollegeModel>> getAllColleges(String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return collegeDao.getAllColleges(responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return collegeDao.getAllColleges(requestHeaderModel);
     }
 }

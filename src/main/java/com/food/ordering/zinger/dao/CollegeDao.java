@@ -15,8 +15,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import static com.food.ordering.zinger.utils.ErrorLog.*;
 
 @Repository
 public class CollegeDao {
@@ -30,18 +30,20 @@ public class CollegeDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertCollege(CollegeModel collegeModel, RequestHeaderModel responseHeader) {
+    public Response<String> insertCollege(CollegeModel collegeModel, RequestHeaderModel requestHeaderModel) {
+
         Response<String> response = new Response<>();
-        CollegeLogModel collegeLogModel = new CollegeLogModel();
+        Priority priority=Priority.MEDIUM;
+
 
         try {
 
-            if (!responseHeader.getRole().equals((UserRole.SUPER_ADMIN).name())) {
-                response.setCode(ErrorLog.InvalidHeader1000);
+            if (!requestHeaderModel.getRole().equals((UserRole.SUPER_ADMIN).name())) {
+                response.setCode(ErrorLog.IH1000);
                 response.setMessage(ErrorLog.InvalidHeader);
             }
-            else if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1001);
+            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1001);
                 response.setMessage(ErrorLog.InvalidHeader);
             }
             else{
@@ -55,37 +57,39 @@ public class CollegeDao {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
                     response.setData(ErrorLog.Success);
+                }else{
+                    response.setCode(EC1100);
                 }
             }
-
         } catch (Exception e) {
+            response.setCode(EC1101);
             e.printStackTrace();
         }
 
-
+        auditLogDao.insertCollegeLog(new CollegeLogModel(response,requestHeaderModel.getMobile(),null,collegeModel.toString(),priority));
         return response;
     }
 
-    public Response<List<CollegeModel>> getAllColleges(RequestHeaderModel responseHeader) {
+    public Response<List<CollegeModel>> getAllColleges(RequestHeaderModel requestHeaderModel) {
         Response<List<CollegeModel>> response = new Response<>();
         List<CollegeModel> list = null;
         CollegeLogModel collegeLogModel = new CollegeLogModel();
         collegeLogModel.setId(collegeLogModel.getId());
-        collegeLogModel.setMobile(responseHeader.getMobile());
+        collegeLogModel.setMobile(requestHeaderModel.getMobile());
 
         collegeLogModel.setErrorCode(response.getCode());
         collegeLogModel.setMessage(response.getMessage());
-        collegeLogModel.setUpdatedValue(responseHeader.getMobile());
+        collegeLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
         try {
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1002);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1002);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 collegeLogModel.setErrorCode(response.getCode());
                 collegeLogModel.setMessage(response.getMessage());
                 collegeLogModel.setPriority(Priority.HIGH);
-                collegeLogModel.setUpdatedValue(responseHeader.getMobile());
+                collegeLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);

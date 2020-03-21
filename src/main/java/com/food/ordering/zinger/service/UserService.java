@@ -26,12 +26,12 @@ public class UserService {
     /**************************************************/
 
     public Response<String> updateUser(UserModel userModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return userDao.updateUser(userModel, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return userDao.updateUser(userModel, requestHeaderModel);
     }
 
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return userDao.updateUserCollegeData(userCollegeModel, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return userDao.updateUserCollegeData(userCollegeModel, requestHeaderModel);
     }
 }

@@ -15,17 +15,17 @@ public class ShopService {
     ShopDao shopDao;
 
     public Response<String> insertShop(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return shopDao.insertShop(configurationModel, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return shopDao.insertShop(configurationModel, requestHeaderModel);
     }
 
     public Response<List<ShopConfigurationModel>> getShopByCollegeId(Integer collegeId, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return shopDao.getShopsByCollegeId(collegeId, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return shopDao.getShopsByCollegeId(collegeId, requestHeaderModel);
     }
 
     public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
-        return shopDao.updateShopConfigurationModel(configurationModel, responseHeader);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return shopDao.updateShopConfigurationModel(configurationModel, requestHeaderModel);
     }
 }

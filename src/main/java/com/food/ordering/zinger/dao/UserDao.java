@@ -217,11 +217,11 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<String> updateUser(UserModel user, RequestHeaderModel responseHeader) {
+    public Response<String> updateUser(UserModel user, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -286,15 +286,15 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, RequestHeaderModel responseHeader) {
+    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
 
-        if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
             response.setMessage(ErrorLog.InvalidHeader);
             return response;
         }
 
-        Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), responseHeader);
+        Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), requestHeaderModel);
         Response<String> responseCollege = updateCollege(userCollegeModel);
 
         if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {

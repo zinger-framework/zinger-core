@@ -40,7 +40,7 @@ public class ShopDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel responseHeader) {
+    public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
@@ -53,8 +53,8 @@ public class ShopDao {
         shopLogModel.setUpdatedValue(configurationModel.toString());
 
         try {
-            if (!responseHeader.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                response.setCode(ErrorLog.InvalidHeader1004);
+            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
+                response.setCode(ErrorLog.IH1004);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 shopLogModel.setErrorCode(response.getCode());
@@ -71,8 +71,8 @@ public class ShopDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1005);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1005);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 shopLogModel.setErrorCode(response.getCode());
@@ -135,27 +135,27 @@ public class ShopDao {
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel responseHeader) {
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
         ShopLogModel shopLogModel = new ShopLogModel();
         shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setMobile(responseHeader.getMobile());
+        shopLogModel.setMobile(requestHeaderModel.getMobile());
 
         shopLogModel.setErrorCode(response.getCode());
         shopLogModel.setMessage(response.getMessage());
-        shopLogModel.setUpdatedValue(responseHeader.getMobile());
+        shopLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
         try {
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1006);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1006);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 shopLogModel.setErrorCode(response.getCode());
                 shopLogModel.setMessage(response.getMessage());
                 shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(responseHeader.getMobile());
+                shopLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
                 try {
                     auditLogDao.insertShopLog(shopLogModel);
@@ -253,20 +253,20 @@ public class ShopDao {
         return response;
     }
 
-    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel responseHeader) {
+    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
         ShopLogModel shopLogModel = new ShopLogModel();
         shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setMobile(responseHeader.getMobile());
+        shopLogModel.setMobile(requestHeaderModel.getMobile());
 
         shopLogModel.setErrorCode(response.getCode());
         shopLogModel.setMessage(response.getMessage());
         shopLogModel.setUpdatedValue(shopLogModel.toString());
 
         try {
-            if (!responseHeader.getRole().equals((UserRole.SHOP_OWNER).name())) {
-                response.setCode(ErrorLog.InvalidHeader1007);
+            if (!requestHeaderModel.getRole().equals((UserRole.SHOP_OWNER).name())) {
+                response.setCode(ErrorLog.IH1007);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 shopLogModel.setErrorCode(response.getCode());
@@ -283,8 +283,8 @@ public class ShopDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1008);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1008);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 shopLogModel.setErrorCode(response.getCode());

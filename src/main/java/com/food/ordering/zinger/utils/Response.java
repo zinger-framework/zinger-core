@@ -6,7 +6,6 @@ public class Response<T> {
     private T data;
 
     public Response() {
-        code = ErrorLog.CodeFailure;
         message = ErrorLog.Failure;
     }
 

@@ -37,19 +37,19 @@ public class ItemDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel responseHeader) {
+    public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(responseHeader.getMobile());
+        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemModel.toString());
 
         try {
-            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
-                response.setCode(ErrorLog.InvalidHeader1009);
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+                response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -65,8 +65,8 @@ public class ItemDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1010);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1010);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -113,27 +113,27 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel responseHeader) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(responseHeader.getMobile());
+        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(responseHeader.getMobile());
+        itemLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
 
         try {
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1011);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1011);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(responseHeader.getMobile());
+                itemLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
@@ -174,7 +174,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel responseHeader) {
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         ItemLogModel itemLogModel = new ItemLogModel();
@@ -185,8 +185,8 @@ public class ItemDao {
         itemLogModel.setUpdatedValue(collegeId.toString());
 
         try {
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1012);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1012);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -332,18 +332,18 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel responseHeader) {
+    public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(responseHeader.getMobile());
+        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemLogModel.toString());
         try {
-            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
-                response.setCode(ErrorLog.InvalidHeader1013);
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+                response.setCode(ErrorLog.IH1013);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -359,8 +359,8 @@ public class ItemDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1014);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1014);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -419,7 +419,7 @@ public class ItemDao {
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
-                response.setCode(ErrorLog.InvalidHeader1015);
+                response.setCode(ErrorLog.IH1015);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -437,7 +437,7 @@ public class ItemDao {
             }
 
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1016);
+                response.setCode(ErrorLog.IH1016);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -478,19 +478,19 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel, RequestHeaderModel responseHeader) {
+    public Response<String> unDeleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(responseHeader.getMobile());
+        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemLogModel.toString());
 
         try {
-            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
-                response.setCode(ErrorLog.InvalidHeader1017);
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+                response.setCode(ErrorLog.IH1017);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
@@ -506,8 +506,8 @@ public class ItemDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.InvalidHeader1018);
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1018);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
