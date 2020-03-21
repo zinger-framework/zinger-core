@@ -19,9 +19,6 @@ public class ConfigurationDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    UtilsDao utilsDao;
-
     public Response<String> insertConfiguration(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
 
