@@ -14,7 +14,6 @@ public class ErrorLog {
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
     public static final String TransactionDetailNotAvailable = "Transaction detail not available";
 
-
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
     public static final String ShopDetailNotUpdated = "Shop detail not updated";
@@ -59,7 +58,9 @@ public class ErrorLog {
 
 
     // Logesh 1050-1100
-
+    public static final Integer IH1050 = 1050;
+    public static final Integer IH1051 = 1051;
+    public static final Integer IH1052 = 1052;
 
     /**********************************************************************/
 
@@ -76,7 +77,16 @@ public class ErrorLog {
     /**********************************************************************/
 
     // User Controller Error Code 1151-1200
-
+    public static final Integer UDNU1151 = 1151;
+    public static final Integer CE1152 = 1152;
+    public static final Integer UDNU1153 = 1153;
+    public static final Integer CE1154 = 1154;
+    public static final Integer UDNU1155 = 1155;
+    public static final Integer UDNA1156 = 1156;
+    public static final Integer UDNU1157 = 1157;
+    public static final Integer CE1158 = 1158;
+    public static final Integer UDNU1159 = 1159;
+    public static final Integer CDNU1160 = 1160;
 
 
 
@@ -89,7 +99,6 @@ public class ErrorLog {
 
 
     /**********************************************************************/
-
 
 
 }

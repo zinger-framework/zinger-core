@@ -27,10 +27,6 @@ public class CollegeLogModel {
         this.priority=priority;
     }
 
-    public CollegeLogModel() {
-        this.priority = Priority.MEDIUM;
-    }
-
     public Integer getId() {
         return id;
     }

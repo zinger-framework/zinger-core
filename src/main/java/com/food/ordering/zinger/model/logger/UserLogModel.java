@@ -2,6 +2,7 @@ package com.food.ordering.zinger.model.logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.food.ordering.zinger.enums.Priority;
+import com.food.ordering.zinger.utils.Response;
 
 import java.sql.Timestamp;
 
@@ -16,10 +17,15 @@ public class UserLogModel {
     private Timestamp date;
 
     private Priority priority;
-    
-    public UserLogModel() {
-		this.priority = Priority.MEDIUM;
-	}
+
+    public UserLogModel(Response response, String mobile, String id, String updatedValue, Priority priority) {
+        this.usersMobile = id;
+        this.errorCode = response.getCode();
+        this.mobile = mobile;
+        this.message = response.getMessage();
+        this.updatedValue = updatedValue;
+        this.priority = priority;
+    }
 
     public String getUsersMobile() {
         return usersMobile;
