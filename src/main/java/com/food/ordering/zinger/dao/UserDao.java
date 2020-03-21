@@ -217,7 +217,7 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<String> updateUser(UserModel user, ResponseHeaderModel responseHeader) {
+    public Response<String> updateUser(UserModel user, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
@@ -286,7 +286,7 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, ResponseHeaderModel responseHeader) {
+    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {

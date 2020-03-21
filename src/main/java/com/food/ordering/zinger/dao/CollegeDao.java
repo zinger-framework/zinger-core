@@ -1,11 +1,10 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.CollegeColumn;
-import com.food.ordering.zinger.column.logger.CollegeLogColumn;
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.CollegeModel;
-import com.food.ordering.zinger.model.ResponseHeaderModel;
+import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.logger.CollegeLogModel;
 import com.food.ordering.zinger.query.CollegeQuery;
 import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
@@ -31,7 +30,7 @@ public class CollegeDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertCollege(CollegeModel collegeModel, ResponseHeaderModel responseHeader) {
+    public Response<String> insertCollege(CollegeModel collegeModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         CollegeLogModel collegeLogModel = new CollegeLogModel();
 
@@ -67,7 +66,7 @@ public class CollegeDao {
         return response;
     }
 
-    public Response<List<CollegeModel>> getAllColleges(ResponseHeaderModel responseHeader) {
+    public Response<List<CollegeModel>> getAllColleges(RequestHeaderModel responseHeader) {
         Response<List<CollegeModel>> response = new Response<>();
         List<CollegeModel> list = null;
         CollegeLogModel collegeLogModel = new CollegeLogModel();

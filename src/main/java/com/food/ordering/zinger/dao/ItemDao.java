@@ -7,9 +7,7 @@ import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.ItemModel;
-import com.food.ordering.zinger.model.logger.CollegeLogModel;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
-import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.query.ItemQuery;
 import com.food.ordering.zinger.query.OrderItemQuery;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
@@ -22,7 +20,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -40,7 +37,7 @@ public class ItemDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertItem(ItemModel itemModel, ResponseHeaderModel responseHeader) {
+    public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
@@ -116,7 +113,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, ResponseHeaderModel responseHeader) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel responseHeader) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
         ItemLogModel itemLogModel = new ItemLogModel();
@@ -177,7 +174,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, ResponseHeaderModel responseHeader) {
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel responseHeader) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         ItemLogModel itemLogModel = new ItemLogModel();
@@ -335,7 +332,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> updateItemById(ItemModel itemModel, ResponseHeaderModel responseHeader) {
+    public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
@@ -410,18 +407,18 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> deleteItemById(ItemModel itemModel, ResponseHeaderModel responseHeaderModel) {
+    public Response<String> deleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(responseHeaderModel.getMobile());
+        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemModel.toString());
 
         try {
-            if (responseHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.InvalidHeader1015);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -439,7 +436,7 @@ public class ItemDao {
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1016);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -481,7 +478,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel, ResponseHeaderModel responseHeader) {
+    public Response<String> unDeleteItemById(ItemModel itemModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());

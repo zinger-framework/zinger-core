@@ -46,7 +46,7 @@ public class OrderDao {
     @Autowired
     ConfigurationDao configurationDao;
 
-    public Response<String> insertOrder(OrderItemListModel orderItemListModel, ResponseHeaderModel responseHeader) {
+    public Response<String> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
@@ -123,7 +123,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, ResponseHeaderModel responseHeader) {
+    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
@@ -165,7 +165,7 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, ResponseHeaderModel responseHeader) {
+    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, RequestHeaderModel responseHeader) {
         Response<List<OrderItemListModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
         List<OrderItemListModel> orderItemListByMobile = null;
@@ -238,7 +238,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, ResponseHeaderModel responseHeader) {
+    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel responseHeader) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
 
@@ -288,7 +288,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, ResponseHeaderModel responseHeader) {
+    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, RequestHeaderModel responseHeader) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
 
@@ -336,7 +336,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<OrderModel> getOrderById(String id, ResponseHeaderModel responseHeader) {
+    public Response<OrderModel> getOrderById(String id, RequestHeaderModel responseHeader) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
 
@@ -381,7 +381,7 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<String> updateOrder(OrderModel orderModel, ResponseHeaderModel responseHeader) {
+    public Response<String> updateOrder(OrderModel orderModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         try {
             if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
@@ -408,7 +408,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> updateOrderStatus(OrderModel orderModel, ResponseHeaderModel responseHeader) {
+    public Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {

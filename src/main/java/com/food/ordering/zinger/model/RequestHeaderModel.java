@@ -1,14 +1,14 @@
 package com.food.ordering.zinger.model;
 
-public class ResponseHeaderModel {
+public class RequestHeaderModel {
     String oauthId;
     String mobile;
     String role;
 
-    public ResponseHeaderModel() {
+    public RequestHeaderModel() {
     }
 
-    public ResponseHeaderModel(String oauthId, String mobile, String role) {
+    public RequestHeaderModel(String oauthId, String mobile, String role) {
         this.oauthId = oauthId;
         this.mobile = mobile;
         this.role = role;

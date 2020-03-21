@@ -10,18 +10,12 @@ import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
 import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +40,7 @@ public class ShopDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertShop(ConfigurationModel configurationModel, ResponseHeaderModel responseHeader) {
+    public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel responseHeader) {
 
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
@@ -141,7 +135,7 @@ public class ShopDao {
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, ResponseHeaderModel responseHeader) {
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel responseHeader) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
@@ -259,7 +253,7 @@ public class ShopDao {
         return response;
     }
 
-    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, ResponseHeaderModel responseHeader) {
+    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
         ShopLogModel shopLogModel = new ShopLogModel();

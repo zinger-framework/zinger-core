@@ -1,7 +1,7 @@
 package com.food.ordering.zinger.service;
 
 import com.food.ordering.zinger.dao.UserDao;
-import com.food.ordering.zinger.model.ResponseHeaderModel;
+import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.UserCollegeModel;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserShopListModel;
@@ -26,12 +26,12 @@ public class UserService {
     /**************************************************/
 
     public Response<String> updateUser(UserModel userModel, String oauthId, String mobile, String role) {
-        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
         return userDao.updateUser(userModel, responseHeader);
     }
 
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
-        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        RequestHeaderModel responseHeader = new RequestHeaderModel(oauthId, mobile, role);
         return userDao.updateUserCollegeData(userCollegeModel, responseHeader);
     }
 }
