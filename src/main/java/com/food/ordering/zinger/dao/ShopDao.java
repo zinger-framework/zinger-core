@@ -102,7 +102,7 @@ public class ShopDao {
                     .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
                     .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
                     .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
-                    .addValue(ShopColumn.isDelete, shopModel.getIsDelete());
+                    .addValue(ShopColumn.isDelete,0);
 
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
             simpleJdbcInsert
