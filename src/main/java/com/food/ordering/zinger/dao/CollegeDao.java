@@ -15,7 +15,9 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
+
 import static com.food.ordering.zinger.utils.ErrorLog.*;
 
 @Repository
@@ -33,20 +35,18 @@ public class CollegeDao {
     public Response<String> insertCollege(CollegeModel collegeModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
-        Priority priority=Priority.MEDIUM;
-
+        Priority priority = Priority.MEDIUM;
 
         try {
-
             if (!requestHeaderModel.getRole().equals((UserRole.SUPER_ADMIN).name())) {
                 response.setCode(ErrorLog.IH1000);
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1001);
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else{
+                priority = Priority.HIGH;
+            } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(CollegeColumn.name, collegeModel.getName())
                         .addValue(CollegeColumn.address, collegeModel.getAddress())
@@ -57,84 +57,61 @@ public class CollegeDao {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
                     response.setData(ErrorLog.Success);
-                }else{
-                    response.setCode(EC1100);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(CDNU1100);
                 }
             }
         } catch (Exception e) {
-            response.setCode(EC1101);
+            response.setCode(CE1101);
             e.printStackTrace();
         }
 
-        auditLogDao.insertCollegeLog(new CollegeLogModel(response,requestHeaderModel.getMobile(),null,collegeModel.toString(),priority));
+        auditLogDao.insertCollegeLog(new CollegeLogModel(response, requestHeaderModel.getMobile(), null, collegeModel.toString(), priority));
         return response;
     }
 
     public Response<List<CollegeModel>> getAllColleges(RequestHeaderModel requestHeaderModel) {
+
         Response<List<CollegeModel>> response = new Response<>();
         List<CollegeModel> list = null;
-        CollegeLogModel collegeLogModel = new CollegeLogModel();
-        collegeLogModel.setId(collegeLogModel.getId());
-        collegeLogModel.setMobile(requestHeaderModel.getMobile());
-
-        collegeLogModel.setErrorCode(response.getCode());
-        collegeLogModel.setMessage(response.getMessage());
-        collegeLogModel.setUpdatedValue(requestHeaderModel.getMobile());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1002);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                collegeLogModel.setErrorCode(response.getCode());
-                collegeLogModel.setMessage(response.getMessage());
-                collegeLogModel.setPriority(Priority.HIGH);
-                collegeLogModel.setUpdatedValue(requestHeaderModel.getMobile());
-
+                priority = Priority.HIGH;
+            } else {
                 try {
-                    auditLogDao.insertCollegeLog(collegeLogModel);
+                    list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
                 } catch (Exception e) {
+                    response.setCode(CDNA1102);
+                    response.setMessage(CollegeDetailNotAvailable);
                     e.printStackTrace();
                 }
-
-                return response;
-            }
-
-            try {
-                list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         } catch (Exception e) {
             e.printStackTrace();
+            response.setCode(CE1103);
         } finally {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
+                priority = Priority.LOW;
             }
         }
-        try {
-            auditLogDao.insertCollegeLog(collegeLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
+        auditLogDao.insertCollegeLog(new CollegeLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
         return response;
     }
 
     public Response<CollegeModel> getCollegeById(Integer collegeId) {
         Response<CollegeModel> response = new Response<>();
         CollegeModel college = null;
-        CollegeLogModel collegeLogModel = new CollegeLogModel();
-
-        collegeLogModel.setId(collegeLogModel.getId());
-        collegeLogModel.setErrorCode(response.getCode());
-        collegeLogModel.setMessage(response.getMessage());
-        collegeLogModel.setUpdatedValue(collegeId.toString());
 
         try {
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.id, collegeId);
 
@@ -150,18 +127,7 @@ public class CollegeDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(college);
-
-                collegeLogModel.setErrorCode(response.getCode());
-                collegeLogModel.setMessage(response.getMessage());
-                collegeLogModel.setPriority(Priority.LOW);
-                collegeLogModel.setUpdatedValue(collegeId.toString());
             }
-        }
-
-        try {
-            auditLogDao.insertCollegeLog(collegeLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
         return response;

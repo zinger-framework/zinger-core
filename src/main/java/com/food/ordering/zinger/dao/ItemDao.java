@@ -19,8 +19,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
-
 import java.util.List;
+import static com.food.ordering.zinger.utils.ErrorLog.*;
 
 @Repository
 public class ItemDao {
@@ -38,78 +38,46 @@ public class ItemDao {
     AuditLogDao auditLogDao;
 
     public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
-        Response<String> response = new Response<>();
-        ItemLogModel itemLogModel = new ItemLogModel();
-        itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(requestHeaderModel.getMobile());
 
-        itemLogModel.setErrorCode(response.getCode());
-        itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(itemModel.toString());
+        Response<String> response = new Response<>();
+        Priority priority=Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemModel.toString());
-
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                return response;
             }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1010);
                 response.setMessage(ErrorLog.InvalidHeader);
+            }
+            else{
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                                                    .addValue(ItemColumn.name, itemModel.getName())
+                                                    .addValue(ItemColumn.price, itemModel.getPrice())
+                                                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                                                    .addValue(ItemColumn.category, itemModel.getCategory())
+                                                    .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
+                                                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
 
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(itemModel.toString());
+                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.insertItem, parameters);
 
-                try {
-                    auditLogDao.insertItemLog(itemLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (responseValue > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                }else{
+                    response.setCode(IDNU1201);
+                    response.setMessage(ItemDetailNotUpdated);
                 }
-                return response;
-            }
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.name, itemModel.getName())
-                    .addValue(ItemColumn.price, itemModel.getPrice())
-                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
-                    .addValue(ItemColumn.category, itemModel.getCategory())
-                    .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
-                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
-
-            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.insertItem, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                itemLogModel.setErrorCode(response.getCode());
-                itemLogModel.setMessage(response.getMessage());
-                itemLogModel.setPriority(Priority.LOW);
-                itemLogModel.setUpdatedValue(itemModel.toString());
             }
         } catch (Exception e) {
-            e.printStackTrace();
-        }
-        try {
-            auditLogDao.insertItemLog(itemLogModel);
-        } catch (Exception e) {
+            response.setCode(CE1202);
             e.printStackTrace();
         }
 
+
+        auditLogDao.insertItemLog(new ItemLogModel(response,requestHeaderModel.getMobile(),itemModel.getId(),itemModel.toString(),priority));
         return response;
     }
 

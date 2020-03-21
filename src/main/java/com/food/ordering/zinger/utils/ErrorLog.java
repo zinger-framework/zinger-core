@@ -22,6 +22,7 @@ public class ErrorLog {
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Order detail not updated";
     public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
+    public static final String ItemDetailNotUpdated = "Item detail not updated";
 
     public static final String InvalidOrderStatus = "Invalid Order status";
     public static final String SecretKeyMismatch = "Secret key mismatch";
@@ -63,15 +64,27 @@ public class ErrorLog {
     /**********************************************************************/
 
     // College Controller Error Code 1100-1150
-    public static final Integer EC1100=1100;
+    /*
+    *   IF -> Insertion Failed
+    *   CE -> Catch Exception
+    * */
+    public static final Integer CDNU1100=1100;
     public static final Integer CE1101=1101;
-
-
+    public static final Integer CDNA1102=1102;
+    public static final Integer CE1103=1103;
 
     /**********************************************************************/
 
     // User Controller Error Code 1151-1200
 
+
+
+
+    /**********************************************************************/
+
+    // Item Controller Error Code 1200-1250
+    public static final Integer IDNU1201=1201;
+    public static final Integer CE1202=1202;
 
 
 
