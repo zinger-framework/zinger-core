@@ -10,6 +10,7 @@ public class ErrorLog {
 
     public static final String CollegeDetailNotAvailable = "College detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";
+    public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";
     public static final String OrderDetailNotAvailable = "Order detail not available";
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
     public static final String ItemDetailNotAvailable = "Item detail not available";
@@ -64,20 +65,19 @@ public class ErrorLog {
     public static final Integer IH1052 = 1052;
 
     /**********************************************************************/
-
     // College Controller Error Code 1100-1150
     /*
-    *   IF -> Insertion Failed
-    *   CE -> Catch Exception
-    * */
-    public static final Integer CDNU1100=1100;
-    public static final Integer CE1101=1101;
-    public static final Integer CDNA1102=1102;
-    public static final Integer CE1103=1103;
+     *   CE -> Catch Exception
+     * */
+
+    public static final Integer CDNU1100 = 1100;
+    public static final Integer CE1101 = 1101;
+    public static final Integer CDNA1102 = 1102;
+    public static final Integer CE1103 = 1103;
 
     /**********************************************************************/
-
     // User Controller Error Code 1151-1200
+
     public static final Integer UDNU1151 = 1151;
     public static final Integer CE1152 = 1152;
     public static final Integer UDNU1153 = 1153;
@@ -89,13 +89,11 @@ public class ErrorLog {
     public static final Integer UDNU1159 = 1159;
     public static final Integer CDNU1160 = 1160;
 
-
-
     /**********************************************************************/
-
     // Item Controller Error Code 1200-1250
-    public static final Integer IDNU1201=1201;
-    public static final Integer CE1202=1202;
+
+    public static final Integer IDNU1201 = 1201;
+    public static final Integer CE1202 = 1202;
     public static final Integer IDNA1203=1203;
     public static final Integer CE1204=1204;
     public static final Integer IDNA1205=1205;
@@ -109,8 +107,18 @@ public class ErrorLog {
 
 
 
-
     /**********************************************************************/
+    // Shop Controller Error Code 1251-1260
 
+    public static final Integer SDNU1251 = 1251;
+    public static final Integer CDNU1252 = 1252;
+    public static final Integer CE1253 = 1253;
+    public static final Integer CE1254 = 1254;
+    public static final Integer CE1255 = 1255;
+    public static final Integer SDNA1256 = 1256;
+    public static final Integer CDNA1257 = 1257;
+    public static final Integer SDNA1258 = 1258;
+    public static final Integer CE1259 = 1259;
+    public static final Integer CDNU1260 = 1260;
 
 }

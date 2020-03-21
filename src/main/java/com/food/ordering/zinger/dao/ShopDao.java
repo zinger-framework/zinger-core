@@ -41,143 +41,88 @@ public class ShopDao {
     AuditLogDao auditLogDao;
 
     public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
-
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
-        ShopLogModel shopLogModel = new ShopLogModel();
-        shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setMobile(shopLogModel.getMobile());
-
-        shopLogModel.setErrorCode(response.getCode());
-        shopLogModel.setMessage(response.getMessage());
-        shopLogModel.setUpdatedValue(configurationModel.toString());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
                 response.setCode(ErrorLog.IH1004);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(configurationModel.toString());
-
-                try {
-                    auditLogDao.insertShopLog(shopLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1005);
                 response.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                ShopModel shopModel = configurationModel.getShopModel();
+                parameters = new MapSqlParameterSource()
+                        .addValue(ShopColumn.name, shopModel.getName())
+                        .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
+                        .addValue(ShopColumn.mobile, shopModel.getMobile())
+                        .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
+                        .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
+                        .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
+                        .addValue(ShopColumn.isDelete, 0);
 
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(configurationModel.toString());
+                SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+                simpleJdbcInsert.withTableName(ShopColumn.tableName).usingGeneratedKeyColumns(ShopColumn.id);
+                Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
 
-                try {
-                    auditLogDao.insertShopLog(shopLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                configurationModel.getShopModel().setId(responseValue.intValue());
+                Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
+
+                if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else if (responseValue.intValue() <= 0) {
+                    priority = Priority.HIGH;
+                    response.setCode(ErrorLog.SDNU1251);
+                    response.setData(ErrorLog.ShopDetailNotUpdated);
+                } else {
+                    response.setCode(ErrorLog.CDNU1252);
+                    response.setData(ErrorLog.ConfigurationDetailNotUpdated);
                 }
-                return response;
             }
-
-            ShopModel shopModel = configurationModel.getShopModel();
-            parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.name, shopModel.getName())
-                    .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
-                    .addValue(ShopColumn.mobile, shopModel.getMobile())
-                    .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
-                    .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
-                    .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
-                    .addValue(ShopColumn.isDelete, 0);
-
-            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-            simpleJdbcInsert
-                    .withTableName(ShopColumn.tableName)
-                    .usingGeneratedKeyColumns(ShopColumn.id);
-
-            Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
-            configurationModel.getShopModel().setId(responseValue.intValue());
-
-            Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
-
-            if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.LOW);
-                shopLogModel.setUpdatedValue(shopModel.toString());
-            } else if (responseValue.intValue() <= 0)
-                response.setData(ErrorLog.ShopDetailNotUpdated);
-            else
-                response.setData(ErrorLog.ConfigurationDetailNotUpdated);
-
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1253);
             e.printStackTrace();
         }
 
-        try {
-            auditLogDao.insertShopLog(shopLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
+        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, configurationModel.toString(), priority));
         return response;
     }
 
     public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
-        ShopLogModel shopLogModel = new ShopLogModel();
-        shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setMobile(requestHeaderModel.getMobile());
-
-        shopLogModel.setErrorCode(response.getCode());
-        shopLogModel.setMessage(response.getMessage());
-        shopLogModel.setUpdatedValue(requestHeaderModel.getMobile());
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1006);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(requestHeaderModel.getMobile());
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(ShopColumn.collegeId, collegeId);
 
                 try {
-                    auditLogDao.insertShopLog(shopLogModel);
+                    list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
                 } catch (Exception e) {
+                    response.setCode(ErrorLog.CE1254);
                     e.printStackTrace();
                 }
-
-                return response;
-            }
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.collegeId, collegeId);
-
-            try {
-                list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1255);
             e.printStackTrace();
         } finally {
             if (list != null && !list.isEmpty()) {
+                priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
@@ -190,33 +135,44 @@ public class ShopDao {
                     Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
 
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-                    shopConfigurationModel.setShopModel(shopModelResponse.getData());
-                    shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
-                    shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+
+                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getMessage().equals(ErrorLog.Success))
+                        shopConfigurationModel.setShopModel(shopModelResponse.getData());
+                    else {
+                        priority = Priority.HIGH;
+                        response.setCode(ErrorLog.SDNA1256);
+                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                    }
+
+                    if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess) && configurationModelResponse.getMessage().equals(ErrorLog.Success))
+                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+                    else {
+                        priority = Priority.HIGH;
+                        response.setCode(ErrorLog.CDNA1257);
+                        response.setMessage(ErrorLog.ConfigurationDetailNotAvailable);
+                    }
+
+                    if (ratingModelResponse.getCode().equals(ErrorLog.CodeSuccess) && ratingModelResponse.getMessage().equals(ErrorLog.Success))
+                        shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+                    else {
+                        priority = Priority.HIGH;
+                        response.setCode(ErrorLog.SDNA1258);
+                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                    }
+
                     shopConfigurationModelList.add(shopConfigurationModel);
                 }
-
                 response.setData(shopConfigurationModelList);
             }
         }
-        try {
-            auditLogDao.insertShopLog(shopLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, collegeId.toString(), priority));
         return response;
     }
 
     public Response<ShopModel> getShopById(Integer shopId) {
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
-        ShopLogModel shopLogModel = new ShopLogModel();
-
-        shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setErrorCode(response.getCode());
-        shopLogModel.setMessage(response.getMessage());
-        shopLogModel.setUpdatedValue(shopId.toString());
-
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -238,17 +194,7 @@ public class ShopDao {
                     shopModel.setCollegeModel(collegeModelResponse.getData());
                 }
                 response.setData(shopModel);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.LOW);
-                shopLogModel.setUpdatedValue(shopId.toString());
             }
-        }
-        try {
-            auditLogDao.insertShopLog(shopLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return response;
     }
@@ -256,79 +202,45 @@ public class ShopDao {
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
-        ShopLogModel shopLogModel = new ShopLogModel();
-        shopLogModel.setId(shopLogModel.getId());
-        shopLogModel.setMobile(requestHeaderModel.getMobile());
-
-        shopLogModel.setErrorCode(response.getCode());
-        shopLogModel.setMessage(response.getMessage());
-        shopLogModel.setUpdatedValue(shopLogModel.toString());
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (!requestHeaderModel.getRole().equals((UserRole.SHOP_OWNER).name())) {
                 response.setCode(ErrorLog.IH1007);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(shopLogModel.toString());
-
-                try {
-                    auditLogDao.insertShopLog(shopLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return response;
-            }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1008);
                 response.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
 
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.HIGH);
-                shopLogModel.setUpdatedValue(shopLogModel.toString());
+                parameters = new MapSqlParameterSource()
+                        .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
+                        .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
+                        .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
+                        .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
+                        .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
+                        .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
 
-                try {
-                    auditLogDao.insertShopLog(shopLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
+                if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(ErrorLog.CDNU1260);
+                    response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
                 }
-                return response;
-            }
-
-            Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
-
-            parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
-                    .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
-                    .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
-                    .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
-                    .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
-                    .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
-
-            int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
-            if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                shopLogModel.setErrorCode(response.getCode());
-                shopLogModel.setMessage(response.getMessage());
-                shopLogModel.setPriority(Priority.LOW);
-                shopLogModel.setUpdatedValue(configurationModel.toString());
             }
         } catch (Exception e) {
             e.printStackTrace();
+            response.setCode(ErrorLog.CE1259);
         }
-        try {
-            auditLogDao.insertShopLog(shopLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
         return response;
     }
 }
