@@ -112,7 +112,6 @@ public class ShopDao {
             Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
             configurationModel.getShopModel().setId(responseValue.intValue());
 
-            //int responseValue = namedParameterJdbcTemplate.update(ShopQuery.insertShop, parameters);
             Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
 
             if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
