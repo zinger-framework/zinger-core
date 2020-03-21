@@ -1,7 +1,6 @@
 package com.food.ordering.zinger.model;
 
 public class ResponseHeaderModel {
-
     String oauthId;
     String mobile;
     String role;
@@ -39,4 +38,12 @@ public class ResponseHeaderModel {
         this.role = role;
     }
 
+    @Override
+    public String toString() {
+        return "ResponseHeaderModel{" +
+                "oauthId='" + oauthId + '\'' +
+                ", mobile='" + mobile + '\'' +
+                ", role='" + role + '\'' +
+                '}';
+    }
 }

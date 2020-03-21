@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.UserColumn;
+import com.food.ordering.zinger.model.ResponseHeaderModel;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.query.UserQuery;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
@@ -18,15 +19,15 @@ public class UtilsDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public Response<UserModel> validateUser(String oauthId, String mobile, String role) {
+    public Response<UserModel> validateUser(ResponseHeaderModel responseHeaderModel) {
         UserModel userModel = null;
         Response<UserModel> response = new Response<>();
-System.out.println("\n OAuthID : " + oauthId + "\n Mobile :  " + mobile + "\n Role : " + role);
+
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserColumn.oauthId, oauthId)
-                    .addValue(UserColumn.mobile, mobile)
-                    .addValue(UserColumn.role, role);
+                    .addValue(UserColumn.oauthId, responseHeaderModel.getOauthId())
+                    .addValue(UserColumn.mobile, responseHeaderModel.getMobile())
+                    .addValue(UserColumn.role, responseHeaderModel.getRole());
 
             try {
                 userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
