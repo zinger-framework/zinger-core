@@ -55,6 +55,9 @@ public class ErrorLog {
     public static final Integer IH1016 = 1016;
     public static final Integer IH1017 = 1017;
     public static final Integer IH1018 = 1018;
+    public static final Integer IH1019 = 1019;
+    public static final Integer IH1020 = 1020;
+    public static final Integer IH1021 = 1021;
 
     // Logesh 1050-1100
 
@@ -124,4 +127,15 @@ public class ErrorLog {
     public static final Integer OIDNU1262 = 1262;
     public static final Integer ODNU1263 = 1263;
     public static final Integer TDNU1264 = 1264;
+
+    public static final Integer ODNU1280=1280;
+    public static final Integer SKM1281=1281;
+    public static final Integer IOS1282=1282;
+    public static final Integer ODNA1283=1283;
+    public static final Integer CE1284 = 1284;
+    public static final Integer ODNU1285=1285;
+    public static final Integer CE1286 = 1286;
+    public static final Integer ODNA1287=1287;
+    public static final Integer CE1289 = 1289;
+    public static final Integer SDNA1290 = 1290;
 }

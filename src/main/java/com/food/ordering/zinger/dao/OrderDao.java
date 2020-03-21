@@ -302,27 +302,32 @@ public class OrderDao {
     public Response<List<OrderModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
+        Priority priority=Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
+                response.setCode(ErrorLog.IH1020);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+                priority=Priority.HIGH;
             }
-
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1020);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+                priority=Priority.HIGH;
+            }else{
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(OrderColumn.shopId, shopId);
+                try {
+                    orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+                } catch (Exception e) {
+                    response.setCode(ErrorLog.ODNA1287);
+                    response.setMessage(ErrorLog.OrderDetailNotAvailable);
+                    e.printStackTrace();
+                }
             }
 
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.shopId, shopId);
-
-            try {
-                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         } catch (Exception e1) {
+            response.setCode(ErrorLog.CE1289);
             e1.printStackTrace();
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
@@ -333,8 +338,8 @@ public class OrderDao {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
                     if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                        return response;
+                        response.setCode(ErrorLog.SDNA1290);
+                        priority=Priority.HIGH;
                     }
 
                     orderModel.setTransactionModel(transactionModelResponse.getData());
@@ -344,6 +349,7 @@ public class OrderDao {
             }
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response,requestHeaderModel.getMobile(),shopId.toString(),shopId.toString(), priority));
         return response;
     }
 
@@ -394,79 +400,97 @@ public class OrderDao {
 
     public Response<String> updateOrder(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
+        Priority priority=Priority.HIGH;
+
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1019);
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
             }
+            else{
 
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(cookingInfo, orderModel.getCookingInfo())
-                    .addValue(rating, orderModel.getRating())
-                    .addValue(secretKey, orderModel.getSecretKey())
-                    .addValue(id, orderModel.getId());
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(cookingInfo, orderModel.getCookingInfo())
+                        .addValue(rating, orderModel.getRating())
+                        .addValue(secretKey, orderModel.getSecretKey())
+                        .addValue(id, orderModel.getId());
 
-            int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrder, parameter);
-            if (updateStatus > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
+                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrder, parameter);
+                if (updateStatus > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority=Priority.LOW;
+                }else{
+                    response.setCode(ErrorLog.ODNU1285);
+                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                }
             }
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1286);
             e.printStackTrace();
         }
 
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
     public Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
+        Priority priority=Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
-                return response;
+            }
+            else{
+                Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
+                if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
+                        if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
+                            String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
+                            orderModelResponse.getData().setSecretKey(secretKey);
+                            Response<String> updateResponse = updateOrder(orderModelResponse.getData(), requestHeaderModel);
+                            if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                                response.setCode(ErrorLog.ODNU1280);
+                                response.setData(ErrorLog.OrderDetailNotUpdated);
+                            }
+                        }
+
+                        if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+                            if (!orderModel.getSecretKey().equals(orderModelResponse.getData().getSecretKey())) {
+                                response.setCode(ErrorLog.SKM1281);
+                                response.setData(ErrorLog.SecretKeyMismatch);
+                            }
+                        }
+
+                        MapSqlParameterSource parameter = new MapSqlParameterSource()
+                                .addValue(status, orderModel.getOrderStatus().name())
+                                .addValue(id, orderModel.getId());
+
+                        namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
+
+                        response.setCode(ErrorLog.CodeSuccess);
+                        response.setMessage(ErrorLog.Success);
+                        response.setData(ErrorLog.Success);
+                        priority=Priority.LOW;
+
+                    } else{
+                        response.setCode(ErrorLog.IOS1282);
+                        response.setData(ErrorLog.InvalidOrderStatus);
+                    }
+                } else{
+                    response.setCode(ErrorLog.ODNA1283);
+                    response.setData(ErrorLog.OrderDetailNotAvailable);
+                }
             }
 
-            Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
-
-            if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
-
-                    if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
-                        String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
-                        orderModelResponse.getData().setSecretKey(secretKey);
-
-                        Response<String> updateResponse = updateOrder(orderModelResponse.getData(), requestHeaderModel);
-                        if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            response.setData(ErrorLog.OrderDetailNotUpdated);
-                            return response;
-                        }
-                    }
-
-                    if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-                        if (!orderModel.getSecretKey().equals(orderModelResponse.getData().getSecretKey())) {
-                            response.setData(ErrorLog.SecretKeyMismatch);
-                            return response;
-                        }
-                    }
-
-                    MapSqlParameterSource parameter = new MapSqlParameterSource()
-                            .addValue(status, orderModel.getOrderStatus().name())
-                            .addValue(id, orderModel.getId());
-
-                    namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                } else
-                    response.setData(ErrorLog.InvalidOrderStatus);
-            } else
-                response.setData(ErrorLog.OrderDetailNotAvailable);
         } catch (Exception e) {
+            response.setCode(ErrorLog.CE1284);
             e.printStackTrace();
         }
+
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
