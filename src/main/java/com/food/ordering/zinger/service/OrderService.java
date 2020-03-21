@@ -4,6 +4,7 @@ import com.food.ordering.zinger.column.UserColumn;
 import com.food.ordering.zinger.dao.OrderDao;
 import com.food.ordering.zinger.model.OrderItemListModel;
 import com.food.ordering.zinger.model.OrderModel;
+import com.food.ordering.zinger.model.ResponseHeaderModel;
 import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,34 +20,42 @@ public class OrderService {
     OrderDao orderDao;
 
     public Response<String> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
-        return orderDao.insertOrder(orderItemListModel, oauthId, mobile, role);
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.insertOrder(orderItemListModel, responseHeader);
     }
 
     public Response<String> verifyOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
-        return orderDao.verifyOrder(orderItemListModel, oauthId, mobile, role);
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.verifyOrder(orderItemListModel, responseHeader);
     }
 
-    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role){
-        return orderDao.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
+    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.getOrderByMobile(mobile, pageNum, pageCount, responseHeader);
     }
 
-    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role){
-        return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount, oauthId, mobile, role);
+    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount, responseHeader);
     }
 
-    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role){
-        return orderDao.getOrderByShopId(shopId, oauthId, mobile, role);
+    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.getOrderByShopId(shopId, responseHeader);
     }
 
-    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role){
-        return orderDao.getOrderById(id, oauthId, mobile, role);
+    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role) {
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.getOrderById(id, responseHeader);
     }
 
     public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
-        return orderDao.updateOrder(orderModel, oauthId, mobile, role);
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.updateOrder(orderModel, responseHeader);
     }
 
     public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
-        return orderDao.updateOrderStatus(orderModel, oauthId, mobile, role);
+        ResponseHeaderModel responseHeader = new ResponseHeaderModel(oauthId, mobile, role);
+        return orderDao.updateOrderStatus(orderModel, responseHeader);
     }
 }

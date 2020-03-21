@@ -54,8 +54,7 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -74,8 +73,7 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -104,8 +102,7 @@ public class CollegeDao {
 
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
@@ -134,8 +131,7 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -144,8 +140,7 @@ public class CollegeDao {
 
             try {
                 list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
@@ -159,8 +154,7 @@ public class CollegeDao {
         }
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -204,8 +198,7 @@ public class CollegeDao {
 
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
