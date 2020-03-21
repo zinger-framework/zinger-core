@@ -17,6 +17,8 @@ public class ErrorLog {
 
 
     public static final String UserDetailNotUpdated = "User detail not updated";
+    public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
+    public static final String ShopDetailNotUpdated = "Shop detail not updated";
     public static final String CollegeDetailNotUpdated = "College detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Order detail not updated";

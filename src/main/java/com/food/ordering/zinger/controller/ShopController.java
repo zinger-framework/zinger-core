@@ -20,8 +20,8 @@ public class ShopController {
     ShopService shopService;
 
     @PostMapping(value = "")
-    public Response<String> insertShop(@RequestBody ShopModel shopModel,@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.insertShop(shopModel,oauthId,mobile,role);
+    public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel,@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.insertShop(configurationModel,oauthId,mobile,role);
     }
 
     @GetMapping(value = "/college/{collegeId}")

@@ -39,10 +39,12 @@ insert into rating values(3,3.7,98);
 insert into configurations(shop_id, delivery_price) values(1,5.0);
 insert into configurations(shop_id, delivery_price) values(2,15.0);
 insert into configurations(shop_id, delivery_price) values(3,20.0);
+insert into configurations(shop_id, delivery_price) values(10,2.0);
 
 -- insert into users_college values("9176786582",1);
 -- insert into users_shop values("9176786581",1);
 -- insert into users_shop values("9176786581",2);
+
 select * from users;
 select * from college;
 select * from college_log;
