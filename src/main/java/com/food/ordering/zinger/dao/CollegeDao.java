@@ -34,77 +34,36 @@ public class CollegeDao {
     public Response<String> insertCollege(CollegeModel collegeModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         CollegeLogModel collegeLogModel = new CollegeLogModel();
-        collegeLogModel.setId(collegeLogModel.getId());
-        collegeLogModel.setMobile(responseHeader.getMobile());
-
-        collegeLogModel.setErrorCode(response.getCode());
-        collegeLogModel.setMessage(response.getMessage());
-        collegeLogModel.setUpdatedValue(collegeModel.toString());
 
         try {
+
             if (!responseHeader.getRole().equals((UserRole.SUPER_ADMIN).name())) {
-                //TODO: HIGH
                 response.setCode(ErrorLog.InvalidHeader1000);
                 response.setMessage(ErrorLog.InvalidHeader);
-
-                collegeLogModel.setErrorCode(response.getCode());
-                collegeLogModel.setMessage(response.getMessage());
-                collegeLogModel.setPriority(Priority.HIGH);
-                collegeLogModel.setUpdatedValue(collegeModel.toString());
-
-                try {
-                    auditLogDao.insertCollegeLog(collegeLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                return response;
             }
-
-            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
-                //TODO: HIGH
+            else if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1001);
                 response.setMessage(ErrorLog.InvalidHeader);
+            }
+            else{
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(CollegeColumn.name, collegeModel.getName())
+                        .addValue(CollegeColumn.address, collegeModel.getAddress())
+                        .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl());
 
-                collegeLogModel.setErrorCode(response.getCode());
-                collegeLogModel.setMessage(response.getMessage());
-                collegeLogModel.setPriority(Priority.HIGH);
-                collegeLogModel.setUpdatedValue(collegeModel.toString());
-
-                try {
-                    auditLogDao.insertCollegeLog(collegeLogModel);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                int responseValue = namedParameterJdbcTemplate.update(CollegeQuery.insertCollege, parameters);
+                if (responseValue > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
                 }
-
-                return response;
             }
 
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(CollegeColumn.name, collegeModel.getName())
-                    .addValue(CollegeColumn.address, collegeModel.getAddress())
-                    .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl());
-
-            int responseValue = namedParameterJdbcTemplate.update(CollegeQuery.insertCollege, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-
-                collegeLogModel.setErrorCode(response.getCode());
-                collegeLogModel.setMessage(response.getMessage());
-                collegeLogModel.setPriority(Priority.LOW);
-                collegeLogModel.setUpdatedValue(collegeModel.toString());
-            }
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        try {
-            auditLogDao.insertCollegeLog(collegeLogModel);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
         return response;
     }
 
