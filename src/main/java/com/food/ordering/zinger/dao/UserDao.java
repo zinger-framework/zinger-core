@@ -3,10 +3,8 @@ package com.food.ordering.zinger.dao;
 import com.food.ordering.zinger.column.UserCollegeColumn;
 import com.food.ordering.zinger.column.UserColumn;
 import com.food.ordering.zinger.column.UserShopColumn;
-import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.query.UserCollegeQuery;
 import com.food.ordering.zinger.query.UserQuery;
 import com.food.ordering.zinger.query.UserShopQuery;
@@ -21,7 +19,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,13 +43,9 @@ public class UserDao {
     @Autowired
     UtilsDao utilsDao;
 
-    @Autowired
-    AuditLogDao auditLogDao;
-
     public Response<UserCollegeModel> insertCustomer(UserModel user) {
         Response<UserCollegeModel> response = new Response<>();
         UserCollegeModel userCollegeModel = new UserCollegeModel();
-        UserLogModel userLogModel = new UserLogModel();
         try {
             if (!user.getRole().equals(UserRole.CUSTOMER))
                 return response;
@@ -78,22 +71,15 @@ public class UserDao {
                         .addValue(UserColumn.oauthId, user.getOauthId())
                         .addValue(UserColumn.role, user.getRole().name());
 
-                userLogModel.setMobile(user.getMobile());
-                userLogModel.setUsersMobile(user.getMobile());
-                userLogModel.setDate(new Timestamp(System.currentTimeMillis()));
-
                 int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
                 if (result > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.CollegeDetailNotAvailable);
                     userCollegeModel.setUserModel(user);
                     response.setData(userCollegeModel);
-                    userLogModel.setMessage("Customer created successfully");
                 }
             }
         } catch (Exception e) {
-        	userLogModel.setMessage(ErrorLog.UserDetailNotUpdated);
-        	userLogModel.setPriority(Priority.HIGH);
             e.printStackTrace();
         }
         return response;
@@ -101,7 +87,6 @@ public class UserDao {
 
     public Response<UserShopListModel> insertSeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
-        UserLogModel userLogModel = new UserLogModel();
         try {
             if (user.getRole().equals(UserRole.CUSTOMER))
                 return response;
@@ -155,8 +140,7 @@ public class UserDao {
                 }
                 userCollegeModel.setUserModel(userModel);
                 response.setData(userCollegeModel);
-            }
-            else
+            } else
                 response.setMessage(ErrorLog.CollegeDetailNotAvailable);
         }
 
@@ -233,11 +217,11 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<String> updateUser(UserModel user, String oauthId, String mobile, String role) {
+    public Response<String> updateUser(UserModel user, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -302,15 +286,15 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
+    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
-        if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+        if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
             response.setMessage(ErrorLog.InvalidHeader);
             return response;
         }
 
-        Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), oauthId, mobile, role);
+        Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), responseHeader);
         Response<String> responseCollege = updateCollege(userCollegeModel);
 
         if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {

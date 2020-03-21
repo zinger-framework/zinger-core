@@ -46,11 +46,11 @@ public class OrderDao {
     @Autowired
     ConfigurationDao configurationDao;
 
-    public Response<String> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
+    public Response<String> insertOrder(OrderItemListModel orderItemListModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -123,11 +123,11 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
+    public Response<String> verifyOrder(OrderItemListModel orderItemListModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -165,18 +165,18 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
+    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, ResponseHeaderModel responseHeader) {
         Response<List<OrderItemListModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
-        List<OrderItemListModel> orderItemListByMobile=null;
+        List<OrderItemListModel> orderItemListByMobile = null;
 
         try {
-            if (!role.equals((UserRole.CUSTOMER).name())) {
+            if (!responseHeader.getRole().equals((UserRole.CUSTOMER).name())) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobileRh, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -198,14 +198,14 @@ public class OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
-                orderItemListByMobile=new ArrayList<>();
+                orderItemListByMobile = new ArrayList<>();
 
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
-                    Response<List<OrderItemModel>> orderItemsListResponse=itemDao.getItemsByOrderId(orderModel);
+                    Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(orderModel);
 
-                    if(!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         response.setMessage(ErrorLog.TransactionDetailNotAvailable);
                         return response;
                     }
@@ -215,18 +215,17 @@ public class OrderDao {
                         return response;
                     }
 
-                    if(!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)){
+                    if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
                         return response;
                     }
-
 
 
                     orderModel.setTransactionModel(transactionModelResponse.getData());
                     orderModel.setShopModel(shopModelResponse.getData());
 
 
-                    OrderItemListModel orderItemListModel=new OrderItemListModel();
+                    OrderItemListModel orderItemListModel = new OrderItemListModel();
                     orderItemListModel.setOrderModel(orderModel);
                     orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
 
@@ -239,17 +238,17 @@ public class OrderDao {
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
+    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, ResponseHeaderModel responseHeader) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
 
         try {
-            if (role.equals((UserRole.CUSTOMER).name())) {
+            if (responseHeader.getRole().equals((UserRole.CUSTOMER).name())) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -289,17 +288,17 @@ public class OrderDao {
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
+    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, ResponseHeaderModel responseHeader) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
 
         try {
-            if (role.equals((UserRole.CUSTOMER).name())) {
+            if (responseHeader.getRole().equals((UserRole.CUSTOMER).name())) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -337,12 +336,12 @@ public class OrderDao {
         return response;
     }
 
-    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role) {
+    public Response<OrderModel> getOrderById(String id, ResponseHeaderModel responseHeader) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -382,10 +381,10 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
+    public Response<String> updateOrder(OrderModel orderModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
@@ -409,16 +408,16 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
+    public Response<String> updateOrderStatus(OrderModel orderModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
                 return response;
             }
 
-            Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), oauthId, mobile, role);
+            Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), responseHeader);
 
             if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
@@ -427,7 +426,7 @@ public class OrderDao {
                         String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
                         orderModelResponse.getData().setSecretKey(secretKey);
 
-                        Response<String> updateResponse = updateOrder(orderModelResponse.getData(), oauthId, mobile, role);
+                        Response<String> updateResponse = updateOrder(orderModelResponse.getData(), responseHeader);
                         if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             response.setData(ErrorLog.OrderDetailNotUpdated);
                             return response;

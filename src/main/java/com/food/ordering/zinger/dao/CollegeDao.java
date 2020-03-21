@@ -54,15 +54,14 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 return response;
             }
 
-            if (!utilsDao.validateUser(responseHeader.getOauthId(),responseHeader.getMobile(),responseHeader.getRole()).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 //TODO: HIGH
                 response.setCode(ErrorLog.InvalidHeader1001);
                 response.setMessage(ErrorLog.InvalidHeader);
@@ -74,8 +73,7 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -104,8 +102,7 @@ public class CollegeDao {
 
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
@@ -123,7 +120,7 @@ public class CollegeDao {
         collegeLogModel.setUpdatedValue(responseHeader.getMobile());
 
         try {
-            if (!utilsDao.validateUser(responseHeader.getOauthId(),responseHeader.getMobile(),responseHeader.getRole()).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1002);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -134,8 +131,7 @@ public class CollegeDao {
 
                 try {
                     auditLogDao.insertCollegeLog(collegeLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -144,8 +140,7 @@ public class CollegeDao {
 
             try {
                 list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {
@@ -159,11 +154,10 @@ public class CollegeDao {
         }
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return response;
     }
 
@@ -171,14 +165,14 @@ public class CollegeDao {
         Response<CollegeModel> response = new Response<>();
         CollegeModel college = null;
         CollegeLogModel collegeLogModel = new CollegeLogModel();
-        
+
         collegeLogModel.setId(collegeLogModel.getId());
         collegeLogModel.setErrorCode(response.getCode());
         collegeLogModel.setMessage(response.getMessage());
         collegeLogModel.setUpdatedValue(collegeId.toString());
 
         try {
-              
+
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(CollegeColumn.id, collegeId);
 
@@ -194,21 +188,20 @@ public class CollegeDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(college);
-                
+
                 collegeLogModel.setErrorCode(response.getCode());
                 collegeLogModel.setMessage(response.getMessage());
                 collegeLogModel.setPriority(Priority.LOW);
                 collegeLogModel.setUpdatedValue(collegeId.toString());
             }
         }
-        
+
         try {
             auditLogDao.insertCollegeLog(collegeLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return response;
     }
 }

@@ -5,10 +5,7 @@ import com.food.ordering.zinger.column.OrderItemColumn;
 import com.food.ordering.zinger.column.ShopColumn;
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
-import com.food.ordering.zinger.model.ItemModel;
-import com.food.ordering.zinger.model.OrderItemModel;
-import com.food.ordering.zinger.model.OrderModel;
-import com.food.ordering.zinger.model.ShopModel;
+import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.logger.CollegeLogModel;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
@@ -39,22 +36,22 @@ public class ItemDao {
 
     @Autowired
     ShopDao shopDao;
-    
+
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertItem(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> insertItem(ItemModel itemModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(mobile);
+        itemLogModel.setMobile(responseHeader.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemModel.toString());
 
         try {
-            if (role.equals(UserRole.CUSTOMER.name())) {
+            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.InvalidHeader1009);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -65,14 +62,13 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1010);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -83,8 +79,7 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
@@ -103,7 +98,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -114,40 +109,38 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        
+
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, ResponseHeaderModel responseHeader) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(mobile);
+        itemLogModel.setMobile(responseHeader.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
-        itemLogModel.setUpdatedValue(mobile.toString());
+        itemLogModel.setUpdatedValue(responseHeader.getMobile());
 
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1011);
                 response.setMessage(ErrorLog.InvalidHeader);
 
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
-                itemLogModel.setUpdatedValue(mobile.toString());
+                itemLogModel.setUpdatedValue(responseHeader.getMobile());
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -173,7 +166,7 @@ public class ItemDao {
                     list.get(i).setShopModel(null);
 
                 response.setData(list);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -184,19 +177,18 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {
+    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, ResponseHeaderModel responseHeader) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
-        ItemModel itemModel = null;
         ItemLogModel itemLogModel = new ItemLogModel();
-        
+
         itemLogModel.setId(itemLogModel.getId());
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(collegeId.toString());
 
         try {
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1012);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -207,8 +199,7 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
@@ -234,7 +225,7 @@ public class ItemDao {
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
                 response.setData(items);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -243,8 +234,7 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
@@ -254,7 +244,7 @@ public class ItemDao {
         ItemModel item = null;
         Response<ItemModel> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
-        
+
         itemLogModel.setId(itemLogModel.getId());
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
@@ -277,7 +267,7 @@ public class ItemDao {
                 Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getId());
                 item.setShopModel(shopModelResponse.getData());
                 response.setData(item);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -286,8 +276,7 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
@@ -317,17 +306,17 @@ public class ItemDao {
                 if (orderItemModelList != null && orderItemModelList.size() > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
-                    orderItemModelList.stream().forEach(s->{
+                    orderItemModelList.stream().forEach(s -> {
                         s.setOrderModel(null);
-                        Response<ItemModel> itemModelResponse=getItemById(s.getItemModel().getId());
-                        if(itemModelResponse.getCode().equals(ErrorLog.CodeSuccess)&& itemModelResponse.getMessage().equals(ErrorLog.Success)){
+                        Response<ItemModel> itemModelResponse = getItemById(s.getItemModel().getId());
+                        if (itemModelResponse.getCode().equals(ErrorLog.CodeSuccess) && itemModelResponse.getMessage().equals(ErrorLog.Success)) {
                             s.setItemModel(itemModelResponse.getData());
-                        }else{
+                        } else {
                             s.setItemModel(null);
                         }
                     });
                     response.setData(orderItemModelList);
-                    
+
                     itemLogModel.setErrorCode(response.getCode());
                     itemLogModel.setMessage(response.getMessage());
                     itemLogModel.setPriority(Priority.LOW);
@@ -340,24 +329,23 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> updateItemById(ItemModel itemModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(mobile);
+        itemLogModel.setMobile(responseHeader.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemLogModel.toString());
         try {
-            if (role.equals(UserRole.CUSTOMER.name())) {
+            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.InvalidHeader1013);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -365,17 +353,16 @@ public class ItemDao {
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
                 itemLogModel.setUpdatedValue(itemLogModel.toString());
-                
+
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1014);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -386,8 +373,7 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
@@ -407,7 +393,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -418,25 +404,24 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    public Response<String> deleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> deleteItemById(ItemModel itemModel, ResponseHeaderModel responseHeaderModel) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(mobile);
+        itemLogModel.setMobile(responseHeaderModel.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemModel.toString());
 
         try {
-            if (role.equals(UserRole.CUSTOMER.name())) {
+            if (responseHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.InvalidHeader1015);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -444,18 +429,17 @@ public class ItemDao {
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
                 itemLogModel.setUpdatedValue(itemModel.toString());
-                
+
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1016);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -466,8 +450,7 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
@@ -481,7 +464,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -492,25 +475,24 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> unDeleteItemById(ItemModel itemModel, ResponseHeaderModel responseHeader) {
         Response<String> response = new Response<>();
         ItemLogModel itemLogModel = new ItemLogModel();
         itemLogModel.setId(itemLogModel.getId());
-        itemLogModel.setMobile(mobile);
+        itemLogModel.setMobile(responseHeader.getMobile());
 
         itemLogModel.setErrorCode(response.getCode());
         itemLogModel.setMessage(response.getMessage());
         itemLogModel.setUpdatedValue(itemLogModel.toString());
 
         try {
-            if (role.equals(UserRole.CUSTOMER.name())) {
+            if (responseHeader.getRole().equals(UserRole.CUSTOMER.name())) {
                 response.setCode(ErrorLog.InvalidHeader1017);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -518,17 +500,16 @@ public class ItemDao {
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.HIGH);
                 itemLogModel.setUpdatedValue(itemModel.toString());
-                
+
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
             }
 
-            if (!utilsDao.validateUser(oauthId, mobile, role).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!utilsDao.validateUser(responseHeader).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.InvalidHeader1018);
                 response.setMessage(ErrorLog.InvalidHeader);
 
@@ -539,8 +520,7 @@ public class ItemDao {
 
                 try {
                     auditLogDao.insertItemLog(itemLogModel);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 return response;
@@ -554,7 +534,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                
+
                 itemLogModel.setErrorCode(response.getCode());
                 itemLogModel.setMessage(response.getMessage());
                 itemLogModel.setPriority(Priority.LOW);
@@ -565,8 +545,7 @@ public class ItemDao {
         }
         try {
             auditLogDao.insertItemLog(itemLogModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return response;
