@@ -2,6 +2,7 @@ package com.food.ordering.zinger.model.logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.food.ordering.zinger.enums.Priority;
+import com.food.ordering.zinger.utils.Response;
 
 import java.sql.Timestamp;
 
@@ -17,9 +18,17 @@ public class CollegeLogModel {
 
     private Priority priority;
 
-	public CollegeLogModel() {
-		this.priority = Priority.MEDIUM;
-	}
+    public CollegeLogModel(Response response, String mobile, Integer id, String updatedValue) {
+        this.id = id;
+        this.errorCode = response.getCode();
+        this.mobile = mobile;
+        this.message = response.getMessage();
+        this.updatedValue = updatedValue;
+    }
+
+    public CollegeLogModel() {
+        this.priority = Priority.MEDIUM;
+    }
 
     public Integer getId() {
         return id;
@@ -76,17 +85,17 @@ public class CollegeLogModel {
     public void setPriority(Priority priority) {
         this.priority = priority;
     }
-    
-	@Override
-	public String toString() {
-		return "CollegeLogModel{" +
-				"id=" + id +
-				", errorCode=" + errorCode +
-				", mobile='" + mobile + '\'' +
-				", message='" + message + '\'' +
-				", updatedValue='" + updatedValue + '\'' +
-				", date=" + date +
-				", priority=" + priority +
-				'}';
-	}
+
+    @Override
+    public String toString() {
+        return "CollegeLogModel{" +
+                "id=" + id +
+                ", errorCode=" + errorCode +
+                ", mobile='" + mobile + '\'' +
+                ", message='" + message + '\'' +
+                ", updatedValue='" + updatedValue + '\'' +
+                ", date=" + date +
+                ", priority=" + priority +
+                '}';
+    }
 }
