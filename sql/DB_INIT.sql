@@ -53,7 +53,7 @@ CREATE TABLE item (
   id INT AUTO_INCREMENT,
   name VARCHAR(32) NOT NULL,
   price DOUBLE NOT NULL,
-  photo_url VARCHAR(64) DEFAULT NULL,
+  photo_url VARCHAR(128) DEFAULT NULL,
   category VARCHAR(16) NOT NULL,
   shop_id INT NOT NULL,
   is_veg INT DEFAULT 0,
@@ -129,8 +129,8 @@ CREATE TABLE orders_item (
 
 CREATE TABLE rating (
    shop_id INT NOT NULL,
-   rating DOUBLE DEFAULT NULL,
-   user_count INT DEFAULT NULL,
+   rating DOUBLE DEFAULT 0,
+   user_count INT DEFAULT 0,
    CONSTRAINT rating_shop_id_pk PRIMARY KEY (shop_id),
    CONSTRAINT rating_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
 );
@@ -145,3 +145,22 @@ CREATE TABLE configurations (
 );
 
 ####################################################
+
+CREATE TRIGGER new_rating_trigger
+AFTER INSERT ON shop
+FOR EACH ROW
+INSERT INTO rating(shop_id) VALUES(NEW.id);
+
+CREATE TRIGGER update_rating_trigger
+AFTER UPDATE ON orders
+FOR EACH ROW
+UPDATE rating
+SET user_count = 1,
+rating = NEW.rating;
+
+CREATE TRIGGER calculate_rating_trigger
+BEFORE UPDATE ON rating
+FOR EACH ROW
+UPDATE rating
+set user_count = (OLD.user_count + 1),
+rating = (OLD.rating + (NEW.rating/(OLD.user_count + 1)));
