@@ -89,7 +89,7 @@ CREATE TABLE orders (
   delivery_price DOUBLE DEFAULT NULL,
   delivery_location VARCHAR(128) DEFAULT NULL,
   cooking_info VARCHAR(128) DEFAULT NULL,
-  rating DOUBLE DEFAULT NULL,
+  rating DOUBLE(2,1) DEFAULT NULL,
   secret_key VARCHAR(10) DEFAULT NULL,
   CONSTRAINT orders_id_pk PRIMARY KEY (id),
   CONSTRAINT orders_mobile_fk FOREIGN KEY (mobile) REFERENCES users(mobile),
@@ -129,7 +129,7 @@ CREATE TABLE orders_item (
 
 CREATE TABLE rating (
    shop_id INT NOT NULL,
-   rating DOUBLE DEFAULT 0,
+   rating DOUBLE(2,1) DEFAULT 0,
    user_count INT DEFAULT 0,
    CONSTRAINT rating_shop_id_pk PRIMARY KEY (shop_id),
    CONSTRAINT rating_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)
@@ -150,17 +150,3 @@ CREATE TRIGGER new_rating_trigger
 AFTER INSERT ON shop
 FOR EACH ROW
 INSERT INTO rating(shop_id) VALUES(NEW.id);
-
-CREATE TRIGGER update_rating_trigger
-AFTER UPDATE ON orders
-FOR EACH ROW
-UPDATE rating
-SET user_count = 1,
-rating = NEW.rating;
-
-CREATE TRIGGER calculate_rating_trigger
-BEFORE UPDATE ON rating
-FOR EACH ROW
-UPDATE rating
-set user_count = (OLD.user_count + 1),
-rating = (OLD.rating + (NEW.rating/(OLD.user_count + 1)));

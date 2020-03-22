@@ -60,6 +60,7 @@ public class ErrorLog {
     public static final Integer IH1019 = 1019;
     public static final Integer IH1020 = 1020;
     public static final Integer IH1021 = 1021;
+    public static final Integer IH1022 = 1022;
 
     // Logesh 1050-1100
 
@@ -169,4 +170,6 @@ public class ErrorLog {
     public static final Integer TDNA1292 = 1292;
     public static final Integer UDNA1293 = 1293;
     public static final Integer SDNA1294 = 1294;
+    public static final Integer ODNU1295 = 1295;
+    public static final Integer CE1296 = 1296;
 }

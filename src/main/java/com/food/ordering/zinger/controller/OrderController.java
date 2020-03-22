@@ -47,9 +47,14 @@ public class OrderController {
         return orderService.getOrderById(id, oauthId, mobile, role);
     }
 
-    @PatchMapping(value = "")
-    public Response<String> updateOrder(@RequestBody OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return orderService.updateOrder(orderModel, oauthId, mobile, role);
+    @PatchMapping(value = "/rating")
+    public Response<String> updateOrderRating(@RequestBody OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.updateOrderRating(orderModel, oauthId, mobile, role);
+    }
+
+    @PatchMapping(value = "/key")
+    public Response<String> updateOrderKey(@RequestBody OrderModel orderModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.updateOrderKey(orderModel, oauthId, mobile, role);
     }
 
     @PatchMapping(value = "/status")

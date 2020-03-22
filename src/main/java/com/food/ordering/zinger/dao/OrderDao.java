@@ -43,6 +43,9 @@ public class OrderDao {
     ShopDao shopDao;
 
     @Autowired
+    RatingDao ratingDao;
+
+    @Autowired
     UserDao userDao;
 
     @Autowired
@@ -450,35 +453,67 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<String> updateOrder(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateOrderRating(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1019);
-                response.setMessage(ErrorLog.InvalidHeader);
+                response.setData(ErrorLog.InvalidHeader);
             } else {
-
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(cookingInfo, orderModel.getCookingInfo())
-                        .addValue(rating, orderModel.getRating())
-                        .addValue(secretKey, orderModel.getSecretKey())
+                        .addValue(OrderColumn.rating, orderModel.getRating())
                         .addValue(id, orderModel.getId());
 
-                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrder, parameter);
+                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
                 if (updateStatus > 0) {
+                    ratingDao.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
+
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
                     response.setData(ErrorLog.Success);
                     priority = Priority.LOW;
                 } else {
                     response.setCode(ErrorLog.ODNU1285);
-                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                    response.setData(ErrorLog.OrderDetailNotUpdated);
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1286);
+            e.printStackTrace();
+        }
+
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
+        return response;
+    }
+
+    public Response<String> updateOrderKey(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.HIGH;
+
+        try {
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1022);
+                response.setMessage(ErrorLog.InvalidHeader);
+            } else {
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
+                        .addValue(id, orderModel.getId());
+
+                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderKey, parameter);
+                if (updateStatus > 0) {
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                    priority = Priority.LOW;
+                } else {
+                    response.setCode(ErrorLog.ODNU1295);
+                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                }
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1296);
             e.printStackTrace();
         }
 
@@ -500,7 +535,7 @@ public class OrderDao {
                         if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
                             String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
                             orderModelResponse.getData().setSecretKey(secretKey);
-                            Response<String> updateResponse = updateOrder(orderModelResponse.getData(), requestHeaderModel);
+                            Response<String> updateResponse = updateOrderKey(orderModelResponse.getData(), requestHeaderModel);
                             if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                                 response.setCode(ErrorLog.ODNU1280);
                                 response.setData(ErrorLog.OrderDetailNotUpdated);

@@ -46,9 +46,14 @@ public class OrderService {
         return orderDao.getOrderById(id, requestHeaderModel);
     }
 
-    public Response<String> updateOrder(OrderModel orderModel, String oauthId, String mobile, String role) {
+    public Response<String> updateOrderRating(OrderModel orderModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return orderDao.updateOrder(orderModel, requestHeaderModel);
+        return orderDao.updateOrderRating(orderModel, requestHeaderModel);
+    }
+
+    public Response<String> updateOrderKey(OrderModel orderModel, String oauthId, String mobile, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+        return orderDao.updateOrderKey(orderModel, requestHeaderModel);
     }
 
     public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
