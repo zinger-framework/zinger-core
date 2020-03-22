@@ -1,9 +1,7 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.TransactionColumn;
-import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.model.TransactionModel;
-import com.food.ordering.zinger.model.logger.TransactionLogModel;
 import com.food.ordering.zinger.query.TransactionQuery;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;

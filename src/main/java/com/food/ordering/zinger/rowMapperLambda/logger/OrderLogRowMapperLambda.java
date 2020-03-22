@@ -10,7 +10,7 @@ public class OrderLogRowMapperLambda {
 
 	 public static final RowMapper<OrderLogModel> ordersLogRowMapperLambda = (rs, rownum) -> {
 	        OrderLogModel orders = new OrderLogModel();
-	        orders.setId(rs.getInt(id));
+	        orders.setId(rs.getString(id));
 	        orders.setErrorCode(rs.getInt(errorCode));
 	        orders.setMobile(rs.getString(mobile));
 	        orders.setMessage(rs.getString(message));

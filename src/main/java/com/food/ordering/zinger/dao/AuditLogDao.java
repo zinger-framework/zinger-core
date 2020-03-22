@@ -120,31 +120,6 @@ public class AuditLogDao {
         return response;
     }
 
-    public Response<String> insertTransactionLog(TransactionLogModel TransactionLogModel) {
-        Response<String> response = new Response<>();
-
-        try {
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(TransactionLogColumn.transactionId, TransactionLogModel.getTransactionId())
-                    .addValue(TransactionLogColumn.errorCode, TransactionLogModel.getErrorCode())
-                    .addValue(TransactionLogColumn.mobile, TransactionLogModel.getMobile())
-                    .addValue(TransactionLogColumn.message, TransactionLogModel.getMessage())
-                    .addValue(TransactionLogColumn.updatedValue, TransactionLogModel.getUpdatedValue())
-                    .addValue(TransactionLogColumn.priority, TransactionLogModel.getPriority().name());
-
-            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertTransactionLog, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
 
     public Response<String> insertOrderLog(OrderLogModel OrderLogModel) {
         Response<String> response = new Response<>();
@@ -172,81 +147,6 @@ public class AuditLogDao {
         return response;
     }
 
-    public Response<String> insertUserShopLog(UserShopLogModel UserShopLogModel) {
-        Response<String> response = new Response<>();
 
-        try {
 
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopLogColumn.usersMobile, UserShopLogModel.getUsersMobile())
-                    .addValue(UserShopLogColumn.errorCode, UserShopLogModel.getErrorCode())
-                    .addValue(UserShopLogColumn.mobile, UserShopLogModel.getMobile())
-                    .addValue(UserShopLogColumn.message, UserShopLogModel.getMessage())
-                    .addValue(UserShopLogColumn.updatedValue, UserShopLogModel.getUpdatedValue())
-                    .addValue(UserShopLogColumn.priority, UserShopLogModel.getPriority().name());
-
-            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserShopLog, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
-    public Response<String> insertUserCollegeLog(UserCollegeLogModel UserCollegeLogModel) {
-        Response<String> response = new Response<>();
-
-        try {
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserCollegeLogColumn.usersMobile, UserCollegeLogModel.getUsersMobile())
-                    .addValue(UserCollegeLogColumn.errorCode, UserCollegeLogModel.getErrorCode())
-                    .addValue(UserCollegeLogColumn.mobile, UserCollegeLogModel.getMobile())
-                    .addValue(UserCollegeLogColumn.message, UserCollegeLogModel.getMessage())
-                    .addValue(UserCollegeLogColumn.updatedValue, UserCollegeLogModel.getUpdatedValue())
-                    .addValue(UserCollegeLogColumn.priority, UserCollegeLogModel.getPriority().name());
-
-            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertUserCollegeLog, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
-
-    public Response<String> insertConfigurationLog(ConfigurationLogModel ConfigurationLogModel) {
-        Response<String> response = new Response<>();
-
-        try {
-
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ConfigurationLogColumn.shopId, ConfigurationLogModel.getShopId())
-                    .addValue(ConfigurationLogColumn.errorCode, ConfigurationLogModel.getErrorCode())
-                    .addValue(ConfigurationLogColumn.mobile, ConfigurationLogModel.getMobile())
-                    .addValue(ConfigurationLogColumn.message, ConfigurationLogModel.getMessage())
-                    .addValue(ConfigurationLogColumn.updatedValue, ConfigurationLogModel.getUpdatedValue())
-                    .addValue(ConfigurationLogColumn.priority, ConfigurationLogModel.getPriority().name());
-
-            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertConfigurationLog, parameters);
-            if (responseValue > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return response;
-    }
 }
