@@ -57,7 +57,7 @@ CREATE TABLE item (
   category VARCHAR(16) NOT NULL,
   shop_id INT NOT NULL,
   is_veg INT DEFAULT 0,
-  is_available INT DEFAULT 0,
+  is_available INT DEFAULT 1,
   is_delete INT DEFAULT 0,
   CONSTRAINT item_id_pk PRIMARY KEY(id),
   CONSTRAINT item_shop_id_fk FOREIGN KEY(shop_id) REFERENCES shop(id)

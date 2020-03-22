@@ -241,8 +241,10 @@ public class OrderDao {
                         response.setCode(ErrorLog.SDNA1272);
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         break;
-                    } else
+                    } else {
+                        shopModelResponse.getData().setCollegeModel(null);
                         orderModel.setShopModel(shopModelResponse.getData());
+                    }
 
                     if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         priority = Priority.MEDIUM;
@@ -251,6 +253,7 @@ public class OrderDao {
                         break;
                     } else {
                         OrderItemListModel orderItemListModel = new OrderItemListModel();
+                        orderModel.setUserModel(null);
                         orderItemListModel.setOrderModel(orderModel);
                         orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
                         orderItemListByMobile.add(orderItemListModel);
@@ -301,6 +304,7 @@ public class OrderDao {
                 response.setMessage(ErrorLog.Success);
 
                 for (OrderModel orderModel : orderModelList) {
+                    orderModel.setShopModel(null);
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
 
@@ -363,6 +367,7 @@ public class OrderDao {
                 response.setMessage(ErrorLog.Success);
 
                 for (OrderModel orderModel : orderModelList) {
+                    orderModel.setShopModel(null);
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
                     if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {

@@ -14,7 +14,7 @@ create table college_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -24,7 +24,7 @@ create table shop_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -34,7 +34,7 @@ create table users_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -44,7 +44,7 @@ create table item_log (
 	error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -54,7 +54,7 @@ create table transactions_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -64,7 +64,7 @@ create table orders_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -74,7 +74,7 @@ create table users_shop_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -84,7 +84,7 @@ create table users_college_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
@@ -94,7 +94,7 @@ create table configurations_log (
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
-	updated_value VARCHAR(1024) DEFAULT NULL,
+	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	priority ENUM('LOW','MEDIUM','HIGH')
 );

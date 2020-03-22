@@ -183,7 +183,7 @@ public class ItemDao {
             if (item != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getId());
+                Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getShopModel().getId());
                 item.setShopModel(shopModelResponse.getData());
                 response.setData(item);
             }
@@ -212,6 +212,7 @@ public class ItemDao {
                         s.setOrderModel(null);
                         Response<ItemModel> itemModelResponse = getItemById(s.getItemModel().getId());
                         if (itemModelResponse.getCode().equals(ErrorLog.CodeSuccess) && itemModelResponse.getMessage().equals(ErrorLog.Success)) {
+                            itemModelResponse.getData().setShopModel(null);
                             s.setItemModel(itemModelResponse.getData());
                         } else {
                             s.setItemModel(null);
