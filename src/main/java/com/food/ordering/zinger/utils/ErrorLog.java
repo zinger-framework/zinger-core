@@ -102,16 +102,16 @@ public class ErrorLog {
 
     public static final Integer IDNU1201 = 1201;
     public static final Integer CE1202 = 1202;
-    public static final Integer IDNA1203=1203;
-    public static final Integer CE1204=1204;
-    public static final Integer IDNA1205=1205;
-    public static final Integer CE1206=1206;
-    public static final Integer IDNU1207=1207;
-    public static final Integer CE1208=1208;
-    public static final Integer CE1209=1209;
-    public static final Integer IDNU1210=1210;
-    public static final Integer IDNU1211=1211;
-    public static final Integer CE1212=1212;
+    public static final Integer IDNA1203 = 1203;
+    public static final Integer CE1204 = 1204;
+    public static final Integer IDNA1205 = 1205;
+    public static final Integer CE1206 = 1206;
+    public static final Integer IDNU1207 = 1207;
+    public static final Integer CE1208 = 1208;
+    public static final Integer CE1209 = 1209;
+    public static final Integer IDNU1210 = 1210;
+    public static final Integer IDNU1211 = 1211;
+    public static final Integer CE1212 = 1212;
 
     /**********************************************************************/
     // Shop Controller Error Code 1251-1260
@@ -149,19 +149,18 @@ public class ErrorLog {
     public static final Integer UDNA1277 = 1277;
     public static final Integer CE1278 = 1278;
     public static final Integer CE1279 = 1279;
-    public static final Integer TDNA1280 = 1280;
-    public static final Integer UDNA1281 = 1281;
-    public static final Integer SDNA1282 = 1282;
-
-
-    public static final Integer ODNU1280=1280;
-    public static final Integer SKM1281=1281;
-    public static final Integer IOS1282=1282;
-    public static final Integer ODNA1283=1283;
+    public static final Integer ODNU1280 = 1280;
+    public static final Integer SKM1281 = 1281;
+    public static final Integer IOS1282 = 1282;
+    public static final Integer ODNA1283 = 1283;
     public static final Integer CE1284 = 1284;
-    public static final Integer ODNU1285=1285;
+    public static final Integer ODNU1285 = 1285;
     public static final Integer CE1286 = 1286;
-    public static final Integer ODNA1287=1287;
+    public static final Integer ODNA1287 = 1287;
     public static final Integer CE1289 = 1289;
-    public static final Integer SDNA1290 = 1290;
+    public static final Integer UDNA1290 = 1290;
+    public static final Integer TDNA1291 = 1291;
+    public static final Integer TDNA1292 = 1292;
+    public static final Integer UDNA1293 = 1293;
+    public static final Integer SDNA1294 = 1294;
 }

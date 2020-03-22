@@ -275,8 +275,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1057);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            }
-            else {
+            } else {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.shopId, shopId)
                         .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
@@ -329,19 +328,18 @@ public class OrderDao {
     public Response<List<OrderModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
-        Priority priority=Priority.MEDIUM;
+        Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
                 response.setCode(ErrorLog.IH1020);
                 response.setMessage(ErrorLog.InvalidHeader);
-                priority=Priority.HIGH;
-            }
-            else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1020);
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1021);
                 response.setMessage(ErrorLog.InvalidHeader);
-                priority=Priority.HIGH;
-            }else{
+                priority = Priority.HIGH;
+            } else {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.shopId, shopId);
                 try {
@@ -364,19 +362,26 @@ public class OrderDao {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
-                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) || !userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        response.setCode(ErrorLog.SDNA1290);
-                        priority=Priority.HIGH;
+                    if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        orderModel.setTransactionModel(transactionModelResponse.getData());
+                        if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            orderModel.setUserModel(userModelResponse.getData());
+                        } else {
+                            priority = Priority.MEDIUM;
+                            response.setCode(ErrorLog.UDNA1290);
+                            response.setMessage(ErrorLog.UserDetailNotAvailable);
+                        }
+                    } else {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.TDNA1291);
+                        response.setMessage(ErrorLog.TransactionDetailNotAvailable);
                     }
-
-                    orderModel.setTransactionModel(transactionModelResponse.getData());
-                    orderModel.setUserModel(userModelResponse.getData());
                 }
                 response.setData(orderModelList);
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response,requestHeaderModel.getMobile(),shopId.toString(),shopId.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), shopId.toString(), shopId.toString(), priority));
         return response;
     }
 
@@ -390,8 +395,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1058);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            }
-            else {
+            } else {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.id, id);
 
@@ -421,28 +425,26 @@ public class OrderDao {
                         orderModel.setUserModel(userModelResponse.getData());
                         if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess))
                             orderModel.setShopModel(shopModelResponse.getData());
-                        else{
+                        else {
                             priority = Priority.MEDIUM;
-                            response.setCode(ErrorLog.SDNA1282);
+                            response.setCode(ErrorLog.SDNA1294);
                             response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         }
-                    }
-                    else{
+                    } else {
                         priority = Priority.MEDIUM;
-                        response.setCode(ErrorLog.UDNA1281);
+                        response.setCode(ErrorLog.UDNA1293);
                         response.setMessage(ErrorLog.UserDetailNotAvailable);
                     }
-                }
-                else{
+                } else {
                     priority = Priority.MEDIUM;
-                    response.setCode(ErrorLog.TDNA1280);
+                    response.setCode(ErrorLog.TDNA1292);
                     response.setMessage(ErrorLog.TransactionDetailNotAvailable);
                 }
                 response.setData(orderModel);
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), id,null, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), id, null, priority));
         return response;
     }
 
@@ -450,14 +452,13 @@ public class OrderDao {
 
     public Response<String> updateOrder(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
-        Priority priority=Priority.HIGH;
+        Priority priority = Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1019);
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else{
+            } else {
 
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(cookingInfo, orderModel.getCookingInfo())
@@ -470,8 +471,8 @@ public class OrderDao {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
                     response.setData(ErrorLog.Success);
-                    priority=Priority.LOW;
-                }else{
+                    priority = Priority.LOW;
+                } else {
                     response.setCode(ErrorLog.ODNU1285);
                     response.setMessage(ErrorLog.OrderDetailNotUpdated);
                 }
@@ -487,13 +488,12 @@ public class OrderDao {
 
     public Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
-        Priority priority=Priority.HIGH;
+        Priority priority = Priority.HIGH;
 
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else{
+            } else {
                 Response<OrderModel> orderModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
                 if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
@@ -523,13 +523,13 @@ public class OrderDao {
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
                         response.setData(ErrorLog.Success);
-                        priority=Priority.LOW;
+                        priority = Priority.LOW;
 
-                    } else{
+                    } else {
                         response.setCode(ErrorLog.IOS1282);
                         response.setData(ErrorLog.InvalidOrderStatus);
                     }
-                } else{
+                } else {
                     response.setCode(ErrorLog.ODNA1283);
                     response.setData(ErrorLog.OrderDetailNotAvailable);
                 }
