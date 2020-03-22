@@ -135,9 +135,13 @@ public class ShopDao {
                     Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
 
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
+                    shopModelResponse.getData().setCollegeModel(null);
+                    ratingModelResponse.getData().setShopModel(null);
+                    configurationModelResponse.getData().setShopModel(null);
 
-                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getMessage().equals(ErrorLog.Success))
+                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getMessage().equals(ErrorLog.Success)){
                         shopConfigurationModel.setShopModel(shopModelResponse.getData());
+                    }
                     else {
                         priority = Priority.HIGH;
                         response.setCode(ErrorLog.SDNA1256);

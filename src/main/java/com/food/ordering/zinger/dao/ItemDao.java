@@ -154,6 +154,7 @@ public class ItemDao {
                 response.setMessage(ErrorLog.Success);
                 for (int i = 0; i < items.size(); i++) {
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(items.get(i).getShopModel().getId());
+                    shopModelResponse.getData().setCollegeModel(null);
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
                 response.setData(items);
