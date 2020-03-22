@@ -17,13 +17,18 @@ public class UserController {
     UserService userService;
 
     @PostMapping(value = "/customer")
-    public Response<UserCollegeModel> insertCustomer(@RequestBody UserModel user) {
-        return userService.insertCustomer(user);
+    public Response<UserCollegeModel> loginRegisterCustomer(@RequestBody UserModel user) {
+        return userService.loginRegisterCustomer(user);
     }
 
     @PostMapping(value = "/seller")
-    public Response<UserShopListModel> insertSeller(@RequestBody UserModel user) {
-        return userService.insertSeller(user);
+    public Response<UserShopListModel> verifySeller(@RequestBody UserModel user) {
+        return userService.verifySeller(user);
+    }
+
+    @PostMapping(value = "/seller/{mobile}/{shopId}")
+    public Response<String> insertSeller(@PathVariable("mobile") String mobile, @PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.insertSeller(mobile, shopId, oauthId, mobileRh, role);
     }
 
     /**************************************************/

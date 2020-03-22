@@ -24,6 +24,8 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.food.ordering.zinger.utils.ErrorLog.*;
+
 @Repository
 public class UserDao {
 
@@ -48,7 +50,7 @@ public class UserDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<UserCollegeModel> insertCustomer(UserModel user) {
+    public Response<UserCollegeModel> loginRegisterCustomer(UserModel user) {
         Response<UserCollegeModel> response = new Response<>();
         Priority priority = Priority.HIGH;
         UserCollegeModel userCollegeModel = new UserCollegeModel();
@@ -99,7 +101,7 @@ public class UserDao {
         return response;
     }
 
-    public Response<UserShopListModel> insertSeller(UserModel user) {
+    public Response<UserShopListModel> verifySeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
         Priority priority = Priority.HIGH;
 
@@ -119,22 +121,18 @@ public class UserDao {
                     if (userModel.getOauthId() == null || userModel.getOauthId().isEmpty()) {
                         userModel.setOauthId(user.getOauthId());
                         Response<String> response1 = updateOauthId(userModel);
-                        if(response1.getCode().equals(ErrorLog.CodeSuccess) && response1.getMessage().equals(ErrorLog.Success)){
+                        if (response1.getCode().equals(ErrorLog.CodeSuccess) && response1.getMessage().equals(ErrorLog.Success)) {
                             response = getShopByMobile(userModel);
                             priority = Priority.LOW;
-                        }
-                        else
+                        } else
                             response.setCode(ErrorLog.UDNA1156);
-                    }
-                    else {
+                    } else {
                         response = getShopByMobile(userModel);
                         priority = Priority.LOW;
                     }
-                }
-                else
+                } else
                     response.setCode(ErrorLog.UDNU1155);
-            }
-            else
+            } else
                 response.setCode(ErrorLog.UDNU1153);
 
         } catch (Exception e) {
@@ -145,6 +143,57 @@ public class UserDao {
         auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), user.getMobile(), user.toString(), priority));
         return response;
     }
+
+    public Response<String> insertSeller(String mobile, Integer shopId, RequestHeaderModel requestHeaderModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.HIGH;
+        UserRole userRole = UserRole.SELLER;
+
+        try {
+            if (requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name()))
+                userRole = UserRole.SHOP_OWNER;
+
+            if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name()) || requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name())) {
+                if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.IH1060);
+                    response.setData(ErrorLog.InvalidHeader);
+                } else {
+                    SqlParameterSource parameters = new MapSqlParameterSource()
+                            .addValue(UserColumn.mobile, mobile)
+                            .addValue(UserColumn.role, userRole.name());
+
+                    int responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
+                    UserShopModel userShopModel = new UserShopModel();
+                    userShopModel.getUserModel().setMobile(mobile);
+                    userShopModel.getShopModel().setId(shopId);
+                    Response<String> response1 = updateShop(userShopModel);
+
+                    if (responseValue > 0 && response1.getCode().equals(CodeSuccess)) {
+                        response.setCode(ErrorLog.CodeSuccess);
+                        response.setMessage(ErrorLog.Success);
+                        response.setData(ErrorLog.Success);
+                        priority = Priority.LOW;
+                    } else if (responseValue <= 0) {
+                        response.setCode(ErrorLog.UDNU1162);
+                        response.setData(UserDetailNotUpdated);
+                    } else {
+                        response.setCode(ErrorLog.SDNU1163);
+                        response.setData(ShopDetailNotUpdated);
+                    }
+                }
+            } else {
+                response.setCode(ErrorLog.IH1059);
+                response.setData(ErrorLog.InvalidHeader);
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1161);
+            e.printStackTrace();
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
+        return response;
+    }
+
 
     /**************************************************/
 
@@ -226,14 +275,19 @@ public class UserDao {
 
                 for (int i = 0; i < shopModelList.size(); i++) {
                     if (shopModelList.get(i).getName() == null || shopModelList.get(i).getName().isEmpty()) {
-                        Response<ShopModel> shopModelResponse = shopDao.getShopById(shopModelList.get(i).getId());
-                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
-                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
-
                         ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
+
+                        Response<ShopModel> shopModelResponse = shopDao.getShopById(shopModelList.get(i).getId());
                         shopConfigurationModel.setShopModel(shopModelResponse.getData());
-                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+
+                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
+                        ratingModelResponse.getData().setShopModel(null);
                         shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+
+                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
+                        configurationModelResponse.getData().setShopModel(null);
+                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+
                         shopConfigurationModelList.add(shopConfigurationModel);
                     }
                 }
@@ -254,10 +308,10 @@ public class UserDao {
         try {
             if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1051);
-                response.setMessage(ErrorLog.InvalidHeader);
+                response.setMessage(ErrorLog.Failure);
+                response.setData(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            }
-            else {
+            } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(UserColumn.name, user.getName())
                         .addValue(UserColumn.mobile, user.getMobile())
@@ -268,8 +322,10 @@ public class UserDao {
                     priority = Priority.LOW;
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
                 } else {
                     response.setCode(ErrorLog.UDNU1157);
+                    response.setMessage(ErrorLog.Failure);
                     response.setMessage(ErrorLog.UserDetailNotUpdated);
                 }
             }
@@ -293,6 +349,27 @@ public class UserDao {
             int result = namedParameterJdbcTemplate.update(UserCollegeQuery.updateCollegeByMobile, parameters);
             if (result <= 0)
                 namedParameterJdbcTemplate.update(UserCollegeQuery.insertUserCollege, parameters);
+
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return response;
+    }
+
+    public Response<String> updateShop(UserShopModel userShopModel) {
+        Response<String> response = new Response<>();
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserShopColumn.mobile, userShopModel.getUserModel().getMobile())
+                    .addValue(UserShopColumn.shopId, userShopModel.getShopModel().getId());
+
+            int result = namedParameterJdbcTemplate.update(UserShopQuery.updateShopByMobile, parameters);
+            if (result <= 0)
+                namedParameterJdbcTemplate.update(UserShopQuery.insertUserShop, parameters);
 
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
@@ -332,8 +409,7 @@ public class UserDao {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
-        }
-        else {
+        } else {
             Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), requestHeaderModel);
             Response<String> responseCollege = updateCollege(userCollegeModel);
 

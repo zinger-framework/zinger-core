@@ -15,12 +15,17 @@ public class UserService {
     @Autowired
     UserDao userDao;
 
-    public Response<UserCollegeModel> insertCustomer(UserModel user) {
-        return userDao.insertCustomer(user);
+    public Response<UserCollegeModel> loginRegisterCustomer(UserModel user) {
+        return userDao.loginRegisterCustomer(user);
     }
 
-    public Response<UserShopListModel> insertSeller(UserModel user) {
-        return userDao.insertSeller(user);
+    public Response<UserShopListModel> verifySeller(UserModel user) {
+        return userDao.verifySeller(user);
+    }
+
+    public Response<String> insertSeller(String mobile, Integer shopId, String oauthId, String mobileRh, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+        return userDao.insertSeller(mobile, shopId, requestHeaderModel);
     }
 
     /**************************************************/

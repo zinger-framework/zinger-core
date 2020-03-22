@@ -8,5 +8,7 @@ public class UserShopQuery {
     public static final String getUserByShopId = "SELECT " + mobile + ", " + shopId + " FROM " + tableName + " WHERE " + shopId + " = :" + shopId;
     public static final String getShopByMobile = "SELECT " + mobile + ", " + shopId + " FROM " + tableName + " WHERE " + mobile + " = :" + mobile;
 
+    public static final String updateShopByMobile = "UPDATE " + tableName + " SET " + shopId + " = :" + shopId + " WHERE " + mobile + " = :" + mobile;
+
     public static final String deleteUser = "DELETE FROM " + tableName + " WHERE " + mobile + " = :" + mobile + " AND " + shopId + " = :" + shopId;
 }

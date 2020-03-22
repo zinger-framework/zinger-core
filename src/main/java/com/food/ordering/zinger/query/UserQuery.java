@@ -6,6 +6,7 @@ public class UserQuery {
     public static final String notDeleted = isDelete + " = 0";
 
     public static final String insertUser = "INSERT INTO " + tableName + "(" + oauthId + ", " + mobile + ", " + role + ") VALUES( :" + oauthId + ",:" + mobile + ", :" + role + ")";
+    public static final String insertSeller = "INSERT INTO " + tableName + "(" + mobile + ", " + role + ") VALUES( :" + mobile + ", :" + role + ")";
 
     public static final String getUserByMobile = "SELECT " + oauthId + ", " + name + ", " + email + ", " + mobile + ", " + role + ", " + isDelete + " FROM " + tableName + " WHERE " + mobile + " = :" + mobile;
     public static final String loginUserByMobile = getUserByMobile + " AND " + role + " = :" + role + " AND " + notDeleted;

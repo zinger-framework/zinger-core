@@ -71,6 +71,8 @@ public class ErrorLog {
     public static final Integer IH1056 = 1056;
     public static final Integer IH1057 = 1057;
     public static final Integer IH1058 = 1058;
+    public static final Integer IH1059 = 1059;
+    public static final Integer IH1060 = 1060;
 
     /**********************************************************************/
     /* College Controller Error Code 1100-1150
@@ -96,6 +98,9 @@ public class ErrorLog {
     public static final Integer CE1158 = 1158;
     public static final Integer UDNU1159 = 1159;
     public static final Integer CDNU1160 = 1160;
+    public static final Integer CE1161 = 1161;
+    public static final Integer UDNU1162 = 1162;
+    public static final Integer SDNU1163 = 1163;
 
     /**********************************************************************/
     // Item Controller Error Code 1200-1250
