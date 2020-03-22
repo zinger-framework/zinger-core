@@ -133,7 +133,6 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1012);
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
-
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(ItemColumn.name, "%" + itemName + "%")
                         .addValue(ShopColumn.collegeId, collegeId);
@@ -145,7 +144,6 @@ public class ItemDao {
                     response.setMessage(ItemDetailNotAvailable);
                     e.printStackTrace();
                 }
-
             }
         } catch (Exception e) {
             response.setCode(CE1206);

@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.utils;
 
 public class ErrorLog {
+    public static final Integer CodeFailure = 0;
     public static final Integer CodeSuccess = 1;
 
     public static final String Success = "Success";
