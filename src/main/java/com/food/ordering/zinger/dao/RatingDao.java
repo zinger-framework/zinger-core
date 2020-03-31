@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.ConfigurationColumn;
 import com.food.ordering.zinger.column.RatingColumn;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.ShopModel;

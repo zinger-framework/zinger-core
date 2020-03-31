@@ -31,8 +31,7 @@ public class UtilsDao {
 
             try {
                 userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         } catch (Exception e) {

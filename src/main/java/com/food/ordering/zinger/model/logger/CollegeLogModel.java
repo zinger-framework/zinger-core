@@ -27,7 +27,7 @@ public class CollegeLogModel {
         this.mobile = mobile;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority=priority;
+        this.priority = priority;
     }
 
     public Integer getId() {

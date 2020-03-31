@@ -28,22 +28,22 @@ public class OrderController {
     }
 
     @GetMapping(value = "/customer/{mobile}/{pageNum}/{pageCount}")
-    public Response<List<OrderItemListModel>> getOrderByMobile(@PathVariable("mobile") String mobile, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role){
-       return orderService.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
+    public Response<List<OrderItemListModel>> getOrderByMobile(@PathVariable("mobile") String mobile, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.getOrderByMobile(mobile, pageNum, pageCount, oauthId, mobileRh, role);
     }
 
     @GetMapping(value = "/seller/{shopId}/{pageNum}/{pageCount}")
-    public Response<List<OrderModel>> getOrderByShopIdPagination(@PathVariable("shopId") Integer shopId, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
+    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(@PathVariable("shopId") Integer shopId, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.getOrderByShopIdPagination(shopId, pageNum, pageCount, oauthId, mobile, role);
     }
 
     @GetMapping(value = "/seller/{shopId}")
-    public Response<List<OrderModel>> getOrderByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
+    public Response<List<OrderItemListModel>> getOrderByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.getOrderByShopId(shopId, oauthId, mobile, role);
     }
 
     @GetMapping(value = "/{id}")
-    public Response<OrderModel> getOrderById(@PathVariable("id") String id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role){
+    public Response<OrderModel> getOrderById(@PathVariable("id") String id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.getOrderById(id, oauthId, mobile, role);
     }
 

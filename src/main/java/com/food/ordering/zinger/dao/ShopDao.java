@@ -139,10 +139,9 @@ public class ShopDao {
                     ratingModelResponse.getData().setShopModel(null);
                     configurationModelResponse.getData().setShopModel(null);
 
-                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getMessage().equals(ErrorLog.Success)){
+                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getMessage().equals(ErrorLog.Success)) {
                         shopConfigurationModel.setShopModel(shopModelResponse.getData());
-                    }
-                    else {
+                    } else {
                         priority = Priority.HIGH;
                         response.setCode(ErrorLog.SDNA1256);
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);

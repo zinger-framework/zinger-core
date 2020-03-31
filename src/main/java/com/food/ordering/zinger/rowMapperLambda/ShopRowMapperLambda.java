@@ -3,6 +3,7 @@ package com.food.ordering.zinger.rowMapperLambda;
 import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
+
 import static com.food.ordering.zinger.column.ShopColumn.*;
 
 public class ShopRowMapperLambda {

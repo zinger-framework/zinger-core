@@ -36,14 +36,14 @@ public class ItemService {
         return itemDao.updateItemById(itemModel, requestHeaderModel);
     }
 
-    public Response<String> deleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> deleteItemById(Integer itemId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return itemDao.deleteItemById(itemModel, requestHeaderModel);
+        return itemDao.deleteItemById(itemId, requestHeaderModel);
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> unDeleteItemById(Integer itemId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return itemDao.unDeleteItemById(itemModel, requestHeaderModel);
+        return itemDao.unDeleteItemById(itemId, requestHeaderModel);
     }
 
 }

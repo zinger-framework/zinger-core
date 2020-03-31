@@ -24,11 +24,11 @@ public class ItemLogModel {
         this.mobile = mobile;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority=priority;
+        this.priority = priority;
     }
 
     public ItemLogModel() {
-	}
+    }
 
     public Integer getId() {
         return id;

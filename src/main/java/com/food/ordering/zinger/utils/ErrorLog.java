@@ -28,6 +28,8 @@ public class ErrorLog {
     public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
     public static final String ItemDetailNotUpdated = "Item detail not updated";
 
+    public static final String UserDetailNotDeleted = "User detail not deleted";
+
     public static final String InvalidOrderStatus = "Invalid Order status";
     public static final String SecretKeyMismatch = "Secret key mismatch";
     public static final String OrderPriceMismatch = "Order price mismatch";
@@ -61,6 +63,10 @@ public class ErrorLog {
     public static final Integer IH1020 = 1020;
     public static final Integer IH1021 = 1021;
     public static final Integer IH1022 = 1022;
+    public static final Integer IH1023 = 1023;
+    public static final Integer IH1024 = 1024;
+    public static final Integer IH1025 = 1025;
+    public static final Integer IH1026 = 1026;
 
     // Logesh 1050-1100
 
@@ -86,6 +92,9 @@ public class ErrorLog {
     public static final Integer CE1101 = 1101;
     public static final Integer CDNA1102 = 1102;
     public static final Integer CE1103 = 1103;
+    public static final Integer CE1104 = 1104;
+    public static final Integer CE1105 = 1105;
+    public static final Integer CE1106 = 1106;
 
     /**********************************************************************/
     // User Controller Error Code 1151-1200
@@ -103,6 +112,7 @@ public class ErrorLog {
     public static final Integer CE1161 = 1161;
     public static final Integer UDNU1162 = 1162;
     public static final Integer SDNU1163 = 1163;
+    public static final Integer UDND1164 = 1164;
 
     /**********************************************************************/
     // Item Controller Error Code 1200-1250
@@ -143,7 +153,7 @@ public class ErrorLog {
     public static final Integer TDNU1264 = 1264;
     public static final Integer SDNA1265 = 1265;
     public static final Integer ONT1266 = 1266;
-    public static final Integer OPM1267 = 1267;
+    public static final Integer CE1267 = 1267;
     public static final Integer CE1268 = 1268;
     public static final Integer CE1269 = 1269;
     public static final Integer CE1270 = 1270;
@@ -172,4 +182,6 @@ public class ErrorLog {
     public static final Integer SDNA1294 = 1294;
     public static final Integer ODNU1295 = 1295;
     public static final Integer CE1296 = 1296;
+    public static final Integer OIDNA1297 = 1297;
+    public static final Integer OIDNA1298 = 1298;
 }

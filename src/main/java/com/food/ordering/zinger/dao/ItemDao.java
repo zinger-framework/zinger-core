@@ -6,7 +6,6 @@ import com.food.ordering.zinger.column.ShopColumn;
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.query.ItemQuery;
 import com.food.ordering.zinger.query.OrderItemQuery;
@@ -272,7 +271,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<String> deleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> deleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
@@ -287,7 +286,7 @@ public class ItemDao {
                 priority = Priority.HIGH;
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.id, itemModel.getId());
+                        .addValue(ItemColumn.id, itemId);
 
                 int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
                 if (responseValue > 0) {
@@ -305,11 +304,11 @@ public class ItemDao {
             e.printStackTrace();
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
         return response;
     }
 
-    public Response<String> unDeleteItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> unDeleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
@@ -324,7 +323,7 @@ public class ItemDao {
                 priority = Priority.HIGH;
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.id, itemModel.getId());
+                        .addValue(ItemColumn.id, itemId);
 
                 int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
                 if (responseValue > 0) {
@@ -343,7 +342,7 @@ public class ItemDao {
             e.printStackTrace();
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
         return response;
     }
 }

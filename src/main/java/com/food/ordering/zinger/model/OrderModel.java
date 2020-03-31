@@ -32,7 +32,7 @@ public class OrderModel {
         shopModel = new ShopModel();
     }
 
-    public String  getId() {
+    public String getId() {
         return id;
     }
 

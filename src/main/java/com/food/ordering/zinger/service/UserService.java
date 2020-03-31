@@ -9,6 +9,8 @@ import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
 
@@ -28,6 +30,11 @@ public class UserService {
         return userDao.insertSeller(mobile, shopId, requestHeaderModel);
     }
 
+    public Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, String mobileRh, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+        return userDao.getSellerByShopId(shopId, requestHeaderModel);
+    }
+
     /**************************************************/
 
     public Response<String> updateUser(UserModel userModel, String oauthId, String mobile, String role) {
@@ -38,5 +45,10 @@ public class UserService {
     public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return userDao.updateUserCollegeData(userCollegeModel, requestHeaderModel);
+    }
+
+    public Response<String> deleteSeller(Integer shopId, String mobile, String oauthId, String mobileRh, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+        return userDao.deleteSeller(shopId, mobile, requestHeaderModel);
     }
 }

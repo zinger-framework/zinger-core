@@ -161,8 +161,8 @@ public class OrderDao {
                     } else {
                         String deliveryResponse = verifyPricing(orderItemListModel, configurationModel);
                         if (!deliveryResponse.equals(ErrorLog.Success)) {
-                            response.setCode(ErrorLog.OPM1267);
-                            response.setMessage(ErrorLog.OrderPriceMismatch);
+                            response.setCode(ErrorLog.CE1267);
+                            response.setMessage(deliveryResponse);
                             response.setData(deliveryResponse);
                         } else {
                             priority = Priority.LOW;
@@ -260,17 +260,19 @@ public class OrderDao {
                     }
                 }
                 response.setData(orderItemListByMobile);
-            }
+            } else
+                response.setCode(ErrorLog.CE1269);
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
-        Response<List<OrderModel>> response = new Response<>();
-        List<OrderModel> orderModelList = null;
+    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
+        Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
+        List<OrderModel> orderModelList = null;
+        List<OrderItemListModel> orderItemListByMobile = null;
 
         try {
             if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
@@ -303,10 +305,13 @@ public class OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
+                orderItemListByMobile = new ArrayList<>();
+
                 for (OrderModel orderModel : orderModelList) {
                     orderModel.setShopModel(null);
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
+                    Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(orderModel);
 
                     if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         priority = Priority.MEDIUM;
@@ -323,19 +328,34 @@ public class OrderDao {
                         break;
                     } else
                         orderModel.setUserModel(userModelResponse.getData());
+
+                    if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.OIDNA1297);
+                        response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
+                        break;
+                    } else {
+                        OrderItemListModel orderItemListModel = new OrderItemListModel();
+                        orderModel.setShopModel(null);
+                        orderItemListModel.setOrderModel(orderModel);
+                        orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
+                        orderItemListByMobile.add(orderItemListModel);
+                    }
                 }
-                response.setData(orderModelList);
-            }
+                response.setData(orderItemListByMobile);
+            } else
+                response.setCode(ErrorLog.CE1274);
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
         return response;
     }
 
-    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
-        Response<List<OrderModel>> response = new Response<>();
-        List<OrderModel> orderModelList = null;
+    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
+        Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
+        List<OrderModel> orderModelList = null;
+        List<OrderItemListModel> orderItemListByMobile = null;
 
         try {
             if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
@@ -366,27 +386,46 @@ public class OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
+                orderItemListByMobile = new ArrayList<>();
+
                 for (OrderModel orderModel : orderModelList) {
                     orderModel.setShopModel(null);
                     Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionDetails(orderModel.getTransactionModel().getTransactionId());
                     Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
-                    if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        orderModel.setTransactionModel(transactionModelResponse.getData());
-                        if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            orderModel.setUserModel(userModelResponse.getData());
-                        } else {
-                            priority = Priority.MEDIUM;
-                            response.setCode(ErrorLog.UDNA1290);
-                            response.setMessage(ErrorLog.UserDetailNotAvailable);
-                        }
-                    } else {
+                    Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(orderModel);
+
+                    if (!transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         priority = Priority.MEDIUM;
                         response.setCode(ErrorLog.TDNA1291);
                         response.setMessage(ErrorLog.TransactionDetailNotAvailable);
+                        break;
+                    } else
+                        orderModel.setTransactionModel(transactionModelResponse.getData());
+
+                    if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.UDNA1290);
+                        response.setMessage(ErrorLog.UserDetailNotAvailable);
+                        break;
+                    } else
+                        orderModel.setUserModel(userModelResponse.getData());
+
+                    if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.OIDNA1298);
+                        response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
+                        break;
+                    } else {
+                        OrderItemListModel orderItemListModel = new OrderItemListModel();
+                        orderModel.setShopModel(null);
+                        orderItemListModel.setOrderModel(orderModel);
+                        orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
+                        orderItemListByMobile.add(orderItemListModel);
                     }
                 }
-                response.setData(orderModelList);
-            }
+                response.setData(orderItemListByMobile);
+            } else
+                response.setCode(ErrorLog.ODNA1287);
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), shopId.toString(), shopId.toString(), priority));
@@ -642,7 +681,7 @@ public class OrderDao {
         Double totalPrice = 0.0;
         for (OrderItemModel orderItemModel : orderItemModelList) {
             Response<ItemModel> itemModelResponse = itemDao.getItemById(orderItemModel.getItemModel().getId());
-            if (!itemModelResponse.getCode().equals(ErrorLog.CodeSuccess))
+            if (!itemModelResponse.getCode().equals(ErrorLog.CodeSuccess) || itemModelResponse.getData().getIsAvailable() == 0)
                 return null;
             totalPrice += orderItemModel.getQuantity() * itemModelResponse.getData().getPrice();
         }

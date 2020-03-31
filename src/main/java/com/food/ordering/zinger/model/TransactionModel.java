@@ -1,9 +1,5 @@
 package com.food.ordering.zinger.model;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
-import java.sql.Timestamp;
-
 public class TransactionModel {
     private String transactionId;
     private String bankTransactionId;

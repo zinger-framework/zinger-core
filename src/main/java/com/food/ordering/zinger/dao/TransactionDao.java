@@ -16,7 +16,7 @@ public class TransactionDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-    
+
 
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
         Response<String> response = new Response<>();
@@ -57,8 +57,7 @@ public class TransactionDao {
 
             try {
                 transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransaction, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

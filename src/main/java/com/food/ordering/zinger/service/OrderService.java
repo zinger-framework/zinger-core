@@ -31,12 +31,12 @@ public class OrderService {
         return orderDao.getOrderByMobile(mobile, pageNum, pageCount, requestHeaderModel);
     }
 
-    public Response<List<OrderModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
+    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount, requestHeaderModel);
     }
 
-    public Response<List<OrderModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
+    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.getOrderByShopId(shopId, requestHeaderModel);
     }

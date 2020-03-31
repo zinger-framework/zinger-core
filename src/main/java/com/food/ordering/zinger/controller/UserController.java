@@ -9,6 +9,8 @@ import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -33,6 +35,13 @@ public class UserController {
 
     /**************************************************/
 
+    @GetMapping(value = "/seller/{shopId}")
+    public Response<List<UserModel>> getSellerByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.getSellerByShopId(shopId, oauthId, mobileRh, role);
+    }
+
+    /**************************************************/
+
     @PatchMapping(value = "")
     public Response<String> updateUser(@RequestBody UserModel userModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return userService.updateUser(userModel, oauthId, mobile, role);
@@ -41,5 +50,12 @@ public class UserController {
     @PatchMapping(value = "/college")
     public Response<String> updateUserCollegeData(@RequestBody UserCollegeModel userCollegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return userService.updateUserCollegeData(userCollegeModel, oauthId, mobile, role);
+    }
+
+    /**************************************************/
+
+    @DeleteMapping(value = "/seller/{shopId}/{mobile}")
+    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.deleteSeller(shopId, mobile, oauthId, mobileRh, role);
     }
 }

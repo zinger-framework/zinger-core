@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import static com.food.ordering.zinger.column.logger.UserLogColumn.*;
 
 public class UserLogRowMapperLambda {
-	public static final RowMapper<UserLogModel> usersLogRowMapperLambda = (rs, rownum) -> {
+    public static final RowMapper<UserLogModel> usersLogRowMapperLambda = (rs, rownum) -> {
         UserLogModel users = new UserLogModel();
         users.setUsersMobile(rs.getString(usersMobile));
         users.setErrorCode(rs.getInt(errorCode));

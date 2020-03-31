@@ -194,7 +194,6 @@ public class UserDao {
         return response;
     }
 
-
     /**************************************************/
 
     public Response<UserCollegeModel> getCollegeByMobile(UserModel userModel) {
@@ -297,6 +296,51 @@ public class UserDao {
                 response.setMessage(ErrorLog.ShopDetailNotAvailable);
         }
         return response;
+    }
+
+    public Response<List<UserModel>> getSellerByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
+        Response<List<UserModel>> userModelResponse = new Response<>();
+        List<UserModel> userModelList = null;
+        Priority priority = Priority.MEDIUM;
+
+        try {
+            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
+                userModelResponse.setCode(ErrorLog.IH1024);
+                userModelResponse.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                userModelResponse.setCode(ErrorLog.IH1023);
+                userModelResponse.setMessage(ErrorLog.InvalidHeader);
+                priority = Priority.HIGH;
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(UserShopColumn.shopId, shopId);
+
+                try {
+                    userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
+                } catch (Exception e) {
+                    userModelResponse.setCode(ErrorLog.CE1104);
+                    e.printStackTrace();
+                } finally {
+                    if (userModelList != null) {
+                        userModelList.removeIf(userModel -> userModel.getRole() == UserRole.SHOP_OWNER);
+                        if (!userModelList.isEmpty()) {
+                            priority = Priority.LOW;
+                            userModelResponse.setCode(ErrorLog.CodeSuccess);
+                            userModelResponse.setMessage(ErrorLog.Success);
+                            userModelResponse.setData(userModelList);
+                        } else
+                            userModelResponse.setCode(ErrorLog.CE1104);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            userModelResponse.setCode(ErrorLog.CE1105);
+            e.printStackTrace();
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getMobile(), null, shopId.toString(), priority));
+        return userModelResponse;
     }
 
     /**************************************************/
@@ -429,6 +473,43 @@ public class UserDao {
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userCollegeModel.getUserModel().getMobile(), userCollegeModel.toString(), priority));
+        return response;
+    }
+
+    public Response<String> deleteSeller(Integer shopId, String mobile, RequestHeaderModel requestHeaderModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.HIGH;
+
+        try {
+            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
+                response.setCode(ErrorLog.IH1025);
+                response.setData(ErrorLog.InvalidHeader);
+            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1026);
+                response.setData(ErrorLog.InvalidHeader);
+            } else {
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(UserShopColumn.mobile, mobile)
+                        .addValue(UserShopColumn.shopId, shopId);
+
+                int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
+                if (result > 0) {
+                    priority = Priority.LOW;
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(ErrorLog.Success);
+                } else {
+                    response.setCode(ErrorLog.UDND1164);
+                    response.setData(ErrorLog.UserDetailNotDeleted);
+                }
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1106);
+            response.setData(Failure);
+            e.printStackTrace();
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
         return response;
     }
 }

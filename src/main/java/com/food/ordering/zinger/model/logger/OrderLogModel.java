@@ -19,7 +19,7 @@ public class OrderLogModel {
     private Priority priority;
 
     public OrderLogModel() {
-	}
+    }
 
     public OrderLogModel(Response response, String mobile, String id, String updatedValue, Priority priority) {
         this.id = id;
@@ -27,7 +27,7 @@ public class OrderLogModel {
         this.mobile = mobile;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority=priority;
+        this.priority = priority;
     }
 
     public String getId() {
