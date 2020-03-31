@@ -167,7 +167,7 @@ CREATE TABLE seller_archive
 
 ####################################################
 
-CREATE TRIGGER new_rating_trigger
+CREATE TRIGGER new_rating
     AFTER INSERT
     ON shop
     FOR EACH ROW
