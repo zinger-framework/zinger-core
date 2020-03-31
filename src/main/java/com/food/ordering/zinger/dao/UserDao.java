@@ -160,11 +160,20 @@ public class UserDao {
                             .addValue(UserColumn.mobile, mobile)
                             .addValue(UserColumn.role, userRole.name());
 
-                    int responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
+                    int responseValue = 0;
+                    try {
+                        responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
+                    }
+                    catch (Exception e){
+                        e.printStackTrace();
+                    }
                     UserShopModel userShopModel = new UserShopModel();
                     userShopModel.getUserModel().setMobile(mobile);
                     userShopModel.getShopModel().setId(shopId);
                     Response<String> response1 = updateShop(userShopModel);
+
+                    if (responseValue <= 0)
+                        responseValue = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
 
                     if (responseValue > 0 && response1.getCode().equals(CodeSuccess)) {
                         response.setCode(ErrorLog.CodeSuccess);

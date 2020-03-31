@@ -18,4 +18,5 @@ public class UserQuery {
 
     public static final String updateUser = "UPDATE " + tableName + " SET " + name + " = :" + name + ", " + email + " = :" + email + " WHERE " + mobile + " = :" + mobile;
     public static final String updateOauthId = "UPDATE " + tableName + " SET " + oauthId + " = :" + oauthId + " WHERE " + mobile + " = :" + mobile;
+    public static final String updateRole = "UPDATE " + tableName + " SET " + role + " = :" + role + " WHERE " + mobile + " = :" + mobile;
 }
