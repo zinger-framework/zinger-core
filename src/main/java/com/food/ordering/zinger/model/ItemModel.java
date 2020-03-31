@@ -9,7 +9,6 @@ public class ItemModel {
     private ShopModel shopModel;
     private Integer isVeg;
     private Integer isAvailable;
-    private Integer isDelete;
 
     public ItemModel() {
         shopModel = new ShopModel();
@@ -79,14 +78,6 @@ public class ItemModel {
         this.isAvailable = isAvailable;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "ItemModel{" +
@@ -98,7 +89,6 @@ public class ItemModel {
                 ", shopModel=" + shopModel +
                 ", isVeg=" + isVeg +
                 ", isAvailable=" + isAvailable +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

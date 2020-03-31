@@ -28,9 +28,9 @@ public class UserController {
         return userService.verifySeller(user);
     }
 
-    @PostMapping(value = "/seller/{mobile}/{shopId}")
-    public Response<String> insertSeller(@PathVariable("mobile") String mobile, @PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.insertSeller(mobile, shopId, oauthId, mobileRh, role);
+    @PostMapping(value = "/seller/{shopId}/{mobile}")
+    public Response<String> insertSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.insertSeller(shopId, mobile, oauthId, mobileRh, role);
     }
 
     /**************************************************/

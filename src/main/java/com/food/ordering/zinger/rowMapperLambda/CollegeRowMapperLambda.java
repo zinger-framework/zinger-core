@@ -12,7 +12,6 @@ public class CollegeRowMapperLambda {
         college.setName(rs.getString(name));
         college.setIconUrl(rs.getString(iconUrl));
         college.setAddress(rs.getString(address));
-        college.setIsDelete(rs.getInt(isDelete));
         return college;
     };
 }

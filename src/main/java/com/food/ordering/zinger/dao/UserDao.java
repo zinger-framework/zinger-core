@@ -56,41 +56,39 @@ public class UserDao {
         UserCollegeModel userCollegeModel = new UserCollegeModel();
 
         try {
-            if (user.getRole().equals(UserRole.CUSTOMER)) {
-                SqlParameterSource parameters = new MapSqlParameterSource()
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.mobile, user.getMobile())
+                    .addValue(UserColumn.oauthId, user.getOauthId());
+
+            UserModel userModel = null;
+            try {
+                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userRowMapperLambda);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (userModel != null) {
+                userCollegeModel.setUserModel(userModel);
+                response = getCollegeByMobile(userModel);
+                priority = Priority.LOW;
+                response.setCode(ErrorLog.CodeSuccess);
+            } else {
+                parameters = new MapSqlParameterSource()
                         .addValue(UserColumn.mobile, user.getMobile())
-                        .addValue(UserColumn.role, user.getRole().name());
+                        .addValue(UserColumn.oauthId, user.getOauthId())
+                        .addValue(UserColumn.role, UserRole.CUSTOMER.name());
 
-                UserModel userModel = null;
-                try {
-                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
-                if (userModel != null) {
-                    userCollegeModel.setUserModel(userModel);
-                    response = getCollegeByMobile(userModel);
+                int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
+                if (result > 0) {
                     priority = Priority.LOW;
                     response.setCode(ErrorLog.CodeSuccess);
-                } else {
-                    parameters = new MapSqlParameterSource()
-                            .addValue(UserColumn.mobile, user.getMobile())
-                            .addValue(UserColumn.oauthId, user.getOauthId())
-                            .addValue(UserColumn.role, user.getRole().name());
-
-                    int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
-                    if (result > 0) {
-                        priority = Priority.LOW;
-                        response.setCode(ErrorLog.CodeSuccess);
-                        response.setMessage(ErrorLog.CollegeDetailNotAvailable);
-                        userCollegeModel.setUserModel(user);
-                        response.setData(userCollegeModel);
-                    } else
-                        response.setCode(ErrorLog.UDNU1151);
-                }
-            } else
-                response.setCode(ErrorLog.IH1050);
+                    response.setMessage(ErrorLog.CollegeDetailNotAvailable);
+                    user.setRole(UserRole.CUSTOMER);
+                    userCollegeModel.setUserModel(user);
+                    response.setData(userCollegeModel);
+                } else
+                    response.setCode(ErrorLog.UDNU1151);
+            }
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1152);
@@ -113,7 +111,7 @@ public class UserDao {
 
                 UserModel userModel = null;
                 try {
-                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
+                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileRole, parameters, UserRowMapperLambda.userRowMapperLambda);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -144,7 +142,7 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> insertSeller(String mobile, Integer shopId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertSeller(Integer shopId, String mobile, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
         UserRole userRole = UserRole.SELLER;

@@ -25,9 +25,9 @@ public class UserService {
         return userDao.verifySeller(user);
     }
 
-    public Response<String> insertSeller(String mobile, Integer shopId, String oauthId, String mobileRh, String role) {
+    public Response<String> insertSeller(Integer shopId, String mobile, String oauthId, String mobileRh, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
-        return userDao.insertSeller(mobile, shopId, requestHeaderModel);
+        return userDao.insertSeller(shopId, mobile, requestHeaderModel);
     }
 
     public Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, String mobileRh, String role) {

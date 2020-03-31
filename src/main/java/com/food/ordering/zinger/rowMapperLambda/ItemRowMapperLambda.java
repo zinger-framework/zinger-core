@@ -21,7 +21,6 @@ public class ItemRowMapperLambda {
 
         item.setIsVeg(rs.getInt(isVeg));
         item.setIsAvailable(rs.getInt(isAvailable));
-        item.setIsDelete(rs.getInt(isDelete));
         return item;
     };
 }

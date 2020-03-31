@@ -5,7 +5,6 @@ public class CollegeModel {
     private String name;
     private String iconUrl;
     private String address;
-    private Integer isDelete;
 
     public Integer getId() {
         return id;
@@ -39,14 +38,6 @@ public class CollegeModel {
         this.address = address;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "CollegeModel{" +
@@ -54,7 +45,6 @@ public class CollegeModel {
                 ", name='" + name + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +
                 ", address='" + address + '\'' +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

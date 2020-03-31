@@ -8,7 +8,6 @@ public class UserModel {
     private String email;
     private String oauthId;
     private UserRole role;
-    private Integer isDelete;
 
     public UserModel() {
     }
@@ -53,14 +52,6 @@ public class UserModel {
         this.role = role;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "UserModel{" +
@@ -69,7 +60,6 @@ public class UserModel {
                 ", email='" + email + '\'' +
                 ", oauthId='" + oauthId + '\'' +
                 ", role=" + role +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

@@ -14,7 +14,6 @@ public class UserRowMapperLambda {
         userModel.setEmail(rs.getString(email));
         userModel.setOauthId(rs.getString(oauthId));
         userModel.setRole(UserRole.valueOf(rs.getString(role)));
-        userModel.setIsDelete(rs.getInt(isDelete));
         return userModel;
     };
 }

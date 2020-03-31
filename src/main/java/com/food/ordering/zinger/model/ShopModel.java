@@ -17,8 +17,6 @@ public class ShopModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Kolkata")
     private Time closingTime;
 
-    private Integer isDelete;
-
     public ShopModel() {
         this.collegeModel = new CollegeModel();
     }
@@ -79,14 +77,6 @@ public class ShopModel {
         this.closingTime = closingTime;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "ShopModel{" +
@@ -97,7 +87,6 @@ public class ShopModel {
                 ", collegeModel=" + collegeModel +
                 ", openingTime=" + openingTime +
                 ", closingTime=" + closingTime +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

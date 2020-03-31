@@ -3,7 +3,6 @@ package com.food.ordering.zinger.model;
 public class UserShopModel {
     private UserModel userModel;
     private ShopModel shopModel;
-    private Integer isDelete;
 
     public UserShopModel() {
         userModel = new UserModel();
@@ -26,20 +25,11 @@ public class UserShopModel {
         this.shopModel = shopModel;
     }
 
-    public Integer getIsDelete() {
-        return isDelete;
-    }
-
-    public void setIsDelete(Integer isDelete) {
-        this.isDelete = isDelete;
-    }
-
     @Override
     public String toString() {
         return "UserShopModel{" +
                 "userModel=" + userModel +
                 ", shopModel=" + shopModel +
-                ", isDelete=" + isDelete +
                 '}';
     }
 }

@@ -21,7 +21,6 @@ public class ShopRowMapperLambda {
 
         shop.setOpeningTime(rs.getTime(openingTime));
         shop.setClosingTime(rs.getTime(closingTime));
-        shop.setIsDelete(rs.getInt(isDelete));
         return shop;
     };
 }
