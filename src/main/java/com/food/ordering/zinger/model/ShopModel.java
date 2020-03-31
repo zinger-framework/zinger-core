@@ -11,10 +11,10 @@ public class ShopModel {
     private String mobile;
     private CollegeModel collegeModel;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss", timezone = "Asia/Kolkata")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss a", timezone = "Asia/Kolkata")
     private Time openingTime;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss", timezone = "Asia/Kolkata")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "hh:mm:ss a", timezone = "Asia/Kolkata")
     private Time closingTime;
 
     public ShopModel() {
