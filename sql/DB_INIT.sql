@@ -71,6 +71,7 @@ CREATE TABLE item
 CREATE TABLE transactions
 (
     transaction_id      VARCHAR(64)  NOT NULL,
+    order_id            VARCHAR(16)  NOT NULL,
     bank_transaction_id VARCHAR(64)  NOT NULL,
     currency            VARCHAR(3)   NOT NULL,
     response_code       VARCHAR(10)  NOT NULL,
@@ -80,14 +81,14 @@ CREATE TABLE transactions
     payment_mode        VARCHAR(15)  NOT NULL,
     checksum_hash       VARCHAR(108) NOT NULL,
     date                TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id)
+    CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id),
+    CONSTRAINT transactions_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 
 CREATE TABLE orders
 (
     id                       VARCHAR(16)        NOT NULL,
     mobile                   VARCHAR(10)        NOT NULL,
-    transaction_id           VARCHAR(64) UNIQUE NOT NULL,
     shop_id                  INT                NOT NULL,
     date                     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED', 'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER', 'READY', 'OUT_FOR_DELIVERY', 'COMPLETED', 'DELIVERED'),
@@ -100,7 +101,6 @@ CREATE TABLE orders
     secret_key               VARCHAR(10)  DEFAULT NULL,
     CONSTRAINT orders_id_pk PRIMARY KEY (id),
     CONSTRAINT orders_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
-    CONSTRAINT orders_transaction_id_fk FOREIGN KEY (transaction_id) REFERENCES transactions (transaction_id),
     CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
@@ -171,15 +171,15 @@ CREATE TABLE seller_archive
 CREATE TRIGGER new_rating
 AFTER INSERT
 ON shop
-FOR EACH ROW 
+FOR EACH ROW
 INSERT INTO rating(shop_id) VALUES (NEW.id);
-    
+
 CREATE TRIGGER seller_archive
-    AFTER DELETE
-    ON users_shop
-    FOR EACH ROW
-    INSERT INTO seller_archive(mobile, shop_id)
-    VALUES (OLD.mobile, OLD.shop_id);
+AFTER DELETE
+ON users_shop
+FOR EACH ROW
+INSERT INTO seller_archive(mobile, shop_id)
+VALUES (OLD.mobile, OLD.shop_id);
 
 ####################################################
 
