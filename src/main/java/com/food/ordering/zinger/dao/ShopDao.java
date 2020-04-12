@@ -35,7 +35,7 @@ public class ShopDao {
     RatingDao ratingDao;
 
     @Autowired
-    CollegeDao collegeDao;
+    PlaceDao placeDao;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -60,7 +60,7 @@ public class ShopDao {
                         .addValue(ShopColumn.name, shopModel.getName())
                         .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
                         .addValue(ShopColumn.mobile, shopModel.getMobile())
-                        .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
+                        .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
                         .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
                         .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
                         .addValue(ShopColumn.isDelete, 0);
@@ -95,7 +95,7 @@ public class ShopDao {
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer placeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<ShopModel> list = null;
@@ -108,7 +108,7 @@ public class ShopDao {
                 priority = Priority.HIGH;
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ShopColumn.collegeId, collegeId);
+                        .addValue(ShopColumn.placeId, placeId);
 
                 try {
                     list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
@@ -128,14 +128,14 @@ public class ShopDao {
 
                 shopConfigurationModelList = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++) {
-                    list.get(i).setCollegeModel(null);
+                    list.get(i).setPlaceModel(null);
 
                     Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
                     Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));
                     Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
 
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-                    shopModelResponse.getData().setCollegeModel(null);
+                    shopModelResponse.getData().setPlaceModel(null);
                     ratingModelResponse.getData().setShopModel(null);
                     configurationModelResponse.getData().setShopModel(null);
 
@@ -169,7 +169,7 @@ public class ShopDao {
             }
         }
 
-        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, collegeId.toString(), priority));
+        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, placeId.toString(), priority));
         return response;
     }
 
@@ -192,9 +192,9 @@ public class ShopDao {
             if (shopModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                if (shopModel.getCollegeModel().getName() == null || shopModel.getCollegeModel().getName().isEmpty()) {
-                    Response<CollegeModel> collegeModelResponse = collegeDao.getCollegeById(shopModel.getCollegeModel().getId());
-                    shopModel.setCollegeModel(collegeModelResponse.getData());
+                if (shopModel.getPlaceModel().getName() == null || shopModel.getPlaceModel().getName().isEmpty()) {
+                    Response<PlaceModel> collegeModelResponse = placeDao.getCollegeById(shopModel.getPlaceModel().getId());
+                    shopModel.setPlaceModel(collegeModelResponse.getData());
                 }
                 response.setData(shopModel);
             }

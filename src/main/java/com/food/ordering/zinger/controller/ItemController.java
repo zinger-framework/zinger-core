@@ -30,8 +30,8 @@ public class ItemController {
     }
 
     @GetMapping(value = getItemsByName)
-    public Response<List<ItemModel>> getItemsByName(@PathVariable("collegeId") Integer collegeId, @PathVariable("itemName") String itemName, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.getItemsByName(collegeId, itemName, oauthId, mobile, role);
+    public Response<List<ItemModel>> getItemsByName(@PathVariable("placeId") Integer placeId, @PathVariable("itemName") String itemName, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return itemService.getItemsByName(placeId, itemName, oauthId, mobile, role);
     }
 
     @PatchMapping(value = updateItemById)

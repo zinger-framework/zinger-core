@@ -122,7 +122,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         Priority priority = Priority.MEDIUM;
@@ -134,7 +134,7 @@ public class ItemDao {
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(ItemColumn.name, "%" + itemName + "%")
-                        .addValue(ShopColumn.collegeId, collegeId);
+                        .addValue(ShopColumn.placeId, placeId);
 
                 try {
                     items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
@@ -153,7 +153,7 @@ public class ItemDao {
                 response.setMessage(ErrorLog.Success);
                 for (int i = 0; i < items.size(); i++) {
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(items.get(i).getShopModel().getId());
-                    shopModelResponse.getData().setCollegeModel(null);
+                    shopModelResponse.getData().setPlaceModel(null);
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
                 response.setData(items);

@@ -4,7 +4,7 @@ public class ApiConfig {
     public static final String EMPTY_QUOTES = "";
 
     public static class CollegeApi {
-        public static final String BASE_URL = "/college";
+        public static final String BASE_URL = "/place";
         public static final String insertCollege = EMPTY_QUOTES;
         public static final String getAllColleges = EMPTY_QUOTES;
     }
@@ -14,7 +14,7 @@ public class ApiConfig {
 
         public static final String insertItem = EMPTY_QUOTES;
         public static final String getItemsByShopId = "/shop/{shopId}";
-        public static final String getItemsByName = "/{collegeId}/{itemName}";
+        public static final String getItemsByName = "/{placeId}/{itemName}";
         public static final String updateItemById = EMPTY_QUOTES;
         public static final String deleteItemById = "/delete/{itemId}";
         public static final String unDeleteItemById = "/undelete/{itemId}";
@@ -40,14 +40,14 @@ public class ApiConfig {
         public static final String insertSeller = "/seller/{shopId}/{mobile}";
         public static final String getSellerByShopId = "/seller/{shopId}";
         public static final String updateUser = EMPTY_QUOTES;
-        public static final String updateUserCollegeData = "/college";
+        public static final String updateUserCollegeData = "/place";
         public static final String deleteSeller = "/seller/{shopId}/{mobile}";
     }
 
     public static class ShopApi {
         public static final String BASE_URL = "/shop";
         public static final String insertShop = EMPTY_QUOTES;
-        public static final String getShopsByCollegeId = "/college/{collegeId}";
+        public static final String getShopsByCollegeId = "/place/{placeId}";
         public static final String updateShopConfiguration = "/config";
     }
 }

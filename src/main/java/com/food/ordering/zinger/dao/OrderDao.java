@@ -242,7 +242,7 @@ public class OrderDao {
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         break;
                     } else {
-                        shopModelResponse.getData().setCollegeModel(null);
+                        shopModelResponse.getData().setPlaceModel(null);
                         orderModel.setShopModel(shopModelResponse.getData());
                     }
 

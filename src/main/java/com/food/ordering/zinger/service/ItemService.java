@@ -26,9 +26,9 @@ public class ItemService {
         return itemDao.getItemsByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return itemDao.getItemsByName(collegeId, itemName, requestHeaderModel);
+        return itemDao.getItemsByName(placeId, itemName, requestHeaderModel);
     }
 
     public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {

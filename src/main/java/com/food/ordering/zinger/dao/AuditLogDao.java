@@ -18,17 +18,17 @@ public class AuditLogDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public Response<String> insertCollegeLog(CollegeLogModel collegeLogModel) {
+    public Response<String> insertCollegeLog(PlaceLogModel placeLogModel) {
         Response<String> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(CollegeLogColumn.id, collegeLogModel.getId())
-                    .addValue(CollegeLogColumn.errorCode, collegeLogModel.getErrorCode())
-                    .addValue(CollegeLogColumn.mobile, collegeLogModel.getMobile())
-                    .addValue(CollegeLogColumn.message, collegeLogModel.getMessage())
-                    .addValue(CollegeLogColumn.updatedValue, collegeLogModel.getUpdatedValue())
-                    .addValue(CollegeLogColumn.priority, collegeLogModel.getPriority().name());
+                    .addValue(PlaceLogColumn.id, placeLogModel.getId())
+                    .addValue(PlaceLogColumn.errorCode, placeLogModel.getErrorCode())
+                    .addValue(PlaceLogColumn.mobile, placeLogModel.getMobile())
+                    .addValue(PlaceLogColumn.message, placeLogModel.getMessage())
+                    .addValue(PlaceLogColumn.updatedValue, placeLogModel.getUpdatedValue())
+                    .addValue(PlaceLogColumn.priority, placeLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertCollegeLog, parameters);
             if (responseValue > 0) {

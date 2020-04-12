@@ -7,19 +7,19 @@ import static com.food.ordering.zinger.constant.Sql.*;
 
 public class Query {
     public static final class AuditLogQuery {
-        public static final String insertCollegeLog = INSERT_INTO + CollegeLogColumn.tableName + LEFT_PARANTHESIS +
-                CollegeLogColumn.id + COMMA +
-                CollegeLogColumn.errorCode + COMMA +
-                CollegeLogColumn.mobile + COMMA +
-                CollegeLogColumn.message + COMMA +
-                CollegeLogColumn.updatedValue + COMMA +
-                CollegeLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + CollegeLogColumn.id +
-                COMMA_COLON + CollegeLogColumn.errorCode +
-                COMMA_COLON + CollegeLogColumn.mobile +
-                COMMA_COLON + CollegeLogColumn.message +
-                COMMA_COLON + CollegeLogColumn.updatedValue +
-                COMMA_COLON + CollegeLogColumn.priority + RIGHT_PARANTHESIS;
+        public static final String insertCollegeLog = INSERT_INTO + PlaceLogColumn.tableName + LEFT_PARANTHESIS +
+                PlaceLogColumn.id + COMMA +
+                PlaceLogColumn.errorCode + COMMA +
+                PlaceLogColumn.mobile + COMMA +
+                PlaceLogColumn.message + COMMA +
+                PlaceLogColumn.updatedValue + COMMA +
+                PlaceLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
+                COLON + PlaceLogColumn.id +
+                COMMA_COLON + PlaceLogColumn.errorCode +
+                COMMA_COLON + PlaceLogColumn.mobile +
+                COMMA_COLON + PlaceLogColumn.message +
+                COMMA_COLON + PlaceLogColumn.updatedValue +
+                COMMA_COLON + PlaceLogColumn.priority + RIGHT_PARANTHESIS;
 
         public static final String insertShopLog = INSERT_INTO + ShopLogColumn.tableName + LEFT_PARANTHESIS +
                 ShopLogColumn.id + COMMA +
@@ -78,44 +78,44 @@ public class Query {
     }
 
     public static final class CollegeQuery {
-        public static final String notDeleted = CollegeColumn.isDelete + " = 0";
+        public static final String notDeleted = PlaceColumn.isDelete + " = 0";
 
-        public static final String insertCollege = INSERT_INTO + CollegeColumn.tableName + LEFT_PARANTHESIS +
-                CollegeColumn.name + COMMA +
-                CollegeColumn.iconUrl + COMMA +
-                CollegeColumn.address + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + CollegeColumn.name +
-                COMMA_COLON + CollegeColumn.iconUrl +
-                COMMA_COLON + CollegeColumn.address + RIGHT_PARANTHESIS;
+        public static final String insertCollege = INSERT_INTO + PlaceColumn.tableName + LEFT_PARANTHESIS +
+                PlaceColumn.name + COMMA +
+                PlaceColumn.iconUrl + COMMA +
+                PlaceColumn.address + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
+                COLON + PlaceColumn.name +
+                COMMA_COLON + PlaceColumn.iconUrl +
+                COMMA_COLON + PlaceColumn.address + RIGHT_PARANTHESIS;
 
         public static final String getAllColleges = SELECT +
-                CollegeColumn.id + COMMA +
-                CollegeColumn.name + COMMA +
-                CollegeColumn.iconUrl + COMMA +
-                CollegeColumn.address + FROM + CollegeColumn.tableName + WHERE +
+                PlaceColumn.id + COMMA +
+                PlaceColumn.name + COMMA +
+                PlaceColumn.iconUrl + COMMA +
+                PlaceColumn.address + FROM + PlaceColumn.tableName + WHERE +
                 notDeleted +
-                ORDER_BY + CollegeColumn.name + ASC;
+                ORDER_BY + PlaceColumn.name + ASC;
 
         public static final String getCollegeById = SELECT +
-                CollegeColumn.id + COMMA +
-                CollegeColumn.name + COMMA +
-                CollegeColumn.iconUrl + COMMA +
-                CollegeColumn.address + FROM + CollegeColumn.tableName + WHERE +
-                CollegeColumn.id + EQUAL_COLON + CollegeColumn.id;
+                PlaceColumn.id + COMMA +
+                PlaceColumn.name + COMMA +
+                PlaceColumn.iconUrl + COMMA +
+                PlaceColumn.address + FROM + PlaceColumn.tableName + WHERE +
+                PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String updateCollege = UPDATE + CollegeColumn.tableName + SET +
-                CollegeColumn.name + EQUAL_COLON + CollegeColumn.name + COMMA +
-                CollegeColumn.iconUrl + EQUAL_COLON + CollegeColumn.iconUrl + COMMA +
-                CollegeColumn.address + EQUAL_COLON + CollegeColumn.address + WHERE +
-                CollegeColumn.id + EQUAL_COLON + CollegeColumn.id;
+        public static final String updateCollege = UPDATE + PlaceColumn.tableName + SET +
+                PlaceColumn.name + EQUAL_COLON + PlaceColumn.name + COMMA +
+                PlaceColumn.iconUrl + EQUAL_COLON + PlaceColumn.iconUrl + COMMA +
+                PlaceColumn.address + EQUAL_COLON + PlaceColumn.address + WHERE +
+                PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String deleteCollege = UPDATE + CollegeColumn.tableName + SET +
-                CollegeColumn.isDelete + " = 1" + WHERE +
-                CollegeColumn.id + EQUAL_COLON + CollegeColumn.id;
+        public static final String deleteCollege = UPDATE + PlaceColumn.tableName + SET +
+                PlaceColumn.isDelete + " = 1" + WHERE +
+                PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String unDeleteCollege = UPDATE + CollegeColumn.tableName + SET +
-                CollegeColumn.isDelete + " = 0" + WHERE +
-                CollegeColumn.id + EQUAL_COLON + CollegeColumn.id;
+        public static final String unDeleteCollege = UPDATE + PlaceColumn.tableName + SET +
+                PlaceColumn.isDelete + " = 0" + WHERE +
+                PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
     }
 
     public static final class ConfigurationQuery {
@@ -366,13 +366,13 @@ public class Query {
                 ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + COMMA +
                 ShopColumn.mobile + COMMA +
-                ShopColumn.collegeId + COMMA +
+                ShopColumn.placeId + COMMA +
                 ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ShopColumn.name +
                 COMMA_COLON + ShopColumn.photoUrl +
                 COMMA_COLON + ShopColumn.mobile +
-                COMMA_COLON + ShopColumn.collegeId +
+                COMMA_COLON + ShopColumn.placeId +
                 COMMA_COLON + ShopColumn.openingTime +
                 COMMA_COLON + ShopColumn.closingTime + RIGHT_PARANTHESIS;
 
@@ -381,21 +381,21 @@ public class Query {
                 ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + COMMA +
                 ShopColumn.mobile + COMMA +
-                ShopColumn.collegeId + COMMA +
+                ShopColumn.placeId + COMMA +
                 ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + FROM + ShopColumn.tableName + WHERE +
-                ShopColumn.collegeId + EQUAL_COLON + ShopColumn.collegeId + AND + notDeleted;
+                ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted;
 
         public static final String getShopIdByCollegeId = SELECT +
                 ShopColumn.id + FROM + ShopColumn.tableName + WHERE +
-                ShopColumn.collegeId + EQUAL_COLON + ShopColumn.collegeId + AND + notDeleted;
+                ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted;
 
         public static final String getShopById = SELECT +
                 ShopColumn.id + COMMA +
                 ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + COMMA +
                 ShopColumn.mobile + COMMA +
-                ShopColumn.collegeId + COMMA +
+                ShopColumn.placeId + COMMA +
                 ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + FROM + ShopColumn.tableName + WHERE +
                 ShopColumn.id + EQUAL_COLON + ShopColumn.id;
@@ -458,20 +458,20 @@ public class Query {
     }
 
     public static final class UserCollegeQuery {
-        public static final String insertUserCollege = INSERT_INTO + UserCollegeColumn.tableName + LEFT_PARANTHESIS +
-                UserCollegeColumn.mobile + COMMA +
-                UserCollegeColumn.collegeId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserCollegeColumn.mobile +
-                COMMA_COLON + UserCollegeColumn.collegeId + RIGHT_PARANTHESIS;
+        public static final String insertUserCollege = INSERT_INTO + UserPlaceColumn.tableName + LEFT_PARANTHESIS +
+                UserPlaceColumn.mobile + COMMA +
+                UserPlaceColumn.placeId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
+                COLON + UserPlaceColumn.mobile +
+                COMMA_COLON + UserPlaceColumn.placeId + RIGHT_PARANTHESIS;
 
         public static final String getCollegeByMobile = SELECT +
-                UserCollegeColumn.mobile + COMMA +
-                UserCollegeColumn.collegeId + FROM + UserCollegeColumn.tableName + WHERE +
-                UserCollegeColumn.mobile + EQUAL_COLON + UserCollegeColumn.mobile;
+                UserPlaceColumn.mobile + COMMA +
+                UserPlaceColumn.placeId + FROM + UserPlaceColumn.tableName + WHERE +
+                UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
 
-        public static final String updateCollegeByMobile = UPDATE + UserCollegeColumn.tableName + SET +
-                UserCollegeColumn.collegeId + EQUAL_COLON + UserCollegeColumn.collegeId + WHERE +
-                UserCollegeColumn.mobile + EQUAL_COLON + UserCollegeColumn.mobile;
+        public static final String updateCollegeByMobile = UPDATE + UserPlaceColumn.tableName + SET +
+                UserPlaceColumn.placeId + EQUAL_COLON + UserPlaceColumn.placeId + WHERE +
+                UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
     }
 
     public static final class UserQuery {

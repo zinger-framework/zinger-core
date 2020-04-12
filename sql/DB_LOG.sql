@@ -1,4 +1,4 @@
--- DROP TABLE users_college_log;
+-- DROP TABLE users_place_log;
 -- DROP TABLE users_shop_log;
 -- DROP TABLE configurations_log;
 
@@ -7,9 +7,9 @@
 -- DROP TABLE item_log;
 -- DROP TABLE users_log;
 -- DROP TABLE shop_log;
--- DROP TABLE college_log;
+-- DROP TABLE place_log;
 
-create table college_log (
+create table place_log (
 	id INT DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
@@ -79,7 +79,7 @@ create table users_shop_log (
 	priority ENUM('LOW','MEDIUM','HIGH')
 );
 
-create table users_college_log (
+create table users_place_log (
 	users_mobile VARCHAR(10) DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,

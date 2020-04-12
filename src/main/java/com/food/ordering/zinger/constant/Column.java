@@ -2,8 +2,8 @@ package com.food.ordering.zinger.constant;
 
 public class Column {
 
-    public static final class CollegeColumn {
-        public static final String tableName = "college";
+    public static final class PlaceColumn {
+        public static final String tableName = "place";
 
         public static final String id = "id";
         public static final String name = "name";
@@ -77,8 +77,9 @@ public class Column {
         public static final String id = "id";
         public static final String name = "name";
         public static final String photoUrl = "photo_url";
+        public static final String coverUrls = "cover_urls";
         public static final String mobile = "mobile";
-        public static final String collegeId = "college_id";
+        public static final String placeId = "place_id";
         public static final String openingTime = "opening_time";
         public static final String closingTime = "closing_time";
         public static final String isDelete = "is_delete";
@@ -99,11 +100,11 @@ public class Column {
         public static final String date = "date";
     }
 
-    public static final class UserCollegeColumn {
-        public static final String tableName = "users_college";
+    public static final class UserPlaceColumn {
+        public static final String tableName = "users_place";
 
         public static final String mobile = "mobile";
-        public static final String collegeId = "college_id";
+        public static final String placeId = "place_id";
     }
 
     public static final class UserColumn {
@@ -126,8 +127,8 @@ public class Column {
 
     /**************************************************************/
 
-    public static final class CollegeLogColumn {
-        public static final String tableName = "college_log";
+    public static final class PlaceLogColumn {
+        public static final String tableName = "place_log";
 
         public static final String id = "id";
         public static final String errorCode = "error_code";

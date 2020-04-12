@@ -25,8 +25,8 @@ public class ShopController {
     }
 
     @GetMapping(value = getShopsByCollegeId)
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(@PathVariable("collegeId") Integer collegeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByCollegeId(collegeId, oauthId, mobile, role);
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(@PathVariable("placeId") Integer placeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.getShopByCollegeId(placeId, oauthId, mobile, role);
     }
 
     @PatchMapping(value = updateShopConfiguration)

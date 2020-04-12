@@ -1,7 +1,7 @@
 package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
-import com.food.ordering.zinger.model.UserCollegeModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserShopListModel;
 import com.food.ordering.zinger.service.UserService;
@@ -21,7 +21,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping(value = loginRegisterCustomer)
-    public Response<UserCollegeModel> loginRegisterCustomer(@RequestBody UserModel user) {
+    public Response<UserPlaceModel> loginRegisterCustomer(@RequestBody UserModel user) {
         return userService.loginRegisterCustomer(user);
     }
 
@@ -50,8 +50,8 @@ public class UserController {
     }
 
     @PatchMapping(value = updateUserCollegeData)
-    public Response<String> updateUserCollegeData(@RequestBody UserCollegeModel userCollegeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.updateUserCollegeData(userCollegeModel, oauthId, mobile, role);
+    public Response<String> updateUserCollegeData(@RequestBody UserPlaceModel userPlaceModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.updateUserCollegeData(userPlaceModel, oauthId, mobile, role);
     }
 
     /**************************************************/

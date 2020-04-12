@@ -3,11 +3,11 @@ package com.food.ordering.zinger.dao;
 import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
-import com.food.ordering.zinger.model.CollegeModel;
+import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.model.logger.CollegeLogModel;
+import com.food.ordering.zinger.model.logger.PlaceLogModel;
 import com.food.ordering.zinger.constant.Query.CollegeQuery;
-import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
-public class CollegeDao {
+public class PlaceDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -32,7 +32,7 @@ public class CollegeDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertCollege(CollegeModel collegeModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertCollege(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -48,9 +48,9 @@ public class CollegeDao {
                 priority = Priority.HIGH;
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(CollegeColumn.name, collegeModel.getName())
-                        .addValue(CollegeColumn.address, collegeModel.getAddress())
-                        .addValue(CollegeColumn.iconUrl, collegeModel.getIconUrl());
+                        .addValue(PlaceColumn.name, placeModel.getName())
+                        .addValue(PlaceColumn.address, placeModel.getAddress())
+                        .addValue(PlaceColumn.iconUrl, placeModel.getIconUrl());
 
                 int responseValue = namedParameterJdbcTemplate.update(CollegeQuery.insertCollege, parameters);
                 if (responseValue > 0) {
@@ -67,14 +67,14 @@ public class CollegeDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertCollegeLog(new CollegeLogModel(response, requestHeaderModel.getMobile(), null, collegeModel.toString(), priority));
+        auditLogDao.insertCollegeLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, placeModel.toString(), priority));
         return response;
     }
 
-    public Response<List<CollegeModel>> getAllColleges(RequestHeaderModel requestHeaderModel) {
+    public Response<List<PlaceModel>> getAllColleges(RequestHeaderModel requestHeaderModel) {
 
-        Response<List<CollegeModel>> response = new Response<>();
-        List<CollegeModel> list = null;
+        Response<List<PlaceModel>> response = new Response<>();
+        List<PlaceModel> list = null;
         Priority priority = Priority.MEDIUM;
 
         try {
@@ -84,7 +84,7 @@ public class CollegeDao {
                 priority = Priority.HIGH;
             } else {
                 try {
-                    list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, CollegeRowMapperLambda.collegeRowMapperLambda);
+                    list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, PlaceRowMapperLambda.collegeRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(CDNA1102);
                     response.setMessage(CollegeDetailNotAvailable);
@@ -103,30 +103,30 @@ public class CollegeDao {
             }
         }
 
-        auditLogDao.insertCollegeLog(new CollegeLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
+        auditLogDao.insertCollegeLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
         return response;
     }
 
-    public Response<CollegeModel> getCollegeById(Integer collegeId) {
-        Response<CollegeModel> response = new Response<>();
-        CollegeModel college = null;
+    public Response<PlaceModel> getCollegeById(Integer placeId) {
+        Response<PlaceModel> response = new Response<>();
+        PlaceModel place = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(CollegeColumn.id, collegeId);
+                    .addValue(PlaceColumn.id, placeId);
 
             try {
-                college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
+                place = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, PlaceRowMapperLambda.collegeRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (college != null) {
+            if (place != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                response.setData(college);
+                response.setData(place);
             }
         }
 
