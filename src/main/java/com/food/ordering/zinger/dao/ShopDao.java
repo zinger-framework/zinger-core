@@ -88,7 +88,7 @@ public class ShopDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1253);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, configurationModel.toString(), priority));
@@ -114,12 +114,12 @@ public class ShopDao {
                     list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1254);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1255);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null && !list.isEmpty()) {
                 priority = Priority.LOW;
@@ -184,10 +184,10 @@ public class ShopDao {
             try {
                 shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (shopModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -239,7 +239,7 @@ public class ShopDao {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1259);
         }
 

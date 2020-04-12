@@ -40,7 +40,7 @@ public class TransactionDao {
                 response.setMessage(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -58,7 +58,7 @@ public class TransactionDao {
             try {
                 transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransaction, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
 
             if (transactionModel != null) {
@@ -67,7 +67,7 @@ public class TransactionDao {
                 response.setData(transactionModel);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

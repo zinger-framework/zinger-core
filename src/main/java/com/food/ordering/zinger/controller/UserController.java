@@ -1,7 +1,6 @@
 package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
-import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.UserCollegeModel;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserShopListModel;
@@ -22,7 +21,7 @@ public class UserController {
     UserService userService;
 
     @PostMapping(value = loginRegisterCustomer)
-    public Response<UserCollegeModel> loginRegisterCustomer(@RequestBody UserModel user) throws GenericException {
+    public Response<UserCollegeModel> loginRegisterCustomer(@RequestBody UserModel user) {
         return userService.loginRegisterCustomer(user);
     }
 

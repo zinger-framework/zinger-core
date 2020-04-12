@@ -64,7 +64,7 @@ public class CollegeDao {
             }
         } catch (Exception e) {
             response.setCode(CE1101);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertCollegeLog(new CollegeLogModel(response, requestHeaderModel.getMobile(), null, collegeModel.toString(), priority));
@@ -88,11 +88,11 @@ public class CollegeDao {
                 } catch (Exception e) {
                     response.setCode(CDNA1102);
                     response.setMessage(CollegeDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(CE1103);
         } finally {
             if (list != null && !list.isEmpty()) {
@@ -118,10 +118,10 @@ public class CollegeDao {
             try {
                 college = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, CollegeRowMapperLambda.collegeRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (college != null) {
                 response.setCode(ErrorLog.CodeSuccess);

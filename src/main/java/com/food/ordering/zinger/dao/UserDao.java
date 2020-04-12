@@ -15,6 +15,7 @@ import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.model.Response;
+import com.sun.javafx.tools.packager.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -64,7 +65,7 @@ public class UserDao {
             try {
                 userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
 
             if (userModel != null) {
@@ -93,7 +94,7 @@ public class UserDao {
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1152);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), user.getMobile(), user.toString(), priority));
@@ -114,7 +115,7 @@ public class UserDao {
                 try {
                     userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileRole, parameters, UserRowMapperLambda.userRowMapperLambda);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
                 if (userModel != null) {
                     if (userModel.getOauthId() == null || userModel.getOauthId().isEmpty()) {
@@ -135,7 +136,7 @@ public class UserDao {
                 response.setCode(ErrorLog.UDNU1153);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1154);
         }
 
@@ -166,7 +167,7 @@ public class UserDao {
                         responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
                     }
                     catch (Exception e){
-                        e.printStackTrace();
+                        System.err.println(e.getClass().getName() + ": " + e.getMessage());
                     }
                     UserShopModel userShopModel = new UserShopModel();
                     userShopModel.getUserModel().setMobile(mobile);
@@ -195,7 +196,7 @@ public class UserDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1161);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
@@ -214,7 +215,7 @@ public class UserDao {
         try {
             userCollegeModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (userCollegeModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -243,7 +244,7 @@ public class UserDao {
         try {
             userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (userModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -267,10 +268,10 @@ public class UserDao {
             try {
                 shopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByMobile, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (shopModelList != null && !shopModelList.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -328,7 +329,7 @@ public class UserDao {
                     userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
                 } catch (Exception e) {
                     userModelResponse.setCode(ErrorLog.CE1104);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 } finally {
                     if (userModelList != null) {
                         userModelList.removeIf(userModel -> userModel.getRole() == UserRole.SHOP_OWNER);
@@ -344,7 +345,7 @@ public class UserDao {
             }
         } catch (Exception e) {
             userModelResponse.setCode(ErrorLog.CE1105);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getMobile(), null, shopId.toString(), priority));
@@ -383,7 +384,7 @@ public class UserDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1158);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), user.getMobile(), user.toString(), priority));
@@ -405,7 +406,7 @@ public class UserDao {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -426,7 +427,7 @@ public class UserDao {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -447,7 +448,7 @@ public class UserDao {
             } else
                 response.setMessage(ErrorLog.UserDetailNotUpdated);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -514,7 +515,7 @@ public class UserDao {
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1106);
             response.setData(Failure);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));

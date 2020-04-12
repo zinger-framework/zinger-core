@@ -32,10 +32,10 @@ public class RatingDao {
             try {
                 ratingModel = namedParameterJdbcTemplate.queryForObject(RatingQuery.getRatingByShopId, parameters, RatingRowMapperLambda.ratingRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (ratingModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -66,7 +66,7 @@ public class RatingDao {
                 namedParameterJdbcTemplate.update(RatingQuery.updateRating, parameter);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
 }

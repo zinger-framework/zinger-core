@@ -75,7 +75,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1202);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
 
@@ -101,12 +101,12 @@ public class ItemDao {
                 } catch (Exception e) {
                     response.setCode(IDNA1203);
                     response.setMessage(ItemDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(CE1204);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -141,12 +141,12 @@ public class ItemDao {
                 } catch (Exception e) {
                     response.setCode(IDNA1205);
                     response.setMessage(ItemDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(CE1206);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (items != null && !items.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -174,10 +174,10 @@ public class ItemDao {
             try {
                 item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (item != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -202,7 +202,7 @@ public class ItemDao {
             try {
                 orderItemModelList = namedParameterJdbcTemplate.query(OrderItemQuery.getItemByOrderId, parameters, OrderItemRowMapperLambda.orderItemRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             } finally {
                 if (orderItemModelList != null && orderItemModelList.size() > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
@@ -222,7 +222,7 @@ public class ItemDao {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -264,7 +264,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1208);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
@@ -301,7 +301,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1209);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
@@ -339,7 +339,7 @@ public class ItemDao {
 
         } catch (Exception e) {
             response.setCode(CE1212);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));

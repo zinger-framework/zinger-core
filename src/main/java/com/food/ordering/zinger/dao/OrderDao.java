@@ -108,7 +108,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1261);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
@@ -132,7 +132,7 @@ public class OrderDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
         return response;
     }
@@ -175,7 +175,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1268);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
@@ -209,12 +209,12 @@ public class OrderDao {
                     orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1269);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1270);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 priority = Priority.LOW;
@@ -293,12 +293,12 @@ public class OrderDao {
                     orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1274);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1275);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 priority = Priority.LOW;
@@ -374,7 +374,7 @@ public class OrderDao {
                 } catch (Exception e) {
                     response.setCode(ErrorLog.ODNA1287);
                     response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
 
@@ -450,12 +450,12 @@ public class OrderDao {
                     orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1278);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModel != null) {
                 priority = Priority.LOW;
@@ -525,7 +525,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1286);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
@@ -558,7 +558,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1296);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
@@ -616,7 +616,7 @@ public class OrderDao {
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1284);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
