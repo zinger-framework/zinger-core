@@ -1,29 +1,57 @@
-insert into college values(1,'SSN College of Enginering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
-insert into college values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
-insert into college values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Ramapuram',0);
+insert into college values(1,'SSN College of Enginering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','kelambakkam',0);
+insert into college values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','vandaloor',0);
+insert into college values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','ramapuram',0);
 
-insert into shop values(1,'Sathyas Main Canteen','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg',9176019344,1,'09:00:00','21:00:00',0);
-insert into shop values(2,'Snow Qube','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg',9176019344,1,'09:00:00','21:00:00',0);
-insert into shop values(3,'Viswaas','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg',9176019344,1,'09:00:00','21:00:00',0);
-insert into shop values(4,'Sathyas Fast Food','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg',9176019344,1,'09:00:00','21:00:00',0);
+insert into shop values(1,'sathyas main','shop.com',9176019344,1,'09:00:00','21:00:00',0);
+insert into shop values(2,'Snow Qube','shop.com',9176019344,1,'09:00:00','21:00:00',0);
+insert into shop values(3,'sathyas small','shop.com',9176019344,1,'09:00:00','21:00:00',0);
 
-insert into item values(1,'Chicken Fried Rice',80,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Chinese',1,0,1,0);
-insert into item values(2,'Chicken Noodles',90,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Chinese',1,0,1,0);
-insert into item values(3,'Veg Noodles',60,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Chinese',1,1,1,0);
-insert into item values(4,'Masala Dosa',45,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','South Indian',1,1,1,0);
-insert into item values(5,'Sada Dosa',35,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','South Indian',1,1,1,0);
-insert into item values(6,'Onion Dosa',50,'https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','South Indian',1,1,1,0);
+insert into shop values(4,'VIT sathyas main','shop.com',9176019344,2,'09:00:00','21:00:00',0);
+insert into shop values(5,'VIT Snow Qube','shop.com',9176019344,2,'09:00:00','21:00:00',0);
+insert into shop values(6,'VIT sathyas small','shop.com',9176019344,2,'09:00:00','21:00:00',0);
+
+insert into shop values(7,'SRM sathyas main','shop.com',9176019344,3,'09:00:00','21:00:00',0);
+insert into shop values(8,'SRM Snow Qube','shop.com',9176019344,3,'09:00:00','21:00:00',0);
+insert into shop values(9,'SRM sathyas small','shop.com',9176019344,3,'09:00:00','21:00:00',0);
+
+insert into users values(9789075309,'Abhiram','abhi@yahoo.co.in','24oauthid12','SHOP_OWNER',0);
+-- insert into users values(9176019346,'shrikanth','harshavardhan98@yahoo.co.in','12oauthid36','SHOP_OWNER',0);
+-- insert into users values(9176019347,'spider-man','harshavardhan98@yahoo.co.in','12oauthid37','CUSTOMER',0);
+-- insert into users values(9176019348,'Harshavardhan','harshavardhan98@yahoo.co.in','12oauthid38','SELLER',0);
+
+insert into item values(1,'chicken fried rice',75,'food.com','fast food',1,0,0,0);
+insert into item values(2,'chicken noodles',75,'food.com','fast food',1,0,0,0);
+insert into item values(3,'dosa',75,'food.com','fast food',2,0,0,0);
+insert into item values(4,'idly',75,'food.com','fast food',2,0,0,0);
+insert into item values(5,'burger',75,'food.com','fast food',3,0,0,0);
+insert into item values(6,'burger',75,'food.com','fast food',3,0,0,0);
+insert into item values(7,'parota',75,'food.com','fast food',4,0,0,0);
+insert into item values(8,'chappati',75,'food.com','fast food',5,0,0,0);
+insert into item values(9,'samosa',75,'food.com','fast food',6,0,0,0);
+insert into item values(10,'channa samosa',75,'food.com','fast food',7,0,0,0);
+insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
+insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
+
+insert into rating values(1,2.8,23);
+insert into rating values(2,4.8,5);
+insert into rating values(3,3.7,98);
 
 insert into configurations(shop_id, delivery_price) values(1,5.0);
 insert into configurations(shop_id, delivery_price) values(2,15.0);
 insert into configurations(shop_id, delivery_price) values(3,20.0);
-insert into configurations(shop_id, delivery_price) values(4,25.0);
+insert into configurations(shop_id, delivery_price) values(10,2.0);
+
+-- insert into users_college values("9176786582",1);
+-- insert into users_shop values("9176786581",1);
+-- insert into users_shop values("9176786581",2);
 
 select * from users;
 select * from college;
 select * from college_log;
 select * from shop;
 select * from item;
+select * from item_log;
+select * from users_log;
 select * from users_college;
 select * from users_shop;
 select * from transactions;
@@ -45,3 +73,40 @@ SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = 
 SELECT id FROM shop WHERE college_id = 2 AND is_delete = 0;
 SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE id = 'O0005';
 SELECT id, name, price, photo_url, category, shop_id, is_veg, is_available, is_delete FROM item WHERE name LIKE '%pa%' AND is_delete = 0 AND shop_id IN (SELECT id FROM shop WHERE college_id = 2 AND is_delete = 0);
+
+
+
+
+####################################################
+# INDEXING ADDED
+####################################################
+CREATE INDEX college_is_delete_index
+ON college (is_delete); 
+
+CREATE INDEX college_name_index
+ON college (name); 
+
+CREATE INDEX shop_college_id_index
+ON shop (college_id); 
+
+CREATE INDEX users_oauth_id_index
+ON users (oauth_id); 
+
+CREATE INDEX items_shop_id_index
+ON item (shop_id); 
+
+CREATE INDEX items_name_index
+ON item (name); 
+
+CREATE INDEX orders_shop_id_index
+ON orders (shop_id); 
+
+CREATE INDEX orders_mobile_index
+ON orders (mobile);
+
+####################################################
+
+
+
+ 
+
