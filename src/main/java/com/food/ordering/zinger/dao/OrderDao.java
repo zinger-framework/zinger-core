@@ -18,11 +18,14 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
 import static com.food.ordering.zinger.column.OrderColumn.*;
+import static com.food.ordering.zinger.column.OrderColumn.status;
 
 @Repository
 public class OrderDao {
@@ -70,7 +73,15 @@ public class OrderDao {
                 if (!transactionResult.getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.TDNU1264);
                     response.setData(ErrorLog.TransactionDetailNotUpdated);
-                } else if (transaction.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode) && transaction.getResponseMessage().equals(PaytmResponseLog.TxnSuccessful) && checkOrderStatusValidity(null, order.getOrderStatus())) {
+                } else{
+
+                    if(transaction.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode))
+                        order.setOrderStatus(OrderStatus.PLACED);
+                    else if(transaction.getResponseCode().equals(PaytmResponseLog.PendingCode))
+                        order.setOrderStatus(OrderStatus.PENDING);
+                    else
+                        order.setOrderStatus(OrderStatus.TXN_FAILURE);
+
                     MapSqlParameterSource parameter = new MapSqlParameterSource()
                             .addValue(OrderColumn.id, order.getId())
                             .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
@@ -636,10 +647,7 @@ public class OrderDao {
         // ready -> secret key must be updated in table, completed
         // out_for_delivery -> secret key must be updated in table, delivered
 
-        if (currentStatus == null)
-            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
-
-        else if (currentStatus.equals(OrderStatus.PENDING))
+        if (currentStatus.equals(OrderStatus.PENDING))
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
         else if (currentStatus.equals(OrderStatus.PLACED)) {
             return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
@@ -686,5 +694,80 @@ public class OrderDao {
             totalPrice += orderItemModel.getQuantity() * itemModelResponse.getData().getPrice();
         }
         return totalPrice;
+    }
+
+
+    public void updatePendingOrder(){
+
+        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status,OrderStatus.PENDING.name());
+        List<OrderModel> orderModelList = null;
+        try {
+            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            if(orderModelList!=null && orderModelList.size()>0){
+                for(OrderModel orderModel:orderModelList){
+                    OrderStatus newStatus=orderModel.getOrderStatus();
+                    String transactionID=orderModel.getTransactionModel().getTransactionId();
+                    System.out.println("transaction id: "+transactionID);
+                    String transactionStatusCode=getTransactionStatus(transactionID);
+                    if(transactionStatusCode.equals(PaytmResponseLog.TxnSuccessfulCode)){
+                        Date currentDate = new Date();
+                        long diff = currentDate.getTime() - orderModel.getDate().getTime();
+                        long diffMinutes = diff / (60 * 1000) % 60;
+                        long diffHours = diff / (60 * 60 * 1000);
+                        int diffInDays = (int) ((currentDate.getTime() - orderModel.getDate().getTime()) / (1000 * 60 * 60 * 24));
+
+                        if(diffMinutes>10 || diffHours>=1 || diffInDays>=1)
+                        {
+                            initiateRefund();
+                            newStatus=OrderStatus.TXN_FAILURE;
+                            System.out.println("testing");
+                        }else{
+                            System.out.println("Change the order status to placed");
+                            newStatus=OrderStatus.PLACED;
+                        }
+                    }
+                    else if(transactionStatusCode.equals(PaytmResponseLog.TxnFailureCode)){
+                        newStatus=OrderStatus.TXN_FAILURE;
+                    }
+
+                    // update order status
+
+                    if(newStatus!=orderModel.getOrderStatus()){
+
+                        try{
+                            parameter = new MapSqlParameterSource()
+                                    .addValue(status, newStatus.name())
+                                    .addValue(id, orderModel.getId());
+                            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
+
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+
+                        // update the transaction code here
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    public String getTransactionStatus(String transactionId){
+        // HITS the paytm API
+        Random rn = new Random();
+        int answer = rn.nextInt(3)+1;
+        if(answer%2==0)
+            return PaytmResponseLog.TxnSuccessfulCode;
+        else
+            return PaytmResponseLog.TxnFailureCode;
+
+    }
+
+    public void initiateRefund(){
+        // Initiate the refund using payment gateway
     }
 }
