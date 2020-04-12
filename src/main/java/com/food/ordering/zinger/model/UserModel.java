@@ -1,6 +1,6 @@
 package com.food.ordering.zinger.model;
 
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 
 public class UserModel {
     private String mobile;

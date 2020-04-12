@@ -1,8 +1,8 @@
 package com.food.ordering.zinger.model.logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.model.Response;
 
 import java.sql.Timestamp;
 

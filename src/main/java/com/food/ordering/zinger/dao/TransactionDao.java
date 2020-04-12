@@ -1,11 +1,11 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.TransactionColumn;
+import com.food.ordering.zinger.constant.Column.TransactionColumn;
 import com.food.ordering.zinger.model.TransactionModel;
-import com.food.ordering.zinger.query.TransactionQuery;
+import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;

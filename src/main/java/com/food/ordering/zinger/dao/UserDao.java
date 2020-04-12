@@ -1,20 +1,20 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.UserCollegeColumn;
-import com.food.ordering.zinger.column.UserColumn;
-import com.food.ordering.zinger.column.UserShopColumn;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.UserCollegeColumn;
+import com.food.ordering.zinger.constant.Column.UserColumn;
+import com.food.ordering.zinger.constant.Column.UserShopColumn;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.query.UserCollegeQuery;
-import com.food.ordering.zinger.query.UserQuery;
-import com.food.ordering.zinger.query.UserShopQuery;
+import com.food.ordering.zinger.constant.Query.UserCollegeQuery;
+import com.food.ordering.zinger.constant.Query.UserQuery;
+import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.UserCollegeRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.food.ordering.zinger.utils.ErrorLog.*;
+import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
 public class UserDao {
@@ -86,8 +86,9 @@ public class UserDao {
                     user.setRole(UserRole.CUSTOMER);
                     userCollegeModel.setUserModel(user);
                     response.setData(userCollegeModel);
-                } else
+                } else {
                     response.setCode(ErrorLog.UDNU1151);
+                }
             }
 
         } catch (Exception e) {

@@ -5,7 +5,7 @@ import com.food.ordering.zinger.model.OrderItemModel;
 import com.food.ordering.zinger.model.OrderModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.OrderItemColumn.*;
+import static com.food.ordering.zinger.constant.Column.OrderItemColumn.*;
 
 public class OrderItemRowMapperLambda {
     public static final RowMapper<OrderItemModel> orderItemRowMapperLambda = (rs, rownum) -> {

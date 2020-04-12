@@ -1,15 +1,16 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.logger.*;
+import com.food.ordering.zinger.constant.Column.*;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.logger.*;
-import com.food.ordering.zinger.query.AuditLogQuery;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
+import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
 
 @Repository
 public class AuditLogDao {

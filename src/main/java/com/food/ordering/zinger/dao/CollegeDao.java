@@ -1,15 +1,15 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.CollegeColumn;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.*;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.logger.CollegeLogModel;
-import com.food.ordering.zinger.query.CollegeQuery;
+import com.food.ordering.zinger.constant.Query.CollegeQuery;
 import com.food.ordering.zinger.rowMapperLambda.CollegeRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,7 +18,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.food.ordering.zinger.utils.ErrorLog.*;
+import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
 public class CollegeDao {

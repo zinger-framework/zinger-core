@@ -1,18 +1,18 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.OrderColumn;
-import com.food.ordering.zinger.column.OrderItemColumn;
-import com.food.ordering.zinger.enums.OrderStatus;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.OrderColumn;
+import com.food.ordering.zinger.constant.Column.OrderItemColumn;
+import com.food.ordering.zinger.constant.Enums.OrderStatus;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
-import com.food.ordering.zinger.query.OrderItemQuery;
-import com.food.ordering.zinger.query.OrderQuery;
+import com.food.ordering.zinger.constant.Query.OrderItemQuery;
+import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.PaytmResponseLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.constant.PaytmResponseLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static com.food.ordering.zinger.column.OrderColumn.*;
+import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 @Repository
 public class OrderDao {

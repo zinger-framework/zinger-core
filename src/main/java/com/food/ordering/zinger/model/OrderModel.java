@@ -1,7 +1,7 @@
 package com.food.ordering.zinger.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.food.ordering.zinger.enums.OrderStatus;
+import com.food.ordering.zinger.constant.Enums.OrderStatus;
 
 import java.sql.Timestamp;
 

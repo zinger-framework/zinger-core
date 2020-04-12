@@ -1,13 +1,13 @@
 package com.food.ordering.zinger.rowMapperLambda;
 
-import com.food.ordering.zinger.enums.OrderStatus;
+import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.model.TransactionModel;
 import com.food.ordering.zinger.model.UserModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.OrderColumn.*;
+import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 public class OrderRowMapperLambda {
     public static final RowMapper<OrderModel> orderRowMapperLambda = (rs, rownum) -> {

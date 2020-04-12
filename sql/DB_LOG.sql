@@ -1,13 +1,13 @@
-DROP TABLE users_college_log;
-DROP TABLE users_shop_log;
-DROP TABLE configurations_log;
+-- DROP TABLE users_college_log;
+-- DROP TABLE users_shop_log;
+-- DROP TABLE configurations_log;
 
-DROP TABLE orders_log;
-DROP TABLE transactions_log;
-DROP TABLE item_log;
-DROP TABLE users_log;
-DROP TABLE shop_log;
-DROP TABLE college_log;
+-- DROP TABLE orders_log;
+-- DROP TABLE transactions_log;
+-- DROP TABLE item_log;
+-- DROP TABLE users_log;
+-- DROP TABLE shop_log;
+-- DROP TABLE college_log;
 
 create table college_log (
 	id INT DEFAULT NULL,

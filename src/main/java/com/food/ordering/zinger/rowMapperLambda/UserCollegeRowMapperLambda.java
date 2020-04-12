@@ -5,8 +5,8 @@ import com.food.ordering.zinger.model.UserCollegeModel;
 import com.food.ordering.zinger.model.UserModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.UserCollegeColumn.collegeId;
-import static com.food.ordering.zinger.column.UserCollegeColumn.mobile;
+import static com.food.ordering.zinger.constant.Column.UserCollegeColumn.collegeId;
+import static com.food.ordering.zinger.constant.Column.UserCollegeColumn.mobile;
 
 public class UserCollegeRowMapperLambda {
 

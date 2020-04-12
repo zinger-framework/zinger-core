@@ -3,7 +3,7 @@ package com.food.ordering.zinger.service;
 import com.food.ordering.zinger.dao.CollegeDao;
 import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

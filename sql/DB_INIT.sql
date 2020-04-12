@@ -1,6 +1,6 @@
-CREATE DATABASE ifJlo6XgsN;
+CREATE DATABASE sfdbgffed;
 
-USE ifJlo6XgsN;
+USE sfdbgffed;
 
 -- DROP TABLE users_college;
 -- DROP TABLE users_shop;

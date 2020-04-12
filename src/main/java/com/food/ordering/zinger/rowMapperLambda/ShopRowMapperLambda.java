@@ -4,7 +4,7 @@ import com.food.ordering.zinger.model.CollegeModel;
 import com.food.ordering.zinger.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.ShopColumn.*;
+import static com.food.ordering.zinger.constant.Column.ShopColumn.*;
 
 public class ShopRowMapperLambda {
 
