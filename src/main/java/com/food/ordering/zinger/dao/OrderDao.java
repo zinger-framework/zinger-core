@@ -5,7 +5,7 @@ import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
-import com.food.ordering.zinger.constant.Query;
+import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
@@ -780,7 +780,7 @@ public class OrderDao {
                     .addValue(responseCode,transactionModel.getResponseCode())
                     .addValue(responseMessage,transactionModel.getResponseMessage())
                     .addValue(transactionId,transactionModel.getTransactionId());
-            namedParameterJdbcTemplate.update(Query.TransactionQuery.updateTransaction,parameter);
+            namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction,parameter);
         }catch (Exception e){
             e.printStackTrace();
         }
