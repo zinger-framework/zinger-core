@@ -184,4 +184,5 @@ public class ErrorLog {
     public static final Integer CE1296 = 1296;
     public static final Integer OIDNA1297 = 1297;
     public static final Integer OIDNA1298 = 1298;
+    public static final Integer ODNA1299=1299;
 }

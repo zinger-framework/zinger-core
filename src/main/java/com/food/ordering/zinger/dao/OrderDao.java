@@ -2,6 +2,7 @@ package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.column.OrderColumn;
 import com.food.ordering.zinger.column.OrderItemColumn;
+import com.food.ordering.zinger.column.TransactionColumn;
 import com.food.ordering.zinger.enums.OrderStatus;
 import com.food.ordering.zinger.enums.Priority;
 import com.food.ordering.zinger.enums.UserRole;
@@ -9,6 +10,7 @@ import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.query.OrderItemQuery;
 import com.food.ordering.zinger.query.OrderQuery;
+import com.food.ordering.zinger.query.TransactionQuery;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.utils.ErrorLog;
 import com.food.ordering.zinger.utils.PaytmResponseLog;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +29,10 @@ import java.util.Random;
 
 import static com.food.ordering.zinger.column.OrderColumn.*;
 import static com.food.ordering.zinger.column.OrderColumn.status;
+import static com.food.ordering.zinger.column.TransactionColumn.date;
+import static com.food.ordering.zinger.column.TransactionColumn.responseCode;
+import static com.food.ordering.zinger.column.TransactionColumn.responseMessage;
+import static com.food.ordering.zinger.column.TransactionColumn.transactionId;
 
 @Repository
 public class OrderDao {
@@ -604,12 +611,8 @@ public class OrderDao {
                             }
                         }
 
-                        MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                .addValue(status, orderModel.getOrderStatus().name())
-                                .addValue(id, orderModel.getId());
 
-                        namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-
+                        updateOrder(orderModel);
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
                         response.setData(ErrorLog.Success);
@@ -697,22 +700,47 @@ public class OrderDao {
     }
 
 
-    public void updatePendingOrder(){
+    private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus){
 
-        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status,OrderStatus.PENDING.name());
+        Response<List<OrderModel>> response=new Response<>();
         List<OrderModel> orderModelList = null;
+        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status,orderStatus.name());
+
         try {
             orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus, parameter, OrderRowMapperLambda.orderRowMapperLambda);
         } catch (Exception e) {
+            response.setCode(ErrorLog.ODNA1299);
             e.printStackTrace();
-        }finally {
+        } finally {
+            if(orderModelList!=null && !orderModelList.isEmpty()){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(orderModelList);
+            }
+        }
+
+        return response;
+    }
+
+
+    public void updatePendingOrder(){
+
+        Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
+
+        if(pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
+
+            List<OrderModel> orderModelList=pendingOrderResponse.getData();
+
             if(orderModelList!=null && orderModelList.size()>0){
+
                 for(OrderModel orderModel:orderModelList){
+
                     OrderStatus newStatus=orderModel.getOrderStatus();
                     String transactionID=orderModel.getTransactionModel().getTransactionId();
-                    System.out.println("transaction id: "+transactionID);
-                    String transactionStatusCode=getTransactionStatus(transactionID);
-                    if(transactionStatusCode.equals(PaytmResponseLog.TxnSuccessfulCode)){
+                    TransactionModel transactionModel=getTransactionStatus(transactionID);
+
+                    if(transactionModel.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode)){
+
                         Date currentDate = new Date();
                         long diff = currentDate.getTime() - orderModel.getDate().getTime();
                         long diffMinutes = diff / (60 * 1000) % 60;
@@ -723,47 +751,67 @@ public class OrderDao {
                         {
                             initiateRefund();
                             newStatus=OrderStatus.TXN_FAILURE;
-                            System.out.println("testing");
                         }else{
-                            System.out.println("Change the order status to placed");
                             newStatus=OrderStatus.PLACED;
                         }
                     }
-                    else if(transactionStatusCode.equals(PaytmResponseLog.TxnFailureCode)){
+                    else if(transactionModel.getResponseCode().equals(PaytmResponseLog.TxnFailureCode)){
                         newStatus=OrderStatus.TXN_FAILURE;
                     }
 
-                    // update order status
-
                     if(newStatus!=orderModel.getOrderStatus()){
-
-                        try{
-                            parameter = new MapSqlParameterSource()
-                                    .addValue(status, newStatus.name())
-                                    .addValue(id, orderModel.getId());
-                            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-
-                        // update the transaction code here
+                        orderModel.setOrderStatus(newStatus);
+                        updateOrder(orderModel);
+                        updatePendingTransaction(transactionModel);
                     }
-
                 }
             }
         }
 
     }
 
-    public String getTransactionStatus(String transactionId){
+    public void updateOrder(OrderModel orderModel){
+        try{
+           MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(status, orderModel.getOrderStatus().name())
+                    .addValue(id, orderModel.getId());
+            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void updatePendingTransaction(TransactionModel transactionModel){
+
+        try{
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(responseCode,transactionModel.getResponseCode())
+                    .addValue(responseMessage,transactionModel.getResponseMessage())
+                    .addValue(transactionId,transactionModel.getTransactionId());
+            namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction,parameter);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    public TransactionModel getTransactionStatus(String transactionId){
+        TransactionModel transactionModel=new TransactionModel();
+        transactionModel.setTransactionId(transactionId);
         // HITS the paytm API
         Random rn = new Random();
         int answer = rn.nextInt(3)+1;
-        if(answer%2==0)
-            return PaytmResponseLog.TxnSuccessfulCode;
-        else
-            return PaytmResponseLog.TxnFailureCode;
+        if(answer%2==0){
+            transactionModel.setResponseCode(PaytmResponseLog.TxnSuccessfulCode);
+            transactionModel.setResponseMessage(PaytmResponseLog.TxnSuccessfulMessage);
+        }
+        else{
+            transactionModel.setResponseCode(PaytmResponseLog.TxnFailureCode);
+            transactionModel.setResponseMessage(PaytmResponseLog.TxnFailureMessage);
+        }
+
+        return transactionModel;
 
     }
 
