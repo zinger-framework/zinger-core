@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.utils;
+package com.food.ordering.zinger.constant;
 
 public class PaytmResponseLog {
 

@@ -1,12 +1,12 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.UserColumn;
+import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.UserModel;
-import com.food.ordering.zinger.query.UserQuery;
+import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,10 +32,10 @@ public class UtilsDao {
             try {
                 userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (userModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);

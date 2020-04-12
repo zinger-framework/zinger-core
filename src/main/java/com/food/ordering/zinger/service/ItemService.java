@@ -3,7 +3,7 @@ package com.food.ordering.zinger.service;
 import com.food.ordering.zinger.dao.ItemDao;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +26,9 @@ public class ItemService {
         return itemDao.getItemsByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, String oauthId, String mobile, String role) {
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return itemDao.getItemsByName(collegeId, itemName, requestHeaderModel);
+        return itemDao.getItemsByName(placeId, itemName, requestHeaderModel);
     }
 
     public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {

@@ -1,18 +1,18 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.ItemColumn;
-import com.food.ordering.zinger.column.OrderItemColumn;
-import com.food.ordering.zinger.column.ShopColumn;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.ItemColumn;
+import com.food.ordering.zinger.constant.Column.OrderItemColumn;
+import com.food.ordering.zinger.constant.Column.ShopColumn;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
-import com.food.ordering.zinger.query.ItemQuery;
-import com.food.ordering.zinger.query.OrderItemQuery;
+import com.food.ordering.zinger.constant.Query.ItemQuery;
+import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderItemRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -21,7 +21,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.food.ordering.zinger.utils.ErrorLog.*;
+import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
 public class ItemDao {
@@ -75,7 +75,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1202);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
 
@@ -101,12 +101,12 @@ public class ItemDao {
                 } catch (Exception e) {
                     response.setCode(IDNA1203);
                     response.setMessage(ItemDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(CE1204);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -122,7 +122,7 @@ public class ItemDao {
         return response;
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer collegeId, String itemName, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         Priority priority = Priority.MEDIUM;
@@ -134,26 +134,26 @@ public class ItemDao {
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(ItemColumn.name, "%" + itemName + "%")
-                        .addValue(ShopColumn.collegeId, collegeId);
+                        .addValue(ShopColumn.placeId, placeId);
 
                 try {
                     items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(IDNA1205);
                     response.setMessage(ItemDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(CE1206);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (items != null && !items.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 for (int i = 0; i < items.size(); i++) {
                     Response<ShopModel> shopModelResponse = shopDao.getShopById(items.get(i).getShopModel().getId());
-                    shopModelResponse.getData().setCollegeModel(null);
+                    shopModelResponse.getData().setPlaceModel(null);
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
                 response.setData(items);
@@ -174,10 +174,10 @@ public class ItemDao {
             try {
                 item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (item != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -202,7 +202,7 @@ public class ItemDao {
             try {
                 orderItemModelList = namedParameterJdbcTemplate.query(OrderItemQuery.getItemByOrderId, parameters, OrderItemRowMapperLambda.orderItemRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             } finally {
                 if (orderItemModelList != null && orderItemModelList.size() > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
@@ -222,7 +222,7 @@ public class ItemDao {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -264,7 +264,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1208);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
@@ -301,7 +301,7 @@ public class ItemDao {
             }
         } catch (Exception e) {
             response.setCode(CE1209);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
@@ -339,7 +339,7 @@ public class ItemDao {
 
         } catch (Exception e) {
             response.setCode(CE1212);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));

@@ -1,11 +1,11 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.TransactionColumn;
+import com.food.ordering.zinger.constant.Column.TransactionColumn;
 import com.food.ordering.zinger.model.TransactionModel;
-import com.food.ordering.zinger.query.TransactionQuery;
+import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -40,7 +40,7 @@ public class TransactionDao {
                 response.setMessage(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -58,7 +58,7 @@ public class TransactionDao {
             try {
                 transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransaction, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
 
             if (transactionModel != null) {
@@ -67,7 +67,7 @@ public class TransactionDao {
                 response.setData(transactionModel);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

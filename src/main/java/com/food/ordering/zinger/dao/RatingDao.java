@@ -1,12 +1,12 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.RatingColumn;
+import com.food.ordering.zinger.constant.Column.RatingColumn;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.ShopModel;
-import com.food.ordering.zinger.query.RatingQuery;
+import com.food.ordering.zinger.constant.Query.RatingQuery;
 import com.food.ordering.zinger.rowMapperLambda.RatingRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,10 +32,10 @@ public class RatingDao {
             try {
                 ratingModel = namedParameterJdbcTemplate.queryForObject(RatingQuery.getRatingByShopId, parameters, RatingRowMapperLambda.ratingRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (ratingModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -66,7 +66,7 @@ public class RatingDao {
                 namedParameterJdbcTemplate.update(RatingQuery.updateRating, parameter);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
     }
 }

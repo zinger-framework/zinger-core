@@ -1,4 +1,6 @@
-package com.food.ordering.zinger.utils;
+package com.food.ordering.zinger.model;
+
+import com.food.ordering.zinger.constant.ErrorLog;
 
 public class Response<T> {
     private Integer code;

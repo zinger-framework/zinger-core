@@ -2,10 +2,10 @@ package com.food.ordering.zinger.service;
 
 import com.food.ordering.zinger.dao.UserDao;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.model.UserCollegeModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserShopListModel;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ public class UserService {
     @Autowired
     UserDao userDao;
 
-    public Response<UserCollegeModel> loginRegisterCustomer(UserModel user) {
+    public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
         return userDao.loginRegisterCustomer(user);
     }
 
@@ -42,9 +42,9 @@ public class UserService {
         return userDao.updateUser(userModel, requestHeaderModel);
     }
 
-    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, String oauthId, String mobile, String role) {
+    public Response<String> updateUserCollegeData(UserPlaceModel userPlaceModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return userDao.updateUserCollegeData(userCollegeModel, requestHeaderModel);
+        return userDao.updateUserCollegeData(userPlaceModel, requestHeaderModel);
     }
 
     public Response<String> deleteSeller(Integer shopId, String mobile, String oauthId, String mobileRh, String role) {

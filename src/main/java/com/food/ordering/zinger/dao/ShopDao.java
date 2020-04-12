@@ -1,14 +1,14 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.ShopColumn;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.ShopColumn;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ShopLogModel;
-import com.food.ordering.zinger.query.ShopQuery;
+import com.food.ordering.zinger.constant.Query.ShopQuery;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -35,7 +35,7 @@ public class ShopDao {
     RatingDao ratingDao;
 
     @Autowired
-    CollegeDao collegeDao;
+    PlaceDao placeDao;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -60,7 +60,7 @@ public class ShopDao {
                         .addValue(ShopColumn.name, shopModel.getName())
                         .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
                         .addValue(ShopColumn.mobile, shopModel.getMobile())
-                        .addValue(ShopColumn.collegeId, shopModel.getCollegeModel().getId())
+                        .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
                         .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
                         .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
                         .addValue(ShopColumn.isDelete, 0);
@@ -88,14 +88,14 @@ public class ShopDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1253);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, configurationModel.toString(), priority));
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer collegeId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer placeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<ShopModel> list = null;
@@ -108,18 +108,18 @@ public class ShopDao {
                 priority = Priority.HIGH;
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ShopColumn.collegeId, collegeId);
+                        .addValue(ShopColumn.placeId, placeId);
 
                 try {
                     list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1254);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1255);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null && !list.isEmpty()) {
                 priority = Priority.LOW;
@@ -128,14 +128,14 @@ public class ShopDao {
 
                 shopConfigurationModelList = new ArrayList<>();
                 for (int i = 0; i < list.size(); i++) {
-                    list.get(i).setCollegeModel(null);
+                    list.get(i).setPlaceModel(null);
 
                     Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
                     Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));
                     Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
 
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-                    shopModelResponse.getData().setCollegeModel(null);
+                    shopModelResponse.getData().setPlaceModel(null);
                     ratingModelResponse.getData().setShopModel(null);
                     configurationModelResponse.getData().setShopModel(null);
 
@@ -169,7 +169,7 @@ public class ShopDao {
             }
         }
 
-        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, collegeId.toString(), priority));
+        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getMobile(), null, placeId.toString(), priority));
         return response;
     }
 
@@ -184,17 +184,17 @@ public class ShopDao {
             try {
                 shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (shopModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                if (shopModel.getCollegeModel().getName() == null || shopModel.getCollegeModel().getName().isEmpty()) {
-                    Response<CollegeModel> collegeModelResponse = collegeDao.getCollegeById(shopModel.getCollegeModel().getId());
-                    shopModel.setCollegeModel(collegeModelResponse.getData());
+                if (shopModel.getPlaceModel().getName() == null || shopModel.getPlaceModel().getName().isEmpty()) {
+                    Response<PlaceModel> collegeModelResponse = placeDao.getCollegeById(shopModel.getPlaceModel().getId());
+                    shopModel.setPlaceModel(collegeModelResponse.getData());
                 }
                 response.setData(shopModel);
             }
@@ -239,7 +239,7 @@ public class ShopDao {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1259);
         }
 

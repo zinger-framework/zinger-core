@@ -9,7 +9,7 @@ public class ShopModel {
     private String name;
     private String photoUrl;
     private String mobile;
-    private CollegeModel collegeModel;
+    private PlaceModel placeModel;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss", timezone = "Asia/Kolkata")
     private Time openingTime;
@@ -18,7 +18,7 @@ public class ShopModel {
     private Time closingTime;
 
     public ShopModel() {
-        this.collegeModel = new CollegeModel();
+        this.placeModel = new PlaceModel();
     }
 
     public Integer getId() {
@@ -53,12 +53,12 @@ public class ShopModel {
         this.mobile = mobile;
     }
 
-    public CollegeModel getCollegeModel() {
-        return collegeModel;
+    public PlaceModel getPlaceModel() {
+        return placeModel;
     }
 
-    public void setCollegeModel(CollegeModel collegeModel) {
-        this.collegeModel = collegeModel;
+    public void setPlaceModel(PlaceModel placeModel) {
+        this.placeModel = placeModel;
     }
 
     public Time getOpeningTime() {
@@ -84,7 +84,7 @@ public class ShopModel {
                 ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
                 ", mobile='" + mobile + '\'' +
-                ", collegeModel=" + collegeModel +
+                ", collegeModel=" + placeModel +
                 ", openingTime=" + openingTime +
                 ", closingTime=" + closingTime +
                 '}';

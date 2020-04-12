@@ -1,12 +1,12 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.ConfigurationColumn;
+import com.food.ordering.zinger.constant.Column.ConfigurationColumn;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.ShopModel;
-import com.food.ordering.zinger.query.ConfigurationQuery;
+import com.food.ordering.zinger.constant.Query.ConfigurationQuery;
 import com.food.ordering.zinger.rowMapperLambda.ConfigurationRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -34,7 +34,7 @@ public class ConfigurationDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -51,10 +51,10 @@ public class ConfigurationDao {
             try {
                 configurationModel = namedParameterJdbcTemplate.queryForObject(ConfigurationQuery.getConfigurationByShopId, parameters, ConfigurationRowMapperLambda.configurationRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (configurationModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -84,7 +84,7 @@ public class ConfigurationDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

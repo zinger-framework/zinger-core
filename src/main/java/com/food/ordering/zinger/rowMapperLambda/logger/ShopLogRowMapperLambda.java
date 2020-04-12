@@ -1,10 +1,10 @@
 package com.food.ordering.zinger.rowMapperLambda.logger;
 
-import com.food.ordering.zinger.enums.Priority;
+import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.model.logger.ShopLogModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.logger.ShopLogColumn.*;
+import static com.food.ordering.zinger.constant.Column.ShopLogColumn.*;
 
 public class ShopLogRowMapperLambda {
     public static final RowMapper<ShopLogModel> shopLogRowMapperLambda = (rs, rownum) -> {

@@ -1,15 +1,16 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.logger.*;
+import com.food.ordering.zinger.constant.Column.*;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.logger.*;
-import com.food.ordering.zinger.query.AuditLogQuery;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
+
+import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
 
 @Repository
 public class AuditLogDao {
@@ -17,17 +18,17 @@ public class AuditLogDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public Response<String> insertCollegeLog(CollegeLogModel collegeLogModel) {
+    public Response<String> insertCollegeLog(PlaceLogModel placeLogModel) {
         Response<String> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(CollegeLogColumn.id, collegeLogModel.getId())
-                    .addValue(CollegeLogColumn.errorCode, collegeLogModel.getErrorCode())
-                    .addValue(CollegeLogColumn.mobile, collegeLogModel.getMobile())
-                    .addValue(CollegeLogColumn.message, collegeLogModel.getMessage())
-                    .addValue(CollegeLogColumn.updatedValue, collegeLogModel.getUpdatedValue())
-                    .addValue(CollegeLogColumn.priority, collegeLogModel.getPriority().name());
+                    .addValue(PlaceLogColumn.id, placeLogModel.getId())
+                    .addValue(PlaceLogColumn.errorCode, placeLogModel.getErrorCode())
+                    .addValue(PlaceLogColumn.mobile, placeLogModel.getMobile())
+                    .addValue(PlaceLogColumn.message, placeLogModel.getMessage())
+                    .addValue(PlaceLogColumn.updatedValue, placeLogModel.getUpdatedValue())
+                    .addValue(PlaceLogColumn.priority, placeLogModel.getPriority().name());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertCollegeLog, parameters);
             if (responseValue > 0) {
@@ -36,7 +37,7 @@ public class AuditLogDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -62,7 +63,7 @@ public class AuditLogDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -88,7 +89,7 @@ public class AuditLogDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -114,7 +115,7 @@ public class AuditLogDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -141,7 +142,7 @@ public class AuditLogDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

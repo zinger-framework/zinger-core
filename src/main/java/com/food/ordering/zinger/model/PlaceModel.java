@@ -1,6 +1,6 @@
 package com.food.ordering.zinger.model;
 
-public class CollegeModel {
+public class PlaceModel {
     private Integer id;
     private String name;
     private String iconUrl;

@@ -4,7 +4,7 @@ import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.column.RatingColumn.*;
+import static com.food.ordering.zinger.constant.Column.RatingColumn.*;
 
 public class RatingRowMapperLambda {
     public static final RowMapper<RatingModel> ratingRowMapperLambda = (rs, rownum) -> {

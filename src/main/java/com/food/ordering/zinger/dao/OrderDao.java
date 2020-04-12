@@ -1,20 +1,18 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.OrderColumn;
-import com.food.ordering.zinger.column.OrderItemColumn;
-import com.food.ordering.zinger.column.TransactionColumn;
-import com.food.ordering.zinger.enums.OrderStatus;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.OrderColumn;
+import com.food.ordering.zinger.constant.Column.OrderItemColumn;
+import com.food.ordering.zinger.constant.Enums.OrderStatus;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
-import com.food.ordering.zinger.query.OrderItemQuery;
-import com.food.ordering.zinger.query.OrderQuery;
-import com.food.ordering.zinger.query.TransactionQuery;
+import com.food.ordering.zinger.constant.Query.OrderItemQuery;
+import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.PaytmResponseLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.constant.PaytmResponseLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,12 +25,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
-import static com.food.ordering.zinger.column.OrderColumn.*;
-import static com.food.ordering.zinger.column.OrderColumn.status;
-import static com.food.ordering.zinger.column.TransactionColumn.date;
-import static com.food.ordering.zinger.column.TransactionColumn.responseCode;
-import static com.food.ordering.zinger.column.TransactionColumn.responseMessage;
-import static com.food.ordering.zinger.column.TransactionColumn.transactionId;
+import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 @Repository
 public class OrderDao {
@@ -126,7 +119,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1261);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
@@ -150,7 +143,7 @@ public class OrderDao {
                 response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
         return response;
     }
@@ -193,7 +186,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1268);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getOrderModel().getId(), orderItemListModel.toString(), priority));
@@ -227,12 +220,12 @@ public class OrderDao {
                     orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByMobile, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1269);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1270);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 priority = Priority.LOW;
@@ -260,7 +253,7 @@ public class OrderDao {
                         response.setMessage(ErrorLog.ShopDetailNotAvailable);
                         break;
                     } else {
-                        shopModelResponse.getData().setCollegeModel(null);
+                        shopModelResponse.getData().setPlaceModel(null);
                         orderModel.setShopModel(shopModelResponse.getData());
                     }
 
@@ -311,12 +304,12 @@ public class OrderDao {
                     orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPagination, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1274);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1275);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 priority = Priority.LOW;
@@ -392,7 +385,7 @@ public class OrderDao {
                 } catch (Exception e) {
                     response.setCode(ErrorLog.ODNA1287);
                     response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
 
@@ -468,12 +461,12 @@ public class OrderDao {
                     orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1278);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModel != null) {
                 priority = Priority.LOW;
@@ -543,7 +536,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1286);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
@@ -576,7 +569,7 @@ public class OrderDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1296);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
@@ -630,7 +623,7 @@ public class OrderDao {
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1284);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
@@ -650,7 +643,9 @@ public class OrderDao {
         // ready -> secret key must be updated in table, completed
         // out_for_delivery -> secret key must be updated in table, delivered
 
-        if (currentStatus.equals(OrderStatus.PENDING))
+        if (currentStatus == null)
+            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
+        else if (currentStatus.equals(OrderStatus.PENDING))
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
         else if (currentStatus.equals(OrderStatus.PLACED)) {
             return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);

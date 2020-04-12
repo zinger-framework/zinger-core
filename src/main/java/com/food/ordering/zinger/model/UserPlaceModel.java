@@ -1,10 +1,10 @@
 package com.food.ordering.zinger.model;
 
-public class UserCollegeModel {
+public class UserPlaceModel {
     private UserModel userModel;
-    private CollegeModel collegeModel;
+    private PlaceModel placeModel;
 
-    public UserCollegeModel() {
+    public UserPlaceModel() {
     }
 
     public UserModel getUserModel() {
@@ -15,19 +15,19 @@ public class UserCollegeModel {
         this.userModel = userModel;
     }
 
-    public CollegeModel getCollegeModel() {
-        return collegeModel;
+    public PlaceModel getPlaceModel() {
+        return placeModel;
     }
 
-    public void setCollegeModel(CollegeModel collegeModel) {
-        this.collegeModel = collegeModel;
+    public void setPlaceModel(PlaceModel placeModel) {
+        this.placeModel = placeModel;
     }
 
     @Override
     public String toString() {
         return "UserCollegeModel{" +
                 "userModel=" + userModel +
-                ", collegeModel=" + collegeModel +
+                ", collegeModel=" + placeModel +
                 '}';
     }
 }

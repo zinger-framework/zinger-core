@@ -1,20 +1,20 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.column.UserCollegeColumn;
-import com.food.ordering.zinger.column.UserColumn;
-import com.food.ordering.zinger.column.UserShopColumn;
-import com.food.ordering.zinger.enums.Priority;
-import com.food.ordering.zinger.enums.UserRole;
+import com.food.ordering.zinger.constant.Column.UserPlaceColumn;
+import com.food.ordering.zinger.constant.Column.UserColumn;
+import com.food.ordering.zinger.constant.Column.UserShopColumn;
+import com.food.ordering.zinger.constant.Enums.Priority;
+import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.query.UserCollegeQuery;
-import com.food.ordering.zinger.query.UserQuery;
-import com.food.ordering.zinger.query.UserShopQuery;
-import com.food.ordering.zinger.rowMapperLambda.UserCollegeRowMapperLambda;
+import com.food.ordering.zinger.constant.Query.UserCollegeQuery;
+import com.food.ordering.zinger.constant.Query.UserQuery;
+import com.food.ordering.zinger.constant.Query.UserShopQuery;
+import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
-import com.food.ordering.zinger.utils.ErrorLog;
-import com.food.ordering.zinger.utils.Response;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,7 +24,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.food.ordering.zinger.utils.ErrorLog.*;
+import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
 public class UserDao {
@@ -33,7 +33,7 @@ public class UserDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    CollegeDao collegeDao;
+    PlaceDao placeDao;
 
     @Autowired
     ShopDao shopDao;
@@ -50,10 +50,10 @@ public class UserDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<UserCollegeModel> loginRegisterCustomer(UserModel user) {
-        Response<UserCollegeModel> response = new Response<>();
+    public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
+        Response<UserPlaceModel> response = new Response<>();
         Priority priority = Priority.HIGH;
-        UserCollegeModel userCollegeModel = new UserCollegeModel();
+        UserPlaceModel userPlaceModel = new UserPlaceModel();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -64,11 +64,11 @@ public class UserDao {
             try {
                 userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
 
             if (userModel != null) {
-                userCollegeModel.setUserModel(userModel);
+                userPlaceModel.setUserModel(userModel);
                 response = getCollegeByMobile(userModel);
                 priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
@@ -84,15 +84,16 @@ public class UserDao {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.CollegeDetailNotAvailable);
                     user.setRole(UserRole.CUSTOMER);
-                    userCollegeModel.setUserModel(user);
-                    response.setData(userCollegeModel);
-                } else
+                    userPlaceModel.setUserModel(user);
+                    response.setData(userPlaceModel);
+                } else {
                     response.setCode(ErrorLog.UDNU1151);
+                }
             }
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1152);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), user.getMobile(), user.toString(), priority));
@@ -113,7 +114,7 @@ public class UserDao {
                 try {
                     userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileRole, parameters, UserRowMapperLambda.userRowMapperLambda);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
                 if (userModel != null) {
                     if (userModel.getOauthId() == null || userModel.getOauthId().isEmpty()) {
@@ -134,7 +135,7 @@ public class UserDao {
                 response.setCode(ErrorLog.UDNU1153);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1154);
         }
 
@@ -165,7 +166,7 @@ public class UserDao {
                         responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
                     }
                     catch (Exception e){
-                        e.printStackTrace();
+                        System.err.println(e.getClass().getName() + ": " + e.getMessage());
                     }
                     UserShopModel userShopModel = new UserShopModel();
                     userShopModel.getUserModel().setMobile(mobile);
@@ -194,7 +195,7 @@ public class UserDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1161);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
@@ -203,28 +204,28 @@ public class UserDao {
 
     /**************************************************/
 
-    public Response<UserCollegeModel> getCollegeByMobile(UserModel userModel) {
-        Response<UserCollegeModel> response = new Response<>();
-        UserCollegeModel userCollegeModel = null;
+    public Response<UserPlaceModel> getCollegeByMobile(UserModel userModel) {
+        Response<UserPlaceModel> response = new Response<>();
+        UserPlaceModel userPlaceModel = null;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue(UserCollegeColumn.mobile, userModel.getMobile());
+                .addValue(UserPlaceColumn.mobile, userModel.getMobile());
 
         try {
-            userCollegeModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserCollegeRowMapperLambda.userCollegeRowMapperLambda);
+            userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserPlaceRowMapperLambda.userCollegeRowMapperLambda);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (userCollegeModel != null) {
+            if (userPlaceModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
 
-                if (userCollegeModel.getCollegeModel().getName() == null || userCollegeModel.getCollegeModel().getName().isEmpty()) {
-                    Response<CollegeModel> collegeModelResponse = collegeDao.getCollegeById(userCollegeModel.getCollegeModel().getId());
-                    userCollegeModel.setCollegeModel(collegeModelResponse.getData());
+                if (userPlaceModel.getPlaceModel().getName() == null || userPlaceModel.getPlaceModel().getName().isEmpty()) {
+                    Response<PlaceModel> collegeModelResponse = placeDao.getCollegeById(userPlaceModel.getPlaceModel().getId());
+                    userPlaceModel.setPlaceModel(collegeModelResponse.getData());
                 }
-                userCollegeModel.setUserModel(userModel);
-                response.setData(userCollegeModel);
+                userPlaceModel.setUserModel(userModel);
+                response.setData(userPlaceModel);
             } else
                 response.setMessage(ErrorLog.CollegeDetailNotAvailable);
         }
@@ -242,7 +243,7 @@ public class UserDao {
         try {
             userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (userModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -266,10 +267,10 @@ public class UserDao {
             try {
                 shopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByMobile, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
             } catch (Exception e) {
-                e.printStackTrace();
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (shopModelList != null && !shopModelList.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -327,7 +328,7 @@ public class UserDao {
                     userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
                 } catch (Exception e) {
                     userModelResponse.setCode(ErrorLog.CE1104);
-                    e.printStackTrace();
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 } finally {
                     if (userModelList != null) {
                         userModelList.removeIf(userModel -> userModel.getRole() == UserRole.SHOP_OWNER);
@@ -343,7 +344,7 @@ public class UserDao {
             }
         } catch (Exception e) {
             userModelResponse.setCode(ErrorLog.CE1105);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getMobile(), null, shopId.toString(), priority));
@@ -382,20 +383,20 @@ public class UserDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1158);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), user.getMobile(), user.toString(), priority));
         return response;
     }
 
-    public Response<String> updateCollege(UserCollegeModel userCollegeModel) {
+    public Response<String> updateCollege(UserPlaceModel userPlaceModel) {
         Response<String> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserCollegeColumn.mobile, userCollegeModel.getUserModel().getMobile())
-                    .addValue(UserCollegeColumn.collegeId, userCollegeModel.getCollegeModel().getId());
+                    .addValue(UserPlaceColumn.mobile, userPlaceModel.getUserModel().getMobile())
+                    .addValue(UserPlaceColumn.placeId, userPlaceModel.getPlaceModel().getId());
 
             int result = namedParameterJdbcTemplate.update(UserCollegeQuery.updateCollegeByMobile, parameters);
             if (result <= 0)
@@ -404,7 +405,7 @@ public class UserDao {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -425,7 +426,7 @@ public class UserDao {
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
@@ -446,23 +447,23 @@ public class UserDao {
             } else
                 response.setMessage(ErrorLog.UserDetailNotUpdated);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;
     }
 
-    public Response<String> updateUserCollegeData(UserCollegeModel userCollegeModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateUserCollegeData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
-        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess) || !userCollegeModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess) || !userPlaceModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
         } else {
-            Response<String> responseUser = updateUser(userCollegeModel.getUserModel(), requestHeaderModel);
-            Response<String> responseCollege = updateCollege(userCollegeModel);
+            Response<String> responseUser = updateUser(userPlaceModel.getUserModel(), requestHeaderModel);
+            Response<String> responseCollege = updateCollege(userPlaceModel);
 
             if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -479,7 +480,7 @@ public class UserDao {
             }
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userCollegeModel.getUserModel().getMobile(), userCollegeModel.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userPlaceModel.getUserModel().getMobile(), userPlaceModel.toString(), priority));
         return response;
     }
 
@@ -513,7 +514,7 @@ public class UserDao {
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1106);
             response.setData(Failure);
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));

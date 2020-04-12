@@ -1,8 +1,8 @@
-CREATE DATABASE ifJlo6XgsN;
+CREATE DATABASE sfdbgffed;
 
-USE ifJlo6XgsN;
+USE sfdbgffed;
 
--- DROP TABLE users_college;
+-- DROP TABLE users_place;
 -- DROP TABLE users_shop;
 -- DROP TABLE orders_item;
 -- DROP TABLE rating;
@@ -13,18 +13,18 @@ USE ifJlo6XgsN;
 -- DROP TABLE item;
 -- DROP TABLE users;
 -- DROP TABLE shop;
--- DROP TABLE college;
+-- DROP TABLE place;
 
 ####################################################
 
-CREATE TABLE college
+CREATE TABLE place
 (
     id        INT AUTO_INCREMENT,
     name      VARCHAR(32)  NOT NULL,
     icon_url  VARCHAR(128) NOT NULL,
     address   VARCHAR(256) NOT NULL,
     is_delete INT DEFAULT 0,
-    CONSTRAINT college_id_pk PRIMARY KEY (id)
+    CONSTRAINT place_id_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE shop
@@ -32,13 +32,14 @@ CREATE TABLE shop
     id           INT AUTO_INCREMENT,
     name         VARCHAR(32) UNIQUE NOT NULL,
     photo_url    VARCHAR(128) DEFAULT NULL,
+    cover_urls   JSON DEFAULT NULL,
     mobile       VARCHAR(10)        NOT NULL,
-    college_id   INT                NOT NULL,
+    place_id     INT                NOT NULL,
     opening_time TIME               NOT NULL,
     closing_time TIME               NOT NULL,
     is_delete    INT          DEFAULT 0,
     CONSTRAINT shop_id_pk PRIMARY KEY (id),
-    CONSTRAINT shop_college_id_fk FOREIGN KEY (college_id) REFERENCES college (id)
+    CONSTRAINT shop_place_id_fk FOREIGN KEY (place_id) REFERENCES place (id)
 );
 
 CREATE TABLE users
@@ -114,13 +115,13 @@ CREATE TABLE users_shop
     CONSTRAINT users_shop_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
-CREATE TABLE users_college
+CREATE TABLE users_place
 (
-    mobile     VARCHAR(10) NOT NULL,
-    college_id INT         NOT NULL,
-    CONSTRAINT users_college_mobile_pk PRIMARY KEY (mobile),
-    CONSTRAINT users_college_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
-    CONSTRAINT users_college_college_id_fk FOREIGN KEY (college_id) REFERENCES college (id)
+    mobile   VARCHAR(10) NOT NULL,
+    place_id INT         NOT NULL,
+    CONSTRAINT users_place_mobile_pk PRIMARY KEY (mobile),
+    CONSTRAINT users_place_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
+    CONSTRAINT users_place_place_id_fk FOREIGN KEY (place_id) REFERENCES place (id)
 );
 
 CREATE TABLE orders_item
@@ -148,7 +149,7 @@ CREATE TABLE rating
 CREATE TABLE configurations
 (
     shop_id               INT    NOT NULL,
-    delivery_price        DOUBLE NOT NULL,
+    delivery_price        DOUBLE DEFAULT 0.0,
     is_delivery_available INT DEFAULT 1,
     is_order_taken        INT DEFAULT 1,
     CONSTRAINT configurations_shop_id_pk PRIMARY KEY (shop_id),
@@ -168,15 +169,40 @@ CREATE TABLE seller_archive
 ####################################################
 
 CREATE TRIGGER new_rating
-    AFTER INSERT
-    ON shop
-    FOR EACH ROW
-    INSERT INTO rating(shop_id)
-    VALUES (NEW.id);
-
+AFTER INSERT
+ON shop
+FOR EACH ROW 
+INSERT INTO rating(shop_id) VALUES (NEW.id);
+    
 CREATE TRIGGER seller_archive
     AFTER DELETE
     ON users_shop
     FOR EACH ROW
     INSERT INTO seller_archive(mobile, shop_id)
     VALUES (OLD.mobile, OLD.shop_id);
+
+####################################################
+
+CREATE INDEX place_is_delete_index
+    ON place (is_delete);
+
+CREATE INDEX place_name_index
+    ON place (name);
+
+CREATE INDEX shop_place_id_index
+    ON shop (place_id);
+
+CREATE INDEX users_oauth_id_index
+    ON users (oauth_id);
+
+CREATE INDEX items_shop_id_index
+    ON item (shop_id);
+
+CREATE INDEX items_name_index
+    ON item (name);
+
+CREATE INDEX orders_shop_id_index
+    ON orders (shop_id);
+
+CREATE INDEX orders_mobile_index
+    ON orders (mobile);
