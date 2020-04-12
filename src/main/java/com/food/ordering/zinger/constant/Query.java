@@ -332,6 +332,8 @@ public class Query {
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 orderByDesc;
 
+        public static final String getOrderByStatus = "SELECT " + id + ", " + mobile + ", " + transactionId + ", " + shopId + ", " + date + ", " + status + ", " + lastStatusUpdatedTime + ", " + price + ", " + deliveryPrice + ", " + deliveryLocation + ", " + cookingInfo + ", " + rating + ", " + secretKey + " FROM " + tableName + " WHERE "+ status+" = :"+status;
+
         public static final String updateOrderRating = UPDATE + OrderColumn.tableName + SET +
                 OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;

@@ -5,6 +5,7 @@ import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
+import com.food.ordering.zinger.constant.Query;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
@@ -17,15 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.bind.annotation.RequestHeader;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
+import java.util.*;
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
+import static com.food.ordering.zinger.constant.Column.TransactionColumn.*;
+import static com.food.ordering.zinger.constant.Column.TransactionColumn.transactionId;
 
 @Repository
 public class OrderDao {
@@ -784,7 +780,7 @@ public class OrderDao {
                     .addValue(responseCode,transactionModel.getResponseCode())
                     .addValue(responseMessage,transactionModel.getResponseMessage())
                     .addValue(transactionId,transactionModel.getTransactionId());
-            namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction,parameter);
+            namedParameterJdbcTemplate.update(Query.TransactionQuery.updateTransaction,parameter);
         }catch (Exception e){
             e.printStackTrace();
         }
