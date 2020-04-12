@@ -46,7 +46,7 @@ public class ShopDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
+            if (!requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name())) {
                 response.setCode(ErrorLog.IH1004);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;

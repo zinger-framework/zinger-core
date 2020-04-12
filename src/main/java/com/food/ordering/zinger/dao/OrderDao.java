@@ -600,7 +600,6 @@ public class OrderDao {
                             }
                         }
 
-
                         updateOrder(orderModel);
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
