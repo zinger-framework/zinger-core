@@ -37,6 +37,8 @@ public class ErrorLog {
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
     public static final String OrderNotTaken = "Order not taken";
     public static final String InviteExpired = "Invite Expired";
+    public static final String TransactionInitiationFailed = "Transaction Initiation Failed";
+    public static final String TransactionTokenNotAvailable = "Transaction Token Not Available";
 
     /**********************************************************************/
     // IH - Invalid Header
@@ -193,4 +195,5 @@ public class ErrorLog {
     public static final Integer OIDNA1297 = 1297;
     public static final Integer OIDNA1298 = 1298;
     public static final Integer ODNA1299=1299;
+    public static final Integer TIF1300=1300;
 }

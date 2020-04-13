@@ -65,64 +65,76 @@ public class OrderDao {
         * */
 
         Response<String> response = new Response<>();
-
         Priority priority=Priority.HIGH;
-        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.IH1053);
-            response.setMessage(ErrorLog.InvalidHeader);
-        }else{
-            Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
 
-            if(verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
+        try{
+            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.IH1053);
+                response.setMessage(ErrorLog.InvalidHeader);
+            }else{
+                Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
 
-                Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel());
+                if(verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
 
-                if(initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)){
+                    Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel());
 
-                    OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
+                    if(initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)){
 
-                    MapSqlParameterSource parameter = new MapSqlParameterSource()
-                            .addValue(OrderColumn.id, order.getId())
-                            .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
-                            .addValue(shopId, order.getShopModel().getId())
-                            .addValue(price, order.getPrice())
-                            .addValue(deliveryPrice, order.getDeliveryPrice())
-                            .addValue(deliveryLocation, order.getDeliveryLocation())
-                            .addValue(cookingInfo, order.getCookingInfo());
+                        OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
 
-                    int orderResult = namedParameterJdbcTemplate.update(OrderQuery.insertOrder, parameter);
-                    if (orderResult <= 0) {
-                        response.setCode(ErrorLog.ODNU1263);
-                        response.setData(ErrorLog.OrderDetailNotUpdated);
-                    } else {
-                        int i;
-                        for (i = 0; i < orderItemListModel.getOrderItemsList().size(); i++) {
-                            OrderItemModel orderItem = orderItemListModel.getOrderItemsList().get(i);
-                            Response<String> orderItemResult = insertOrderItem(orderItem, orderItemListModel.getTransactionModel().getOrderModel().getId());
-                            if (!orderItemResult.getCode().equals(ErrorLog.CodeSuccess)) {
-                                response.setCode(ErrorLog.OIDNU1262);
-                                response.setData(ErrorLog.OrderItemDetailNotUpdated + " : " + orderItem);
-                                break;
+                        MapSqlParameterSource parameter = new MapSqlParameterSource()
+                                .addValue(OrderColumn.id, order.getId())
+                                .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
+                                .addValue(shopId, order.getShopModel().getId())
+                                .addValue(price, order.getPrice())
+                                .addValue(deliveryPrice, order.getDeliveryPrice())
+                                .addValue(deliveryLocation, order.getDeliveryLocation())
+                                .addValue(cookingInfo, order.getCookingInfo());
+
+                        int orderResult = namedParameterJdbcTemplate.update(OrderQuery.insertOrder, parameter);
+                        if (orderResult <= 0) {
+                            response.setCode(ErrorLog.ODNU1263);
+                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                            response.setData(ErrorLog.TransactionTokenNotAvailable);
+                        } else {
+                            int i;
+                            for (i = 0; i < orderItemListModel.getOrderItemsList().size(); i++) {
+                                OrderItemModel orderItem = orderItemListModel.getOrderItemsList().get(i);
+                                Response<String> orderItemResult = insertOrderItem(orderItem, orderItemListModel.getTransactionModel().getOrderModel().getId());
+                                if (!orderItemResult.getCode().equals(ErrorLog.CodeSuccess)) {
+                                    response.setCode(ErrorLog.OIDNU1262);
+                                    response.setMessage(ErrorLog.OrderItemDetailNotUpdated + " : " + orderItem);
+                                    response.setData(ErrorLog.TransactionTokenNotAvailable);
+                                    break;
+                                }
+                            }
+                            if (i == orderItemListModel.getOrderItemsList().size()) {
+                                priority = Priority.LOW;
+                                response.setCode(ErrorLog.CodeSuccess);
+                                response.setMessage(ErrorLog.Success);
+                                response.setData(initiateTransactionResponse.getData());
                             }
                         }
-                        if (i == orderItemListModel.getOrderItemsList().size()) {
-                            priority = Priority.LOW;
-                            response.setCode(ErrorLog.CodeSuccess);
-                            response.setMessage(ErrorLog.Success);
-                            response.setData(initiateTransactionResponse.getData());
-                        }
                     }
-                }
-                else{
+                    else{
+                        response.setCode(ErrorLog.TIF1300);
+                        response.setMessage(ErrorLog.TransactionInitiationFailed);
+                        response.setData(ErrorLog.TransactionTokenNotAvailable);
+                    }
 
+                }else{
+                    response.setCode(verifyOrderResponse.getCode());
+                    response.setMessage(verifyOrderResponse.getMessage());
+                    response.setData(ErrorLog.TransactionTokenNotAvailable);
                 }
-
-            }else{
-                response.setCode(verifyOrderResponse.getCode());
-                response.setMessage(verifyOrderResponse.getMessage());
-                response.setData(verifyOrderResponse.getData());
             }
+
+        }catch (Exception e){
+            response.setCode(ErrorLog.CE1261);
+            response.setData(ErrorLog.TransactionTokenNotAvailable);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
+
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
