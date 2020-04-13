@@ -49,7 +49,7 @@ public class ApiConfig {
 
     public static class NotifyApi {
         public static final String BASE_URL = "/notify";
-        public static final String inviteSeller = "/seller/invite/{shopId}/{mobile}";
+        public static final String inviteSeller = "/seller/invite";
     }
 
     public static class ShopApi {

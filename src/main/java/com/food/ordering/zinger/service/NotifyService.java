@@ -22,7 +22,7 @@ public class NotifyService {
         Response<String> response = new Response<>();
         Response<UserInviteModel> inviteModelResponse = userDao.verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
         if(inviteModelResponse.getCode().equals(ErrorLog.CodeSuccess) && inviteModelResponse.getMessage().equals(ErrorLog.Success))
-            return notifyInvitation(userShopModel);
+            return notifyDao.notifyInvitation(userShopModel);
         else{
             response.setCode(inviteModelResponse.getCode());
             response.setMessage(inviteModelResponse.getMessage());

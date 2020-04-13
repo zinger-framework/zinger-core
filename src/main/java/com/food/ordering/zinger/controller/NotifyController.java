@@ -17,7 +17,7 @@ public class NotifyController {
     NotifyService notifyService;
 
     @PostMapping(value = inviteSeller)
-    public Response<String> notifyInvitation(UserShopModel userShopModel) {
+    public Response<String> notifyInvitation(@RequestBody UserShopModel userShopModel) {
         return notifyService.notifyInvitation(userShopModel);
     }
 }
