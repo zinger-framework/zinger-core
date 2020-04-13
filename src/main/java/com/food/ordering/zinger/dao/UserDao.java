@@ -512,7 +512,7 @@ public class UserDao {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
-        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess) || !userPlaceModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
