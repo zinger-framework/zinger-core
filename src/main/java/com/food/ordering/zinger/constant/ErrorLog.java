@@ -10,7 +10,7 @@ public class ErrorLog {
     public static final String InvalidHeader = "Invalid Header Values";
 
     public static final String UserDetailNotAvailable = "User detail not available";
-    public static final String CollegeDetailNotAvailable = "College detail not available";
+    public static final String PlaceDetailNotAvailable = "Place detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";
     public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";
     public static final String OrderDetailNotAvailable = "Order detail not available";
@@ -22,7 +22,7 @@ public class ErrorLog {
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
     public static final String ShopDetailNotUpdated = "Shop detail not updated";
-    public static final String CollegeDetailNotUpdated = "College detail not updated";
+    public static final String PlaceDetailNotUpdated = "Place detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Order detail not updated";
     public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
@@ -36,6 +36,7 @@ public class ErrorLog {
     public static final String ItemPriceMismatch = "Item price mismatch";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
     public static final String OrderNotTaken = "Order not taken";
+    public static final String InviteExpired = "Invite Expired";
 
     /**********************************************************************/
     // IH - Invalid Header
@@ -67,6 +68,7 @@ public class ErrorLog {
     public static final Integer IH1024 = 1024;
     public static final Integer IH1025 = 1025;
     public static final Integer IH1026 = 1026;
+    public static final Integer IH1027 = 1027;
 
     // Logesh 1050-1100
 
@@ -81,9 +83,10 @@ public class ErrorLog {
     public static final Integer IH1058 = 1058;
     public static final Integer IH1059 = 1059;
     public static final Integer IH1060 = 1060;
+    public static final Integer IH1061 = 1061;
 
     /**********************************************************************/
-    /* College Controller Error Code 1100-1150
+    /* Place Controller Error Code 1100-1150
      *
      *   CE -> Catch Exception
      * */
@@ -95,6 +98,8 @@ public class ErrorLog {
     public static final Integer CE1104 = 1104;
     public static final Integer CE1105 = 1105;
     public static final Integer CE1106 = 1106;
+    public static final Integer CE1107 = 1107;
+    public static final Integer CE1108 = 1108;
 
     /**********************************************************************/
     // User Controller Error Code 1151-1200
@@ -113,6 +118,8 @@ public class ErrorLog {
     public static final Integer UDNU1162 = 1162;
     public static final Integer SDNU1163 = 1163;
     public static final Integer UDND1164 = 1164;
+    public static final Integer UDNU1165 = 1165;
+    public static final Integer IE1166 = 1166;
 
     /**********************************************************************/
     // Item Controller Error Code 1200-1250
@@ -129,6 +136,7 @@ public class ErrorLog {
     public static final Integer IDNU1210 = 1210;
     public static final Integer IDNU1211 = 1211;
     public static final Integer CE1212 = 1212;
+    public static final Integer CE1213 = 1213;
 
     /**********************************************************************/
     // Shop Controller Error Code 1251-1260
