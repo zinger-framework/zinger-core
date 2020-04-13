@@ -505,8 +505,9 @@ public class Query {
                 TransactionColumn.bankName + COMMA +
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
-                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId + IN+
-                LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS;
+                TransactionColumn.orderId + IN +
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS+
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopId= SELECT +
                 TransactionColumn.transactionId + COMMA +
@@ -519,9 +520,8 @@ public class Query {
                 TransactionColumn.bankName + COMMA +
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
-                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS+
-                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;;
+                TransactionColumn.orderId +  IN +
+                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS;
 
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +

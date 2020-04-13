@@ -165,12 +165,12 @@ public class ErrorLog {
     public static final Integer CE1268 = 1268;
     public static final Integer CE1269 = 1269;
     public static final Integer CE1270 = 1270;
-    public static final Integer TDNA1271 = 1271;
+    public static final Integer ODNA1271 = 1271;
     public static final Integer SDNA1272 = 1272;
     public static final Integer OIDNA1273 = 1273;
     public static final Integer CE1274 = 1274;
     public static final Integer CE1275 = 1275;
-    public static final Integer TDNA1276 = 1276;
+    public static final Integer ODNA1276 = 1276;
     public static final Integer UDNA1277 = 1277;
     public static final Integer CE1278 = 1278;
     public static final Integer CE1279 = 1279;
@@ -184,7 +184,7 @@ public class ErrorLog {
     public static final Integer ODNA1287 = 1287;
     public static final Integer CE1289 = 1289;
     public static final Integer UDNA1290 = 1290;
-    public static final Integer TDNA1291 = 1291;
+    public static final Integer ODNA1291 = 1291;
     public static final Integer TDNA1292 = 1292;
     public static final Integer UDNA1293 = 1293;
     public static final Integer SDNA1294 = 1294;
