@@ -113,9 +113,13 @@ public class OrderDao {
                         }
                     }
                 }
+                else{
+
+                }
 
             }else{
                 response.setCode(verifyOrderResponse.getCode());
+                response.setMessage(verifyOrderResponse.getMessage());
                 response.setData(verifyOrderResponse.getData());
             }
         }
@@ -132,8 +136,6 @@ public class OrderDao {
         return  response;
     }
 
-
-
     public Response<String> verifyOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel){
         /*
         *   1. verify the transaction status api and
@@ -142,7 +144,6 @@ public class OrderDao {
         Response<String> response = new Response<>();
         return  response;
     }
-
 
     public Response<String> insertOrderItem(OrderItemModel orderItemModel, String orderId) {
         Response<String> response = new Response<>();
@@ -207,7 +208,6 @@ public class OrderDao {
     }
 
     /**************************************************/
-
 
     public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel){
 
@@ -378,7 +378,6 @@ public class OrderDao {
         return response;
     }
 
-
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
@@ -460,7 +459,6 @@ public class OrderDao {
         return response;
     }
 
-
     public Response<TransactionModel> getTransactionByOrderId(String orderId, RequestHeaderModel requestHeaderModel){
         Response<TransactionModel> response=new Response<>();
         TransactionModel transactionModel=null;
@@ -498,7 +496,6 @@ public class OrderDao {
         auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), id, null, priority));
         return response;
     }
-
 
     public Response<OrderModel> getOrderById(String id) {
         Response<OrderModel> response = new Response<>();
@@ -735,7 +732,6 @@ public class OrderDao {
         return totalPrice;
     }
 
-
     private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus){
 
         Response<List<OrderModel>> response=new Response<>();
@@ -757,7 +753,6 @@ public class OrderDao {
 
         return response;
     }
-
 
     public void updatePendingOrder(){
 
@@ -816,7 +811,6 @@ public class OrderDao {
         }
     }
 
-
     public void updatePendingTransaction(TransactionModel transactionModel){
 
         try{
@@ -831,9 +825,9 @@ public class OrderDao {
 
     }
 
-    public TransactionModel getTransactionStatus(String transactionId){
+    public TransactionModel getTransactionStatus(String orderId){
         TransactionModel transactionModel=new TransactionModel();
-        transactionModel.setTransactionId(transactionId);
+        transactionModel.getOrderModel().setId(orderId);
         // HITS the paytm API
         Random rn = new Random();
         int answer = rn.nextInt(3)+1;
