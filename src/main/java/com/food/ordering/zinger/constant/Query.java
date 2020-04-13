@@ -237,18 +237,14 @@ public class Query {
         public static final String insertOrder = INSERT_INTO + OrderColumn.tableName + LEFT_PARANTHESIS +
                 OrderColumn.id + COMMA +
                 OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
                 OrderColumn.shopId + COMMA +
-                OrderColumn.status + COMMA +
                 OrderColumn.price + COMMA +
                 OrderColumn.deliveryPrice + COMMA +
                 OrderColumn.deliveryLocation + COMMA +
                 OrderColumn.cookingInfo + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + OrderColumn.id +
                 COMMA_COLON + OrderColumn.mobile +
-                COMMA_COLON + OrderColumn.transactionId +
                 COMMA_COLON + OrderColumn.shopId +
-                COMMA_COLON + OrderColumn.status +
                 COMMA_COLON + OrderColumn.price +
                 COMMA_COLON + OrderColumn.deliveryPrice +
                 COMMA_COLON + OrderColumn.deliveryLocation +
@@ -257,7 +253,6 @@ public class Query {
         public static final String getOrderByOrderId = SELECT +
                 OrderColumn.id + COMMA +
                 OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.date + COMMA +
                 OrderColumn.status + COMMA +
@@ -271,38 +266,14 @@ public class Query {
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
         public static final String getOrderByMobile = SELECT +
-                OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
-                OrderColumn.shopId + COMMA +
-                OrderColumn.date + COMMA +
-                OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + COMMA +
-                OrderColumn.price + COMMA +
-                OrderColumn.deliveryPrice + COMMA +
-                OrderColumn.deliveryLocation + COMMA +
-                OrderColumn.cookingInfo + COMMA +
-                OrderColumn.rating + COMMA +
-                OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
+                OrderColumn.id +
+                FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.mobile + EQUAL_COLON + OrderColumn.mobile +
-                orderByDesc +
-                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
+                orderByDesc;
 
         public static final String getOrderByShopIdPagination = SELECT +
-                OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
-                OrderColumn.shopId + COMMA +
-                OrderColumn.date + COMMA +
-                OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + COMMA +
-                OrderColumn.price + COMMA +
-                OrderColumn.deliveryPrice + COMMA +
-                OrderColumn.deliveryLocation + COMMA +
-                OrderColumn.cookingInfo + COMMA +
-                OrderColumn.rating + COMMA +
-                OrderColumn.secretKey + FROM +
-                OrderColumn.tableName + WHERE +
+                OrderColumn.id +
+                FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.shopId + EQUAL_COLON + OrderColumn.shopId + AND + LEFT_PARANTHESIS +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
@@ -312,19 +283,8 @@ public class Query {
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getOrderByShopId = SELECT +
-                OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
-                OrderColumn.shopId + COMMA +
-                OrderColumn.date + COMMA +
-                OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + COMMA +
-                OrderColumn.price + COMMA +
-                OrderColumn.deliveryPrice + COMMA +
-                OrderColumn.deliveryLocation + COMMA +
-                OrderColumn.cookingInfo + COMMA +
-                OrderColumn.rating + COMMA +
-                OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
+                OrderColumn.id +
+                FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.shopId + EQUAL_COLON + OrderColumn.shopId + AND + LEFT_PARANTHESIS +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.PLACED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
@@ -335,7 +295,6 @@ public class Query {
         public static final String getOrderByStatus = SELECT +
                 OrderColumn.id + COMMA +
                 OrderColumn.mobile + COMMA +
-                OrderColumn.transactionId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.date + COMMA +
                 OrderColumn.status + COMMA +
@@ -436,6 +395,7 @@ public class Query {
     public static final class TransactionQuery {
         public static final String insertTransaction = INSERT_INTO + TransactionColumn.tableName + LEFT_PARANTHESIS +
                 TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
                 TransactionColumn.bankTransactionId + COMMA +
                 TransactionColumn.currency + COMMA +
                 TransactionColumn.responseCode + COMMA +
@@ -456,6 +416,7 @@ public class Query {
 
         public static final String getTransaction = SELECT +
                 TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
                 TransactionColumn.bankTransactionId + COMMA +
                 TransactionColumn.currency + COMMA +
                 TransactionColumn.responseCode + COMMA +
@@ -465,6 +426,67 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.transactionId + EQUAL_COLON + TransactionColumn.transactionId;
+
+        public static final String getTransactionByOrderId = SELECT +
+                TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
+                TransactionColumn.bankTransactionId + COMMA +
+                TransactionColumn.currency + COMMA +
+                TransactionColumn.responseCode + COMMA +
+                TransactionColumn.responseMessage + COMMA +
+                TransactionColumn.gatewayName + COMMA +
+                TransactionColumn.bankName + COMMA +
+                TransactionColumn.paymentMode + COMMA +
+                TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
+                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
+
+
+        public static final String getTransactionByMobile= SELECT +
+                TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
+                TransactionColumn.bankTransactionId + COMMA +
+                TransactionColumn.currency + COMMA +
+                TransactionColumn.responseCode + COMMA +
+                TransactionColumn.responseMessage + COMMA +
+                TransactionColumn.gatewayName + COMMA +
+                TransactionColumn.bankName + COMMA +
+                TransactionColumn.paymentMode + COMMA +
+                TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
+                TransactionColumn.orderId + IN +
+                LEFT_PARANTHESIS+OrderQuery.getOrderByMobile+RIGHT_PARANTHESIS+
+                LIMIT + COLON + OrderQuery.pageCount + OFFSET + COLON + OrderQuery.pageNum;
+
+        public static final String getTransactionByShopIdPagination = SELECT +
+                TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
+                TransactionColumn.bankTransactionId + COMMA +
+                TransactionColumn.currency + COMMA +
+                TransactionColumn.responseCode + COMMA +
+                TransactionColumn.responseMessage + COMMA +
+                TransactionColumn.gatewayName + COMMA +
+                TransactionColumn.bankName + COMMA +
+                TransactionColumn.paymentMode + COMMA +
+                TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
+                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId + IN+
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS;
+
+        public static final String getTransactionByShopId= SELECT +
+                TransactionColumn.transactionId + COMMA +
+                TransactionColumn.orderId + COMMA +
+                TransactionColumn.bankTransactionId + COMMA +
+                TransactionColumn.currency + COMMA +
+                TransactionColumn.responseCode + COMMA +
+                TransactionColumn.responseMessage + COMMA +
+                TransactionColumn.gatewayName + COMMA +
+                TransactionColumn.bankName + COMMA +
+                TransactionColumn.paymentMode + COMMA +
+                TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
+                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId + IN +
+                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS;
+
+
+
+
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +
                 TransactionColumn.responseCode + EQUAL_COLON + TransactionColumn.responseCode + COMMA +

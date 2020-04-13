@@ -18,16 +18,16 @@ public class OrderRowMapperLambda {
         userModel.setMobile(rs.getString(mobile));
         orderModel.setUserModel(userModel);
 
-        TransactionModel transactionModel = new TransactionModel();
-        transactionModel.setTransactionId(rs.getString(transactionId));
-        orderModel.setTransactionModel(transactionModel);
 
         ShopModel shopModel = new ShopModel();
         shopModel.setId(rs.getInt(shopId));
         orderModel.setShopModel(shopModel);
 
         orderModel.setDate(rs.getTimestamp(date));
-        orderModel.setOrderStatus(OrderStatus.valueOf(rs.getString(status)));
+
+        if(rs.getString(status)!=null)
+            orderModel.setOrderStatus(OrderStatus.valueOf(rs.getString(status)));
+
         orderModel.setLastStatusUpdatedTime(rs.getTimestamp(lastStatusUpdatedTime));
         orderModel.setPrice(rs.getDouble(price));
         orderModel.setDeliveryPrice(rs.getDouble(deliveryPrice));

@@ -4,15 +4,15 @@ import java.util.List;
 
 public class OrderItemListModel {
 
-    OrderModel orderModel;
+    TransactionModel transactionModel;
     List<OrderItemModel> orderItemsList;
 
-    public OrderModel getOrderModel() {
-        return orderModel;
+    public TransactionModel getTransactionModel() {
+        return transactionModel;
     }
 
-    public void setOrderModel(OrderModel orderModel) {
-        this.orderModel = orderModel;
+    public void setTransactionModel(TransactionModel transactionModel) {
+        this.transactionModel = transactionModel;
     }
 
     public List<OrderItemModel> getOrderItemsList() {
@@ -26,7 +26,7 @@ public class OrderItemListModel {
     @Override
     public String toString() {
         return "OrderItemListModel{" +
-                "orderModel=" + orderModel +
+                "transactionModel=" + transactionModel +
                 ", orderItemsList=" + orderItemsList +
                 '}';
     }

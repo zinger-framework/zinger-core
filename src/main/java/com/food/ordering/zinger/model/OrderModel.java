@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 public class OrderModel {
     private String id;
     private UserModel userModel;
-    private TransactionModel transactionModel;
     private ShopModel shopModel;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
@@ -28,7 +27,6 @@ public class OrderModel {
 
     public OrderModel() {
         userModel = new UserModel();
-        transactionModel = new TransactionModel();
         shopModel = new ShopModel();
     }
 
@@ -46,14 +44,6 @@ public class OrderModel {
 
     public void setUserModel(UserModel userModel) {
         this.userModel = userModel;
-    }
-
-    public TransactionModel getTransactionModel() {
-        return transactionModel;
-    }
-
-    public void setTransactionModel(TransactionModel transactionModel) {
-        this.transactionModel = transactionModel;
     }
 
     public ShopModel getShopModel() {
@@ -139,9 +129,8 @@ public class OrderModel {
     @Override
     public String toString() {
         return "OrderModel{" +
-                "id=" + id +
+                "id='" + id + '\'' +
                 ", userModel=" + userModel +
-                ", transactionModel=" + transactionModel +
                 ", shopModel=" + shopModel +
                 ", date=" + date +
                 ", orderStatus=" + orderStatus +

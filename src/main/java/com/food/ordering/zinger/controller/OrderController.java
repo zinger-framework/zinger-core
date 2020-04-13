@@ -3,6 +3,7 @@ package com.food.ordering.zinger.controller;
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.OrderItemListModel;
 import com.food.ordering.zinger.model.OrderModel;
+import com.food.ordering.zinger.model.TransactionModel;
 import com.food.ordering.zinger.service.OrderService;
 import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping(value = getOrderById)
-    public Response<OrderModel> getOrderById(@PathVariable("id") String id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+    public Response<TransactionModel> getOrderById(@PathVariable("id") String id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.getOrderById(id, oauthId, mobile, role);
     }
 

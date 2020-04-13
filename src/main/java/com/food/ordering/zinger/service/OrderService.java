@@ -1,10 +1,7 @@
 package com.food.ordering.zinger.service;
 
 import com.food.ordering.zinger.dao.OrderDao;
-import com.food.ordering.zinger.model.OrderItemListModel;
-import com.food.ordering.zinger.model.OrderModel;
-import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +38,9 @@ public class OrderService {
         return orderDao.getOrderByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<OrderModel> getOrderById(String id, String oauthId, String mobile, String role) {
+    public Response<TransactionModel> getOrderById(String id, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return orderDao.getOrderById(id, requestHeaderModel);
+        return orderDao.getTransactionByOrderId(id, requestHeaderModel);
     }
 
     public Response<String> updateOrderRating(OrderModel orderModel, String oauthId, String mobile, String role) {

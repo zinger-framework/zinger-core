@@ -39,9 +39,7 @@ public class Column {
         public static final String tableName = "orders";
 
         public static final String id = "id";
-        public static final String oauthId = "oauth_id";
         public static final String mobile = "mobile";
-        public static final String transactionId = "transaction_id";
         public static final String shopId = "shop_id";
         public static final String date = "date";
         public static final String status = "status";
@@ -89,6 +87,7 @@ public class Column {
         public static final String tableName = "transactions";
 
         public static final String transactionId = "transaction_id";
+        public static final String orderId = "order_id";
         public static final String bankTransactionId = "bank_transaction_id";
         public static final String currency = "currency";
         public static final String responseCode = "response_code";

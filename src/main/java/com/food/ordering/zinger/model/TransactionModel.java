@@ -2,6 +2,7 @@ package com.food.ordering.zinger.model;
 
 public class TransactionModel {
     private String transactionId;
+    private String orderId;
     private String bankTransactionId;
     private String currency;
     private String responseCode;
@@ -10,6 +11,7 @@ public class TransactionModel {
     private String bankName;
     private String paymentMode;
     private String checksumHash;
+    private OrderModel orderModel;
 
     public TransactionModel() {
     }
@@ -86,10 +88,27 @@ public class TransactionModel {
         this.bankName = bankName;
     }
 
+    public OrderModel getOrderModel() {
+        return orderModel;
+    }
+
+    public void setOrderModel(OrderModel orderModel) {
+        this.orderModel = orderModel;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
     @Override
     public String toString() {
         return "TransactionModel{" +
                 "transactionId='" + transactionId + '\'' +
+                ", orderId='" + orderId + '\'' +
                 ", bankTransactionId='" + bankTransactionId + '\'' +
                 ", currency='" + currency + '\'' +
                 ", responseCode='" + responseCode + '\'' +
@@ -98,6 +117,7 @@ public class TransactionModel {
                 ", bankName='" + bankName + '\'' +
                 ", paymentMode='" + paymentMode + '\'' +
                 ", checksumHash='" + checksumHash + '\'' +
+                ", orderModel=" + orderModel +
                 '}';
     }
 }

@@ -24,6 +24,7 @@ public class TransactionDao {
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
+                    .addValue(TransactionColumn.orderId,transactionModel.getOrderId())
                     .addValue(TransactionColumn.bankTransactionId, transactionModel.getBankTransactionId())
                     .addValue(TransactionColumn.currency, transactionModel.getCurrency())
                     .addValue(TransactionColumn.responseCode, transactionModel.getResponseCode())
@@ -72,4 +73,33 @@ public class TransactionDao {
 
         return response;
     }
+
+    public Response<TransactionModel> getTransactionDetailsByOrderId(String orderId) {
+
+        Response<TransactionModel> response = new Response<>();
+        TransactionModel transactionModel = null;
+
+        try {
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(TransactionColumn.orderId, orderId);
+
+            try {
+                transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransactionByOrderId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+
+            if (transactionModel != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(transactionModel);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        return response;
+    }
+
+
 }
