@@ -1,11 +1,8 @@
 package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
-import com.food.ordering.zinger.model.UserPlaceModel;
-import com.food.ordering.zinger.model.UserModel;
-import com.food.ordering.zinger.model.UserShopListModel;
+import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.service.UserService;
-import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,9 +27,16 @@ public class UserController {
         return userService.verifySeller(user);
     }
 
-    @PostMapping(value = insertSeller)
-    public Response<String> insertSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.insertSeller(shopId, mobile, oauthId, mobileRh, role);
+    /**************************************************/
+
+    @PostMapping(value = inviteSeller)
+    public Response<String> inviteSeller(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.inviteSeller(userShopModel, oauthId, mobileRh, role);
+    }
+
+    @PostMapping(value = acceptInvite)
+    public Response<String> acceptInvite(@RequestBody UserShopModel userShopModel) {
+        return userService.acceptInvite(userShopModel);
     }
 
     /**************************************************/
@@ -42,6 +46,11 @@ public class UserController {
         return userService.getSellerByShopId(shopId, oauthId, mobileRh, role);
     }
 
+    @GetMapping(value = verifyInvite)
+    public Response<UserInviteModel> verifyInvite(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile) {
+        return userService.verifyInvite(shopId, mobile);
+    }
+
     /**************************************************/
 
     @PatchMapping(value = updateUser)
@@ -49,9 +58,9 @@ public class UserController {
         return userService.updateUser(userModel, oauthId, mobile, role);
     }
 
-    @PatchMapping(value = updateUserCollegeData)
-    public Response<String> updateUserCollegeData(@RequestBody UserPlaceModel userPlaceModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.updateUserCollegeData(userPlaceModel, oauthId, mobile, role);
+    @PatchMapping(value = updateUserPlaceData)
+    public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.updateUserPlaceData(userPlaceModel, oauthId, mobile, role);
     }
 
     /**************************************************/
@@ -59,5 +68,10 @@ public class UserController {
     @DeleteMapping(value = deleteSeller)
     public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
         return userService.deleteSeller(shopId, mobile, oauthId, mobileRh, role);
+    }
+
+    @DeleteMapping(value = deleteInvite)
+    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.deleteInvite(userShopModel, oauthId, mobileRh, role);
     }
 }

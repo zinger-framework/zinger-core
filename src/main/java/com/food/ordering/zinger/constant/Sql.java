@@ -13,6 +13,7 @@ public class Sql {
     public static final String COMMA_COLON = ", :";
     public static final String EQUAL_COLON = " = :";
     public static final String EQUALS = " = ";
+    public static final String LESS_THAN = " < ";
     public static final String LEFT_PARANTHESIS = "(";
     public static final String RIGHT_PARANTHESIS = ")";
     public static final String COMMA = ", ";
@@ -27,4 +28,6 @@ public class Sql {
     public static final String CONCATENATION_OPERATOR = " || ";
     public static final String VALUES = " VALUES";
     public static final String CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
+    public static final String TIMESTAMPDIFF = "TIMESTAMPDIFF";
+    public static final String MINUTE = "MINUTE";
 }

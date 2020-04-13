@@ -115,7 +115,7 @@ public class ErrorLog {
     public static final Integer UDNU1159 = 1159;
     public static final Integer CDNU1160 = 1160;
     public static final Integer CE1161 = 1161;
-    public static final Integer UDNU1162 = 1162;
+    public static final Integer UDND1162 = 1162;
     public static final Integer SDNU1163 = 1163;
     public static final Integer UDND1164 = 1164;
     public static final Integer UDNU1165 = 1165;

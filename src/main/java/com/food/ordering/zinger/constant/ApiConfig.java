@@ -3,10 +3,10 @@ package com.food.ordering.zinger.constant;
 public class ApiConfig {
     public static final String EMPTY_QUOTES = "";
 
-    public static class CollegeApi {
+    public static class PlaceApi {
         public static final String BASE_URL = "/place";
-        public static final String insertCollege = EMPTY_QUOTES;
-        public static final String getAllColleges = EMPTY_QUOTES;
+        public static final String insertPlace = EMPTY_QUOTES;
+        public static final String getAllPlaces = EMPTY_QUOTES;
     }
 
     public static class ItemApi {
@@ -37,17 +37,25 @@ public class ApiConfig {
         public static final String BASE_URL = "/user";
         public static final String loginRegisterCustomer = "/customer";
         public static final String verifySeller = "/seller";
-        public static final String insertSeller = "/seller/{shopId}/{mobile}";
+        public static final String inviteSeller = "/seller/invite";
+        public static final String verifyInvite = "/verify/invite/{shopId}/{mobile}";
+        public static final String acceptInvite = "/accept/invite";
+        public static final String deleteInvite = "/seller/invite";
         public static final String getSellerByShopId = "/seller/{shopId}";
         public static final String updateUser = EMPTY_QUOTES;
-        public static final String updateUserCollegeData = "/place";
+        public static final String updateUserPlaceData = "/place";
         public static final String deleteSeller = "/seller/{shopId}/{mobile}";
+    }
+
+    public static class NotifyApi {
+        public static final String BASE_URL = "/notify";
+        public static final String inviteSeller = "/seller/invite/{shopId}/{mobile}";
     }
 
     public static class ShopApi {
         public static final String BASE_URL = "/shop";
         public static final String insertShop = EMPTY_QUOTES;
-        public static final String getShopsByCollegeId = "/place/{placeId}";
+        public static final String getShopsByPlaceId = "/place/{placeId}";
         public static final String updateShopConfiguration = "/config";
     }
 }

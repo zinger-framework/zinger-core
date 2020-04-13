@@ -71,6 +71,16 @@ public class Column {
         public static final String userCount = "user_count";
     }
 
+    public static final class UserInviteColumn {
+        public static final String tableName = "users_invite";
+
+        public static final String mobile = "mobile";
+        public static final String shopId = "shop_id";
+        public static final String invitedAt = "invited_at";
+        public static final String role = "role";
+        public static final String isDelete = "is_delete";
+    }
+
     public static final class ShopColumn {
         public static final String tableName = "shop";
 

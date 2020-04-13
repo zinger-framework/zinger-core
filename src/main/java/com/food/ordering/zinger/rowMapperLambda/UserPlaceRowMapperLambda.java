@@ -10,7 +10,7 @@ import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.mobile;
 
 public class UserPlaceRowMapperLambda {
 
-    public static final RowMapper<UserPlaceModel> userCollegeRowMapperLambda = (rs, rownum) -> {
+    public static final RowMapper<UserPlaceModel> userPlaceRowMapperLambda = (rs, rownum) -> {
         UserPlaceModel userPlaceModel = new UserPlaceModel();
 
         UserModel userModel = new UserModel();

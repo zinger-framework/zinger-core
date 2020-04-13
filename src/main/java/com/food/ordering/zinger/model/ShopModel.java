@@ -3,11 +3,13 @@ package com.food.ordering.zinger.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.sql.Time;
+import java.util.List;
 
 public class ShopModel {
     private Integer id;
     private String name;
     private String photoUrl;
+    private List<String> coverUrls;
     private String mobile;
     private PlaceModel placeModel;
 
@@ -77,14 +79,34 @@ public class ShopModel {
         this.closingTime = closingTime;
     }
 
+    public List<String> getCoverUrls() {
+        return coverUrls;
+    }
+
+    public String toFormattedCoverUrls() {
+        String result = "[";
+        for (int i = 0; i < coverUrls.size(); i++) {
+            result += "\"" + coverUrls.get(i) + "\"";
+            if (i < coverUrls.size() - 1)
+                result += ",";
+        }
+        result += "]";
+        return result;
+    }
+
+    public void setCoverUrls(List<String> coverUrls) {
+        this.coverUrls = coverUrls;
+    }
+
     @Override
     public String toString() {
         return "ShopModel{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", photoUrl='" + photoUrl + '\'' +
+                ", coverUrls=" + coverUrls +
                 ", mobile='" + mobile + '\'' +
-                ", collegeModel=" + placeModel +
+                ", placeModel=" + placeModel +
                 ", openingTime=" + openingTime +
                 ", closingTime=" + closingTime +
                 '}';
