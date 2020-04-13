@@ -280,8 +280,7 @@ public class Query {
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
-                orderByDesc +
-                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
+                orderByDesc;
 
         public static final String getOrderByShopId = SELECT +
                 OrderColumn.id +
@@ -428,6 +427,10 @@ public class Query {
     }
 
     public static final class TransactionQuery {
+
+        public static final String pageNum = "pageNum";
+        public static final String pageCount = "pageCount";
+
         public static final String insertTransaction = INSERT_INTO + TransactionColumn.tableName + LEFT_PARANTHESIS +
                 TransactionColumn.transactionId + COMMA +
                 TransactionColumn.orderId + COMMA +
@@ -489,7 +492,7 @@ public class Query {
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
                 LEFT_PARANTHESIS+OrderQuery.getOrderByMobile+RIGHT_PARANTHESIS+
-                LIMIT + COLON + OrderQuery.pageCount + OFFSET + COLON + OrderQuery.pageNum;
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopIdPagination = SELECT +
                 TransactionColumn.transactionId + COMMA +
@@ -517,10 +520,8 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS;
-
-
-
+                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS+
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;;
 
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +
