@@ -21,9 +21,9 @@ public class ShopService {
         return shopDao.insertShop(configurationModel, requestHeaderModel);
     }
 
-    public Response<List<ShopConfigurationModel>> getShopByCollegeId(Integer placeId, String oauthId, String mobile, String role) {
+    public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return shopDao.getShopsByCollegeId(placeId, requestHeaderModel);
+        return shopDao.getShopsByPlaceId(placeId, requestHeaderModel);
     }
 
     public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {

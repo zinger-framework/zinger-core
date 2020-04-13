@@ -88,7 +88,7 @@ public class PlaceLogModel {
 
     @Override
     public String toString() {
-        return "CollegeLogModel{" +
+        return "PlaceLogModel{" +
                 "id=" + id +
                 ", errorCode=" + errorCode +
                 ", mobile='" + mobile + '\'' +

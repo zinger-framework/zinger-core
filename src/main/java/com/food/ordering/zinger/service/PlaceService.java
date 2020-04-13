@@ -15,13 +15,13 @@ public class PlaceService {
     @Autowired
     PlaceDao placeDao;
 
-    public Response<String> insertCollege(PlaceModel placeModel, String oauthId, String mobile, String role) {
+    public Response<String> insertPlace(PlaceModel placeModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return placeDao.insertCollege(placeModel, requestHeaderModel);
+        return placeDao.insertPlace(placeModel, requestHeaderModel);
     }
 
-    public Response<List<PlaceModel>> getAllColleges(String oauthId, String mobile, String role) {
+    public Response<List<PlaceModel>> getAllPlaces(String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return placeDao.getAllColleges(requestHeaderModel);
+        return placeDao.getAllPlaces(requestHeaderModel);
     }
 }

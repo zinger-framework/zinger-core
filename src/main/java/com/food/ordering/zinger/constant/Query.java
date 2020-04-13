@@ -3,11 +3,12 @@ package com.food.ordering.zinger.constant;
 import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 
+import static com.food.ordering.zinger.constant.Enums.UserRole.SELLER;
 import static com.food.ordering.zinger.constant.Sql.*;
 
 public class Query {
     public static final class AuditLogQuery {
-        public static final String insertCollegeLog = INSERT_INTO + PlaceLogColumn.tableName + LEFT_PARANTHESIS +
+        public static final String insertPlaceLog = INSERT_INTO + PlaceLogColumn.tableName + LEFT_PARANTHESIS +
                 PlaceLogColumn.id + COMMA +
                 PlaceLogColumn.errorCode + COMMA +
                 PlaceLogColumn.mobile + COMMA +
@@ -77,10 +78,10 @@ public class Query {
                 COMMA_COLON + OrderLogColumn.priority + RIGHT_PARANTHESIS;
     }
 
-    public static final class CollegeQuery {
+    public static final class PlaceQuery {
         public static final String notDeleted = PlaceColumn.isDelete + " = 0";
 
-        public static final String insertCollege = INSERT_INTO + PlaceColumn.tableName + LEFT_PARANTHESIS +
+        public static final String insertPlace = INSERT_INTO + PlaceColumn.tableName + LEFT_PARANTHESIS +
                 PlaceColumn.name + COMMA +
                 PlaceColumn.iconUrl + COMMA +
                 PlaceColumn.address + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
@@ -88,7 +89,7 @@ public class Query {
                 COMMA_COLON + PlaceColumn.iconUrl +
                 COMMA_COLON + PlaceColumn.address + RIGHT_PARANTHESIS;
 
-        public static final String getAllColleges = SELECT +
+        public static final String getAllPlaces = SELECT +
                 PlaceColumn.id + COMMA +
                 PlaceColumn.name + COMMA +
                 PlaceColumn.iconUrl + COMMA +
@@ -96,24 +97,24 @@ public class Query {
                 notDeleted +
                 ORDER_BY + PlaceColumn.name + ASC;
 
-        public static final String getCollegeById = SELECT +
+        public static final String getPlaceById = SELECT +
                 PlaceColumn.id + COMMA +
                 PlaceColumn.name + COMMA +
                 PlaceColumn.iconUrl + COMMA +
                 PlaceColumn.address + FROM + PlaceColumn.tableName + WHERE +
                 PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String updateCollege = UPDATE + PlaceColumn.tableName + SET +
+        public static final String updatePlace = UPDATE + PlaceColumn.tableName + SET +
                 PlaceColumn.name + EQUAL_COLON + PlaceColumn.name + COMMA +
                 PlaceColumn.iconUrl + EQUAL_COLON + PlaceColumn.iconUrl + COMMA +
                 PlaceColumn.address + EQUAL_COLON + PlaceColumn.address + WHERE +
                 PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String deleteCollege = UPDATE + PlaceColumn.tableName + SET +
+        public static final String deletePlace = UPDATE + PlaceColumn.tableName + SET +
                 PlaceColumn.isDelete + " = 1" + WHERE +
                 PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
 
-        public static final String unDeleteCollege = UPDATE + PlaceColumn.tableName + SET +
+        public static final String unDeletePlace = UPDATE + PlaceColumn.tableName + SET +
                 PlaceColumn.isDelete + " = 0" + WHERE +
                 PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
     }
@@ -190,7 +191,7 @@ public class Query {
                 ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
                 ItemColumn.name + LIKE + COLON + ItemColumn.name + AND +
                 notDeleted + AND +
-                ItemColumn.shopId + IN + LEFT_PARANTHESIS + ShopQuery.getShopIdByCollegeId + RIGHT_PARANTHESIS;
+                ItemColumn.shopId + IN + LEFT_PARANTHESIS + ShopQuery.getShopIdByPlaceId + RIGHT_PARANTHESIS;
 
         public static final String updateItem = UPDATE + ItemColumn.tableName + SET +
                 ItemColumn.name + EQUAL_COLON + ItemColumn.name + COMMA +
@@ -334,6 +335,35 @@ public class Query {
                 RatingColumn.shopId + EQUAL_COLON + RatingColumn.shopId;
     }
 
+    public static final class UserInviteQuery{
+        public static final String notDeleted = UserInviteColumn.isDelete + " = 0";
+
+        public static final String inviteSeller = INSERT_INTO + UserInviteColumn.tableName + LEFT_PARANTHESIS +
+                UserInviteColumn.mobile + COMMA +
+                UserInviteColumn.role + COMMA +
+                UserInviteColumn.shopId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
+                COLON + UserInviteColumn.mobile +
+                COMMA_COLON + UserInviteColumn.role +
+                COMMA_COLON + UserInviteColumn.shopId + RIGHT_PARANTHESIS;
+
+        public static final String verifyInvite = SELECT +
+                UserInviteColumn.mobile + COMMA +
+                UserInviteColumn.role + COMMA +
+                UserInviteColumn.shopId + COMMA +
+                UserInviteColumn.invitedAt + FROM + UserInviteColumn.tableName + WHERE +
+                UserInviteColumn.mobile + EQUAL_COLON + UserInviteColumn.mobile + AND +
+                UserInviteColumn.shopId + EQUAL_COLON + UserInviteColumn.shopId + AND +
+                notDeleted + AND +
+                TIMESTAMPDIFF + LEFT_PARANTHESIS + MINUTE + COMMA + UserInviteColumn.invitedAt + COMMA + CURRENT_TIMESTAMP + RIGHT_PARANTHESIS + LESS_THAN + 15 +
+                ORDER_BY + UserInviteColumn.invitedAt + DESC + LIMIT + 1;
+
+        public static final String deleteInvite = UPDATE + UserInviteColumn.tableName + SET +
+                UserInviteColumn.isDelete + " = 1" + WHERE +
+                UserInviteColumn.mobile + EQUAL_COLON + UserInviteColumn.mobile +  AND +
+                UserInviteColumn.role + EQUAL_COLON + UserInviteColumn.role +  AND +
+                UserInviteColumn.shopId + EQUAL_COLON + UserInviteColumn.shopId;
+    }
+
     public static final class ShopQuery {
         public static final String notDeleted = ShopColumn.isDelete + " = 0";
 
@@ -342,26 +372,29 @@ public class Query {
                 ShopColumn.photoUrl + COMMA +
                 ShopColumn.mobile + COMMA +
                 ShopColumn.placeId + COMMA +
+                ShopColumn.coverUrls + COMMA +
                 ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ShopColumn.name +
                 COMMA_COLON + ShopColumn.photoUrl +
                 COMMA_COLON + ShopColumn.mobile +
                 COMMA_COLON + ShopColumn.placeId +
+                COMMA_COLON + ShopColumn.coverUrls +
                 COMMA_COLON + ShopColumn.openingTime +
                 COMMA_COLON + ShopColumn.closingTime + RIGHT_PARANTHESIS;
 
-        public static final String getShopByCollegeId = SELECT +
+        public static final String getShopByPlaceId = SELECT +
                 ShopColumn.id + COMMA +
                 ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + COMMA +
+                ShopColumn.coverUrls + COMMA +
                 ShopColumn.mobile + COMMA +
                 ShopColumn.placeId + COMMA +
                 ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + FROM + ShopColumn.tableName + WHERE +
                 ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted;
 
-        public static final String getShopIdByCollegeId = SELECT +
+        public static final String getShopIdByPlaceId = SELECT +
                 ShopColumn.id + FROM + ShopColumn.tableName + WHERE +
                 ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted;
 
@@ -369,6 +402,7 @@ public class Query {
                 ShopColumn.id + COMMA +
                 ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + COMMA +
+                ShopColumn.coverUrls + COMMA +
                 ShopColumn.mobile + COMMA +
                 ShopColumn.placeId + COMMA +
                 ShopColumn.openingTime + COMMA +
@@ -378,6 +412,7 @@ public class Query {
         public static final String updateShop = UPDATE + ShopColumn.tableName + SET +
                 ShopColumn.name + EQUAL_COLON + ShopColumn.name + COMMA +
                 ShopColumn.photoUrl + EQUAL_COLON + ShopColumn.photoUrl + COMMA +
+                ShopColumn.coverUrls + EQUAL_COLON + ShopColumn.coverUrls + COMMA +
                 ShopColumn.mobile + EQUAL_COLON + ShopColumn.mobile + COMMA +
                 ShopColumn.openingTime + EQUAL_COLON + ShopColumn.openingTime + COMMA +
                 ShopColumn.closingTime + EQUAL_COLON + ShopColumn.closingTime + WHERE +
@@ -495,19 +530,19 @@ public class Query {
                 TransactionColumn.transactionId + EQUAL_COLON + TransactionColumn.transactionId;
     }
 
-    public static final class UserCollegeQuery {
-        public static final String insertUserCollege = INSERT_INTO + UserPlaceColumn.tableName + LEFT_PARANTHESIS +
+    public static final class UserPlaceQuery {
+        public static final String insertUserPlace = INSERT_INTO + UserPlaceColumn.tableName + LEFT_PARANTHESIS +
                 UserPlaceColumn.mobile + COMMA +
                 UserPlaceColumn.placeId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + UserPlaceColumn.mobile +
                 COMMA_COLON + UserPlaceColumn.placeId + RIGHT_PARANTHESIS;
 
-        public static final String getCollegeByMobile = SELECT +
+        public static final String getPlaceByMobile = SELECT +
                 UserPlaceColumn.mobile + COMMA +
                 UserPlaceColumn.placeId + FROM + UserPlaceColumn.tableName + WHERE +
                 UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
 
-        public static final String updateCollegeByMobile = UPDATE + UserPlaceColumn.tableName + SET +
+        public static final String updatePlaceByMobile = UPDATE + UserPlaceColumn.tableName + SET +
                 UserPlaceColumn.placeId + EQUAL_COLON + UserPlaceColumn.placeId + WHERE +
                 UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
     }
@@ -523,12 +558,6 @@ public class Query {
                 COMMA_COLON + UserColumn.mobile +
                 COMMA_COLON + UserColumn.role + RIGHT_PARANTHESIS;
 
-        public static final String insertSeller = INSERT_INTO + UserColumn.tableName + LEFT_PARANTHESIS +
-                UserColumn.mobile + COMMA +
-                UserColumn.role + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserColumn.mobile +
-                COMMA_COLON + UserColumn.role + RIGHT_PARANTHESIS;
-
         public static final String getUserByMobile = SELECT +
                 UserColumn.oauthId + COMMA +
                 UserColumn.name + COMMA +
@@ -541,12 +570,8 @@ public class Query {
                 UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 notDeleted;
 
-        public static final String loginUserByMobileRole = getUserByMobile + AND +
-                UserColumn.role + EQUAL_COLON + UserColumn.role + AND +
-                notDeleted;
-
-        public static final String validateUser = loginUserByMobileRole + AND +
-                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId;
+        public static final String validateUser = loginUserByMobileOauth + AND +
+                UserColumn.role + EQUAL_COLON + UserColumn.role;
 
         public static final String getSellerByShopId = SELECT +
                 UserColumn.oauthId + COMMA +
@@ -555,6 +580,7 @@ public class Query {
                 UserColumn.mobile + COMMA +
                 UserColumn.role + FROM + UserColumn.tableName + WHERE +
                 notDeleted + AND +
+                UserColumn.role + EQUALS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + AND +
                 UserColumn.mobile + IN + LEFT_PARANTHESIS + SELECT +
                 UserShopColumn.mobile + FROM + UserShopColumn.tableName + WHERE +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
@@ -562,10 +588,6 @@ public class Query {
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
                 UserColumn.email + EQUAL_COLON + UserColumn.email + WHERE +
-                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
-
-        public static final String updateOauthId = UPDATE + UserColumn.tableName + SET +
-                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + WHERE +
                 UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
 
         public static final String updateRole = UPDATE + UserColumn.tableName + SET +

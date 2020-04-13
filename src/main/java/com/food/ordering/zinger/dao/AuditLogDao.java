@@ -18,7 +18,7 @@ public class AuditLogDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    public Response<String> insertCollegeLog(PlaceLogModel placeLogModel) {
+    public Response<String> insertPlaceLog(PlaceLogModel placeLogModel) {
         Response<String> response = new Response<>();
 
         try {
@@ -30,7 +30,7 @@ public class AuditLogDao {
                     .addValue(PlaceLogColumn.updatedValue, placeLogModel.getUpdatedValue())
                     .addValue(PlaceLogColumn.priority, placeLogModel.getPriority().name());
 
-            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertCollegeLog, parameters);
+            int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertPlaceLog, parameters);
             if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);

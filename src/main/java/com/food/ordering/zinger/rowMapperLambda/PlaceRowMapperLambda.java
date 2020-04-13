@@ -6,7 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 import static com.food.ordering.zinger.constant.Column.PlaceColumn.*;
 
 public class PlaceRowMapperLambda {
-    public static final RowMapper<PlaceModel> collegeRowMapperLambda = (rs, rownum) -> {
+    public static final RowMapper<PlaceModel> placeRowMapperLambda = (rs, rownum) -> {
         PlaceModel place = new PlaceModel();
         place.setId(rs.getInt(id));
         place.setName(rs.getString(name));

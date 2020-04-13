@@ -25,9 +25,9 @@ public class UserPlaceModel {
 
     @Override
     public String toString() {
-        return "UserCollegeModel{" +
+        return "UserPlaceModel{" +
                 "userModel=" + userModel +
-                ", collegeModel=" + placeModel +
+                ", placeModel=" + placeModel +
                 '}';
     }
 }

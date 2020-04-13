@@ -40,7 +40,7 @@ public class PlaceModel {
 
     @Override
     public String toString() {
-        return "CollegeModel{" +
+        return "PlaceModel{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", iconUrl='" + iconUrl + '\'' +

@@ -761,7 +761,7 @@ public class OrderDao {
 
     public void updatePendingOrder(){
 
-        Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
+        /*Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
 
         if(pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
 
@@ -801,7 +801,7 @@ public class OrderDao {
                     }
                 }
             }
-        }
+        }*/
 
     }
 

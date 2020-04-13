@@ -6,7 +6,7 @@ import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.logger.PlaceLogModel;
-import com.food.ordering.zinger.constant.Query.CollegeQuery;
+import com.food.ordering.zinger.constant.Query.PlaceQuery;
 import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.model.Response;
@@ -32,7 +32,7 @@ public class PlaceDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertCollege(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertPlace(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -52,7 +52,7 @@ public class PlaceDao {
                         .addValue(PlaceColumn.address, placeModel.getAddress())
                         .addValue(PlaceColumn.iconUrl, placeModel.getIconUrl());
 
-                int responseValue = namedParameterJdbcTemplate.update(CollegeQuery.insertCollege, parameters);
+                int responseValue = namedParameterJdbcTemplate.update(PlaceQuery.insertPlace, parameters);
                 if (responseValue > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
@@ -67,11 +67,11 @@ public class PlaceDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertCollegeLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, placeModel.toString(), priority));
+        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, placeModel.toString(), priority));
         return response;
     }
 
-    public Response<List<PlaceModel>> getAllColleges(RequestHeaderModel requestHeaderModel) {
+    public Response<List<PlaceModel>> getAllPlaces(RequestHeaderModel requestHeaderModel) {
 
         Response<List<PlaceModel>> response = new Response<>();
         List<PlaceModel> list = null;
@@ -84,10 +84,10 @@ public class PlaceDao {
                 priority = Priority.HIGH;
             } else {
                 try {
-                    list = namedParameterJdbcTemplate.query(CollegeQuery.getAllColleges, PlaceRowMapperLambda.collegeRowMapperLambda);
+                    list = namedParameterJdbcTemplate.query(PlaceQuery.getAllPlaces, PlaceRowMapperLambda.placeRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(CDNA1102);
-                    response.setMessage(CollegeDetailNotAvailable);
+                    response.setMessage(PlaceDetailNotAvailable);
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
             }
@@ -103,11 +103,11 @@ public class PlaceDao {
             }
         }
 
-        auditLogDao.insertCollegeLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
+        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
         return response;
     }
 
-    public Response<PlaceModel> getCollegeById(Integer placeId) {
+    public Response<PlaceModel> getPlaceById(Integer placeId) {
         Response<PlaceModel> response = new Response<>();
         PlaceModel place = null;
 
@@ -116,7 +116,7 @@ public class PlaceDao {
                     .addValue(PlaceColumn.id, placeId);
 
             try {
-                place = namedParameterJdbcTemplate.queryForObject(CollegeQuery.getCollegeById, parameters, PlaceRowMapperLambda.collegeRowMapperLambda);
+                place = namedParameterJdbcTemplate.queryForObject(PlaceQuery.getPlaceById, parameters, PlaceRowMapperLambda.placeRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }

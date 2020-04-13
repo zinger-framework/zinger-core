@@ -1,4 +1,4 @@
-insert into place values(1,'SSN College of Enginering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','kelambakkam',0);
+insert into place values(1,'SSN Place of Enginering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','kelambakkam',0);
 insert into place values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','vandaloor',0);
 insert into place values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','ramapuram',0);
 
@@ -32,40 +32,40 @@ insert into item values(10,'channa samosa',75,'food.com','fast food',7,0,0,0);
 insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
--- insert into users_place values("9176786582",1);
--- insert into users_shop values("9176786581",1);
--- insert into users_shop values("9176786581",2);
+insert into configurations(shop_id, delivery_price) values(1, 15.0);
+insert into configurations(shop_id, delivery_price) values(2, 10.0);
+insert into configurations(shop_id, delivery_price) values(3, 25.0);
+
+insert into configurations(shop_id, delivery_price) values(4, 15.0);
+insert into configurations(shop_id, delivery_price) values(5, 10.0);
+insert into configurations(shop_id, delivery_price) values(6, 25.0);
+
+insert into configurations(shop_id, delivery_price) values(7, 15.0);
+insert into configurations(shop_id, delivery_price) values(8, 10.0);
+insert into configurations(shop_id, delivery_price) values(9, 25.0);
+
+insert into users_shop values('9176786583',1);
 
 select * from users;
-select * from place;
-select * from place_log;
+-- select * from place;
+-- select * from place_log;
 select * from shop;
-select * from item;
-select * from item_log;
-select * from users_log;
+-- select * from item;
+-- select * from item_log;
+-- select * from users_log;
 select * from users_place;
 select * from users_shop;
-select * from transactions;
-select * from orders;
-select * from orders_item;
-select * from rating;
+select * from users_invite;
+-- select * from transactions;
+-- select * from orders;
+-- select * from orders_item;
+-- select * from rating;
 select * from configurations;
 
-SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786583' AND role = 'SELLER' AND is_delete = 0;
-SELECT mobile, shop_id FROM users_shop WHERE mobile = '9176786583';
-SELECT id, name, photo_url, photo_url, place_id, opening_time, closing_time, is_delete FROM shop WHERE id = 1;
-
-SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE shop_id = 2 AND (status = 'PLACED' || status = 'ACCEPTED' || status = 'READY' || status = 'OUT_FOR_DELIVERY') ORDER BY date DESC;
-
-SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE mobile = '9176786580' ORDER BY date DESC LIMIT 2 OFFSET 2;
-SELECT transaction_id, bank_transaction_id, currency, response_code, response_message, gateway_name, bank_name, payment_mode, checksum_hash FROM transactions WHERE transaction_id = 'T0013';
-
-SELECT oauth_id, name, email, mobile, role, is_delete FROM users WHERE mobile = '9176786581' AND role = 'SELLER' AND is_delete = 0;
-SELECT id FROM shop WHERE place_id = 2 AND is_delete = 0;
-SELECT id, mobile, transaction_id, shop_id, date, status, last_status_updated_time, price, delivery_price, delivery_location, cooking_info, rating, secret_key FROM orders WHERE id = 'O0005';
-SELECT id, name, price, photo_url, category, shop_id, is_veg, is_available, is_delete FROM item WHERE name LIKE '%pa%' AND is_delete = 0 AND shop_id IN (SELECT id FROM shop WHERE place_id = 2 AND is_delete = 0);
-
-
-
-
+SELECT mobile
+    shop_id from seller_invite where
+    mobile='9176786587' AND
+    shop_id=1 AND
+    TIMESTAMPDIFF(MINUTE,invited_at,CURRENT_TIMESTAMP) < 15
+    ORDER BY invited_at DESC LIMIT 1;
 

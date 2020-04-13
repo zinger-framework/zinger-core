@@ -1,15 +1,18 @@
 package com.food.ordering.zinger.dao;
 
+import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.UserPlaceColumn;
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.constant.Column.UserShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
+import com.food.ordering.zinger.constant.Query;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.constant.Query.UserCollegeQuery;
+import com.food.ordering.zinger.constant.Query.UserPlaceQuery;
 import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
+import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
@@ -45,6 +48,9 @@ public class UserDao {
     RatingDao ratingDao;
 
     @Autowired
+    NotifyDao notifyDao;
+
+    @Autowired
     UtilsDao utilsDao;
 
     @Autowired
@@ -69,7 +75,7 @@ public class UserDao {
 
             if (userModel != null) {
                 userPlaceModel.setUserModel(userModel);
-                response = getCollegeByMobile(userModel);
+                response = getPlaceByMobile(userModel);
                 priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
             } else {
@@ -82,7 +88,7 @@ public class UserDao {
                 if (result > 0) {
                     priority = Priority.LOW;
                     response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.CollegeDetailNotAvailable);
+                    response.setMessage(ErrorLog.PlaceDetailNotAvailable);
                     user.setRole(UserRole.CUSTOMER);
                     userPlaceModel.setUserModel(user);
                     response.setData(userPlaceModel);
@@ -105,34 +111,21 @@ public class UserDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!user.getRole().equals(UserRole.CUSTOMER)) {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserColumn.mobile, user.getMobile())
-                        .addValue(UserColumn.role, user.getRole().name());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.mobile, user.getMobile())
+                    .addValue(UserColumn.oauthId, user.getOauthId());
 
-                UserModel userModel = null;
-                try {
-                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileRole, parameters, UserRowMapperLambda.userRowMapperLambda);
-                } catch (Exception e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
-                if (userModel != null) {
-                    if (userModel.getOauthId() == null || userModel.getOauthId().isEmpty()) {
-                        userModel.setOauthId(user.getOauthId());
-                        Response<String> response1 = updateOauthId(userModel);
-                        if (response1.getCode().equals(ErrorLog.CodeSuccess) && response1.getMessage().equals(ErrorLog.Success)) {
-                            response = getShopByMobile(userModel);
-                            priority = Priority.LOW;
-                        } else
-                            response.setCode(ErrorLog.UDNA1156);
-                    } else {
-                        response = getShopByMobile(userModel);
-                        priority = Priority.LOW;
-                    }
-                } else
-                    response.setCode(ErrorLog.UDNU1155);
+            UserModel userModel = null;
+            try {
+                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userRowMapperLambda);
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+            if (userModel != null && !userModel.getRole().equals(UserRole.CUSTOMER.name())) {
+                response = getShopByMobile(userModel);
+                priority = Priority.LOW;
             } else
-                response.setCode(ErrorLog.UDNU1153);
+                response.setCode(ErrorLog.UDNU1155);
 
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -143,68 +136,132 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> insertSeller(Integer shopId, String mobile, RequestHeaderModel requestHeaderModel) {
-        Response<String> response = new Response<>();
-        Priority priority = Priority.HIGH;
-        UserRole userRole = UserRole.SELLER;
+    public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
+        Response<UserInviteModel> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+        UserInviteModel userInviteModel = null;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name()))
-                userRole = UserRole.SHOP_OWNER;
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(Column.UserInviteColumn.mobile, mobile)
+                    .addValue(Column.UserInviteColumn.shopId, shopId);
 
-            if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name()) || requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name())) {
+            try {
+                userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
+            }
+            catch (Exception e){
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+            finally {
+                if(userInviteModel != null){
+                    response.setCode(CodeSuccess);
+                    response.setMessage(Success);
+                    userInviteModel.getShopModel().setPlaceModel(null);
+                    response.setData(userInviteModel);
+                }
+                else{
+                    response.setCode(ErrorLog.IE1166);
+                    response.setMessage(ErrorLog.InviteExpired);
+                }
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1108);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(response, mobile, mobile, null, priority));
+        return response;
+    }
+
+    public Response<String> inviteSeller(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+
+        try {
+            if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
                 if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setCode(ErrorLog.IH1060);
+                    response.setCode(ErrorLog.IH1027);
                     response.setData(ErrorLog.InvalidHeader);
                 } else {
                     SqlParameterSource parameters = new MapSqlParameterSource()
-                            .addValue(UserColumn.mobile, mobile)
-                            .addValue(UserColumn.role, userRole.name());
+                            .addValue(Column.UserInviteColumn.mobile, userShopModel.getUserModel().getMobile())
+                            .addValue(Column.UserInviteColumn.role, userShopModel.getUserModel().getRole().name())
+                            .addValue(Column.UserInviteColumn.shopId, userShopModel.getShopModel().getId());
 
-                    int responseValue = 0;
-                    try {
-                        responseValue = namedParameterJdbcTemplate.update(UserQuery.insertSeller, parameters);
-                    }
-                    catch (Exception e){
-                        System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                    }
-                    UserShopModel userShopModel = new UserShopModel();
-                    userShopModel.getUserModel().setMobile(mobile);
-                    userShopModel.getShopModel().setId(shopId);
-                    Response<String> response1 = updateShop(userShopModel);
-
-                    if (responseValue <= 0)
-                        responseValue = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
-
-                    if (responseValue > 0 && response1.getCode().equals(CodeSuccess)) {
+                    int responseValue = namedParameterJdbcTemplate.update(Query.UserInviteQuery.inviteSeller, parameters);
+                    if (responseValue > 0) {
+                        notifyDao.notifyInvitation(userShopModel);
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
                         response.setData(ErrorLog.Success);
                         priority = Priority.LOW;
-                    } else if (responseValue <= 0) {
-                        response.setCode(ErrorLog.UDNU1162);
-                        response.setData(UserDetailNotUpdated);
                     } else {
-                        response.setCode(ErrorLog.SDNU1163);
-                        response.setData(ShopDetailNotUpdated);
+                        response.setCode(ErrorLog.UDNU1165);
+                        response.setMessage(UserDetailNotUpdated);
                     }
                 }
             } else {
-                response.setCode(ErrorLog.IH1059);
+                priority = Priority.HIGH;
+                response.setCode(ErrorLog.IH1061);
                 response.setData(ErrorLog.InvalidHeader);
             }
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1161);
+            response.setCode(ErrorLog.CE1107);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
+        return response;
+    }
+
+    public Response<String> acceptInvite(UserShopModel userShopModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+        Response<UserInviteModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
+
+        try {
+            if(inviteModelResponse.getCode().equals(CodeSuccess) && inviteModelResponse.getMessage().equals(Success)){
+                SqlParameterSource parameters = new MapSqlParameterSource()
+                        .addValue(UserColumn.mobile, userShopModel.getUserModel().getMobile())
+                        .addValue(UserColumn.oauthId, userShopModel.getUserModel().getOauthId())
+                        .addValue(UserColumn.role, inviteModelResponse.getData().getUserModel().getRole().name());
+
+                int responseValue = 0;
+                try {
+                    responseValue = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
+                }
+                catch (Exception e){
+                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
+                }
+                finally {
+                    if (responseValue > 0) {
+                        response = updateShop(userShopModel);
+                        priority = Priority.LOW;
+                    } else {
+                        Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getMobile(), inviteModelResponse.getData().getUserModel().getRole());
+                        if(updateRoleResponse.getCode().equals(CodeSuccess) && updateRoleResponse.getMessage().equals(Success)){
+                            response = updateShop(userShopModel);
+                            priority = Priority.LOW;
+                        }
+                        else {
+                            response.setCode(ErrorLog.UDNU1153);
+                            response.setMessage(UserDetailNotUpdated);
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1213);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
         return response;
     }
 
     /**************************************************/
 
-    public Response<UserPlaceModel> getCollegeByMobile(UserModel userModel) {
+    public Response<UserPlaceModel> getPlaceByMobile(UserModel userModel) {
         Response<UserPlaceModel> response = new Response<>();
         UserPlaceModel userPlaceModel = null;
 
@@ -212,7 +269,7 @@ public class UserDao {
                 .addValue(UserPlaceColumn.mobile, userModel.getMobile());
 
         try {
-            userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserCollegeQuery.getCollegeByMobile, parameters, UserPlaceRowMapperLambda.userCollegeRowMapperLambda);
+            userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserPlaceQuery.getPlaceByMobile, parameters, UserPlaceRowMapperLambda.userPlaceRowMapperLambda);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
@@ -221,13 +278,13 @@ public class UserDao {
                 response.setMessage(ErrorLog.Success);
 
                 if (userPlaceModel.getPlaceModel().getName() == null || userPlaceModel.getPlaceModel().getName().isEmpty()) {
-                    Response<PlaceModel> collegeModelResponse = placeDao.getCollegeById(userPlaceModel.getPlaceModel().getId());
-                    userPlaceModel.setPlaceModel(collegeModelResponse.getData());
+                    Response<PlaceModel> placeModelResponse = placeDao.getPlaceById(userPlaceModel.getPlaceModel().getId());
+                    userPlaceModel.setPlaceModel(placeModelResponse.getData());
                 }
                 userPlaceModel.setUserModel(userModel);
                 response.setData(userPlaceModel);
             } else
-                response.setMessage(ErrorLog.CollegeDetailNotAvailable);
+                response.setMessage(ErrorLog.PlaceDetailNotAvailable);
         }
 
         return response;
@@ -330,16 +387,14 @@ public class UserDao {
                     userModelResponse.setCode(ErrorLog.CE1104);
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 } finally {
-                    if (userModelList != null) {
-                        userModelList.removeIf(userModel -> userModel.getRole() == UserRole.SHOP_OWNER);
-                        if (!userModelList.isEmpty()) {
-                            priority = Priority.LOW;
-                            userModelResponse.setCode(ErrorLog.CodeSuccess);
-                            userModelResponse.setMessage(ErrorLog.Success);
-                            userModelResponse.setData(userModelList);
-                        } else
-                            userModelResponse.setCode(ErrorLog.CE1104);
+                    if (userModelList != null && !userModelList.isEmpty()) {
+                        priority = Priority.LOW;
+                        userModelResponse.setCode(ErrorLog.CodeSuccess);
+                        userModelResponse.setMessage(ErrorLog.Success);
+                        userModelResponse.setData(userModelList);
                     }
+                    else
+                        userModelResponse.setCode(ErrorLog.CE1104);
                 }
             }
         } catch (Exception e) {
@@ -390,7 +445,27 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateCollege(UserPlaceModel userPlaceModel) {
+    public Response<String> updateRole(String mobile, UserRole role) {
+        Response<String> response = new Response<>();
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.mobile, mobile)
+                    .addValue(UserColumn.role, role.name());
+
+            int result = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
+            if(result > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    public Response<String> updatePlace(UserPlaceModel userPlaceModel) {
         Response<String> response = new Response<>();
 
         try {
@@ -398,9 +473,9 @@ public class UserDao {
                     .addValue(UserPlaceColumn.mobile, userPlaceModel.getUserModel().getMobile())
                     .addValue(UserPlaceColumn.placeId, userPlaceModel.getPlaceModel().getId());
 
-            int result = namedParameterJdbcTemplate.update(UserCollegeQuery.updateCollegeByMobile, parameters);
+            int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceByMobile, parameters);
             if (result <= 0)
-                namedParameterJdbcTemplate.update(UserCollegeQuery.insertUserCollege, parameters);
+                namedParameterJdbcTemplate.update(UserPlaceQuery.insertUserPlace, parameters);
 
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
@@ -425,6 +500,7 @@ public class UserDao {
 
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
+            response.setData(ErrorLog.Success);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -432,51 +508,30 @@ public class UserDao {
         return response;
     }
 
-    public Response<String> updateOauthId(UserModel user) {
-        Response<String> response = new Response<>();
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserColumn.mobile, user.getMobile())
-                    .addValue(UserColumn.oauthId, user.getOauthId());
-
-            int result = namedParameterJdbcTemplate.update(UserQuery.updateOauthId, parameters);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-            } else
-                response.setMessage(ErrorLog.UserDetailNotUpdated);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
-
-    public Response<String> updateUserCollegeData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
-        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess) || !userPlaceModel.getUserModel().getRole().equals(UserRole.CUSTOMER)) {
+        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
         } else {
             Response<String> responseUser = updateUser(userPlaceModel.getUserModel(), requestHeaderModel);
-            Response<String> responseCollege = updateCollege(userPlaceModel);
+            Response<String> responsePlace = updatePlace(userPlaceModel);
 
-            if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
+            if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-            } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.UDNU1159);
                 response.setMessage(ErrorLog.Failure);
                 response.setData(ErrorLog.UserDetailNotUpdated);
-            } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responseCollege.getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CDNU1160);
                 response.setMessage(ErrorLog.Failure);
-                response.setData(ErrorLog.CollegeDetailNotUpdated);
+                response.setData(ErrorLog.PlaceDetailNotUpdated);
             }
         }
 
@@ -520,4 +575,45 @@ public class UserDao {
         auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
         return response;
     }
+
+    public Response<String> deleteInvite(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
+        Response<String> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+
+        try {
+            if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
+                if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                    response.setCode(ErrorLog.IH1050);
+                    response.setData(ErrorLog.InvalidHeader);
+                } else {
+                    SqlParameterSource parameters = new MapSqlParameterSource()
+                            .addValue(Column.UserInviteColumn.mobile, userShopModel.getUserModel().getMobile())
+                            .addValue(Column.UserInviteColumn.role, userShopModel.getUserModel().getRole().name())
+                            .addValue(Column.UserInviteColumn.shopId, userShopModel.getShopModel().getId());
+
+                    int responseValue = namedParameterJdbcTemplate.update(Query.UserInviteQuery.deleteInvite, parameters);
+                    if (responseValue > 0) {
+                        response.setCode(ErrorLog.CodeSuccess);
+                        response.setMessage(ErrorLog.Success);
+                        response.setData(ErrorLog.Success);
+                        priority = Priority.LOW;
+                    } else {
+                        response.setCode(ErrorLog.UDND1162);
+                        response.setMessage(UserDetailNotDeleted);
+                    }
+                }
+            } else {
+                priority = Priority.HIGH;
+                response.setCode(ErrorLog.IH1059);
+                response.setData(ErrorLog.InvalidHeader);
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1161);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
+        return response;
+    }
+
 }

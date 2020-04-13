@@ -59,6 +59,7 @@ public class ShopDao {
                 parameters = new MapSqlParameterSource()
                         .addValue(ShopColumn.name, shopModel.getName())
                         .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
+                        .addValue(ShopColumn.coverUrls, shopModel.toFormattedCoverUrls())
                         .addValue(ShopColumn.mobile, shopModel.getMobile())
                         .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
                         .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
@@ -95,7 +96,7 @@ public class ShopDao {
         return response;
     }
 
-    public Response<List<ShopConfigurationModel>> getShopsByCollegeId(Integer placeId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<ShopModel> list = null;
@@ -111,7 +112,7 @@ public class ShopDao {
                         .addValue(ShopColumn.placeId, placeId);
 
                 try {
-                    list = namedParameterJdbcTemplate.query(ShopQuery.getShopByCollegeId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
+                    list = namedParameterJdbcTemplate.query(ShopQuery.getShopByPlaceId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1254);
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -193,8 +194,8 @@ public class ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 if (shopModel.getPlaceModel().getName() == null || shopModel.getPlaceModel().getName().isEmpty()) {
-                    Response<PlaceModel> collegeModelResponse = placeDao.getCollegeById(shopModel.getPlaceModel().getId());
-                    shopModel.setPlaceModel(collegeModelResponse.getData());
+                    Response<PlaceModel> placeModelResponse = placeDao.getPlaceById(shopModel.getPlaceModel().getId());
+                    shopModel.setPlaceModel(placeModelResponse.getData());
                 }
                 response.setData(shopModel);
             }
@@ -222,6 +223,7 @@ public class ShopDao {
                 parameters = new MapSqlParameterSource()
                         .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
                         .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
+                        .addValue(ShopColumn.coverUrls, configurationModel.getShopModel().toFormattedCoverUrls())
                         .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
                         .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
                         .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
