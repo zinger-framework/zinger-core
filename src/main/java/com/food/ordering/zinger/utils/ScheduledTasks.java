@@ -12,8 +12,13 @@ public class ScheduledTasks {
     OrderDao orderDao;
 
     //TODO: Update Delay: 10s -> 60s
-    @Scheduled(fixedDelay = 10000)
-    public void scheduleTaskWithFixedRate() {
+    @Scheduled(fixedDelay = 60000)
+    public void updatePendingOrder() {
         orderDao.updatePendingOrder();
+    }
+
+    @Scheduled(fixedDelay = 86400000)
+    public void updateRefundedOrder() {
+        orderDao.updatedRefundOrder();
     }
 }

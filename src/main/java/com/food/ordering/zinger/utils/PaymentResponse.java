@@ -1,7 +1,8 @@
-package com.food.ordering.zinger.constant;
+package com.food.ordering.zinger.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.model.TransactionModel;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;

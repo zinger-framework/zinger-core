@@ -6,7 +6,7 @@ import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.constant.PaymentResponse;
+import com.food.ordering.zinger.utils.PaymentResponse;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
@@ -160,7 +160,7 @@ public class OrderDao {
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
-                Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId);
+                Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId,2);
 
                 if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess) && verifyOrderResponse.getMessage().equals(ErrorLog.Success)) {
                     Response<String> insertTransactionResponse = transactionDao.insertTransactionDetails(verifyOrderResponse.getData());
@@ -655,7 +655,7 @@ public class OrderDao {
 
             if (orderModelList != null && orderModelList.size() > 0) {
                 for (OrderModel orderModel : orderModelList) {
-                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId());
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(),2);
 
                     if (transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)) {
                         Date currentDate = new Date();
@@ -671,6 +671,27 @@ public class OrderDao {
                     }
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
+                        updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
+                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
+                    }
+                }
+            }
+        }
+    }
+
+    public void updatedRefundOrder(){
+
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"), env.getProperty("sa_mobile"), env.getProperty("sa_role"));
+        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.REFUND_INITIATED);
+
+        if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            List<OrderModel> orderModelList = pendingOrderResponse.getData();
+
+            if (orderModelList != null && orderModelList.size() > 0) {
+                for (OrderModel orderModel : orderModelList) {
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(),1);
+
+                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
                         transactionDao.updatePendingTransaction(transactionModelResponse.getData());
                     }
@@ -759,12 +780,18 @@ public class OrderDao {
         return response;
     }
 
-    public Response<TransactionModel> verifyOrder(String orderId) {
+    public Response<TransactionModel> verifyOrder(String orderId,int flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getTransactionStatus(orderId);
+            Response<TransactionModel> transactionModelResponse;
+
+            if(flag==1)
+                transactionModelResponse = getRefundStatus(orderId);
+            else
+                transactionModelResponse = getTransactionStatus(orderId);
+
             Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
 
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
@@ -901,6 +928,31 @@ public class OrderDao {
         transactionModel.setCurrency("INR");
         transactionModel.setResponseCode("01");
         transactionModel.setResponseMessage("Success");
+        transactionModel.setGatewayName("PAYTM");
+        transactionModel.setBankName("HDFC");
+        transactionModel.setPaymentMode("UPI");
+        transactionModel.setChecksumHash("XXXXX");
+        transactionModel.getOrderModel().setId(orderId);
+
+        transactionModelResponse.setCode(ErrorLog.CodeSuccess);
+        transactionModelResponse.setMessage(ErrorLog.Success);
+        transactionModelResponse.setData(transactionModel);
+        return transactionModelResponse;
+    }
+
+    public Response<TransactionModel> getRefundStatus(String orderId) {
+        Response<TransactionModel> transactionModelResponse = new Response<>();
+
+        //TODO: GET Transaction Status from Payment Gateway
+        TransactionModel transactionModel = new TransactionModel();
+
+        //Populating Dummy Values Here
+        transactionModel.setTransactionId("T" + orderId);
+        transactionModel.setBankTransactionId("BT0001");
+        transactionModel.transactionAmountSet(90.0);
+        transactionModel.setCurrency("INR");
+        transactionModel.setResponseCode("03");
+        transactionModel.setResponseMessage("Refund Completed");
         transactionModel.setGatewayName("PAYTM");
         transactionModel.setBankName("HDFC");
         transactionModel.setPaymentMode("UPI");
