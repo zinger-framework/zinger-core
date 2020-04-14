@@ -283,6 +283,8 @@ public class Query {
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
+                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
+                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 orderByDesc;
 
@@ -531,7 +533,7 @@ public class Query {
                 TransactionColumn.responseCode + EQUAL_COLON + TransactionColumn.responseCode + COMMA +
                 TransactionColumn.responseMessage + EQUAL_COLON + TransactionColumn.responseMessage + COMMA +
                 TransactionColumn.date + EQUALS + CURRENT_TIMESTAMP + WHERE +
-                TransactionColumn.transactionId + EQUAL_COLON + TransactionColumn.transactionId;
+                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
     }
 
     public static final class UserPlaceQuery {

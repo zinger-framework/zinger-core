@@ -85,7 +85,7 @@ CREATE TABLE orders
     mobile                   VARCHAR(10) NOT NULL,
     shop_id                  INT         NOT NULL,
     date                     TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED', 'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER', 'READY', 'OUT_FOR_DELIVERY', 'COMPLETED', 'DELIVERED') DEFAULT NULL,
+    status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED', 'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER', 'READY', 'OUT_FOR_DELIVERY', 'COMPLETED', 'DELIVERED','REFUND_INITIATED','REFUND_COMPLETED') DEFAULT NULL,
     last_status_updated_time DATETIME     DEFAULT NULL,
     price                    DOUBLE      NOT NULL,
     delivery_price           DOUBLE       DEFAULT NULL,

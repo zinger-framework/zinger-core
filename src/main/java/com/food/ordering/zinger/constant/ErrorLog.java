@@ -180,7 +180,7 @@ public class ErrorLog {
     public static final Integer ODNU1280 = 1280;
     public static final Integer SKM1281 = 1281;
     public static final Integer IOS1282 = 1282;
-    public static final Integer ODNA1283 = 1283;
+    public static final Integer CE1283 = 1283;
     public static final Integer CE1284 = 1284;
     public static final Integer ODNU1285 = 1285;
     public static final Integer CE1286 = 1286;
