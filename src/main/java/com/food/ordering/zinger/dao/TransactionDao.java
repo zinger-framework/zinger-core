@@ -111,7 +111,7 @@ public class TransactionDao {
                     .addValue(orderId, transactionModel.getTransactionId());
             namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction, parameter);
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
     }

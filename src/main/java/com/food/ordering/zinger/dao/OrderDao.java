@@ -606,11 +606,9 @@ public class OrderDao {
         try {
             Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-
                 OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
 
                 if (checkOrderStatusValidity(currentOrderModel.getOrderStatus(), orderModel.getOrderStatus())) {
-
                     if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
                         String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
                         currentOrderModel.setSecretKey(secretKey);
@@ -629,20 +627,19 @@ public class OrderDao {
                     }
 
                     if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
-
                         try {
                             MapSqlParameterSource parameter = new MapSqlParameterSource()
                                     .addValue(status, orderModel.getOrderStatus().name())
                                     .addValue(id, orderModel.getId());
+
                             namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
                             response.setCode(ErrorLog.CodeSuccess);
                             response.setMessage(ErrorLog.Success);
                             response.setData(ErrorLog.Success);
                             priority = Priority.LOW;
-
                         } catch (Exception e) {
                             response.setCode(ErrorLog.CE1283);
-                            e.printStackTrace();
+                            System.err.println(e.getClass().getName() + ": " + e.getMessage());
                         }
                     }
                 } else {
@@ -675,7 +672,7 @@ public class OrderDao {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId());
 
-                    if(transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)){
+                    if (transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)) {
                         Date currentDate = new Date();
                         long diff = currentDate.getTime() - orderModel.getDate().getTime();
                         long diffMinutes = diff / (60 * 1000) % 60;
@@ -858,17 +855,27 @@ public class OrderDao {
         // ready -> secret key must be updated in table, completed
         // out_for_delivery -> secret key must be updated in table, delivered
 
-        if (currentStatus.equals(OrderStatus.PENDING))
-            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED);
-        else if (currentStatus.equals(OrderStatus.PLACED)) {
+        if (currentStatus == null)
+            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
+
+        else if (currentStatus.equals(OrderStatus.PENDING))
+            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED) || newStatus.equals(OrderStatus.REFUND_INITIATED);
+
+        else if (currentStatus.equals(OrderStatus.PLACED))
             return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
-        } else if (currentStatus.equals(OrderStatus.ACCEPTED)) {
+
+        else if (currentStatus.equals(OrderStatus.ACCEPTED))
             return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
-        } else if (currentStatus.equals(OrderStatus.READY)) {
+
+        else if (currentStatus.equals(OrderStatus.READY))
             return newStatus.equals(OrderStatus.COMPLETED);
-        } else if (currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY)) {
+
+        else if (currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY))
             return newStatus.equals(OrderStatus.DELIVERED);
-        }
+
+        else if (currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || currentStatus.equals(OrderStatus.REFUND_INITIATED))
+            return newStatus.equals(OrderStatus.REFUND_COMPLETED);
+
         return false;
     }
 
