@@ -25,6 +25,7 @@ public class ConfigurationDao {
         try {
             MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ConfigurationColumn.shopId, configurationModel.getShopModel().getId())
+                    .addValue(ConfigurationColumn.merchantId, configurationModel.getMerchantId())
                     .addValue(ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice());
 
             int responseResult = namedParameterJdbcTemplate.update(ConfigurationQuery.insertConfiguration, parameters);
@@ -72,6 +73,7 @@ public class ConfigurationDao {
 
         try {
             parameters = new MapSqlParameterSource()
+                    .addValue(ConfigurationColumn.merchantId, configurationModel.getMerchantId())
                     .addValue(ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice())
                     .addValue(ConfigurationColumn.isDeliveryAvailable, configurationModel.getIsDeliveryAvailable())
                     .addValue(ConfigurationColumn.isOrderTaken, configurationModel.getIsOrderTaken())

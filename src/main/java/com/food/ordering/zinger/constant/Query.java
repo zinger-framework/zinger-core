@@ -122,18 +122,22 @@ public class Query {
     public static final class ConfigurationQuery {
         public static final String insertConfiguration = INSERT_INTO + ConfigurationColumn.tableName + LEFT_PARANTHESIS +
                 ConfigurationColumn.shopId + COMMA +
+                ConfigurationColumn.merchantId + COMMA +
                 ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ConfigurationColumn.shopId +
+                COMMA_COLON + ConfigurationColumn.merchantId +
                 COMMA_COLON + ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS;
 
         public static final String getConfigurationByShopId = SELECT +
                 ConfigurationColumn.shopId + COMMA +
+                ConfigurationColumn.merchantId + COMMA +
                 ConfigurationColumn.deliveryPrice + COMMA +
                 ConfigurationColumn.isDeliveryAvailable + COMMA +
                 ConfigurationColumn.isOrderTaken + FROM + ConfigurationColumn.tableName + WHERE +
                 ConfigurationColumn.shopId + EQUAL_COLON + ConfigurationColumn.shopId;
 
         public static final String updateConfiguration = UPDATE + ConfigurationColumn.tableName + SET +
+                ConfigurationColumn.merchantId + EQUAL_COLON + ConfigurationColumn.merchantId + COMMA +
                 ConfigurationColumn.deliveryPrice + EQUAL_COLON + ConfigurationColumn.deliveryPrice + COMMA +
                 ConfigurationColumn.isDeliveryAvailable + EQUAL_COLON + ConfigurationColumn.isDeliveryAvailable + COMMA +
                 ConfigurationColumn.isOrderTaken + EQUAL_COLON + ConfigurationColumn.isOrderTaken + WHERE +
@@ -477,7 +481,6 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
-
 
         public static final String getTransactionByMobile = SELECT +
                 TransactionColumn.transactionId + COMMA +

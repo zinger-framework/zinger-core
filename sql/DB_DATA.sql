@@ -32,17 +32,17 @@ insert into item values(10,'channa samosa',75,'food.com','fast food',7,0,0,0);
 insert into item values(11,'chicken 65',75,'food.com','fast food',8,0,0,0);
 insert into item values(12,'biriyani',75,'food.com','fast food',9,0,0,0);
 
-insert into configurations(shop_id, delivery_price) values(1, 15.0);
-insert into configurations(shop_id, delivery_price) values(2, 10.0);
-insert into configurations(shop_id, delivery_price) values(3, 25.0);
+insert into configurations(shop_id, delivery_price, merchant_id) values(1, 15.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(2, 10.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(3, 25.0, 'MID');
 
-insert into configurations(shop_id, delivery_price) values(4, 15.0);
-insert into configurations(shop_id, delivery_price) values(5, 10.0);
-insert into configurations(shop_id, delivery_price) values(6, 25.0);
+insert into configurations(shop_id, delivery_price, merchant_id) values(4, 15.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(5, 10.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(6, 25.0, 'MID');
 
-insert into configurations(shop_id, delivery_price) values(7, 15.0);
-insert into configurations(shop_id, delivery_price) values(8, 10.0);
-insert into configurations(shop_id, delivery_price) values(9, 25.0);
+insert into configurations(shop_id, delivery_price, merchant_id) values(7, 15.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(8, 10.0, 'MID');
+insert into configurations(shop_id, delivery_price, merchant_id) values(9, 25.0, 'MID');
 
 insert into users_shop values('9176786583',1);
 
@@ -50,22 +50,15 @@ select * from users;
 -- select * from place;
 -- select * from place_log;
 select * from shop;
--- select * from item;
+select * from item;
 -- select * from item_log;
 -- select * from users_log;
 select * from users_place;
 select * from users_shop;
 select * from users_invite;
 -- select * from transactions;
--- select * from orders;
--- select * from orders_item;
+select * from orders;
+select * from orders_item;
 -- select * from rating;
 select * from configurations;
-
-SELECT mobile
-    shop_id from seller_invite where
-    mobile='9176786587' AND
-    shop_id=1 AND
-    TIMESTAMPDIFF(MINUTE,invited_at,CURRENT_TIMESTAMP) < 15
-    ORDER BY invited_at DESC LIMIT 1;
 

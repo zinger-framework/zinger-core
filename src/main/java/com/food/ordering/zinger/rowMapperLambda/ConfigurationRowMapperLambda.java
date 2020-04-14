@@ -14,6 +14,7 @@ public class ConfigurationRowMapperLambda {
         shopModel.setId(rs.getInt(shopId));
         configurationModel.setShopModel(shopModel);
 
+        configurationModel.setMerchantId(rs.getString(merchantId));
         configurationModel.setDeliveryPrice(rs.getDouble(deliveryPrice));
         configurationModel.setIsDeliveryAvailable(rs.getInt(isDeliveryAvailable));
         configurationModel.setIsOrderTaken(rs.getInt(isOrderTaken));

@@ -17,7 +17,6 @@ public class OrderRowMapperLambda {
         userModel.setMobile(rs.getString(mobile));
         orderModel.setUserModel(userModel);
 
-
         ShopModel shopModel = new ShopModel();
         shopModel.setId(rs.getInt(shopId));
         orderModel.setShopModel(shopModel);

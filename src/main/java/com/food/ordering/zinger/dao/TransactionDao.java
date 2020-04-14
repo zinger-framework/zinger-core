@@ -17,14 +17,13 @@ public class TransactionDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
         Response<String> response = new Response<>();
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
-                    .addValue(TransactionColumn.orderId, transactionModel.getOrderId())
+                    .addValue(TransactionColumn.orderId, transactionModel.getOrderModel().getId())
                     .addValue(TransactionColumn.bankTransactionId, transactionModel.getBankTransactionId())
                     .addValue(TransactionColumn.currency, transactionModel.getCurrency())
                     .addValue(TransactionColumn.responseCode, transactionModel.getResponseCode())
@@ -74,7 +73,7 @@ public class TransactionDao {
         return response;
     }
 
-    public Response<TransactionModel> getTransactionDetailsByOrderId(String orderId) {
+    public Response<TransactionModel> getTransactionByOrderId(String orderId) {
 
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
@@ -100,6 +99,4 @@ public class TransactionDao {
 
         return response;
     }
-
-
 }

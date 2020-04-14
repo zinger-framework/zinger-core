@@ -2,8 +2,8 @@ package com.food.ordering.zinger.model;
 
 public class TransactionModel {
     private String transactionId;
-    private String orderId;
     private String bankTransactionId;
+    private Double transactionAmount;
     private String currency;
     private String responseCode;
     private String responseMessage;
@@ -14,6 +14,7 @@ public class TransactionModel {
     private OrderModel orderModel;
 
     public TransactionModel() {
+        orderModel = new OrderModel();
     }
 
     public String getTransactionId() {
@@ -30,6 +31,14 @@ public class TransactionModel {
 
     public void setBankTransactionId(String bankTransactionId) {
         this.bankTransactionId = bankTransactionId;
+    }
+
+    public Double getTransactionAmount() {
+        return transactionAmount;
+    }
+
+    public void setTransactionAmount(Double transactionAmount) {
+        this.transactionAmount = transactionAmount;
     }
 
     public String getCurrency() {
@@ -96,20 +105,12 @@ public class TransactionModel {
         this.orderModel = orderModel;
     }
 
-    public String getOrderId() {
-        return orderId;
-    }
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
-
     @Override
     public String toString() {
         return "TransactionModel{" +
                 "transactionId='" + transactionId + '\'' +
-                ", orderId='" + orderId + '\'' +
                 ", bankTransactionId='" + bankTransactionId + '\'' +
+                ", transactionAmount=" + transactionAmount +
                 ", currency='" + currency + '\'' +
                 ", responseCode='" + responseCode + '\'' +
                 ", responseMessage='" + responseMessage + '\'' +

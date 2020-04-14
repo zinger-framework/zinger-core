@@ -14,9 +14,12 @@ public class TransactionRowMapperLambda {
         orderModel.setId(rs.getString(orderId));
         transactionModel.setOrderModel(orderModel);
 
-        transactionModel.setOrderId(rs.getString(orderId));
         transactionModel.setTransactionId(rs.getString(transactionId));
         transactionModel.setBankTransactionId(rs.getString(bankTransactionId));
+
+        if(rs.getDouble("transaction_amount") > 0.0)
+            transactionModel.setTransactionAmount(rs.getDouble("transaction_amount"));
+
         transactionModel.setCurrency(rs.getString(currency));
         transactionModel.setResponseCode(rs.getString(responseCode));
         transactionModel.setResponseMessage(rs.getString(responseMessage));

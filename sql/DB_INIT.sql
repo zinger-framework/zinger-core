@@ -103,14 +103,14 @@ CREATE TABLE transactions
     transaction_id      VARCHAR(64)  NOT NULL,
     order_id            VARCHAR(16)  NOT NULL,
     bank_transaction_id VARCHAR(64)  NOT NULL,
-    currency            VARCHAR(3)   NOT NULL,
+    currency            VARCHAR(3)   DEFAULT NULL,
     response_code       VARCHAR(10)  NOT NULL,
     response_message    VARCHAR(500) NOT NULL,
-    gateway_name        VARCHAR(15)  NOT NULL,
-    bank_name           VARCHAR(500) NOT NULL,
-    payment_mode        VARCHAR(15)  NOT NULL,
-    checksum_hash       VARCHAR(108) NOT NULL,
-    date                TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    gateway_name        VARCHAR(15)  DEFAULT NULL,
+    bank_name           VARCHAR(500) DEFAULT NULL,
+    payment_mode        VARCHAR(15)  DEFAULT NULL,
+    checksum_hash       VARCHAR(108) DEFAULT NULL,
+    date                TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id),
     CONSTRAINT transactions_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
@@ -160,6 +160,7 @@ CREATE TABLE rating
 CREATE TABLE configurations
 (
     shop_id               INT NOT NULL,
+    merchant_id           VARCHAR(32) NOT NULL,
     delivery_price        DOUBLE DEFAULT 0.0,
     is_delivery_available INT    DEFAULT 1,
     is_order_taken        INT    DEFAULT 1,

@@ -2,6 +2,7 @@ package com.food.ordering.zinger.model;
 
 public class ConfigurationModel {
     private ShopModel shopModel;
+    private String merchantId;
     private Double deliveryPrice;
     private Integer isDeliveryAvailable;
     private Integer isOrderTaken;
@@ -12,6 +13,14 @@ public class ConfigurationModel {
 
     public ShopModel getShopModel() {
         return shopModel;
+    }
+
+    public String getMerchantId() {
+        return merchantId;
+    }
+
+    public void setMerchantId(String merchantId) {
+        this.merchantId = merchantId;
     }
 
     public void setShopModel(ShopModel shopModel) {
@@ -46,6 +55,7 @@ public class ConfigurationModel {
     public String toString() {
         return "ConfigurationModel{" +
                 "shopModel=" + shopModel +
+                ", merchantId='" + merchantId + '\'' +
                 ", deliveryPrice=" + deliveryPrice +
                 ", isDeliveryAvailable=" + isDeliveryAvailable +
                 ", isOrderTaken=" + isOrderTaken +

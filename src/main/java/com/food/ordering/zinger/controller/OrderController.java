@@ -26,8 +26,8 @@ public class OrderController {
     }
 
     @PostMapping(value = verifyOrder)
-    public Response<String> verifyOrder(@RequestBody OrderItemListModel orderItemList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return orderService.verifyOrder(orderItemList, oauthId, mobile, role);
+    public Response<String> verifyOrder(@PathVariable("orderId") String orderId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return orderService.verifyOrder(orderId, oauthId, mobile, role);
     }
 
     @GetMapping(value = getOrderByMobile)

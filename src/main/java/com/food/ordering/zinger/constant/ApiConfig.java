@@ -23,7 +23,7 @@ public class ApiConfig {
     public static class OrderApi {
         public static final String BASE_URL = "/order";
         public static final String insertOrder = EMPTY_QUOTES;
-        public static final String verifyOrder = "/verify";
+        public static final String verifyOrder = "/verify/{orderId}";
         public static final String getOrderByMobile = "/customer/{mobile}/{pageNum}/{pageCount}";
         public static final String getOrderByShopIdPagination = "/seller/{shopId}/{pageNum}/{pageCount}";
         public static final String getOrderByShopId = "/seller/{shopId}";
