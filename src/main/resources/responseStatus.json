@@ -1,0 +1,20 @@
+{
+  "TXN_SUCCESS": [
+    {
+      "code": "01",
+      "message": "Success"
+    }
+  ],
+  "PENDING": [
+    {
+      "code": "294",
+      "message": "Transaction Status Pending"
+    }
+  ],
+  "TXN_FAILURE": [
+    {
+      "code": "02",
+      "message": "Invalid Merchant Id"
+    }
+  ]
+}

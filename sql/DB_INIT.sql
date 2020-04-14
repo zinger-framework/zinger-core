@@ -111,7 +111,8 @@ CREATE TABLE transactions
     payment_mode        VARCHAR(15)  DEFAULT NULL,
     checksum_hash       VARCHAR(108) DEFAULT NULL,
     date                TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id),
+    #TODO: Remove After PAYMENT GATEWAY INTEGRATION
+    #CONSTRAINT transactions_transaction_id_pk PRIMARY KEY (transaction_id),
     CONSTRAINT transactions_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 

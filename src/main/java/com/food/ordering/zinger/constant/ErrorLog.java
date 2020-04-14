@@ -103,6 +103,7 @@ public class ErrorLog {
     public static final Integer CE1106 = 1106;
     public static final Integer CE1107 = 1107;
     public static final Integer CE1108 = 1108;
+    public static final Integer CE1109 = 1109;
 
     /**********************************************************************/
     // User Controller Error Code 1151-1200
@@ -112,17 +113,18 @@ public class ErrorLog {
     public static final Integer UDNU1153 = 1153;
     public static final Integer CE1154 = 1154;
     public static final Integer UDNU1155 = 1155;
-    public static final Integer UDNA1156 = 1156;
+    public static final Integer ODNU1156 = 1156;
     public static final Integer UDNU1157 = 1157;
     public static final Integer CE1158 = 1158;
     public static final Integer UDNU1159 = 1159;
     public static final Integer CDNU1160 = 1160;
     public static final Integer CE1161 = 1161;
     public static final Integer UDND1162 = 1162;
-    public static final Integer SDNU1163 = 1163;
+    public static final Integer ODNU1163 = 1163;
     public static final Integer UDND1164 = 1164;
     public static final Integer UDNU1165 = 1165;
     public static final Integer IE1166 = 1166;
+    public static final Integer ODNA1167 = 1167;
 
     /**********************************************************************/
     // Item Controller Error Code 1200-1250

@@ -447,6 +447,7 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + TransactionColumn.transactionId +
+                COMMA_COLON + TransactionColumn.orderId +
                 COMMA_COLON + TransactionColumn.bankTransactionId +
                 COMMA_COLON + TransactionColumn.currency +
                 COMMA_COLON + TransactionColumn.responseCode +
