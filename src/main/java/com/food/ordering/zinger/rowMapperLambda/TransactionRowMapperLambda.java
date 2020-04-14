@@ -10,7 +10,7 @@ public class TransactionRowMapperLambda {
     public static final RowMapper<TransactionModel> transactionRowMapperLambda = (rs, rownum) -> {
         TransactionModel transactionModel = new TransactionModel();
 
-        OrderModel orderModel=new OrderModel();
+        OrderModel orderModel = new OrderModel();
         orderModel.setId(rs.getString(orderId));
         transactionModel.setOrderModel(orderModel);
 

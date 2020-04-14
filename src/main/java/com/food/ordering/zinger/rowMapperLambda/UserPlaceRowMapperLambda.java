@@ -1,12 +1,12 @@
 package com.food.ordering.zinger.rowMapperLambda;
 
 import com.food.ordering.zinger.model.PlaceModel;
-import com.food.ordering.zinger.model.UserPlaceModel;
 import com.food.ordering.zinger.model.UserModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.placeId;
 import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.mobile;
+import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.placeId;
 
 public class UserPlaceRowMapperLambda {
 

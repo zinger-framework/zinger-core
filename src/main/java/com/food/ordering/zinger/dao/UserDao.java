@@ -1,23 +1,22 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.constant.Column;
-import com.food.ordering.zinger.constant.Column.UserPlaceColumn;
 import com.food.ordering.zinger.constant.Column.UserColumn;
+import com.food.ordering.zinger.constant.Column.UserPlaceColumn;
 import com.food.ordering.zinger.constant.Column.UserShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
+import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query;
-import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.constant.Query.UserPlaceQuery;
 import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
+import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
-import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -148,18 +147,15 @@ public class UserDao {
 
             try {
                 userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-            finally {
-                if(userInviteModel != null){
+            } finally {
+                if (userInviteModel != null) {
                     response.setCode(CodeSuccess);
                     response.setMessage(Success);
                     userInviteModel.getShopModel().setPlaceModel(null);
                     response.setData(userInviteModel);
-                }
-                else{
+                } else {
                     response.setCode(ErrorLog.IE1166);
                     response.setMessage(ErrorLog.InviteExpired);
                 }
@@ -220,7 +216,7 @@ public class UserDao {
         Response<UserInviteModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
 
         try {
-            if(inviteModelResponse.getCode().equals(CodeSuccess) && inviteModelResponse.getMessage().equals(Success)){
+            if (inviteModelResponse.getCode().equals(CodeSuccess) && inviteModelResponse.getMessage().equals(Success)) {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(UserColumn.mobile, userShopModel.getUserModel().getMobile())
                         .addValue(UserColumn.oauthId, userShopModel.getUserModel().getOauthId())
@@ -229,21 +225,18 @@ public class UserDao {
                 int responseValue = 0;
                 try {
                     responseValue = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
-                finally {
+                } finally {
                     if (responseValue > 0) {
                         response = updateShop(userShopModel);
                         priority = Priority.LOW;
                     } else {
                         Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getMobile(), inviteModelResponse.getData().getUserModel().getRole());
-                        if(updateRoleResponse.getCode().equals(CodeSuccess) && updateRoleResponse.getMessage().equals(Success)){
+                        if (updateRoleResponse.getCode().equals(CodeSuccess) && updateRoleResponse.getMessage().equals(Success)) {
                             response = updateShop(userShopModel);
                             priority = Priority.LOW;
-                        }
-                        else {
+                        } else {
                             response.setCode(ErrorLog.UDNU1153);
                             response.setMessage(UserDetailNotUpdated);
                         }
@@ -392,8 +385,7 @@ public class UserDao {
                         userModelResponse.setCode(ErrorLog.CodeSuccess);
                         userModelResponse.setMessage(ErrorLog.Success);
                         userModelResponse.setData(userModelList);
-                    }
-                    else
+                    } else
                         userModelResponse.setCode(ErrorLog.CE1104);
                 }
             }
@@ -454,7 +446,7 @@ public class UserDao {
                     .addValue(UserColumn.role, role.name());
 
             int result = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
-            if(result > 0) {
+            if (result > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }

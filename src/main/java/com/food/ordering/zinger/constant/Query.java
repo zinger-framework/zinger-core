@@ -334,7 +334,7 @@ public class Query {
                 RatingColumn.shopId + EQUAL_COLON + RatingColumn.shopId;
     }
 
-    public static final class UserInviteQuery{
+    public static final class UserInviteQuery {
         public static final String notDeleted = UserInviteColumn.isDelete + " = 0";
 
         public static final String inviteSeller = INSERT_INTO + UserInviteColumn.tableName + LEFT_PARANTHESIS +
@@ -358,8 +358,8 @@ public class Query {
 
         public static final String deleteInvite = UPDATE + UserInviteColumn.tableName + SET +
                 UserInviteColumn.isDelete + " = 1" + WHERE +
-                UserInviteColumn.mobile + EQUAL_COLON + UserInviteColumn.mobile +  AND +
-                UserInviteColumn.role + EQUAL_COLON + UserInviteColumn.role +  AND +
+                UserInviteColumn.mobile + EQUAL_COLON + UserInviteColumn.mobile + AND +
+                UserInviteColumn.role + EQUAL_COLON + UserInviteColumn.role + AND +
                 UserInviteColumn.shopId + EQUAL_COLON + UserInviteColumn.shopId;
     }
 
@@ -479,7 +479,7 @@ public class Query {
                 TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
 
 
-        public static final String getTransactionByMobile= SELECT +
+        public static final String getTransactionByMobile = SELECT +
                 TransactionColumn.transactionId + COMMA +
                 TransactionColumn.orderId + COMMA +
                 TransactionColumn.bankTransactionId + COMMA +
@@ -491,7 +491,7 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS+OrderQuery.getOrderByMobile+RIGHT_PARANTHESIS+
+                LEFT_PARANTHESIS + OrderQuery.getOrderByMobile + RIGHT_PARANTHESIS +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopIdPagination = SELECT +
@@ -506,10 +506,10 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS+
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
-        public static final String getTransactionByShopId= SELECT +
+        public static final String getTransactionByShopId = SELECT +
                 TransactionColumn.transactionId + COMMA +
                 TransactionColumn.orderId + COMMA +
                 TransactionColumn.bankTransactionId + COMMA +
@@ -520,8 +520,8 @@ public class Query {
                 TransactionColumn.bankName + COMMA +
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
-                TransactionColumn.orderId +  IN +
-                LEFT_PARANTHESIS+OrderQuery.getOrderByShopId+RIGHT_PARANTHESIS;
+                TransactionColumn.orderId + IN +
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopId + RIGHT_PARANTHESIS;
 
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +

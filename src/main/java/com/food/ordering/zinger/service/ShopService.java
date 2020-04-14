@@ -3,8 +3,8 @@ package com.food.ordering.zinger.service;
 import com.food.ordering.zinger.dao.ShopDao;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.model.ShopConfigurationModel;
 import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.ShopConfigurationModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -3,7 +3,6 @@ package com.food.ordering.zinger.rowMapperLambda;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.ShopModel;
-import com.food.ordering.zinger.model.TransactionModel;
 import com.food.ordering.zinger.model.UserModel;
 import org.springframework.jdbc.core.RowMapper;
 
@@ -25,7 +24,7 @@ public class OrderRowMapperLambda {
 
         orderModel.setDate(rs.getTimestamp(date));
 
-        if(rs.getString(status)!=null)
+        if (rs.getString(status) != null)
             orderModel.setOrderStatus(OrderStatus.valueOf(rs.getString(status)));
 
         orderModel.setLastStatusUpdatedTime(rs.getTimestamp(lastStatusUpdatedTime));

@@ -2,8 +2,8 @@ package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.PlaceModel;
-import com.food.ordering.zinger.service.PlaceService;
 import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.service.PlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

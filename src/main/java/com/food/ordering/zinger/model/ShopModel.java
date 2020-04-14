@@ -83,6 +83,10 @@ public class ShopModel {
         return coverUrls;
     }
 
+    public void setCoverUrls(List<String> coverUrls) {
+        this.coverUrls = coverUrls;
+    }
+
     public String toFormattedCoverUrls() {
         String result = "[";
         for (int i = 0; i < coverUrls.size(); i++) {
@@ -92,10 +96,6 @@ public class ShopModel {
         }
         result += "]";
         return result;
-    }
-
-    public void setCoverUrls(List<String> coverUrls) {
-        this.coverUrls = coverUrls;
     }
 
     @Override

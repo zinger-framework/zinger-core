@@ -1,11 +1,11 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.constant.Column.TransactionColumn;
-import com.food.ordering.zinger.model.TransactionModel;
-import com.food.ordering.zinger.constant.Query.TransactionQuery;
-import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.TransactionModel;
+import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,7 +24,7 @@ public class TransactionDao {
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(TransactionColumn.transactionId, transactionModel.getTransactionId())
-                    .addValue(TransactionColumn.orderId,transactionModel.getOrderId())
+                    .addValue(TransactionColumn.orderId, transactionModel.getOrderId())
                     .addValue(TransactionColumn.bankTransactionId, transactionModel.getBankTransactionId())
                     .addValue(TransactionColumn.currency, transactionModel.getCurrency())
                     .addValue(TransactionColumn.responseCode, transactionModel.getResponseCode())

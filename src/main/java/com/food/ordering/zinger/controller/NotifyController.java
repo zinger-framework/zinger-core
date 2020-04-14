@@ -4,7 +4,10 @@ import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserShopModel;
 import com.food.ordering.zinger.service.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import static com.food.ordering.zinger.constant.ApiConfig.NotifyApi.BASE_URL;
 import static com.food.ordering.zinger.constant.ApiConfig.NotifyApi.inviteSeller;

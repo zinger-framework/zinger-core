@@ -1,15 +1,15 @@
 package com.food.ordering.zinger.dao;
 
-import com.food.ordering.zinger.constant.Column.*;
+import com.food.ordering.zinger.constant.Column.PlaceColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.constant.Query.PlaceQuery;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
-import com.food.ordering.zinger.model.logger.PlaceLogModel;
-import com.food.ordering.zinger.constant.Query.PlaceQuery;
-import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
-import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.logger.PlaceLogModel;
+import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
