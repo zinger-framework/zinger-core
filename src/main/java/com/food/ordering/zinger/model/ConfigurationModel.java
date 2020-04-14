@@ -15,16 +15,16 @@ public class ConfigurationModel {
         return shopModel;
     }
 
+    public void setShopModel(ShopModel shopModel) {
+        this.shopModel = shopModel;
+    }
+
     public String getMerchantId() {
         return merchantId;
     }
 
     public void setMerchantId(String merchantId) {
         this.merchantId = merchantId;
-    }
-
-    public void setShopModel(ShopModel shopModel) {
-        this.shopModel = shopModel;
     }
 
     public Double getDeliveryPrice() {

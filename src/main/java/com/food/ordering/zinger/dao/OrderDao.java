@@ -6,7 +6,6 @@ import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.utils.PaymentResponse;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
@@ -14,6 +13,7 @@ import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
+import com.food.ordering.zinger.utils.PaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -160,7 +160,7 @@ public class OrderDao {
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
-                Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId,2);
+                Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
 
                 if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess) && verifyOrderResponse.getMessage().equals(ErrorLog.Success)) {
                     Response<String> insertTransactionResponse = transactionDao.insertTransactionDetails(verifyOrderResponse.getData());
@@ -655,7 +655,7 @@ public class OrderDao {
 
             if (orderModelList != null && orderModelList.size() > 0) {
                 for (OrderModel orderModel : orderModelList) {
-                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(),2);
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 2);
 
                     if (transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)) {
                         Date currentDate = new Date();
@@ -679,7 +679,7 @@ public class OrderDao {
         }
     }
 
-    public void updatedRefundOrder(){
+    public void updatedRefundOrder() {
 
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"), env.getProperty("sa_mobile"), env.getProperty("sa_role"));
         Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.REFUND_INITIATED);
@@ -689,7 +689,7 @@ public class OrderDao {
 
             if (orderModelList != null && orderModelList.size() > 0) {
                 for (OrderModel orderModel : orderModelList) {
-                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(),1);
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 1);
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
@@ -780,14 +780,14 @@ public class OrderDao {
         return response;
     }
 
-    public Response<TransactionModel> verifyOrder(String orderId,int flag) {
+    public Response<TransactionModel> verifyOrder(String orderId, int flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
         try {
             Response<TransactionModel> transactionModelResponse;
 
-            if(flag==1)
+            if (flag == 1)
                 transactionModelResponse = getRefundStatus(orderId);
             else
                 transactionModelResponse = getTransactionStatus(orderId);
@@ -798,8 +798,8 @@ public class OrderDao {
                     transactionModelResponse.getMessage().equals(ErrorLog.Success) &&
                     orderModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
                     orderModelResponse.getMessage().equals(ErrorLog.Success)
-                    //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
-                    //&& orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().transactionAmountGet())
+                //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
+                //&& orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().transactionAmountGet())
             ) {
                 transactionModel = transactionModelResponse.getData();
                 orderModelResponse.getData().setOrderStatus(paymentResponse.getOrderStatus(transactionModel));
