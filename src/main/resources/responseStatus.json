@@ -16,5 +16,11 @@
       "code": "02",
       "message": "Invalid Merchant Id"
     }
+  ],
+  "REFUND_COMPLETED": [
+    {
+      "code": "03",
+      "message": "Refund Completed"
+    }
   ]
 }
