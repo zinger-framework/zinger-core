@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Random;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
-import static com.food.ordering.zinger.constant.Column.TransactionColumn.*;
 
 @Repository
 public class OrderDao {
@@ -146,36 +145,6 @@ public class OrderDao {
     }
 
     /**************************************************/
-
-    public Response<TransactionModel> verifyOrder(String orderId) {
-        Response<TransactionModel> response = new Response<>();
-        TransactionModel transactionModel = null;
-
-        try {
-            Response<TransactionModel> transactionModelResponse = getTransactionStatus(orderId);
-            Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
-
-            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
-                    transactionModelResponse.getMessage().equals(ErrorLog.Success) &&
-                    orderModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
-                    orderModelResponse.getMessage().equals(ErrorLog.Success)
-                    //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
-                    && orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().getTransactionAmount())
-            ) {
-                transactionModel = transactionModelResponse.getData();
-                orderModelResponse.getData().setOrderStatus(paymentResponse.getOrderStatus(transactionModel));
-                transactionModel.setOrderModel(orderModelResponse.getData());
-
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(transactionModel);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
 
     public Response<String> acceptOrder(String orderId, RequestHeaderModel requestHeaderModel) {
         /*
@@ -563,10 +532,9 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
 
-            if(transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
-
+            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.rating, orderModel.getRating())
                         .addValue(id, orderModel.getId());
@@ -601,9 +569,9 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
 
-            if(transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
+            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
                         .addValue(id, orderModel.getId());
@@ -618,7 +586,7 @@ public class OrderDao {
                     response.setCode(ErrorLog.ODNU1295);
                     response.setMessage(ErrorLog.OrderDetailNotUpdated);
                 }
-            }else{
+            } else {
                 response.setCode(transactionModelResponse.getCode());
                 response.setMessage(transactionModelResponse.getMessage());
             }
@@ -636,7 +604,7 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
                 OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
@@ -660,7 +628,7 @@ public class OrderDao {
                         }
                     }
 
-                    if(!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)){
+                    if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
 
                         try {
                             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -682,7 +650,7 @@ public class OrderDao {
                     response.setMessage(ErrorLog.InvalidOrderStatus);
                 }
 
-            }else{
+            } else {
                 response.setCode(transactionModelResponse.getCode());
                 response.setMessage(transactionModelResponse.getMessage());
             }
@@ -697,43 +665,32 @@ public class OrderDao {
     }
 
     public void updatePendingOrder() {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"), env.getProperty("sa_mobile"), env.getProperty("sa_role"));
+        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.PENDING);
 
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"),env.getProperty("sa_mobile"),env.getProperty("sa_role"));
-        Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
+        if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            List<OrderModel> orderModelList = pendingOrderResponse.getData();
 
-        if(pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
+            if (orderModelList != null && orderModelList.size() > 0) {
+                for (OrderModel orderModel : orderModelList) {
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId());
 
-            List<OrderModel> orderModelList=pendingOrderResponse.getData();
-            if(orderModelList!=null && orderModelList.size()>0){
-
-                for(OrderModel orderModel:orderModelList){
-
-                    OrderStatus newStatus=orderModel.getOrderStatus();
-                    Response<TransactionModel> transactionModelResponse=getTransactionStatus(orderModel.getId());
-                    TransactionModel transactionModel = transactionModelResponse.getData();
-                    if(transactionModel.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode)){
+                    if(transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)){
                         Date currentDate = new Date();
                         long diff = currentDate.getTime() - orderModel.getDate().getTime();
                         long diffMinutes = diff / (60 * 1000) % 60;
                         long diffHours = diff / (60 * 60 * 1000);
                         int diffInDays = (int) ((currentDate.getTime() - orderModel.getDate().getTime()) / (1000 * 60 * 60 * 24));
 
-                        if(diffMinutes>10 || diffHours>=1 || diffInDays>=1)
-                        {
+                        if (diffMinutes > 10 || diffHours >= 1 || diffInDays >= 1) {
                             initiateRefund();
-                            newStatus=OrderStatus.REFUND_INITIATED;
-                        }else{
-                            newStatus=OrderStatus.PLACED;
+                            transactionModelResponse.getData().getOrderModel().setOrderStatus(OrderStatus.REFUND_INITIATED);
                         }
                     }
-                    else if(transactionModel.getResponseCode().equals(PaytmResponseLog.TxnFailureCode)){
-                        newStatus=OrderStatus.TXN_FAILURE;
-                    }
 
-                    if(newStatus!=orderModel.getOrderStatus()){
-                        orderModel.setOrderStatus(newStatus);
-                        updateOrderStatus(orderModel,requestHeaderModel);
-                        transactionDao.updatePendingTransaction(transactionModel);
+                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
+                        updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
+                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
             }
@@ -814,6 +771,36 @@ public class OrderDao {
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1268);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    public Response<TransactionModel> verifyOrder(String orderId) {
+        Response<TransactionModel> response = new Response<>();
+        TransactionModel transactionModel = null;
+
+        try {
+            Response<TransactionModel> transactionModelResponse = getTransactionStatus(orderId);
+            Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
+
+            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
+                    transactionModelResponse.getMessage().equals(ErrorLog.Success) &&
+                    orderModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
+                    orderModelResponse.getMessage().equals(ErrorLog.Success)
+                    //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
+                    && orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().getTransactionAmount())
+            ) {
+                transactionModel = transactionModelResponse.getData();
+                orderModelResponse.getData().setOrderStatus(paymentResponse.getOrderStatus(transactionModel));
+                transactionModel.setOrderModel(orderModelResponse.getData());
+
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(transactionModel);
+            }
+        } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
@@ -909,8 +896,6 @@ public class OrderDao {
         return response;
     }
 
-
-
     public Response<TransactionModel> getTransactionStatus(String orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
@@ -918,8 +903,8 @@ public class OrderDao {
         TransactionModel transactionModel = new TransactionModel();
 
         //Populating Dummy Values Here
-        transactionModel.setTransactionId("T0002");
-        transactionModel.setBankTransactionId("BT0002");
+        transactionModel.setTransactionId("T0001");
+        transactionModel.setBankTransactionId("BT0001");
         transactionModel.setTransactionAmount(75.0);
         transactionModel.setCurrency("INR");
         transactionModel.setResponseCode("01");
@@ -937,6 +922,6 @@ public class OrderDao {
     }
 
     public void initiateRefund() {
-        // Initiate the refund using payment gateway
+        //TODO: Initiate the refund using payment gateway
     }
 }

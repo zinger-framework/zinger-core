@@ -42,7 +42,8 @@ public class PaymentResponse {
         Map<String, Object> jsonResponse = parser.parseMap(responseValue);
 
         for (Map.Entry<String, Object> entry : jsonResponse.entrySet()) {
-            List<PaymentResponse> responseList = mapper.convertValue(entry.getValue(), new TypeReference<List<PaymentResponse>>() { });
+            List<PaymentResponse> responseList = mapper.convertValue(entry.getValue(), new TypeReference<List<PaymentResponse>>() {
+            });
             for (int i = 0; i < responseList.size(); i++) {
                 PaymentResponse response = responseList.get(i);
                 if (response.getCode().equals(transactionModel.getResponseCode()) && response.getMessage().equals(transactionModel.getResponseMessage())) {

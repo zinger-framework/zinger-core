@@ -28,9 +28,7 @@ public class UtilsDao {
         Response<UserModel> response = new Response<>();
 
         try {
-
-            if(requestHeaderModel.getOauthId().equals(env.getProperty("sa_auth")) && requestHeaderModel.getMobile().equals(env.getProperty("sa_mobile")) && requestHeaderModel.getRole().equals(env.getProperty("sa_role")))
-            {
+            if (requestHeaderModel.getOauthId().equals(env.getProperty("sa_auth")) && requestHeaderModel.getMobile().equals(env.getProperty("sa_mobile")) && requestHeaderModel.getRole().equals(env.getProperty("sa_role"))) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 return response;
