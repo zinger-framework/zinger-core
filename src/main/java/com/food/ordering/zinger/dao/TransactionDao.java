@@ -11,6 +11,8 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import static com.food.ordering.zinger.constant.Column.TransactionColumn.*;
+
 @Repository
 public class TransactionDao {
 
@@ -98,5 +100,19 @@ public class TransactionDao {
         }
 
         return response;
+    }
+
+    public void updatePendingTransaction(TransactionModel transactionModel) {
+
+        try {
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(responseCode, transactionModel.getResponseCode())
+                    .addValue(responseMessage, transactionModel.getResponseMessage())
+                    .addValue(orderId, transactionModel.getTransactionId());
+            namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction, parameter);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }

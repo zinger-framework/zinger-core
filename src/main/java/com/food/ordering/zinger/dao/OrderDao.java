@@ -15,11 +15,13 @@ import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
@@ -55,6 +57,9 @@ public class OrderDao {
 
     @Autowired
     ConfigurationDao configurationDao;
+
+    @Autowired
+    Environment env;
 
     @Autowired
     PaymentResponse paymentResponse;
@@ -558,10 +563,10 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1019);
-                response.setData(ErrorLog.InvalidHeader);
-            } else {
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+
+            if(transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
+
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.rating, orderModel.getRating())
                         .addValue(id, orderModel.getId());
@@ -578,6 +583,9 @@ public class OrderDao {
                     response.setCode(ErrorLog.ODNU1285);
                     response.setData(ErrorLog.OrderDetailNotUpdated);
                 }
+            } else {
+                response.setCode(transactionModelResponse.getCode());
+                response.setMessage(transactionModelResponse.getMessage());
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1286);
@@ -593,10 +601,9 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1022);
-                response.setMessage(ErrorLog.InvalidHeader);
-            } else {
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+
+            if(transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
                         .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
                         .addValue(id, orderModel.getId());
@@ -611,6 +618,9 @@ public class OrderDao {
                     response.setCode(ErrorLog.ODNU1295);
                     response.setMessage(ErrorLog.OrderDetailNotUpdated);
                 }
+            }else{
+                response.setCode(transactionModelResponse.getCode());
+                response.setMessage(transactionModelResponse.getMessage());
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1296);
@@ -626,47 +636,55 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setMessage(ErrorLog.InvalidHeader);
-            } else {
-                Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionByOrderId(orderId);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(),requestHeaderModel);
+            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-                if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    Response<OrderModel> orderModelResponse = getOrderDetailById(orderModel.getId());
-                    if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        if (checkOrderStatusValidity(orderModelResponse.getData().getOrderStatus(), orderModel.getOrderStatus())) {
-                            if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
-                                String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
-                                orderModelResponse.getData().setSecretKey(secretKey);
-                                Response<String> updateResponse = updateOrderKey(orderModelResponse.getData(), requestHeaderModel);
-                                if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                    response.setCode(ErrorLog.ODNU1280);
-                                    response.setData(ErrorLog.OrderDetailNotUpdated);
-                                }
-                            }
+                OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
 
-                            if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-                                if (!orderModel.getSecretKey().equals(orderModelResponse.getData().getSecretKey())) {
-                                    response.setCode(ErrorLog.SKM1281);
-                                    response.setData(ErrorLog.SecretKeyMismatch);
-                                }
-                            }
+                if (checkOrderStatusValidity(currentOrderModel.getOrderStatus(), orderModel.getOrderStatus())) {
 
-                            updateOrderStatusQuery(orderModel);
+                    if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
+                        String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
+                        currentOrderModel.setSecretKey(secretKey);
+                        Response<String> updateResponse = updateOrderKey(currentOrderModel, requestHeaderModel);
+                        if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            response.setCode(ErrorLog.ODNU1280);
+                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                        }
+                    }
+
+                    if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
+                        if (!orderModel.getSecretKey().equals(currentOrderModel.getSecretKey())) {
+                            response.setCode(ErrorLog.SKM1281);
+                            response.setMessage(ErrorLog.SecretKeyMismatch);
+                        }
+                    }
+
+                    if(!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)){
+
+                        try {
+                            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                                    .addValue(status, orderModel.getOrderStatus().name())
+                                    .addValue(id, orderModel.getId());
+                            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
                             response.setCode(ErrorLog.CodeSuccess);
                             response.setMessage(ErrorLog.Success);
                             response.setData(ErrorLog.Success);
                             priority = Priority.LOW;
 
-                        } else {
-                            response.setCode(ErrorLog.IOS1282);
-                            response.setData(ErrorLog.InvalidOrderStatus);
+                        } catch (Exception e) {
+                            response.setCode(ErrorLog.CE1283);
+                            e.printStackTrace();
                         }
                     }
                 } else {
-                    response.setCode(ErrorLog.ODNA1283);
-                    response.setData(ErrorLog.OrderDetailNotAvailable);
+                    response.setCode(ErrorLog.IOS1282);
+                    response.setMessage(ErrorLog.InvalidOrderStatus);
                 }
+
+            }else{
+                response.setCode(transactionModelResponse.getCode());
+                response.setMessage(transactionModelResponse.getMessage());
             }
 
         } catch (Exception e) {
@@ -680,21 +698,20 @@ public class OrderDao {
 
     public void updatePendingOrder() {
 
-        /*Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"),env.getProperty("sa_mobile"),env.getProperty("sa_role"));
+        Response<List<OrderModel>> pendingOrderResponse=getOrdersByStatus(OrderStatus.PENDING);
 
         if(pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)){
 
             List<OrderModel> orderModelList=pendingOrderResponse.getData();
-
             if(orderModelList!=null && orderModelList.size()>0){
 
                 for(OrderModel orderModel:orderModelList){
 
                     OrderStatus newStatus=orderModel.getOrderStatus();
-                    TransactionModel transactionModel=getTransactionStatus(orderModel.getId());
-
+                    Response<TransactionModel> transactionModelResponse=getTransactionStatus(orderModel.getId());
+                    TransactionModel transactionModel = transactionModelResponse.getData();
                     if(transactionModel.getResponseCode().equals(PaytmResponseLog.TxnSuccessfulCode)){
-
                         Date currentDate = new Date();
                         long diff = currentDate.getTime() - orderModel.getDate().getTime();
                         long diffMinutes = diff / (60 * 1000) % 60;
@@ -704,7 +721,7 @@ public class OrderDao {
                         if(diffMinutes>10 || diffHours>=1 || diffInDays>=1)
                         {
                             initiateRefund();
-                            newStatus=OrderStatus.TXN_FAILURE;
+                            newStatus=OrderStatus.REFUND_INITIATED;
                         }else{
                             newStatus=OrderStatus.PLACED;
                         }
@@ -715,13 +732,12 @@ public class OrderDao {
 
                     if(newStatus!=orderModel.getOrderStatus()){
                         orderModel.setOrderStatus(newStatus);
-                        updateOrderStatusQuery(orderModel);
-                        updatePendingTransaction(transactionModel);
+                        updateOrderStatus(orderModel,requestHeaderModel);
+                        transactionDao.updatePendingTransaction(transactionModel);
                     }
                 }
             }
-        }*/
-
+        }
     }
 
     /**************************************************/
@@ -869,17 +885,6 @@ public class OrderDao {
         return false;
     }
 
-    public void updateOrderStatusQuery(OrderModel orderModel) {
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(status, orderModel.getOrderStatus().name())
-                    .addValue(id, orderModel.getId());
-            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-    }
-
     /**************************************************/
 
     private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus) {
@@ -904,17 +909,7 @@ public class OrderDao {
         return response;
     }
 
-    public void updatePendingTransaction(TransactionModel transactionModel) {
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(responseCode, transactionModel.getResponseCode())
-                    .addValue(responseMessage, transactionModel.getResponseMessage())
-                    .addValue(transactionId, transactionModel.getTransactionId());
-            namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction, parameter);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-    }
+
 
     public Response<TransactionModel> getTransactionStatus(String orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
