@@ -319,7 +319,6 @@ public class OrderDao {
                 orderItemListByMobile = new ArrayList<>();
 
                 for (TransactionModel transactionModel : transactionModelList) {
-
                     Response<OrderModel> orderModelResponse = getOrderDetailById(transactionModel.getOrderModel().getId());
 
                     if (!orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
@@ -564,38 +563,24 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> updateOrderKey(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateOrderKey(OrderModel orderModel) {
         Response<String> response = new Response<>();
-        Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
+                    .addValue(id, orderModel.getId());
 
-            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
-                        .addValue(id, orderModel.getId());
-
-                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderKey, parameter);
-                if (updateStatus > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(ErrorLog.ODNU1295);
-                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                }
-            } else {
-                response.setCode(transactionModelResponse.getCode());
-                response.setMessage(transactionModelResponse.getMessage());
+            int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderKey, parameter);
+            if (updateStatus > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
             }
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1296);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -612,7 +597,7 @@ public class OrderDao {
                     if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
                         String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
                         currentOrderModel.setSecretKey(secretKey);
-                        Response<String> updateResponse = updateOrderKey(currentOrderModel, requestHeaderModel);
+                        Response<String> updateResponse = updateOrderKey(currentOrderModel);
                         if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             response.setCode(ErrorLog.ODNU1280);
                             response.setMessage(ErrorLog.OrderDetailNotUpdated);
@@ -787,7 +772,7 @@ public class OrderDao {
                     orderModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
                     orderModelResponse.getMessage().equals(ErrorLog.Success)
                     //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
-                    && orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().getTransactionAmount())
+                    //&& orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().transactionAmountGet())
             ) {
                 transactionModel = transactionModelResponse.getData();
                 orderModelResponse.getData().setOrderStatus(paymentResponse.getOrderStatus(transactionModel));
@@ -910,9 +895,9 @@ public class OrderDao {
         TransactionModel transactionModel = new TransactionModel();
 
         //Populating Dummy Values Here
-        transactionModel.setTransactionId("T0001");
+        transactionModel.setTransactionId("T" + orderId);
         transactionModel.setBankTransactionId("BT0001");
-        transactionModel.setTransactionAmount(75.0);
+        transactionModel.transactionAmountSet(90.0);
         transactionModel.setCurrency("INR");
         transactionModel.setResponseCode("01");
         transactionModel.setResponseMessage("Success");

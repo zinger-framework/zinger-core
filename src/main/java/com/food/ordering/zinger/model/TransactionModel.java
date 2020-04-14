@@ -33,11 +33,11 @@ public class TransactionModel {
         this.bankTransactionId = bankTransactionId;
     }
 
-    public Double getTransactionAmount() {
+    public Double transactionAmountGet() {
         return transactionAmount;
     }
 
-    public void setTransactionAmount(Double transactionAmount) {
+    public void transactionAmountSet(Double transactionAmount) {
         this.transactionAmount = transactionAmount;
     }
 

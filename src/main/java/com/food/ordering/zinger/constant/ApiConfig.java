@@ -29,7 +29,6 @@ public class ApiConfig {
         public static final String getOrderByShopId = "/seller/{shopId}";
         public static final String getOrderById = "/{id}";
         public static final String updateOrderRating = "/rating";
-        public static final String updateOrderKey = "/key";
         public static final String updateOrderStatus = "/status";
     }
 

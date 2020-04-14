@@ -48,11 +48,6 @@ public class OrderService {
         return orderDao.updateOrderRating(orderModel, requestHeaderModel);
     }
 
-    public Response<String> updateOrderKey(OrderModel orderModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return orderDao.updateOrderKey(orderModel, requestHeaderModel);
-    }
-
     public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.updateOrderStatus(orderModel, requestHeaderModel);

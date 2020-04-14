@@ -48,35 +48,7 @@ public class TransactionDao {
         return response;
     }
 
-    public Response<TransactionModel> getTransactionDetails(String id) {
-        Response<TransactionModel> response = new Response<>();
-        TransactionModel transactionModel = null;
-
-
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(TransactionColumn.transactionId, id);
-
-            try {
-                transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransaction, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-
-            if (transactionModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(transactionModel);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
-
     public Response<TransactionModel> getTransactionByOrderId(String orderId) {
-
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
@@ -109,10 +81,10 @@ public class TransactionDao {
                     .addValue(responseCode, transactionModel.getResponseCode())
                     .addValue(responseMessage, transactionModel.getResponseMessage())
                     .addValue(orderId, transactionModel.getTransactionId());
+
             namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction, parameter);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
     }
 }
