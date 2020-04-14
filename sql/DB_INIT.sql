@@ -2,19 +2,19 @@ CREATE DATABASE sfdbgffed;
 
 USE sfdbgffed;
 
--- DROP TABLE users_invite;
--- DROP TABLE users_place;
--- DROP TABLE users_shop;
--- DROP TABLE orders_item;
--- DROP TABLE rating;
--- DROP TABLE configurations;
-
--- DROP TABLE transactions;
--- DROP TABLE orders;
--- DROP TABLE item;
--- DROP TABLE users;
--- DROP TABLE shop;
--- DROP TABLE place;
+# DROP TABLE users_invite;
+# DROP TABLE users_place;
+# DROP TABLE users_shop;
+# DROP TABLE orders_item;
+# DROP TABLE rating;
+# DROP TABLE configurations;
+#
+# DROP TABLE transactions;
+# DROP TABLE orders;
+# DROP TABLE item;
+# DROP TABLE users;
+# DROP TABLE shop;
+# DROP TABLE place;
 
 ####################################################
 

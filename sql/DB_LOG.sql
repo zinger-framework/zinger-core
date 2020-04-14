@@ -1,7 +1,7 @@
 -- DROP TABLE users_place_log;
 -- DROP TABLE users_shop_log;
 -- DROP TABLE configurations_log;
-
+--
 -- DROP TABLE orders_log;
 -- DROP TABLE transactions_log;
 -- DROP TABLE item_log;
