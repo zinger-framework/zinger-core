@@ -63,15 +63,15 @@ public class UserController {
         return userService.updateUserPlaceData(userPlaceModel, oauthId, mobile, role);
     }
 
+    @PatchMapping(value = deleteInvite)
+    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.deleteInvite(userShopModel, oauthId, mobileRh, role);
+    }
+
     /**************************************************/
 
     @DeleteMapping(value = deleteSeller)
     public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
         return userService.deleteSeller(shopId, mobile, oauthId, mobileRh, role);
-    }
-
-    @DeleteMapping(value = deleteInvite)
-    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.deleteInvite(userShopModel, oauthId, mobileRh, role);
     }
 }

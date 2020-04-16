@@ -2,9 +2,12 @@ package com.food.ordering.zinger.constant;
 
 import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
+import com.food.ordering.zinger.model.ItemModel;
+import com.food.ordering.zinger.model.OrderItemModel;
 
 import java.util.List;
 
+import static com.food.ordering.zinger.constant.Column.OrderItemColumn.*;
 import static com.food.ordering.zinger.constant.Enums.UserRole.SELLER;
 import static com.food.ordering.zinger.constant.Sql.*;
 
@@ -149,19 +152,30 @@ public class Query {
     public static final class ItemQuery {
         public static final String notDeleted = ItemColumn.isDelete + " = 0";
 
-        public static final String insertItem = INSERT_INTO + ItemColumn.tableName + LEFT_PARANTHESIS +
-                ItemColumn.name + COMMA +
-                ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + COMMA +
-                ItemColumn.shopId + COMMA +
-                ItemColumn.isVeg + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + ItemColumn.name +
-                COMMA_COLON + ItemColumn.price +
-                COMMA_COLON + ItemColumn.photoUrl +
-                COMMA_COLON + ItemColumn.category +
-                COMMA_COLON + ItemColumn.shopId +
-                COMMA_COLON + ItemColumn.isVeg + RIGHT_PARANTHESIS;
+        public static String getInsertItem(List<ItemModel> itemModelList) {
+            StringBuilder insertItem = new StringBuilder(INSERT_INTO + ItemColumn.tableName + LEFT_PARANTHESIS +
+                    ItemColumn.name + COMMA +
+                    ItemColumn.price + COMMA +
+                    ItemColumn.photoUrl + COMMA +
+                    ItemColumn.category + COMMA +
+                    ItemColumn.shopId + COMMA +
+                    ItemColumn.isVeg + RIGHT_PARANTHESIS + VALUES);
+
+            for (int i = 0; i < itemModelList.size(); i++) {
+                insertItem.append(LEFT_PARANTHESIS)
+                        .append(COLON).append(ItemColumn.name).append(i)
+                        .append(COMMA_COLON).append(ItemColumn.price).append(i)
+                        .append(COMMA_COLON).append(ItemColumn.photoUrl).append(i)
+                        .append(COMMA_COLON).append(ItemColumn.category).append(i)
+                        .append(COMMA_COLON).append(ItemColumn.shopId).append(i)
+                        .append(COMMA_COLON).append(ItemColumn.isVeg).append(i)
+                        .append(RIGHT_PARANTHESIS);
+                if (i < itemModelList.size() - 1)
+                    insertItem.append(COMMA);
+            }
+
+            return insertItem.toString();
+        }
 
         public static final String getItemById = SELECT +
                 ItemColumn.id + COMMA +
@@ -218,22 +232,33 @@ public class Query {
     }
 
     public static final class OrderItemQuery {
-        public static final String insertOrderItem = INSERT_INTO + OrderItemColumn.tableName + LEFT_PARANTHESIS +
-                OrderItemColumn.orderId + COMMA +
-                OrderItemColumn.itemId + COMMA +
-                OrderItemColumn.quantity + COMMA +
-                OrderItemColumn.price + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + OrderItemColumn.orderId +
-                COMMA_COLON + OrderItemColumn.itemId +
-                COMMA_COLON + OrderItemColumn.quantity +
-                COMMA_COLON + OrderItemColumn.price + RIGHT_PARANTHESIS;
+        public static String getInsertOrder(List<OrderItemModel> orderItemModelList) {
+            StringBuilder insertOrderItem = new StringBuilder(INSERT_INTO + OrderItemColumn.tableName + LEFT_PARANTHESIS +
+                    orderId + COMMA +
+                    itemId + COMMA +
+                    OrderItemColumn.quantity + COMMA +
+                    OrderItemColumn.price + RIGHT_PARANTHESIS + VALUES);
+
+            for (int i = 0; i < orderItemModelList.size(); i++) {
+                insertOrderItem.append(LEFT_PARANTHESIS)
+                        .append(COLON).append(orderId).append(i)
+                        .append(COMMA_COLON).append(itemId).append(i)
+                        .append(COMMA_COLON).append(quantity).append(i)
+                        .append(COMMA_COLON).append(price).append(i)
+                        .append(RIGHT_PARANTHESIS);
+                if (i < orderItemModelList.size() - 1)
+                    insertOrderItem.append(COMMA);
+            }
+
+            return insertOrderItem.toString();
+        }
 
         public static final String getItemByOrderId = SELECT +
-                OrderItemColumn.orderId + COMMA +
-                OrderItemColumn.itemId + COMMA +
+                orderId + COMMA +
+                itemId + COMMA +
                 OrderItemColumn.quantity + COMMA +
                 OrderItemColumn.price + FROM + OrderItemColumn.tableName + WHERE +
-                OrderItemColumn.orderId + EQUAL_COLON + OrderItemColumn.orderId;
+                orderId + EQUAL_COLON + orderId;
     }
 
     public static final class OrderQuery {

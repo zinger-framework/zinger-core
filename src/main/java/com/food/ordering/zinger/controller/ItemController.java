@@ -20,8 +20,8 @@ public class ItemController {
 
 
     @PostMapping(value = insertItem)
-    public Response<String> insertItem(@RequestBody ItemModel itemModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.insertItem(itemModel, oauthId, mobile, role);
+    public Response<String> insertItem(@RequestBody List<ItemModel> itemModelList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+        return itemService.insertItem(itemModelList, oauthId, mobile, role);
     }
 
     @GetMapping(value = getItemsByShopId)

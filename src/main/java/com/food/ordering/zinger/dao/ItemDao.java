@@ -13,11 +13,15 @@ import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderItemRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
@@ -37,7 +41,7 @@ public class ItemDao {
     @Autowired
     AuditLogDao auditLogDao;
 
-    public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertItem(List<ItemModel> itemModelList, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
@@ -51,16 +55,18 @@ public class ItemDao {
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.name, itemModel.getName())
-                        .addValue(ItemColumn.price, itemModel.getPrice())
-                        .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
-                        .addValue(ItemColumn.category, itemModel.getCategory())
-                        .addValue(ItemColumn.shopId, itemModel.getShopModel().getId())
-                        .addValue(ItemColumn.isVeg, itemModel.getIsVeg());
+                MapSqlParameterSource parameter = new MapSqlParameterSource();
+                for (int i = 0; i < itemModelList.size(); i++) {
+                    ItemModel itemModel = itemModelList.get(i);
+                    parameter.addValue(ItemColumn.name + i, itemModel.getName())
+                            .addValue(ItemColumn.price + i, itemModel.getPrice())
+                            .addValue(ItemColumn.photoUrl + i, itemModel.getPhotoUrl())
+                            .addValue(ItemColumn.category + i, itemModel.getCategory())
+                            .addValue(ItemColumn.shopId + i, itemModel.getShopModel().getId())
+                            .addValue(ItemColumn.isVeg + i, itemModel.getIsVeg());
+                }
 
-                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.insertItem, parameters);
-
+                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.getInsertItem(itemModelList), parameter);
                 if (responseValue > 0) {
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
@@ -77,7 +83,7 @@ public class ItemDao {
         }
 
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), null, itemModelList.toString(), priority));
         return response;
     }
 

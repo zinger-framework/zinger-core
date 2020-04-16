@@ -16,9 +16,11 @@ public class ItemService {
     ItemDao itemDao;
 
 
-    public Response<String> insertItem(ItemModel itemModel, String oauthId, String mobile, String role) {
+    public Response<String> insertItem(List<ItemModel> itemModelList, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return itemDao.insertItem(itemModel, requestHeaderModel);
+        if(itemModelList != null && itemModelList.size()>0)
+            return itemDao.insertItem(itemModelList, requestHeaderModel);
+        return new Response<>();
     }
 
     public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
