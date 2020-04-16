@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
+import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.model.RequestHeaderModel;
@@ -28,7 +29,7 @@ public class UtilsDao {
         Response<UserModel> response = new Response<>();
 
         try {
-            if (requestHeaderModel.getOauthId().equals(env.getProperty("sa_auth")) && requestHeaderModel.getMobile().equals(env.getProperty("sa_mobile")) && requestHeaderModel.getRole().equals(env.getProperty("sa_role"))) {
+            if (requestHeaderModel.getOauthId().equals(env.getProperty(Constant.authIdSA)) && requestHeaderModel.getMobile().equals(env.getProperty(Constant.mobileSA)) && requestHeaderModel.getRole().equals(env.getProperty(Constant.roleSA))) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 return response;

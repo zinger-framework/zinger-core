@@ -38,12 +38,11 @@ public class ItemDao {
     AuditLogDao auditLogDao;
 
     public Response<String> insertItem(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
-
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
                 response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -232,7 +231,7 @@ public class ItemDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
                 response.setCode(ErrorLog.IH1013);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -275,7 +274,7 @@ public class ItemDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
                 response.setCode(ErrorLog.IH1015);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -312,7 +311,7 @@ public class ItemDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name())) {
+            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
                 response.setCode(ErrorLog.IH1017);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;

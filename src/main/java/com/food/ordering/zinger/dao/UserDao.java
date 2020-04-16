@@ -86,7 +86,7 @@ public class UserDao {
                 int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
                 if (result > 0) {
                     priority = Priority.LOW;
-                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setCode(ErrorLog.PDNA1163);
                     response.setMessage(ErrorLog.PlaceDetailNotAvailable);
                     user.setRole(UserRole.CUSTOMER);
                     userPlaceModel.setUserModel(user);

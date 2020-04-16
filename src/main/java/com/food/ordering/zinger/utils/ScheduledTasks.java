@@ -11,8 +11,7 @@ public class ScheduledTasks {
     @Autowired
     OrderDao orderDao;
 
-    //TODO: Update Delay: 10s -> 60s
-    @Scheduled(fixedDelay = 60000)
+    @Scheduled(fixedDelay = 120000)
     public void updatePendingOrder() {
         orderDao.updatePendingOrder();
     }

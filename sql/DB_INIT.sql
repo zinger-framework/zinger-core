@@ -49,7 +49,7 @@ CREATE TABLE users
     name      VARCHAR(32)        DEFAULT NULL,
     email     VARCHAR(64)        DEFAULT NULL,
     oauth_id  VARCHAR(64) UNIQUE DEFAULT NULL,
-    role      ENUM ('CUSTOMER','SELLER','SHOP_OWNER','SUPER_ADMIN') NOT NULL,
+    role      ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
     is_delete INT                DEFAULT 0,
     CONSTRAINT users_mobile_pk PRIMARY KEY (mobile)
 );
@@ -59,7 +59,7 @@ CREATE TABLE users_invite
     mobile     VARCHAR(10),
     shop_id    INT                          NOT NULL,
     invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role       ENUM ('SELLER','SHOP_OWNER') NOT NULL,
+    role       ENUM ('SELLER','DELIVERY','SHOP_OWNER') NOT NULL,
     is_delete  INT       DEFAULT 0,
     CONSTRAINT users_invite_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
@@ -72,10 +72,11 @@ CREATE TABLE item
     photo_url    VARCHAR(128) DEFAULT NULL,
     category     VARCHAR(16) NOT NULL,
     shop_id      INT         NOT NULL,
-    is_veg       INT          DEFAULT 0,
+    is_veg       INT          DEFAULT 1,
     is_available INT          DEFAULT 1,
     is_delete    INT          DEFAULT 0,
-    CONSTRAINT item_id_pk PRIMARY KEY (id),
+    CONSTRAINT item_name_shop_id_pk PRIMARY KEY (name, price, shop_id),
+    CONSTRAINT item_id_uq UNIQUE (id),
     CONSTRAINT item_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 

@@ -14,6 +14,6 @@ public class Enums {
     }
 
     public enum UserRole {
-        CUSTOMER, SELLER, SHOP_OWNER, SUPER_ADMIN
+        CUSTOMER, SELLER, SHOP_OWNER, DELIVERY, SUPER_ADMIN
     }
 }

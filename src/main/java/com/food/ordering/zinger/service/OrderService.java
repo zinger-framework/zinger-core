@@ -18,9 +18,9 @@ public class OrderService {
         return orderDao.insertOrder(orderItemListModel, requestHeaderModel);
     }
 
-    public Response<String> acceptOrder(String orderId, String oauthId, String mobile, String role) {
+    public Response<String> placeOrder(String orderId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
-        return orderDao.acceptOrder(orderId, requestHeaderModel);
+        return orderDao.placeOrder(orderId, requestHeaderModel);
     }
 
     public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {

@@ -34,7 +34,6 @@ public class ErrorLog {
     public static final String SecretKeyMismatch = "Secret key mismatch";
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String ItemPriceMismatch = "Item price mismatch";
-    public static final String ItemNotAvailable = "Item Not Available";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
     public static final String OrderNotTaken = "Order not taken";
     public static final String InviteExpired = "Invite Expired";
@@ -120,7 +119,7 @@ public class ErrorLog {
     public static final Integer CDNU1160 = 1160;
     public static final Integer CE1161 = 1161;
     public static final Integer UDND1162 = 1162;
-    public static final Integer ODNU1163 = 1163;
+    public static final Integer PDNA1163 = 1163;
     public static final Integer UDND1164 = 1164;
     public static final Integer UDNU1165 = 1165;
     public static final Integer IE1166 = 1166;

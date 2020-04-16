@@ -2,6 +2,7 @@ package com.food.ordering.zinger.dao;
 
 import com.food.ordering.zinger.constant.Column.OrderColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
+import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
@@ -144,9 +145,31 @@ public class OrderDao {
         return response;
     }
 
+    public Response<String> insertOrderItem(OrderItemModel orderItemModel, String orderId) {
+        Response<String> response = new Response<>();
+
+        try {
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderItemColumn.orderId, orderId)
+                    .addValue(OrderItemColumn.itemId, orderItemModel.getItemModel().getId())
+                    .addValue(OrderItemColumn.quantity, orderItemModel.getQuantity())
+                    .addValue(OrderItemColumn.price, orderItemModel.getPrice());
+
+            int result = namedParameterJdbcTemplate.update(OrderItemQuery.insertOrderItem, parameter);
+            if (result > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        return response;
+    }
+
     /**************************************************/
 
-    public Response<String> acceptOrder(String orderId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> placeOrder(String orderId, RequestHeaderModel requestHeaderModel) {
         /*
          *   1. verify the transaction status api and
          *   2. Insert the transaction in the transaction table
@@ -443,6 +466,28 @@ public class OrderDao {
         return response;
     }
 
+    private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus) {
+
+        Response<List<OrderModel>> response = new Response<>();
+        List<OrderModel> orderModelList = null;
+        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status, orderStatus.name());
+
+        try {
+            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+        } catch (Exception e) {
+            response.setCode(ErrorLog.ODNA1299);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(orderModelList);
+            }
+        }
+
+        return response;
+    }
+
     public Response<TransactionModel> getOrderById(String orderId, RequestHeaderModel requestHeaderModel) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel;
@@ -611,17 +656,26 @@ public class OrderDao {
                         }
                     }
 
+                    if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) || orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) || orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
+                        initiateRefund();
+
                     if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
                         try {
                             MapSqlParameterSource parameter = new MapSqlParameterSource()
                                     .addValue(status, orderModel.getOrderStatus().name())
                                     .addValue(id, orderModel.getId());
 
-                            namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-                            response.setCode(ErrorLog.CodeSuccess);
-                            response.setMessage(ErrorLog.Success);
-                            response.setData(ErrorLog.Success);
-                            priority = Priority.LOW;
+                            int result = namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
+                            if(result > 0) {
+                                response.setCode(ErrorLog.CodeSuccess);
+                                response.setMessage(ErrorLog.Success);
+                                response.setData(ErrorLog.Success);
+                                priority = Priority.LOW;
+                            }
+                            else{
+                                response.setCode(ErrorLog.ODNU1295);
+                                response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                            }
                         } catch (Exception e) {
                             response.setCode(ErrorLog.CE1283);
                             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -647,7 +701,7 @@ public class OrderDao {
     }
 
     public void updatePendingOrder() {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"), env.getProperty("sa_mobile"), env.getProperty("sa_role"));
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
         Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.PENDING);
 
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
@@ -664,10 +718,8 @@ public class OrderDao {
                         long diffHours = diff / (60 * 60 * 1000);
                         int diffInDays = (int) ((currentDate.getTime() - orderModel.getDate().getTime()) / (1000 * 60 * 60 * 24));
 
-                        if (diffMinutes > 10 || diffHours >= 1 || diffInDays >= 1) {
-                            initiateRefund();
+                        if (diffMinutes > 10 || diffHours >= 1 || diffInDays >= 1)
                             transactionModelResponse.getData().getOrderModel().setOrderStatus(OrderStatus.REFUND_INITIATED);
-                        }
                     }
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
@@ -680,8 +732,7 @@ public class OrderDao {
     }
 
     public void updatedRefundOrder() {
-
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty("sa_auth"), env.getProperty("sa_mobile"), env.getProperty("sa_role"));
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
         Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.REFUND_INITIATED);
 
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
@@ -832,28 +883,6 @@ public class OrderDao {
         return response;
     }
 
-    public Response<String> insertOrderItem(OrderItemModel orderItemModel, String orderId) {
-        Response<String> response = new Response<>();
-
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderItemColumn.orderId, orderId)
-                    .addValue(OrderItemColumn.itemId, orderItemModel.getItemModel().getId())
-                    .addValue(OrderItemColumn.quantity, orderItemModel.getQuantity())
-                    .addValue(OrderItemColumn.price, orderItemModel.getPrice());
-
-            int result = namedParameterJdbcTemplate.update(OrderItemQuery.insertOrderItem, parameter);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        return response;
-    }
-
     /**************************************************/
 
     boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus) {
@@ -892,28 +921,6 @@ public class OrderDao {
     }
 
     /**************************************************/
-
-    private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus) {
-
-        Response<List<OrderModel>> response = new Response<>();
-        List<OrderModel> orderModelList = null;
-        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status, orderStatus.name());
-
-        try {
-            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-        } catch (Exception e) {
-            response.setCode(ErrorLog.ODNA1299);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (orderModelList != null && !orderModelList.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(orderModelList);
-            }
-        }
-
-        return response;
-    }
 
     public Response<TransactionModel> getTransactionStatus(String orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
