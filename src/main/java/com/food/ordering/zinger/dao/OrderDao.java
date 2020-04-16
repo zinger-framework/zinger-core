@@ -466,14 +466,14 @@ public class OrderDao {
         return response;
     }
 
-    private Response<List<OrderModel>> getOrdersByStatus(OrderStatus orderStatus) {
+    private Response<List<OrderModel>> getOrdersByStatus(List<OrderStatus> orderStatusList) {
 
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
-        MapSqlParameterSource parameter = new MapSqlParameterSource().addValue(status, orderStatus.name());
 
         try {
-            orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus, parameter, OrderRowMapperLambda.orderRowMapperLambda);
+            if (orderStatusList != null && orderStatusList.size() > 0)
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus(orderStatusList), OrderRowMapperLambda.orderRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.ODNA1299);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -666,13 +666,12 @@ public class OrderDao {
                                     .addValue(id, orderModel.getId());
 
                             int result = namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-                            if(result > 0) {
+                            if (result > 0) {
                                 response.setCode(ErrorLog.CodeSuccess);
                                 response.setMessage(ErrorLog.Success);
                                 response.setData(ErrorLog.Success);
                                 priority = Priority.LOW;
-                            }
-                            else{
+                            } else {
                                 response.setCode(ErrorLog.ODNU1295);
                                 response.setMessage(ErrorLog.OrderDetailNotUpdated);
                             }
@@ -702,7 +701,9 @@ public class OrderDao {
 
     public void updatePendingOrder() {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
-        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.PENDING);
+        List<OrderStatus> orderStatuses = new ArrayList<>();
+        orderStatuses.add(OrderStatus.PENDING);
+        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(orderStatuses);
 
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
             List<OrderModel> orderModelList = pendingOrderResponse.getData();
@@ -733,7 +734,11 @@ public class OrderDao {
 
     public void updatedRefundOrder() {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
-        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(OrderStatus.REFUND_INITIATED);
+        List<OrderStatus> orderStatuses = new ArrayList<>();
+        orderStatuses.add(OrderStatus.REFUND_INITIATED);
+        orderStatuses.add(OrderStatus.CANCELLED_BY_USER);
+        orderStatuses.add(OrderStatus.CANCELLED_BY_SELLER);
+        Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(orderStatuses);
 
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
             List<OrderModel> orderModelList = pendingOrderResponse.getData();
@@ -742,7 +747,7 @@ public class OrderDao {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 1);
 
-                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED)) {
+                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
                         transactionDao.updatePendingTransaction(transactionModelResponse.getData());
                     }

@@ -3,6 +3,8 @@ package com.food.ordering.zinger.constant;
 import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 
+import java.util.List;
+
 import static com.food.ordering.zinger.constant.Enums.UserRole.SELLER;
 import static com.food.ordering.zinger.constant.Sql.*;
 
@@ -298,21 +300,6 @@ public class Query {
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 orderByDesc;
 
-        public static final String getOrderByStatus = SELECT +
-                OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
-                OrderColumn.shopId + COMMA +
-                OrderColumn.date + COMMA +
-                OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + COMMA +
-                OrderColumn.price + COMMA +
-                OrderColumn.deliveryPrice + COMMA +
-                OrderColumn.deliveryLocation + COMMA +
-                OrderColumn.cookingInfo + COMMA +
-                OrderColumn.rating + COMMA +
-                OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
-                OrderColumn.status + EQUAL_COLON + OrderColumn.status;
-
         public static final String updateOrderRating = UPDATE + OrderColumn.tableName + SET +
                 OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
@@ -325,6 +312,33 @@ public class Query {
                 OrderColumn.status + EQUAL_COLON + OrderColumn.status + COMMA +
                 OrderColumn.lastStatusUpdatedTime + EQUALS + CURRENT_TIMESTAMP + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
+
+        public static String getOrderByStatus(List<OrderStatus> orderStatusList) {
+            StringBuilder getOrderByStatus = new StringBuilder(SELECT +
+                    OrderColumn.id + COMMA +
+                    OrderColumn.mobile + COMMA +
+                    OrderColumn.shopId + COMMA +
+                    OrderColumn.date + COMMA +
+                    OrderColumn.status + COMMA +
+                    OrderColumn.lastStatusUpdatedTime + COMMA +
+                    OrderColumn.price + COMMA +
+                    OrderColumn.deliveryPrice + COMMA +
+                    OrderColumn.deliveryLocation + COMMA +
+                    OrderColumn.cookingInfo + COMMA +
+                    OrderColumn.rating + COMMA +
+                    OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
+                    OrderColumn.status + IN + LEFT_PARANTHESIS);
+
+            for (int i = 0; i < orderStatusList.size(); i++) {
+                getOrderByStatus.append(SINGLE_QUOTE).append(orderStatusList.get(i).name()).append(SINGLE_QUOTE);
+                if (i < orderStatusList.size() - 1)
+                    getOrderByStatus.append(COMMA);
+                else
+                    getOrderByStatus.append(RIGHT_PARANTHESIS);
+            }
+
+            return getOrderByStatus.toString();
+        }
     }
 
     public static final class RatingQuery {
