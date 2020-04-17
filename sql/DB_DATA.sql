@@ -79,6 +79,8 @@ insert into configurations(shop_id, delivery_price, merchant_id) values(7, 15.0,
 insert into configurations(shop_id, delivery_price, merchant_id) values(8, 10.0, 'MID');
 insert into configurations(shop_id, delivery_price, merchant_id) values(9, 25.0, 'MID');
 
+insert into users values ("9176019334","harsha","harsha@gmail.com","dfsfs","CUSTOMER",0);
+
 -- insert into users_shop values('9176786580',1);
 
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,

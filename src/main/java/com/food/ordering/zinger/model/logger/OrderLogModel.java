@@ -7,7 +7,7 @@ import com.food.ordering.zinger.model.Response;
 import java.sql.Timestamp;
 
 public class OrderLogModel {
-    private String id;
+    private Integer id;
     private Integer errorCode;
     private String mobile;
     private String message;
@@ -21,7 +21,7 @@ public class OrderLogModel {
     public OrderLogModel() {
     }
 
-    public OrderLogModel(Response response, String mobile, String id, String updatedValue, Priority priority) {
+    public OrderLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
         this.mobile = mobile;
@@ -30,11 +30,11 @@ public class OrderLogModel {
         this.priority = priority;
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

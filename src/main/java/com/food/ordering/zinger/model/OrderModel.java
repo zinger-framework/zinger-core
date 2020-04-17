@@ -6,7 +6,7 @@ import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import java.sql.Timestamp;
 
 public class OrderModel {
-    private String id;
+    private Integer id;
     private UserModel userModel;
     private ShopModel shopModel;
 
@@ -30,11 +30,11 @@ public class OrderModel {
         shopModel = new ShopModel();
     }
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

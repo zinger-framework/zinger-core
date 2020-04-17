@@ -82,7 +82,7 @@ CREATE TABLE item
 
 CREATE TABLE orders
 (
-    id                       VARCHAR(16) NOT NULL,
+    id                       INT AUTO_INCREMENT NOT NULL,
     mobile                   VARCHAR(10) NOT NULL,
     shop_id                  INT         NOT NULL,
     date                     TIMESTAMP                                                                                                                                                                                        DEFAULT CURRENT_TIMESTAMP,
@@ -102,7 +102,7 @@ CREATE TABLE orders
 CREATE TABLE transactions
 (
     transaction_id      VARCHAR(64)  NOT NULL,
-    order_id            VARCHAR(16)  NOT NULL,
+    order_id            INTEGER  NOT NULL,
     bank_transaction_id VARCHAR(64)  NOT NULL,
     currency            VARCHAR(3)   DEFAULT NULL,
     response_code       VARCHAR(10)  NOT NULL,
@@ -138,7 +138,7 @@ CREATE TABLE users_place
 
 CREATE TABLE orders_item
 (
-    order_id VARCHAR(16) NOT NULL,
+    order_id INTEGER NOT NULL,
     item_id  INT         NOT NULL,
     quantity INT         NOT NULL,
     price    DOUBLE      NOT NULL,

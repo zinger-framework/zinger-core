@@ -12,7 +12,7 @@ public class OrderItemRowMapperLambda {
         OrderItemModel orderItemModel = new OrderItemModel();
 
         OrderModel orderModel = new OrderModel();
-        orderModel.setId(rs.getString(orderId));
+        orderModel.setId(rs.getInt(orderId));
         orderItemModel.setOrderModel(orderModel);
 
         ItemModel itemModel = new ItemModel();

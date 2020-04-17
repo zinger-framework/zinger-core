@@ -13,12 +13,12 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
-    public Response<String> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
+    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.insertOrder(orderItemListModel, requestHeaderModel);
     }
 
-    public Response<String> placeOrder(String orderId, String oauthId, String mobile, String role) {
+    public Response<String> placeOrder(Integer orderId, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.placeOrder(orderId, requestHeaderModel);
     }
@@ -38,7 +38,7 @@ public class OrderService {
         return orderDao.getOrderByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<TransactionModel> getOrderById(String id, String oauthId, String mobile, String role) {
+    public Response<TransactionModel> getOrderById(Integer id, String oauthId, String mobile, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
         return orderDao.getOrderById(id, requestHeaderModel);
     }

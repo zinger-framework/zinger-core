@@ -11,7 +11,7 @@ import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 public class OrderRowMapperLambda {
     public static final RowMapper<OrderModel> orderRowMapperLambda = (rs, rownum) -> {
         OrderModel orderModel = new OrderModel();
-        orderModel.setId(rs.getString(id));
+        orderModel.setId(rs.getInt(id));
 
         UserModel userModel = new UserModel();
         userModel.setMobile(rs.getString(mobile));
