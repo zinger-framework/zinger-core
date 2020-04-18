@@ -22,7 +22,7 @@ USE sfdbgffed;
 CREATE TABLE place
 (
     id        INT AUTO_INCREMENT,
-    name      VARCHAR(32)  NOT NULL,
+    name      VARCHAR(64) UNIQUE NOT NULL,
     icon_url  VARCHAR(128) NOT NULL,
     address   VARCHAR(256) NOT NULL,
     is_delete INT DEFAULT 0,
