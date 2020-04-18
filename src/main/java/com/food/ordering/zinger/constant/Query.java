@@ -8,6 +8,7 @@ import com.food.ordering.zinger.model.OrderItemModel;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.Column.OrderItemColumn.*;
+import static com.food.ordering.zinger.constant.Enums.UserRole.DELIVERY;
 import static com.food.ordering.zinger.constant.Enums.UserRole.SELLER;
 import static com.food.ordering.zinger.constant.Sql.*;
 
@@ -624,7 +625,8 @@ public class Query {
                 UserColumn.mobile + COMMA +
                 UserColumn.role + FROM + UserColumn.tableName + WHERE +
                 notDeleted + AND +
-                UserColumn.role + EQUALS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + AND +
+                UserColumn.role + IN + LEFT_PARANTHESIS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS + AND +
                 UserColumn.id + IN + LEFT_PARANTHESIS + SELECT +
                 UserShopColumn.userId + FROM + UserShopColumn.tableName + WHERE +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
