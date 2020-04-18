@@ -549,7 +549,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModel != null) {
-                Response<UserModel> userModelResponse = userDao.getUserByMobile(orderModel.getUserModel().getMobile());
+                Response<UserModel> userModelResponse = userDao.getUserById(orderModel.getUserModel().getId());
                 Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
 
                 if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
