@@ -72,9 +72,18 @@ public class UserDao {
 
             if (userModel != null) {
                 userPlaceModel.setUserModel(userModel);
-                response = getPlaceByUserId(userModel);
+                Response<UserPlaceModel> placeResponse = getPlaceByUserId(userModel);
                 priority = Priority.LOW;
-                response.setCode(ErrorLog.CodeSuccess);
+                if(placeResponse.getCode().equals(CodeSuccess)){
+                    response.setCode(CodeSuccess);
+                    response.setMessage(Success);
+                    userPlaceModel.setPlaceModel(placeResponse.getData().getPlaceModel());
+                    response.setData(userPlaceModel);
+                }else{
+                    response.setCode(ErrorLog.PDNA1163);
+                    response.setMessage(ErrorLog.PlaceDetailNotAvailable);
+                    response.setData(userPlaceModel);
+                }
             } else {
                 Number responseValue = insertUser(user);
                 if (responseValue != null && responseValue.intValue() > 0) {
