@@ -14,7 +14,7 @@ public class OrderRowMapperLambda {
         orderModel.setId(rs.getInt(id));
 
         UserModel userModel = new UserModel();
-        userModel.setId(rs.getInt(id));
+        userModel.setId(rs.getInt(userId));
         orderModel.setUserModel(userModel);
 
         ShopModel shopModel = new ShopModel();
