@@ -1,7 +1,8 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.logger.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,12 @@ import org.springframework.stereotype.Repository;
 import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
 
 @Repository
-public class AuditLogDao {
+public class AuditLogDaoImpl implements AuditLogDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
     public Response<String> insertPlaceLog(PlaceLogModel placeLogModel) {
         Response<String> response = new Response<>();
 
@@ -43,6 +45,7 @@ public class AuditLogDao {
         return response;
     }
 
+    @Override
     public Response<String> insertShopLog(ShopLogModel ShopLogModel) {
         Response<String> response = new Response<>();
 
@@ -69,6 +72,7 @@ public class AuditLogDao {
         return response;
     }
 
+    @Override
     public Response<String> insertUserLog(UserLogModel UserLogModel) {
         Response<String> response = new Response<>();
 
@@ -95,6 +99,7 @@ public class AuditLogDao {
         return response;
     }
 
+    @Override
     public Response<String> insertItemLog(ItemLogModel ItemLogModel) {
         Response<String> response = new Response<>();
 
@@ -120,7 +125,7 @@ public class AuditLogDao {
         return response;
     }
 
-
+    @Override
     public Response<String> insertOrderLog(OrderLogModel OrderLogModel) {
         Response<String> response = new Response<>();
 
@@ -146,6 +151,4 @@ public class AuditLogDao {
 
         return response;
     }
-
-
 }

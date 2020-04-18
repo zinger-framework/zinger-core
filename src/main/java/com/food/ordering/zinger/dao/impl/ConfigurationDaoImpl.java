@@ -1,8 +1,9 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.ConfigurationColumn;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ConfigurationQuery;
+import com.food.ordering.zinger.dao.interfaces.ConfigurationDao;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopModel;
@@ -14,11 +15,12 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ConfigurationDao {
+public class ConfigurationDaoImpl implements ConfigurationDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
     public Response<String> insertConfiguration(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
 
@@ -41,6 +43,7 @@ public class ConfigurationDao {
         return response;
     }
 
+    @Override
     public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
         Response<ConfigurationModel> response = new Response<>();
         ConfigurationModel configurationModel = null;
@@ -67,6 +70,7 @@ public class ConfigurationDao {
         return response;
     }
 
+    @Override
     public Response<String> updateConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;

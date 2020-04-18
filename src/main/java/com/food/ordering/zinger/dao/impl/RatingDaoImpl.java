@@ -1,8 +1,9 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.RatingColumn;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.RatingQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopModel;
@@ -14,13 +15,15 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class RatingDao {
+public class RatingDaoImpl implements RatingDao {
+
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
+    @Override
     public Response<RatingModel> getRatingByShopId(ShopModel shopModel) {
         Response<RatingModel> response = new Response<>();
         RatingModel ratingModel = null;
@@ -47,6 +50,7 @@ public class RatingDao {
         return response;
     }
 
+    @Override
     public void updateShopRating(Integer shopId, Double rating) {
         try {
             ShopModel shopModel = new ShopModel();

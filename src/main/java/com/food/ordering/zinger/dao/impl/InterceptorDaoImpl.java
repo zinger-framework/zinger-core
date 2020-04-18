@@ -1,9 +1,10 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.UserQuery;
+import com.food.ordering.zinger.dao.interfaces.InterceptorDao;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserModel;
@@ -16,7 +17,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class InterceptorDao {
+public class InterceptorDaoImpl implements InterceptorDao {
 
     @Autowired
     Environment env;
@@ -24,6 +25,7 @@ public class InterceptorDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
     public Response<UserModel> validateUser(RequestHeaderModel requestHeaderModel) {
         UserModel userModel = null;
         Response<UserModel> response = new Response<>();

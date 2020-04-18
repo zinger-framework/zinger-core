@@ -4,7 +4,7 @@ import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
-import com.food.ordering.zinger.service.ShopService;
+import com.food.ordering.zinger.service.impl.ShopServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,20 +17,20 @@ import static com.food.ordering.zinger.constant.ApiConfig.ShopApi.*;
 public class ShopController {
 
     @Autowired
-    ShopService shopService;
+    ShopServiceImpl shopServiceImpl;
 
     @PostMapping(value = insertShop)
     public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.insertShop(configurationModel, oauthId, id, role);
+        return shopServiceImpl.insertShop(configurationModel, oauthId, id, role);
     }
 
     @GetMapping(value = getShopsByPlaceId)
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByPlaceId(placeId, oauthId, id, role);
+        return shopServiceImpl.getShopByPlaceId(placeId, oauthId, id, role);
     }
 
     @PatchMapping(value = updateShopConfiguration)
     Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.updateShopConfiguration(configurationModel, oauthId, id, role);
+        return shopServiceImpl.updateShopConfiguration(configurationModel, oauthId, id, role);
     }
 }

@@ -1,10 +1,11 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
@@ -19,26 +20,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class ShopDao {
+public class ShopDaoImpl implements ShopDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
     @Autowired
-    ConfigurationDao configurationDao;
+    ConfigurationDaoImpl configurationDaoImpl;
 
     @Autowired
-    RatingDao ratingDao;
+    RatingDaoImpl ratingDaoImpl;
 
     @Autowired
-    PlaceDao placeDao;
+    PlaceDaoImpl placeDaoImpl;
 
     @Autowired
-    AuditLogDao auditLogDao;
+    AuditLogDaoImpl auditLogDaoImpl;
 
+    @Override
     public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
@@ -49,7 +51,7 @@ public class ShopDao {
                 response.setCode(ErrorLog.IH1004);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1005);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -70,7 +72,7 @@ public class ShopDao {
                 Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
 
                 configurationModel.getShopModel().setId(responseValue.intValue());
-                Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
+                Response<String> configurationModelResponse = configurationDaoImpl.insertConfiguration(configurationModel);
 
                 if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.CodeSuccess);
@@ -91,10 +93,11 @@ public class ShopDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, configurationModel.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, configurationModel.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -102,7 +105,7 @@ public class ShopDao {
         List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1006);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -131,8 +134,8 @@ public class ShopDao {
                     list.get(i).setPlaceModel(null);
 
                     Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
-                    Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(list.get(i));
-                    Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(list.get(i));
+                    Response<RatingModel> ratingModelResponse = ratingDaoImpl.getRatingByShopId(list.get(i));
+                    Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(list.get(i));
 
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
                     shopModelResponse.getData().setPlaceModel(null);
@@ -169,10 +172,11 @@ public class ShopDao {
             }
         }
 
-        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, placeId.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, placeId.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<ShopModel> getShopById(Integer shopId) {
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
@@ -193,7 +197,7 @@ public class ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 if (shopModel.getPlaceModel().getName() == null || shopModel.getPlaceModel().getName().isEmpty()) {
-                    Response<PlaceModel> placeModelResponse = placeDao.getPlaceById(shopModel.getPlaceModel().getId());
+                    Response<PlaceModel> placeModelResponse = placeDaoImpl.getPlaceById(shopModel.getPlaceModel().getId());
                     shopModel.setPlaceModel(placeModelResponse.getData());
                 }
                 response.setData(shopModel);
@@ -202,6 +206,7 @@ public class ShopDao {
         return response;
     }
 
+    @Override
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
@@ -212,12 +217,12 @@ public class ShopDao {
                 response.setCode(ErrorLog.IH1007);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1008);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
-                Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
+                Response<String> configResponse = configurationDaoImpl.updateConfigurationModel(configurationModel);
 
                 parameters = new MapSqlParameterSource()
                         .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
@@ -244,7 +249,7 @@ public class ShopDao {
             response.setCode(ErrorLog.CE1259);
         }
 
-        auditLogDao.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
         return response;
     }
 }

@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.ItemColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
@@ -8,6 +8,7 @@ import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
@@ -23,20 +24,21 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
-public class ItemDao {
+public class ItemDaoImpl implements ItemDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
     @Autowired
-    ShopDao shopDao;
+    ShopDaoImpl shopDaoImpl;
 
     @Autowired
-    AuditLogDao auditLogDao;
+    AuditLogDaoImpl auditLogDaoImpl;
 
+    @Override
     public Response<String> insertItem(List<ItemModel> itemModelList, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -46,7 +48,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1010);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -79,17 +81,18 @@ public class ItemDao {
         }
 
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemModelList.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemModelList.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1011);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -118,17 +121,18 @@ public class ItemDao {
             }
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1012);
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
@@ -152,7 +156,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 for (int i = 0; i < items.size(); i++) {
-                    Response<ShopModel> shopModelResponse = shopDao.getShopById(items.get(i).getShopModel().getId());
+                    Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(items.get(i).getShopModel().getId());
                     shopModelResponse.getData().setPlaceModel(null);
                     items.get(i).setShopModel(shopModelResponse.getData());
                 }
@@ -161,10 +165,11 @@ public class ItemDao {
             }
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemName, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemName, priority));
         return response;
     }
 
+    @Override
     public Response<ItemModel> getItemById(Integer id) {
         ItemModel item = null;
         Response<ItemModel> response = new Response<>();
@@ -182,7 +187,7 @@ public class ItemDao {
             if (item != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-                Response<ShopModel> shopModelResponse = shopDao.getShopById(item.getShopModel().getId());
+                Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(item.getShopModel().getId());
                 item.setShopModel(shopModelResponse.getData());
                 response.setData(item);
             }
@@ -190,6 +195,7 @@ public class ItemDao {
         return response;
     }
 
+    @Override
     public Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel) {
 
         Response<List<OrderItemModel>> response = new Response<>();
@@ -228,6 +234,7 @@ public class ItemDao {
         return response;
     }
 
+    @Override
     public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -237,7 +244,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1013);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1014);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -267,10 +274,11 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<String> deleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -280,7 +288,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1015);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1016);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -304,10 +312,11 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
         return response;
     }
 
+    @Override
     public Response<String> unDeleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -317,7 +326,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1017);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1018);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -342,7 +351,7 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
         return response;
     }
 }

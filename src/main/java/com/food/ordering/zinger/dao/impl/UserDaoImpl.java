@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.UserColumn;
@@ -11,6 +11,7 @@ import com.food.ordering.zinger.constant.Query;
 import com.food.ordering.zinger.constant.Query.UserPlaceQuery;
 import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
@@ -30,32 +31,33 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
-public class UserDao {
+public class UserDaoImpl implements UserDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    PlaceDao placeDao;
+    PlaceDaoImpl placeDaoImpl;
 
     @Autowired
-    ShopDao shopDao;
+    ShopDaoImpl shopDaoImpl;
 
     @Autowired
-    ConfigurationDao configurationDao;
+    ConfigurationDaoImpl configurationDaoImpl;
 
     @Autowired
-    RatingDao ratingDao;
+    RatingDaoImpl ratingDaoImpl;
 
     @Autowired
-    NotifyDao notifyDao;
+    NotifyDaoImpl notifyDaoImpl;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
     @Autowired
-    AuditLogDao auditLogDao;
+    AuditLogDaoImpl auditLogDaoImpl;
 
+    @Override
     public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
         Response<UserPlaceModel> response = new Response<>();
         Priority priority = Priority.HIGH;
@@ -107,7 +109,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
         return response;
     }
 
@@ -131,6 +133,7 @@ public class UserDao {
         return null;
     }
 
+    @Override
     public Response<UserShopListModel> verifySeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
         Priority priority = Priority.HIGH;
@@ -157,10 +160,11 @@ public class UserDao {
             response.setCode(ErrorLog.CE1154);
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
         Response<UserInviteModel> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -191,17 +195,18 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, null, null, shopId.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, shopId.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<String> inviteSeller(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.IH1027);
                     response.setData(ErrorLog.InvalidHeader);
                 } else {
@@ -212,7 +217,7 @@ public class UserDao {
 
                     int responseValue = namedParameterJdbcTemplate.update(Query.UserInviteQuery.inviteSeller, parameters);
                     if (responseValue > 0) {
-                        notifyDao.notifyInvitation(userShopModel);
+                        notifyDaoImpl.notifyInvitation(userShopModel);
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
                         response.setData(ErrorLog.Success);
@@ -232,10 +237,11 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<String> acceptInvite(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -271,7 +277,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getId(), null, userShopModel.getUserModel().getMobile(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getId(), null, userShopModel.getUserModel().getMobile(), priority));
         return response;
     }
 
@@ -294,7 +300,7 @@ public class UserDao {
                 response.setMessage(ErrorLog.Success);
 
                 if (userPlaceModel.getPlaceModel().getName() == null || userPlaceModel.getPlaceModel().getName().isEmpty()) {
-                    Response<PlaceModel> placeModelResponse = placeDao.getPlaceById(userPlaceModel.getPlaceModel().getId());
+                    Response<PlaceModel> placeModelResponse = placeDaoImpl.getPlaceById(userPlaceModel.getPlaceModel().getId());
                     userPlaceModel.setPlaceModel(placeModelResponse.getData());
                 }
                 userPlaceModel.setUserModel(userModel);
@@ -375,14 +381,14 @@ public class UserDao {
                 for (int i = 0; i < userShopModelList.size(); i++) {
                     ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
 
-                    Response<ShopModel> shopModelResponse = shopDao.getShopById(userShopModelList.get(i).getShopModel().getId());
+                    Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(userShopModelList.get(i).getShopModel().getId());
                     shopConfigurationModel.setShopModel(shopModelResponse.getData());
 
-                    Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
+                    Response<RatingModel> ratingModelResponse = ratingDaoImpl.getRatingByShopId(shopModelResponse.getData());
                     ratingModelResponse.getData().setShopModel(null);
                     shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
 
-                    Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
+                    Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(shopModelResponse.getData());
                     configurationModelResponse.getData().setShopModel(null);
                     shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
 
@@ -402,6 +408,7 @@ public class UserDao {
         return response;
     }
 
+    @Override
     public Response<List<UserModel>> getSellerByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<UserModel>> userModelResponse = new Response<>();
         List<UserModel> userModelList = null;
@@ -412,7 +419,7 @@ public class UserDao {
                 userModelResponse.setCode(ErrorLog.IH1024);
                 userModelResponse.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 userModelResponse.setCode(ErrorLog.IH1023);
                 userModelResponse.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -440,18 +447,19 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getId(), null, shopId.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getId(), null, shopId.toString(), priority));
         return userModelResponse;
     }
 
     /**************************************************/
 
+    @Override
     public Response<String> updateUser(UserModel user, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1051);
                 response.setMessage(ErrorLog.Failure);
                 response.setData(ErrorLog.InvalidHeader);
@@ -480,7 +488,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), user.getId(), user.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), user.getId(), user.toString(), priority));
         return response;
     }
 
@@ -547,11 +555,12 @@ public class UserDao {
         return response;
     }
 
+    @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
-        if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+        if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
@@ -574,10 +583,11 @@ public class UserDao {
             }
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<String> deleteSeller(Integer shopId, Integer userId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
@@ -586,7 +596,7 @@ public class UserDao {
             if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
                 response.setCode(ErrorLog.IH1025);
                 response.setData(ErrorLog.InvalidHeader);
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1026);
                 response.setData(ErrorLog.InvalidHeader);
             } else {
@@ -611,17 +621,18 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userId, null, priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userId, null, priority));
         return response;
     }
 
+    @Override
     public Response<String> deleteInvite(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.IH1050);
                     response.setData(ErrorLog.InvalidHeader);
                 } else {
@@ -651,8 +662,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
         return response;
     }
-
 }

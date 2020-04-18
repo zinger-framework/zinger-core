@@ -1,10 +1,11 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.PlaceColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.PlaceQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.Response;
@@ -21,17 +22,18 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 @Repository
-public class PlaceDao {
+public class PlaceDaoImpl implements PlaceDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
     @Autowired
-    AuditLogDao auditLogDao;
+    AuditLogDaoImpl auditLogDaoImpl;
 
+    @Override
     public Response<String> insertPlace(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
 
         Response<String> response = new Response<>();
@@ -42,7 +44,7 @@ public class PlaceDao {
                 response.setCode(ErrorLog.IH1000);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1001);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -67,10 +69,11 @@ public class PlaceDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, placeModel.toString(), priority));
+        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, placeModel.toString(), priority));
         return response;
     }
 
+    @Override
     public Response<List<PlaceModel>> getAllPlaces(RequestHeaderModel requestHeaderModel) {
 
         Response<List<PlaceModel>> response = new Response<>();
@@ -78,7 +81,7 @@ public class PlaceDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1002);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -103,10 +106,11 @@ public class PlaceDao {
             }
         }
 
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, null, priority));
+        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, null, priority));
         return response;
     }
 
+    @Override
     public Response<PlaceModel> getPlaceById(Integer placeId) {
         Response<PlaceModel> response = new Response<>();
         PlaceModel place = null;

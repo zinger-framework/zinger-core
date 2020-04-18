@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.OrderColumn;
@@ -11,6 +11,7 @@ import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
+import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
@@ -31,34 +32,34 @@ import java.util.Random;
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 @Repository
-public class OrderDao {
+public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDao interceptorDao;
+    InterceptorDaoImpl interceptorDaoImpl;
 
     @Autowired
-    TransactionDao transactionDao;
+    TransactionDaoImpl transactionDaoImpl;
 
     @Autowired
-    ItemDao itemDao;
+    ItemDaoImpl itemDaoImpl;
 
     @Autowired
-    ShopDao shopDao;
+    ShopDaoImpl shopDaoImpl;
 
     @Autowired
-    RatingDao ratingDao;
+    RatingDaoImpl ratingDaoImpl;
 
     @Autowired
-    UserDao userDao;
+    UserDaoImpl userDaoImpl;
 
     @Autowired
-    AuditLogDao auditLogDao;
+    AuditLogDaoImpl auditLogDaoImpl;
 
     @Autowired
-    ConfigurationDao configurationDao;
+    ConfigurationDaoImpl configurationDaoImpl;
 
     @Autowired
     Environment env;
@@ -66,6 +67,7 @@ public class OrderDao {
     @Autowired
     PaymentResponse paymentResponse;
 
+    @Override
     public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
         /*
          *   1. Verify the amount and availability of the items using verify order
@@ -78,7 +80,7 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1053);
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
@@ -138,7 +140,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
 
@@ -170,6 +172,7 @@ public class OrderDao {
 
     /**************************************************/
 
+    @Override
     public Response<String> placeOrder(Integer orderId, RequestHeaderModel requestHeaderModel) {
         /*
          *   1. verify the transaction status api and
@@ -179,7 +182,7 @@ public class OrderDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1003);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -187,7 +190,7 @@ public class OrderDao {
                 Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
 
                 if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    Response<String> insertTransactionResponse = transactionDao.insertTransactionDetails(verifyOrderResponse.getData());
+                    Response<String> insertTransactionResponse = transactionDaoImpl.insertTransactionDetails(verifyOrderResponse.getData());
 
                     if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         Response<String> updateOrderStatusResponse = updateOrderStatus(verifyOrderResponse.getData().getOrderModel(), requestHeaderModel);
@@ -217,12 +220,13 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, orderId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, orderId.toString(), priority));
         return response;
     }
 
     /**************************************************/
 
+    @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -230,7 +234,7 @@ public class OrderDao {
         List<OrderItemListModel> orderItemListByMobile;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1055);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -269,7 +273,7 @@ public class OrderDao {
                         break;
                     } else {
                         transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<ShopModel> shopModelResponse = shopDao.getShopById(transactionModel.getOrderModel().getShopModel().getId());
+                        Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(transactionModel.getOrderModel().getShopModel().getId());
                         if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             priority = Priority.MEDIUM;
                             response.setCode(ErrorLog.SDNA1272);
@@ -278,7 +282,7 @@ public class OrderDao {
                         } else {
                             shopModelResponse.getData().setPlaceModel(null);
                             transactionModel.getOrderModel().setShopModel(shopModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(transactionModel.getOrderModel());
+                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
                             if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                                 priority = Priority.MEDIUM;
                                 response.setCode(ErrorLog.OIDNA1273);
@@ -298,10 +302,11 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, userId + "-" + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, userId + "-" + pageNum, priority));
         return response;
     }
 
+    @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
@@ -314,7 +319,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1056);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1057);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -352,7 +357,7 @@ public class OrderDao {
                         break;
                     } else {
                         transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<UserModel> userModelResponse = userDao.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
+                        Response<UserModel> userModelResponse = userDaoImpl.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
                         if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             priority = Priority.MEDIUM;
                             response.setCode(ErrorLog.UDNA1277);
@@ -360,7 +365,7 @@ public class OrderDao {
                             break;
                         } else {
                             transactionModel.getOrderModel().setUserModel(userModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(transactionModel.getOrderModel());
+                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
                             if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                                 priority = Priority.MEDIUM;
                                 response.setCode(ErrorLog.OIDNA1297);
@@ -380,10 +385,11 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, shopId + "-" + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, shopId + "-" + pageNum, priority));
         return response;
     }
 
+    @Override
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
@@ -396,7 +402,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1020);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1021);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -434,7 +440,7 @@ public class OrderDao {
                         break;
                     } else {
                         transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<UserModel> userModelResponse = userDao.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
+                        Response<UserModel> userModelResponse = userDaoImpl.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
                         if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             priority = Priority.MEDIUM;
                             response.setCode(ErrorLog.UDNA1290);
@@ -442,7 +448,7 @@ public class OrderDao {
                             break;
                         } else {
                             transactionModel.getOrderModel().setUserModel(userModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDao.getItemsByOrderId(transactionModel.getOrderModel());
+                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
 
                             if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                                 priority = Priority.MEDIUM;
@@ -463,7 +469,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -489,18 +495,19 @@ public class OrderDao {
         return response;
     }
 
+    @Override
     public Response<TransactionModel> getOrderById(Integer orderId, RequestHeaderModel requestHeaderModel) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1058);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
-                Response<TransactionModel> transactionModelResponse = transactionDao.getTransactionByOrderId(orderId);
+                Response<TransactionModel> transactionModelResponse = transactionDaoImpl.getTransactionByOrderId(orderId);
 
                 if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     transactionModel = transactionModelResponse.getData();
@@ -525,7 +532,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderId, null, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderId, null, priority));
         return response;
     }
 
@@ -548,8 +555,8 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModel != null) {
-                Response<UserModel> userModelResponse = userDao.getUserById(orderModel.getUserModel().getId());
-                Response<ShopModel> shopModelResponse = shopDao.getShopById(orderModel.getShopModel().getId());
+                Response<UserModel> userModelResponse = userDaoImpl.getUserById(orderModel.getUserModel().getId());
+                Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(orderModel.getShopModel().getId());
 
                 if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     orderModel.setUserModel(userModelResponse.getData());
@@ -572,6 +579,7 @@ public class OrderDao {
 
     /**************************************************/
 
+    @Override
     public Response<String> updateOrderRating(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
@@ -586,7 +594,7 @@ public class OrderDao {
 
                 int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
                 if (updateStatus > 0) {
-                    ratingDao.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
+                    ratingDaoImpl.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
 
                     response.setCode(ErrorLog.CodeSuccess);
                     response.setMessage(ErrorLog.Success);
@@ -605,7 +613,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -630,6 +638,7 @@ public class OrderDao {
         return response;
     }
 
+    @Override
     public Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
@@ -696,7 +705,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -726,7 +735,7 @@ public class OrderDao {
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
-                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
+                        transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
             }
@@ -750,7 +759,7 @@ public class OrderDao {
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
-                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
+                        transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
             }
@@ -788,7 +797,7 @@ public class OrderDao {
     public Double calculatePricing(List<OrderItemModel> orderItemModelList) {
         Double totalPrice = 0.0;
         for (OrderItemModel orderItemModel : orderItemModelList) {
-            Response<ItemModel> itemModelResponse = itemDao.getItemById(orderItemModel.getItemModel().getId());
+            Response<ItemModel> itemModelResponse = itemDaoImpl.getItemById(orderItemModel.getItemModel().getId());
             if (!itemModelResponse.getCode().equals(ErrorLog.CodeSuccess))
                 return null;
             else if (itemModelResponse.getData().getIsAvailable() == 0)
@@ -806,7 +815,7 @@ public class OrderDao {
             OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
             ShopModel shopModel = order.getShopModel();
 
-            Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModel);
+            Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(shopModel);
             if (!configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.SDNA1265);
                 response.setMessage(ErrorLog.ShopDetailNotAvailable);

@@ -3,7 +3,7 @@ package com.food.ordering.zinger.controller;
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.Response;
-import com.food.ordering.zinger.service.PlaceService;
+import com.food.ordering.zinger.service.impl.PlaceServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,15 +16,15 @@ import static com.food.ordering.zinger.constant.ApiConfig.PlaceApi.*;
 public class PlaceController {
 
     @Autowired
-    PlaceService placeService;
+    PlaceServiceImpl placeServiceImpl;
 
     @PostMapping(value = insertPlace)
     public Response<String> insertPlace(@RequestBody PlaceModel placeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return placeService.insertPlace(placeModel, oauthId, id, role);
+        return placeServiceImpl.insertPlace(placeModel, oauthId, id, role);
     }
 
     @GetMapping(value = getAllPlaces)
     public Response<List<PlaceModel>> getAllPlaces(@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return placeService.getAllPlaces(oauthId, id, role);
+        return placeServiceImpl.getAllPlaces(oauthId, id, role);
     }
 }

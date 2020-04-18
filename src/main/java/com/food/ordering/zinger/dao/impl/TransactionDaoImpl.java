@@ -1,8 +1,9 @@
-package com.food.ordering.zinger.dao;
+package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.TransactionColumn;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
+import com.food.ordering.zinger.dao.interfaces.TransactionDao;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.TransactionModel;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
@@ -14,11 +15,12 @@ import org.springframework.stereotype.Repository;
 import static com.food.ordering.zinger.constant.Column.TransactionColumn.*;
 
 @Repository
-public class TransactionDao {
+public class TransactionDaoImpl implements TransactionDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    @Override
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
         Response<String> response = new Response<>();
 
@@ -48,6 +50,7 @@ public class TransactionDao {
         return response;
     }
 
+    @Override
     public Response<TransactionModel> getTransactionByOrderId(Integer orderId) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
@@ -74,6 +77,7 @@ public class TransactionDao {
         return response;
     }
 
+    @Override
     public void updatePendingTransaction(TransactionModel transactionModel) {
 
         try {
