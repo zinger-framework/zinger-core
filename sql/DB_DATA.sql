@@ -20,11 +20,6 @@ insert into shop values(7,'SRM Sathyas (Main)','shop.com','["shop.com","shop.com
 insert into shop values(8,'SRM Snow Qube','shop.com','["shop.com","shop.com","shop.com"]',9176019344,3,'09:00:00','21:00:00',0);
 insert into shop values(9,'SRM Sathyas PG','shop.com','["shop.com","shop.com","shop.com"]',9176019344,3,'09:00:00','21:00:00',0);
 
--- insert into users values(9789075309,'Abhiram','abhi@yahoo.co.in','24oauthid12','SHOP_OWNER',0);
--- insert into users values(9176019346,'shrikanth','harshavardhan98@yahoo.co.in','12oauthid36','SHOP_OWNER',0);
--- insert into users values(9176019347,'spider-man','harshavardhan98@yahoo.co.in','12oauthid37','CUSTOMER',0);
--- insert into users values(9176019348,'Harshavardhan','harshavardhan98@yahoo.co.in','12oauthid38','SELLER',0);
-
 insert into item values(1,'Chicken Fried Rice',75,'food.com','CHINESE',1,0,1,0);
 insert into item values(2,'Chicken Noodles',65,'food.com','CHINESE',1,0,1,0);
 insert into item values(3,'Sada Dosa',35,'food.com','SOUTH INDIAN',1,1,1,0);
@@ -79,14 +74,12 @@ insert into configurations(shop_id, delivery_price, merchant_id) values(7, 15.0,
 insert into configurations(shop_id, delivery_price, merchant_id) values(8, 10.0, 'MID');
 insert into configurations(shop_id, delivery_price, merchant_id) values(9, 25.0, 'MID');
 
--- insert into users_shop values('9176786580',1);
-
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,
 -- payment_mode,checksum_hash) values("1","O00011","dsfs","RS","01","success","STRIPE","DBS","UPI","3232");
---
+
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,
 -- payment_mode,checksum_hash) values("2","2","dsfs","RS","01","success","STRIPE","DBS","UPI","3232");
---
+
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,
 -- payment_mode,checksum_hash) values("3","O00012","dsfs","RS","01","success","STRIPE","DBS","UPI","3232");
 

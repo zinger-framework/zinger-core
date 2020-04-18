@@ -2,6 +2,7 @@ CREATE DATABASE sfdbgffed;
 
 USE sfdbgffed;
 
+# DROP TABLE seller_archive;
 # DROP TABLE users_invite;
 # DROP TABLE users_place;
 # DROP TABLE users_shop;
@@ -45,18 +46,19 @@ CREATE TABLE shop
 
 CREATE TABLE users
 (
-    mobile    VARCHAR(10),
-    name      VARCHAR(32)        DEFAULT NULL,
-    email     VARCHAR(64)        DEFAULT NULL,
-    oauth_id  VARCHAR(64) UNIQUE DEFAULT NULL,
+    id        INT AUTO_INCREMENT,
+    mobile    VARCHAR(10) UNIQUE                                               NOT NULL,
+    name      VARCHAR(32) DEFAULT NULL,
+    email     VARCHAR(64) DEFAULT NULL,
+    oauth_id  VARCHAR(64) UNIQUE                                               NOT NULL,
     role      ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
-    is_delete INT                DEFAULT 0,
-    CONSTRAINT users_mobile_pk PRIMARY KEY (mobile)
+    is_delete INT         DEFAULT 0,
+    CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE users_invite
 (
-    mobile     VARCHAR(10),
+    mobile    INT                                     NOT NULL,
     shop_id    INT                                     NOT NULL,
     invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role       ENUM ('SELLER','DELIVERY','SHOP_OWNER') NOT NULL,
@@ -83,19 +85,22 @@ CREATE TABLE item
 CREATE TABLE orders
 (
     id                       VARCHAR(16) NOT NULL,
-    mobile                   VARCHAR(10) NOT NULL,
+    user_id                  INT         NOT NULL,
     shop_id                  INT         NOT NULL,
-    date                     TIMESTAMP                                                                                                                                                                                        DEFAULT CURRENT_TIMESTAMP,
-    status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED', 'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER', 'READY', 'OUT_FOR_DELIVERY', 'COMPLETED', 'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
-    last_status_updated_time DATETIME                                                                                                                                                                                         DEFAULT NULL,
+    date                     TIMESTAMP                       DEFAULT CURRENT_TIMESTAMP,
+    status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+        'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
+        'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
+        'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
+    last_status_updated_time DATETIME                        DEFAULT NULL,
     price                    DOUBLE      NOT NULL,
-    delivery_price           DOUBLE                                                                                                                                                                                           DEFAULT NULL,
-    delivery_location        VARCHAR(128)                                                                                                                                                                                     DEFAULT NULL,
-    cooking_info             VARCHAR(128)                                                                                                                                                                                     DEFAULT NULL,
-    rating                   DOUBLE(2, 1)                                                                                                                                                                                     DEFAULT NULL,
-    secret_key               VARCHAR(10)                                                                                                                                                                                      DEFAULT NULL,
+    delivery_price           DOUBLE                          DEFAULT NULL,
+    delivery_location        VARCHAR(128)                    DEFAULT NULL,
+    cooking_info             VARCHAR(128)                    DEFAULT NULL,
+    rating                   DOUBLE(2, 1)                    DEFAULT NULL,
+    secret_key               VARCHAR(10)                     DEFAULT NULL,
     CONSTRAINT orders_id_pk PRIMARY KEY (id),
-    CONSTRAINT orders_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
+    CONSTRAINT orders_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
@@ -120,19 +125,19 @@ CREATE TABLE transactions
 
 CREATE TABLE users_shop
 (
-    mobile  VARCHAR(10) NOT NULL,
+    user_id INT NOT NULL,
     shop_id INT         NOT NULL,
-    CONSTRAINT users_shop_mobile_shop_id_pk PRIMARY KEY (mobile, shop_id),
-    CONSTRAINT users_shop_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
+    CONSTRAINT users_shop_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
+    CONSTRAINT users_shop_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT users_shop_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
 CREATE TABLE users_place
 (
-    mobile   VARCHAR(10) NOT NULL,
+    user_id  INT NOT NULL,
     place_id INT         NOT NULL,
-    CONSTRAINT users_place_mobile_pk PRIMARY KEY (mobile),
-    CONSTRAINT users_place_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
+    CONSTRAINT users_place_user_id_pk PRIMARY KEY (user_id),
+    CONSTRAINT users_place_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT users_place_place_id_fk FOREIGN KEY (place_id) REFERENCES place (id)
 );
 
@@ -171,11 +176,11 @@ CREATE TABLE configurations
 
 CREATE TABLE seller_archive
 (
-    mobile     VARCHAR(10) NOT NULL,
+    user_id    INT NOT NULL,
     shop_id    INT         NOT NULL,
     deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT seller_archive_mobile_shop_id_pk PRIMARY KEY (mobile, shop_id),
-    CONSTRAINT seller_archive_mobile_fk FOREIGN KEY (mobile) REFERENCES users (mobile),
+    CONSTRAINT seller_archive_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
+    CONSTRAINT seller_archive_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT seller_archive_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
@@ -192,8 +197,8 @@ CREATE TRIGGER seller_archive
     AFTER DELETE
     ON users_shop
     FOR EACH ROW
-    INSERT INTO seller_archive(mobile, shop_id)
-    VALUES (OLD.mobile, OLD.shop_id);
+    INSERT INTO seller_archive(user_id, shop_id)
+    VALUES (OLD.user_id, OLD.shop_id);
 
 ####################################################
 
@@ -218,5 +223,5 @@ CREATE INDEX items_name_index
 CREATE INDEX orders_shop_id_index
     ON orders (shop_id);
 
-CREATE INDEX orders_mobile_index
-    ON orders (mobile);
+CREATE INDEX orders_user_id_index
+    ON orders (user_id);

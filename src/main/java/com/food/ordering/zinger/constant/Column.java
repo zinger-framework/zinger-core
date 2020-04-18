@@ -40,7 +40,7 @@ public class Column {
         public static final String tableName = "orders";
 
         public static final String id = "id";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String shopId = "shop_id";
         public static final String date = "date";
         public static final String status = "status";
@@ -113,13 +113,14 @@ public class Column {
     public static final class UserPlaceColumn {
         public static final String tableName = "users_place";
 
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String placeId = "place_id";
     }
 
     public static final class UserColumn {
         public static final String tableName = "users";
 
+        public static final String id = "id";
         public static final String mobile = "mobile";
         public static final String name = "name";
         public static final String email = "email";
@@ -131,7 +132,7 @@ public class Column {
     public static final class UserShopColumn {
         public static final String tableName = "users_shop";
 
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String shopId = "shop_id";
     }
 
@@ -188,7 +189,7 @@ public class Column {
     public static final class UserLogColumn {
         public static final String tableName = "users_log";
 
-        public static final String usersMobile = "users_mobile";
+        public static final String id = "id";
         public static final String errorCode = "error_code";
         public static final String mobile = "mobile";
         public static final String message = "message";

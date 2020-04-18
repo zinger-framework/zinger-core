@@ -7,7 +7,7 @@ import com.food.ordering.zinger.model.Response;
 import java.sql.Timestamp;
 
 public class UserLogModel {
-    private String usersMobile;
+    private Integer id;
     private Integer errorCode;
     private String mobile;
     private String message;
@@ -21,8 +21,8 @@ public class UserLogModel {
     public UserLogModel() {
     }
 
-    public UserLogModel(Response response, String mobile, String id, String updatedValue, Priority priority) {
-        this.usersMobile = id;
+    public UserLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
+        this.id = id;
         this.errorCode = response.getCode();
         this.mobile = mobile;
         this.message = response.getMessage();
@@ -30,12 +30,12 @@ public class UserLogModel {
         this.priority = priority;
     }
 
-    public String getUsersMobile() {
-        return usersMobile;
+    public Integer getId() {
+        return id;
     }
 
-    public void setUsersMobile(String usersMobile) {
-        this.usersMobile = usersMobile;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public Integer getErrorCode() {
@@ -89,7 +89,7 @@ public class UserLogModel {
     @Override
     public String toString() {
         return "UsersLogModel{" +
-                "usersMobile='" + usersMobile + '\'' +
+                "id='" + id + '\'' +
                 ", errorCode=" + errorCode +
                 ", mobile='" + mobile + '\'' +
                 ", message='" + message + '\'' +

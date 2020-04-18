@@ -91,7 +91,7 @@ public class OrderDao {
 
                         MapSqlParameterSource parameter = new MapSqlParameterSource()
                                 .addValue(OrderColumn.id, order.getId())
-                                .addValue(OrderColumn.mobile, order.getUserModel().getMobile())
+                                .addValue(OrderColumn.id, order.getUserModel().getId())
                                 .addValue(shopId, order.getShopModel().getId())
                                 .addValue(price, order.getPrice())
                                 .addValue(deliveryPrice, order.getDeliveryPrice())
@@ -211,7 +211,7 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
+    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
@@ -224,12 +224,12 @@ public class OrderDao {
                 priority = Priority.HIGH;
             } else {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.mobile, mobile)
+                        .addValue(OrderColumn.userId, userId)
                         .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                         .addValue(OrderQuery.pageCount, pageCount);
 
                 try {
-                    transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByMobile, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+                    transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
                 } catch (Exception e) {
                     response.setCode(ErrorLog.CE1269);
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -286,7 +286,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, userId + "-" + pageNum, priority));
         return response;
     }
 
@@ -368,7 +368,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, mobile + "-" + pageNum, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, shopId + "-" + pageNum, priority));
         return response;
     }
 

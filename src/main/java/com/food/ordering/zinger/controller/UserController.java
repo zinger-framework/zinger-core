@@ -71,7 +71,7 @@ public class UserController {
     /**************************************************/
 
     @DeleteMapping(value = deleteSeller)
-    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.deleteSeller(shopId, mobile, oauthId, mobileRh, role);
+    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("userId") Integer userId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobileRh, @RequestHeader(value = UserColumn.role) String role) {
+        return userService.deleteSeller(shopId, userId, oauthId, mobileRh, role);
     }
 }

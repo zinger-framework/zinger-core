@@ -53,9 +53,9 @@ public class UserService {
         return userDao.updateUserPlaceData(userPlaceModel, requestHeaderModel);
     }
 
-    public Response<String> deleteSeller(Integer shopId, String mobile, String oauthId, String mobileRh, String role) {
+    public Response<String> deleteSeller(Integer shopId, Integer userId, String oauthId, String mobileRh, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
-        return userDao.deleteSeller(shopId, mobile, requestHeaderModel);
+        return userDao.deleteSeller(shopId, userId, requestHeaderModel);
     }
 
     public Response<String> deleteInvite(UserShopModel userShopModel, String oauthId, String mobileRh, String role) {

@@ -23,9 +23,9 @@ public class OrderService {
         return orderDao.placeOrder(orderId, requestHeaderModel);
     }
 
-    public Response<List<OrderItemListModel>> getOrderByMobile(String mobile, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
+    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
-        return orderDao.getOrderByMobile(mobile, pageNum, pageCount, requestHeaderModel);
+        return orderDao.getOrderByUserId(userId, pageNum, pageCount, requestHeaderModel);
     }
 
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {

@@ -75,7 +75,7 @@ public class AuditLogDao {
         try {
 
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserLogColumn.usersMobile, UserLogModel.getUsersMobile())
+                    .addValue(UserLogColumn.id, UserLogModel.getId())
                     .addValue(UserLogColumn.errorCode, UserLogModel.getErrorCode())
                     .addValue(UserLogColumn.mobile, UserLogModel.getMobile())
                     .addValue(UserLogColumn.message, UserLogModel.getMessage())

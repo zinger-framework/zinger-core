@@ -13,14 +13,12 @@ import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -74,20 +72,16 @@ public class UserDao {
 
             if (userModel != null) {
                 userPlaceModel.setUserModel(userModel);
-                response = getPlaceByMobile(userModel);
+                response = getPlaceByUserId(userModel);
                 priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
             } else {
-                parameters = new MapSqlParameterSource()
-                        .addValue(UserColumn.mobile, user.getMobile())
-                        .addValue(UserColumn.oauthId, user.getOauthId())
-                        .addValue(UserColumn.role, UserRole.CUSTOMER.name());
-
-                int result = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
-                if (result > 0) {
+                Number responseValue = insertUser(userModel);
+                if (responseValue != null && responseValue.intValue() > 0) {
                     priority = Priority.LOW;
                     response.setCode(ErrorLog.PDNA1163);
                     response.setMessage(ErrorLog.PlaceDetailNotAvailable);
+                    user.setId(responseValue.intValue());
                     user.setRole(UserRole.CUSTOMER);
                     userPlaceModel.setUserModel(user);
                     response.setData(userPlaceModel);
@@ -101,8 +95,29 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), user.getMobile(), user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), null, user.toString(), priority));
         return response;
+    }
+
+    private Number insertUser(UserModel userModel){
+        if(userModel.getRole() == null)
+            userModel.setRole(UserRole.CUSTOMER);
+
+        try {
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.mobile, userModel.getMobile())
+                    .addValue(UserColumn.oauthId, userModel.getOauthId())
+                    .addValue(UserColumn.role, userModel.getRole().name())
+                    .addValue(UserColumn.isDelete, 0);
+
+            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+            simpleJdbcInsert.withTableName(UserColumn.tableName).usingGeneratedKeyColumns(UserColumn.id);
+            return simpleJdbcInsert.executeAndReturnKey(parameters);
+        }
+        catch (Exception e){
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        return null;
     }
 
     public Response<UserShopListModel> verifySeller(UserModel user) {
@@ -121,7 +136,7 @@ public class UserDao {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
             if (userModel != null && !userModel.getRole().equals(UserRole.CUSTOMER.name())) {
-                response = getShopByMobile(userModel);
+                response = getShopByUserId(userModel);
                 priority = Priority.LOW;
             } else
                 response.setCode(ErrorLog.UDNU1155);
@@ -131,7 +146,7 @@ public class UserDao {
             response.setCode(ErrorLog.CE1154);
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), user.getMobile(), user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), null, user.toString(), priority));
         return response;
     }
 
@@ -142,8 +157,8 @@ public class UserDao {
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(Column.UserInviteColumn.mobile, mobile)
-                    .addValue(Column.UserInviteColumn.shopId, shopId);
+                    .addValue(Column.UserInviteColumn.shopId, shopId)
+                    .addValue(Column.UserInviteColumn.mobile, mobile);
 
             try {
                 userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
@@ -165,7 +180,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, mobile, mobile, null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, mobile, null, shopId.toString(), priority));
         return response;
     }
 
@@ -206,7 +221,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), null, userShopModel.toString(), priority));
         return response;
     }
 
@@ -217,22 +232,16 @@ public class UserDao {
 
         try {
             if (inviteModelResponse.getCode().equals(CodeSuccess) && inviteModelResponse.getMessage().equals(Success)) {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserColumn.mobile, userShopModel.getUserModel().getMobile())
-                        .addValue(UserColumn.oauthId, userShopModel.getUserModel().getOauthId())
-                        .addValue(UserColumn.role, inviteModelResponse.getData().getUserModel().getRole().name());
-
-                int responseValue = 0;
-                try {
-                    responseValue = namedParameterJdbcTemplate.update(UserQuery.insertUser, parameters);
-                } catch (Exception e) {
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                } finally {
-                    if (responseValue > 0) {
-                        response = updateShop(userShopModel);
-                        priority = Priority.LOW;
-                    } else {
-                        Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getMobile(), inviteModelResponse.getData().getUserModel().getRole());
+                userShopModel.getUserModel().setRole(inviteModelResponse.getData().getUserModel().getRole());
+                Number responseValue = insertUser(userShopModel.getUserModel());
+                if (responseValue != null && responseValue.intValue() > 0) {
+                    userShopModel.getUserModel().setId(responseValue.intValue());
+                    response = updateShop(userShopModel);
+                    priority = Priority.LOW;
+                } else {
+                    Response<UserModel> userModelResponse = getUserByMobile(userShopModel.getUserModel().getMobile());
+                    if(userModelResponse != null) {
+                        Response<String> updateRoleResponse = updateRole(userModelResponse.getData().getId(), inviteModelResponse.getData().getUserModel().getRole());
                         if (updateRoleResponse.getCode().equals(CodeSuccess) && updateRoleResponse.getMessage().equals(Success)) {
                             response = updateShop(userShopModel);
                             priority = Priority.LOW;
@@ -241,6 +250,10 @@ public class UserDao {
                             response.setMessage(UserDetailNotUpdated);
                         }
                     }
+                    else{
+                        response.setCode(ErrorLog.UDNA1262);
+                        response.setMessage(UserDetailNotAvailable);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -248,21 +261,21 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getMobile(), null, userShopModel.getUserModel().getMobile(), priority));
         return response;
     }
 
     /**************************************************/
 
-    public Response<UserPlaceModel> getPlaceByMobile(UserModel userModel) {
+    public Response<UserPlaceModel> getPlaceByUserId(UserModel userModel) {
         Response<UserPlaceModel> response = new Response<>();
         UserPlaceModel userPlaceModel = null;
 
         SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue(UserPlaceColumn.mobile, userModel.getMobile());
+                .addValue(UserPlaceColumn.userId, userModel.getId());
 
         try {
-            userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserPlaceQuery.getPlaceByMobile, parameters, UserPlaceRowMapperLambda.userPlaceRowMapperLambda);
+            userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserPlaceQuery.getPlaceByUserId, parameters, UserPlaceRowMapperLambda.userPlaceRowMapperLambda);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
@@ -278,6 +291,28 @@ public class UserDao {
                 response.setData(userPlaceModel);
             } else
                 response.setMessage(ErrorLog.PlaceDetailNotAvailable);
+        }
+
+        return response;
+    }
+
+    public Response<UserModel> getUserById(Integer id) {
+        Response<UserModel> response = new Response<>();
+        UserModel userModel = null;
+
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue(UserColumn.id, id);
+
+        try {
+            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserById, parameters, UserRowMapperLambda.userRowMapperLambda);
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            if (userModel != null) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(userModel);
+            }
         }
 
         return response;
@@ -305,17 +340,17 @@ public class UserDao {
         return response;
     }
 
-    public Response<UserShopListModel> getShopByMobile(UserModel userModel) {
+    public Response<UserShopListModel> getShopByUserId(UserModel userModel) {
         Response<UserShopListModel> response = new Response<>();
         List<ShopModel> shopModelList = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.mobile, userModel.getMobile());
+                    .addValue(UserShopColumn.userId, userModel.getId());
 
             try {
-                shopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByMobile, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
+                shopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByUserId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
@@ -414,7 +449,8 @@ public class UserDao {
                 SqlParameterSource parameters = new MapSqlParameterSource()
                         .addValue(UserColumn.name, user.getName())
                         .addValue(UserColumn.mobile, user.getMobile())
-                        .addValue(UserColumn.email, user.getEmail());
+                        .addValue(UserColumn.email, user.getEmail())
+                        .addValue(UserColumn.id, user.getId());
 
                 int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
                 if (result > 0) {
@@ -433,16 +469,16 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), user.getMobile(), user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), user.getId(), user.toString(), priority));
         return response;
     }
 
-    public Response<String> updateRole(String mobile, UserRole role) {
+    public Response<String> updateRole(Integer id, UserRole role) {
         Response<String> response = new Response<>();
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserColumn.mobile, mobile)
+                    .addValue(UserColumn.id, id)
                     .addValue(UserColumn.role, role.name());
 
             int result = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
@@ -462,7 +498,7 @@ public class UserDao {
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserPlaceColumn.mobile, userPlaceModel.getUserModel().getMobile())
+                    .addValue(UserPlaceColumn.userId, userPlaceModel.getUserModel().getId())
                     .addValue(UserPlaceColumn.placeId, userPlaceModel.getPlaceModel().getId());
 
             int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceByMobile, parameters);
@@ -483,10 +519,10 @@ public class UserDao {
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.mobile, userShopModel.getUserModel().getMobile())
+                    .addValue(UserShopColumn.userId, userShopModel.getUserModel().getId())
                     .addValue(UserShopColumn.shopId, userShopModel.getShopModel().getId());
 
-            int result = namedParameterJdbcTemplate.update(UserShopQuery.updateShopByMobile, parameters);
+            int result = namedParameterJdbcTemplate.update(UserShopQuery.updateShopById, parameters);
             if (result <= 0)
                 namedParameterJdbcTemplate.update(UserShopQuery.insertUserShop, parameters);
 
@@ -527,11 +563,11 @@ public class UserDao {
             }
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userPlaceModel.getUserModel().getMobile(), userPlaceModel.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString(), priority));
         return response;
     }
 
-    public Response<String> deleteSeller(Integer shopId, String mobile, RequestHeaderModel requestHeaderModel) {
+    public Response<String> deleteSeller(Integer shopId, Integer userId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
 
@@ -544,7 +580,7 @@ public class UserDao {
                 response.setData(ErrorLog.InvalidHeader);
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserShopColumn.mobile, mobile)
+                        .addValue(UserShopColumn.userId, userId)
                         .addValue(UserShopColumn.shopId, shopId);
 
                 int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
@@ -564,7 +600,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), mobile, null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userId, null, priority));
         return response;
     }
 
@@ -604,7 +640,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userShopModel.getUserModel().getMobile(), null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), null, userShopModel.toString(), priority));
         return response;
     }
 

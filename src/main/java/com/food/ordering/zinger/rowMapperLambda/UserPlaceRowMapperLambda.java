@@ -5,7 +5,7 @@ import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserPlaceModel;
 import org.springframework.jdbc.core.RowMapper;
 
-import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.mobile;
+import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.userId;
 import static com.food.ordering.zinger.constant.Column.UserPlaceColumn.placeId;
 
 public class UserPlaceRowMapperLambda {
@@ -14,7 +14,7 @@ public class UserPlaceRowMapperLambda {
         UserPlaceModel userPlaceModel = new UserPlaceModel();
 
         UserModel userModel = new UserModel();
-        userModel.setMobile(rs.getString(mobile));
+        userModel.setId(rs.getInt(userId));
         userPlaceModel.setUserModel(userModel);
 
         PlaceModel placeModel = new PlaceModel();

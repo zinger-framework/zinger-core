@@ -24,7 +24,7 @@ public class ApiConfig {
         public static final String BASE_URL = "/order";
         public static final String insertOrder = EMPTY_QUOTES;
         public static final String placeOrder = "/place/{orderId}";
-        public static final String getOrderByMobile = "/customer/{mobile}/{pageNum}/{pageCount}";
+        public static final String getOrderByUserId = "/customer/{userId}/{pageNum}/{pageCount}";
         public static final String getOrderByShopIdPagination = "/seller/{shopId}/{pageNum}/{pageCount}";
         public static final String getOrderByShopId = "/seller/{shopId}";
         public static final String getOrderById = "/{id}";
@@ -43,7 +43,7 @@ public class ApiConfig {
         public static final String getSellerByShopId = "/seller/{shopId}";
         public static final String updateUser = EMPTY_QUOTES;
         public static final String updateUserPlaceData = "/place";
-        public static final String deleteSeller = "/seller/{shopId}/{mobile}";
+        public static final String deleteSeller = "/seller/{shopId}/{userId}";
     }
 
     public static class NotifyApi {

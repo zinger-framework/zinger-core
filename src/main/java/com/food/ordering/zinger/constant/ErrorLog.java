@@ -25,7 +25,6 @@ public class ErrorLog {
     public static final String PlaceDetailNotUpdated = "Place detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Order detail not updated";
-    public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
     public static final String ItemDetailNotUpdated = "Item detail not updated";
 
     public static final String UserDetailNotDeleted = "User detail not deleted";
@@ -160,7 +159,7 @@ public class ErrorLog {
     // Order Controller Error Code 1261-1300
 
     public static final Integer CE1261 = 1261;
-    public static final Integer OIDNU1262 = 1262;
+    public static final Integer UDNA1262 = 1262;
     public static final Integer ODNU1263 = 1263;
     public static final Integer TDNU1264 = 1264;
     public static final Integer SDNA1265 = 1265;

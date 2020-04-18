@@ -3,6 +3,7 @@ package com.food.ordering.zinger.model;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 
 public class UserModel {
+    private Integer id;
     private String mobile;
     private String name;
     private String email;
@@ -10,6 +11,14 @@ public class UserModel {
     private UserRole role;
 
     public UserModel() {
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getMobile() {

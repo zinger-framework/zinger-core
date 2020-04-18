@@ -9,6 +9,7 @@ import static com.food.ordering.zinger.constant.Column.UserColumn.*;
 public class UserRowMapperLambda {
     public static final RowMapper<UserModel> userRowMapperLambda = (rs, rownum) -> {
         UserModel userModel = new UserModel();
+        userModel.setId(rs.getInt(id));
         userModel.setMobile(rs.getString(mobile));
         userModel.setName(rs.getString(name));
         userModel.setEmail(rs.getString(email));

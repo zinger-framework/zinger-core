@@ -42,13 +42,13 @@ public class Query {
                 COMMA_COLON + ShopLogColumn.priority + RIGHT_PARANTHESIS;
 
         public static final String insertUserLog = INSERT_INTO + UserLogColumn.tableName + LEFT_PARANTHESIS +
-                UserLogColumn.usersMobile + COMMA +
+                UserLogColumn.id + COMMA +
                 UserLogColumn.errorCode + COMMA +
                 UserLogColumn.mobile + COMMA +
                 UserLogColumn.message + COMMA +
                 UserLogColumn.updatedValue + COMMA +
                 UserLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserLogColumn.usersMobile +
+                COLON + UserLogColumn.id +
                 COMMA_COLON + UserLogColumn.errorCode +
                 COMMA_COLON + UserLogColumn.mobile +
                 COMMA_COLON + UserLogColumn.message +
@@ -268,14 +268,14 @@ public class Query {
 
         public static final String insertOrder = INSERT_INTO + OrderColumn.tableName + LEFT_PARANTHESIS +
                 OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
+                OrderColumn.userId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.price + COMMA +
                 OrderColumn.deliveryPrice + COMMA +
                 OrderColumn.deliveryLocation + COMMA +
                 OrderColumn.cookingInfo + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + OrderColumn.id +
-                COMMA_COLON + OrderColumn.mobile +
+                COMMA_COLON + OrderColumn.userId +
                 COMMA_COLON + OrderColumn.shopId +
                 COMMA_COLON + OrderColumn.price +
                 COMMA_COLON + OrderColumn.deliveryPrice +
@@ -284,7 +284,7 @@ public class Query {
 
         public static final String getOrderByOrderId = SELECT +
                 OrderColumn.id + COMMA +
-                OrderColumn.mobile + COMMA +
+                OrderColumn.userId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.date + COMMA +
                 OrderColumn.status + COMMA +
@@ -297,10 +297,10 @@ public class Query {
                 OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
-        public static final String getOrderByMobile = SELECT +
+        public static final String getOrderByUserId = SELECT +
                 OrderColumn.id +
                 FROM + OrderColumn.tableName + WHERE +
-                OrderColumn.mobile + EQUAL_COLON + OrderColumn.mobile +
+                OrderColumn.userId + EQUAL_COLON + OrderColumn.userId +
                 orderByDesc;
 
         public static final String getOrderByShopIdPagination = SELECT +
@@ -341,7 +341,7 @@ public class Query {
         public static String getOrderByStatus(List<OrderStatus> orderStatusList) {
             StringBuilder getOrderByStatus = new StringBuilder(SELECT +
                     OrderColumn.id + COMMA +
-                    OrderColumn.mobile + COMMA +
+                    OrderColumn.userId + COMMA +
                     OrderColumn.shopId + COMMA +
                     OrderColumn.date + COMMA +
                     OrderColumn.status + COMMA +
@@ -524,7 +524,7 @@ public class Query {
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
 
-        public static final String getTransactionByMobile = SELECT +
+        public static final String getTransactionByUserId = SELECT +
                 TransactionColumn.transactionId + COMMA +
                 TransactionColumn.orderId + COMMA +
                 TransactionColumn.bankTransactionId + COMMA +
@@ -536,7 +536,7 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS + OrderQuery.getOrderByMobile + RIGHT_PARANTHESIS +
+                LEFT_PARANTHESIS + OrderQuery.getOrderByUserId + RIGHT_PARANTHESIS +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopIdPagination = SELECT +
@@ -578,33 +578,35 @@ public class Query {
 
     public static final class UserPlaceQuery {
         public static final String insertUserPlace = INSERT_INTO + UserPlaceColumn.tableName + LEFT_PARANTHESIS +
-                UserPlaceColumn.mobile + COMMA +
+                UserPlaceColumn.userId + COMMA +
                 UserPlaceColumn.placeId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserPlaceColumn.mobile +
+                COLON + UserPlaceColumn.userId +
                 COMMA_COLON + UserPlaceColumn.placeId + RIGHT_PARANTHESIS;
 
-        public static final String getPlaceByMobile = SELECT +
-                UserPlaceColumn.mobile + COMMA +
+        public static final String getPlaceByUserId = SELECT +
+                UserPlaceColumn.userId + COMMA +
                 UserPlaceColumn.placeId + FROM + UserPlaceColumn.tableName + WHERE +
-                UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
+                UserPlaceColumn.userId + EQUAL_COLON + UserPlaceColumn.userId;
 
         public static final String updatePlaceByMobile = UPDATE + UserPlaceColumn.tableName + SET +
                 UserPlaceColumn.placeId + EQUAL_COLON + UserPlaceColumn.placeId + WHERE +
-                UserPlaceColumn.mobile + EQUAL_COLON + UserPlaceColumn.mobile;
+                UserPlaceColumn.userId + EQUAL_COLON + UserPlaceColumn.userId;
     }
 
     public static final class UserQuery {
         public static final String notDeleted = UserColumn.isDelete + " = 0";
 
-        public static final String insertUser = INSERT_INTO + UserColumn.tableName + LEFT_PARANTHESIS +
+        public static final String getUserById = SELECT +
+                UserColumn.id + COMMA +
                 UserColumn.oauthId + COMMA +
+                UserColumn.name + COMMA +
+                UserColumn.email + COMMA +
                 UserColumn.mobile + COMMA +
-                UserColumn.role + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserColumn.oauthId +
-                COMMA_COLON + UserColumn.mobile +
-                COMMA_COLON + UserColumn.role + RIGHT_PARANTHESIS;
+                UserColumn.role + FROM + UserColumn.tableName + WHERE +
+                UserColumn.id + EQUAL_COLON + UserColumn.id;
 
         public static final String getUserByMobile = SELECT +
+                UserColumn.id + COMMA +
                 UserColumn.oauthId + COMMA +
                 UserColumn.name + COMMA +
                 UserColumn.email + COMMA +
@@ -612,14 +614,8 @@ public class Query {
                 UserColumn.role + FROM + UserColumn.tableName + WHERE +
                 UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
 
-        public static final String loginUserByMobileOauth = getUserByMobile + AND +
-                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
-                notDeleted;
-
-        public static final String validateUser = loginUserByMobileOauth + AND +
-                UserColumn.role + EQUAL_COLON + UserColumn.role;
-
         public static final String getSellerByShopId = SELECT +
+                UserColumn.id + COMMA +
                 UserColumn.oauthId + COMMA +
                 UserColumn.name + COMMA +
                 UserColumn.email + COMMA +
@@ -627,43 +623,51 @@ public class Query {
                 UserColumn.role + FROM + UserColumn.tableName + WHERE +
                 notDeleted + AND +
                 UserColumn.role + EQUALS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + AND +
-                UserColumn.mobile + IN + LEFT_PARANTHESIS + SELECT +
-                UserShopColumn.mobile + FROM + UserShopColumn.tableName + WHERE +
+                UserColumn.id + IN + LEFT_PARANTHESIS + SELECT +
+                UserShopColumn.userId + FROM + UserShopColumn.tableName + WHERE +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
 
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
-                UserColumn.email + EQUAL_COLON + UserColumn.email + WHERE +
-                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
+                UserColumn.email + EQUAL_COLON + UserColumn.email + COMMA +
+                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + WHERE +
+                UserColumn.id + EQUAL_COLON + UserColumn.id;
 
         public static final String updateRole = UPDATE + UserColumn.tableName + SET +
                 UserColumn.role + EQUAL_COLON + UserColumn.role + WHERE +
-                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
+                UserColumn.id + EQUAL_COLON + UserColumn.id;
+
+        public static final String loginUserByMobileOauth = getUserByMobile + AND +
+                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
+                notDeleted;
+
+        public static final String validateUser = loginUserByMobileOauth + AND +
+                UserColumn.role + EQUAL_COLON + UserColumn.role;
     }
 
     public static final class UserShopQuery {
         public static final String insertUserShop = INSERT_INTO + UserShopColumn.tableName + LEFT_PARANTHESIS +
-                UserShopColumn.mobile + COMMA +
+                UserShopColumn.userId + COMMA +
                 UserShopColumn.shopId + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + UserShopColumn.mobile +
+                COLON + UserShopColumn.userId +
                 COMMA_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
 
         public static final String getUserByShopId = SELECT +
-                UserShopColumn.mobile + COMMA +
+                UserShopColumn.userId + COMMA +
                 UserShopColumn.shopId + FROM + UserShopColumn.tableName + WHERE +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId;
 
-        public static final String getShopByMobile = SELECT +
-                UserShopColumn.mobile + COMMA +
+        public static final String getShopByUserId = SELECT +
+                UserShopColumn.userId + COMMA +
                 UserShopColumn.shopId + FROM + UserShopColumn.tableName + WHERE +
-                UserShopColumn.mobile + EQUAL_COLON + UserShopColumn.mobile;
+                UserShopColumn.userId + EQUAL_COLON + UserShopColumn.userId;
 
-        public static final String updateShopByMobile = UPDATE + UserShopColumn.tableName + SET +
+        public static final String updateShopById = UPDATE + UserShopColumn.tableName + SET +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + WHERE +
-                UserShopColumn.mobile + EQUAL_COLON + UserShopColumn.mobile;
+                UserShopColumn.userId + EQUAL_COLON + UserShopColumn.userId;
 
         public static final String deleteUser = DELETE_FROM + UserShopColumn.tableName + WHERE +
-                UserShopColumn.mobile + EQUAL_COLON + UserShopColumn.mobile + AND +
+                UserShopColumn.userId + EQUAL_COLON + UserShopColumn.userId + AND +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId;
     }
 }
