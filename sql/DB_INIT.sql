@@ -84,7 +84,7 @@ CREATE TABLE item
 
 CREATE TABLE orders
 (
-    id                       INT AUTO_INCREMENT NOT NULL,
+    id                       INT AUTO_INCREMENT,
     user_id                  INT                NOT NULL,
     shop_id                  INT                NOT NULL,
     date                     TIMESTAMP                       DEFAULT CURRENT_TIMESTAMP,
