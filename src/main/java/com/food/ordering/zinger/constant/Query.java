@@ -152,6 +152,53 @@ public class Query {
 
     public static final class ItemQuery {
         public static final String notDeleted = ItemColumn.isDelete + " = 0";
+        public static final String getItemById = SELECT +
+                ItemColumn.id + COMMA +
+                ItemColumn.name + COMMA +
+                ItemColumn.price + COMMA +
+                ItemColumn.photoUrl + COMMA +
+                ItemColumn.category + COMMA +
+                ItemColumn.shopId + COMMA +
+                ItemColumn.isVeg + COMMA +
+                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
+                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
+        public static final String getItemsByShopId = SELECT +
+                ItemColumn.id + COMMA +
+                ItemColumn.name + COMMA +
+                ItemColumn.price + COMMA +
+                ItemColumn.photoUrl + COMMA +
+                ItemColumn.category + COMMA +
+                ItemColumn.shopId + COMMA +
+                ItemColumn.isVeg + COMMA +
+                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
+                ItemColumn.shopId + EQUAL_COLON + ItemColumn.shopId + AND +
+                notDeleted;
+        public static final String getItemsByName = SELECT +
+                ItemColumn.id + COMMA +
+                ItemColumn.name + COMMA +
+                ItemColumn.price + COMMA +
+                ItemColumn.photoUrl + COMMA +
+                ItemColumn.category + COMMA +
+                ItemColumn.shopId + COMMA +
+                ItemColumn.isVeg + COMMA +
+                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
+                ItemColumn.name + LIKE + COLON + ItemColumn.name + AND +
+                notDeleted + AND +
+                ItemColumn.shopId + IN + LEFT_PARANTHESIS + ShopQuery.getShopIdByPlaceId + RIGHT_PARANTHESIS;
+        public static final String updateItem = UPDATE + ItemColumn.tableName + SET +
+                ItemColumn.name + EQUAL_COLON + ItemColumn.name + COMMA +
+                ItemColumn.price + EQUAL_COLON + ItemColumn.price + COMMA +
+                ItemColumn.photoUrl + EQUAL_COLON + ItemColumn.photoUrl + COMMA +
+                ItemColumn.category + EQUAL_COLON + ItemColumn.category + COMMA +
+                ItemColumn.isVeg + EQUAL_COLON + ItemColumn.isVeg + COMMA +
+                ItemColumn.isAvailable + EQUAL_COLON + ItemColumn.isAvailable + WHERE +
+                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
+        public static final String deleteItem = UPDATE + ItemColumn.tableName + SET +
+                ItemColumn.isDelete + " = 1" + WHERE +
+                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
+        public static final String unDeleteItem = UPDATE + ItemColumn.tableName + SET +
+                ItemColumn.isDelete + " = 0" + WHERE +
+                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
 
         public static String getInsertItem(List<ItemModel> itemModelList) {
             StringBuilder insertItem = new StringBuilder(INSERT_INTO + ItemColumn.tableName + LEFT_PARANTHESIS +
@@ -177,62 +224,16 @@ public class Query {
 
             return insertItem.toString();
         }
-
-        public static final String getItemById = SELECT +
-                ItemColumn.id + COMMA +
-                ItemColumn.name + COMMA +
-                ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + COMMA +
-                ItemColumn.shopId + COMMA +
-                ItemColumn.isVeg + COMMA +
-                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
-                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
-
-        public static final String getItemsByShopId = SELECT +
-                ItemColumn.id + COMMA +
-                ItemColumn.name + COMMA +
-                ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + COMMA +
-                ItemColumn.shopId + COMMA +
-                ItemColumn.isVeg + COMMA +
-                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
-                ItemColumn.shopId + EQUAL_COLON + ItemColumn.shopId + AND +
-                notDeleted;
-
-        public static final String getItemsByName = SELECT +
-                ItemColumn.id + COMMA +
-                ItemColumn.name + COMMA +
-                ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + COMMA +
-                ItemColumn.shopId + COMMA +
-                ItemColumn.isVeg + COMMA +
-                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
-                ItemColumn.name + LIKE + COLON + ItemColumn.name + AND +
-                notDeleted + AND +
-                ItemColumn.shopId + IN + LEFT_PARANTHESIS + ShopQuery.getShopIdByPlaceId + RIGHT_PARANTHESIS;
-
-        public static final String updateItem = UPDATE + ItemColumn.tableName + SET +
-                ItemColumn.name + EQUAL_COLON + ItemColumn.name + COMMA +
-                ItemColumn.price + EQUAL_COLON + ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + EQUAL_COLON + ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + EQUAL_COLON + ItemColumn.category + COMMA +
-                ItemColumn.isVeg + EQUAL_COLON + ItemColumn.isVeg + COMMA +
-                ItemColumn.isAvailable + EQUAL_COLON + ItemColumn.isAvailable + WHERE +
-                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
-
-        public static final String deleteItem = UPDATE + ItemColumn.tableName + SET +
-                ItemColumn.isDelete + " = 1" + WHERE +
-                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
-
-        public static final String unDeleteItem = UPDATE + ItemColumn.tableName + SET +
-                ItemColumn.isDelete + " = 0" + WHERE +
-                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
     }
 
     public static final class OrderItemQuery {
+        public static final String getItemByOrderId = SELECT +
+                orderId + COMMA +
+                itemId + COMMA +
+                OrderItemColumn.quantity + COMMA +
+                OrderItemColumn.price + FROM + OrderItemColumn.tableName + WHERE +
+                orderId + EQUAL_COLON + orderId;
+
         public static String getInsertOrder(List<OrderItemModel> orderItemModelList) {
             StringBuilder insertOrderItem = new StringBuilder(INSERT_INTO + OrderItemColumn.tableName + LEFT_PARANTHESIS +
                     orderId + COMMA +
@@ -253,13 +254,6 @@ public class Query {
 
             return insertOrderItem.toString();
         }
-
-        public static final String getItemByOrderId = SELECT +
-                orderId + COMMA +
-                itemId + COMMA +
-                OrderItemColumn.quantity + COMMA +
-                OrderItemColumn.price + FROM + OrderItemColumn.tableName + WHERE +
-                orderId + EQUAL_COLON + orderId;
     }
 
     public static final class OrderQuery {
@@ -554,7 +548,7 @@ public class Query {
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
                 LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS +
-                orderByIdDesc+
+                orderByIdDesc +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopId = SELECT +
@@ -569,7 +563,7 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS + OrderQuery.getOrderByShopId + RIGHT_PARANTHESIS+
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopId + RIGHT_PARANTHESIS +
                 orderByIdDesc;
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +

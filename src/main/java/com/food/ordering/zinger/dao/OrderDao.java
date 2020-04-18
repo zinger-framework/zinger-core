@@ -109,15 +109,14 @@ public class OrderDao {
                         } else {
                             orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
                             Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
-                            if(orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                                 response.setCode(orderInsertResponse.getCode());
                                 response.setMessage(orderInsertResponse.getMessage());
 
                                 transactionTokenModel.setOrderId(responseValue.intValue());
                                 transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
                                 response.setData(transactionTokenModel);
-                            }
-                            else {
+                            } else {
                                 response.setCode(ErrorLog.OIDNU1296);
                                 response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
                             }
@@ -464,7 +463,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(),shopId, shopId.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -526,7 +525,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(),orderId, null, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderId, null, priority));
         return response;
     }
 
@@ -944,7 +943,7 @@ public class OrderDao {
         transactionModel.setBankName("HDFC");
         transactionModel.setPaymentMode("UPI");
         transactionModel.setChecksumHash("XXXXX");
-        transactionModel.getOrderModel(). setId(orderId);
+        transactionModel.getOrderModel().setId(orderId);
 
         transactionModelResponse.setCode(ErrorLog.CodeSuccess);
         transactionModelResponse.setMessage(ErrorLog.Success);

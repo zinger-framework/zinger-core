@@ -18,7 +18,7 @@ public class ItemService {
 
     public Response<String> insertItem(List<ItemModel> itemModelList, String oauthId, Integer id, String role) {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        if(itemModelList != null && itemModelList.size()>0)
+        if (itemModelList != null && itemModelList.size() > 0)
             return itemDao.insertItem(itemModelList, requestHeaderModel);
         return new Response<>();
     }

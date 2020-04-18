@@ -13,7 +13,10 @@ import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.rowMapperLambda.*;
+import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
+import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -74,12 +77,12 @@ public class UserDao {
                 userPlaceModel.setUserModel(userModel);
                 Response<UserPlaceModel> placeResponse = getPlaceByUserId(userModel);
                 priority = Priority.LOW;
-                if(placeResponse.getCode().equals(CodeSuccess)){
+                if (placeResponse.getCode().equals(CodeSuccess)) {
                     response.setCode(CodeSuccess);
                     response.setMessage(Success);
                     userPlaceModel.setPlaceModel(placeResponse.getData().getPlaceModel());
                     response.setData(userPlaceModel);
-                }else{
+                } else {
                     response.setCode(ErrorLog.PDNA1163);
                     response.setMessage(ErrorLog.PlaceDetailNotAvailable);
                     response.setData(userPlaceModel);
@@ -108,8 +111,8 @@ public class UserDao {
         return response;
     }
 
-    private Number insertUser(UserModel userModel){
-        if(userModel.getRole() == null)
+    private Number insertUser(UserModel userModel) {
+        if (userModel.getRole() == null)
             userModel.setRole(UserRole.CUSTOMER);
 
         try {
@@ -122,8 +125,7 @@ public class UserDao {
             SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
             simpleJdbcInsert.withTableName(UserColumn.tableName).usingGeneratedKeyColumns(UserColumn.id);
             return simpleJdbcInsert.executeAndReturnKey(parameters);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
         return null;
@@ -249,7 +251,7 @@ public class UserDao {
                     priority = Priority.LOW;
                 } else {
                     Response<UserModel> userModelResponse = getUserByMobile(userShopModel.getUserModel().getMobile());
-                    if(userModelResponse != null) {
+                    if (userModelResponse != null) {
                         Response<String> updateRoleResponse = updateRole(userModelResponse.getData().getId(), inviteModelResponse.getData().getUserModel().getRole());
                         if (updateRoleResponse.getCode().equals(CodeSuccess)) {
                             response = updateShop(userShopModel);
@@ -258,8 +260,7 @@ public class UserDao {
                             response.setCode(ErrorLog.UDNU1153);
                             response.setMessage(UserDetailNotUpdated);
                         }
-                    }
-                    else{
+                    } else {
                         response.setCode(ErrorLog.UDNA1262);
                         response.setMessage(UserDetailNotAvailable);
                     }
