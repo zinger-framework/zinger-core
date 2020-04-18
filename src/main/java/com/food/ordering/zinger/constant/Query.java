@@ -267,7 +267,6 @@ public class Query {
         public static final String pageCount = "pageCount";
 
         public static final String insertOrder = INSERT_INTO + OrderColumn.tableName + LEFT_PARANTHESIS +
-                OrderColumn.id + COMMA +
                 OrderColumn.userId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.price + COMMA +
@@ -475,6 +474,7 @@ public class Query {
 
         public static final String pageNum = "pageNum";
         public static final String pageCount = "pageCount";
+        public static final String orderByIdDesc = ORDER_BY + TransactionColumn.orderId + DESC;
 
         public static final String insertTransaction = INSERT_INTO + TransactionColumn.tableName + LEFT_PARANTHESIS +
                 TransactionColumn.transactionId + COMMA +
@@ -537,6 +537,7 @@ public class Query {
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
                 LEFT_PARANTHESIS + OrderQuery.getOrderByUserId + RIGHT_PARANTHESIS +
+                orderByIdDesc +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopIdPagination = SELECT +
@@ -552,6 +553,7 @@ public class Query {
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
                 LEFT_PARANTHESIS + OrderQuery.getOrderByShopIdPagination + RIGHT_PARANTHESIS +
+                orderByIdDesc+
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum;
 
         public static final String getTransactionByShopId = SELECT +
@@ -566,8 +568,8 @@ public class Query {
                 TransactionColumn.paymentMode + COMMA +
                 TransactionColumn.checksumHash + FROM + TransactionColumn.tableName + WHERE +
                 TransactionColumn.orderId + IN +
-                LEFT_PARANTHESIS + OrderQuery.getOrderByShopId + RIGHT_PARANTHESIS;
-
+                LEFT_PARANTHESIS + OrderQuery.getOrderByShopId + RIGHT_PARANTHESIS+
+                orderByIdDesc;
 
         public static final String updateTransaction = UPDATE + TransactionColumn.tableName + SET +
                 TransactionColumn.responseCode + EQUAL_COLON + TransactionColumn.responseCode + COMMA +

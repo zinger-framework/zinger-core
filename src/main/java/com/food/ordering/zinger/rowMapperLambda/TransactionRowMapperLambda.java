@@ -11,7 +11,7 @@ public class TransactionRowMapperLambda {
         TransactionModel transactionModel = new TransactionModel();
 
         OrderModel orderModel = new OrderModel();
-        orderModel.setId(rs.getString(orderId));
+        orderModel.setId(rs.getInt(orderId));
         transactionModel.setOrderModel(orderModel);
 
         transactionModel.setTransactionId(rs.getString(transactionId));

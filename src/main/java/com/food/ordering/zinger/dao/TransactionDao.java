@@ -48,7 +48,7 @@ public class TransactionDao {
         return response;
     }
 
-    public Response<TransactionModel> getTransactionByOrderId(String orderId) {
+    public Response<TransactionModel> getTransactionByOrderId(Integer orderId) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 

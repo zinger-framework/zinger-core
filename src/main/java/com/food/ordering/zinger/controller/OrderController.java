@@ -1,10 +1,7 @@
 package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.constant.Column.UserColumn;
-import com.food.ordering.zinger.model.OrderItemListModel;
-import com.food.ordering.zinger.model.OrderModel;
-import com.food.ordering.zinger.model.Response;
-import com.food.ordering.zinger.model.TransactionModel;
+import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -21,12 +18,12 @@ public class OrderController {
     OrderService orderService;
 
     @PostMapping(value = insertOrder)
-    public Response<String> insertOrder(@RequestBody OrderItemListModel orderItemList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+    public Response<TransactionTokenModel> insertOrder(@RequestBody OrderItemListModel orderItemList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.insertOrder(orderItemList, oauthId, mobile, role);
     }
 
     @PostMapping(value = placeOrder)
-    public Response<String> placeOrder(@PathVariable("orderId") String orderId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+    public Response<String> placeOrder(@PathVariable("orderId") Integer orderId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.placeOrder(orderId, oauthId, mobile, role);
     }
 
@@ -46,7 +43,7 @@ public class OrderController {
     }
 
     @GetMapping(value = getOrderById)
-    public Response<TransactionModel> getOrderById(@PathVariable("id") String id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
+    public Response<TransactionModel> getOrderById(@PathVariable("id") Integer id, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
         return orderService.getOrderById(id, oauthId, mobile, role);
     }
 

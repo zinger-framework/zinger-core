@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.dao;
 
+import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.OrderColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Constant;
@@ -19,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -64,14 +66,15 @@ public class OrderDao {
     @Autowired
     PaymentResponse paymentResponse;
 
-    public Response<String> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
+    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
         /*
          *   1. Verify the amount and availability of the items using verify order
          *   2. Generate the transaction token from payment gateway
          *   3. Insert the order
          * */
 
-        Response<String> response = new Response<>();
+        Response<TransactionTokenModel> response = new Response<>();
+        TransactionTokenModel transactionTokenModel = new TransactionTokenModel();
         Priority priority = Priority.HIGH;
 
         try {
@@ -90,39 +93,43 @@ public class OrderDao {
                         OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
 
                         MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                .addValue(OrderColumn.id, order.getId())
-                                .addValue(OrderColumn.id, order.getUserModel().getId())
+                                .addValue(userId, order.getUserModel().getId())
                                 .addValue(shopId, order.getShopModel().getId())
                                 .addValue(price, order.getPrice())
                                 .addValue(deliveryPrice, order.getDeliveryPrice())
                                 .addValue(deliveryLocation, order.getDeliveryLocation())
                                 .addValue(cookingInfo, order.getCookingInfo());
 
-                        int orderResult = namedParameterJdbcTemplate.update(OrderQuery.insertOrder, parameter);
-                        if (orderResult <= 0) {
+                        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+                        simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
+                        Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
+
+                        if (responseValue.intValue() <= 0) {
                             response.setCode(ErrorLog.ODNU1263);
                             response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                            response.setData(ErrorLog.TransactionTokenNotAvailable);
                         } else {
-                            response = insertOrderItem(orderItemListModel);
-                            response.setData(initiateTransactionResponse.getData());
+                            orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
+                            Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
+                            transactionTokenModel.setOrderId(responseValue.intValue());
+                            transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
+                            response.setCode(orderInsertResponse.getCode());
+                            response.setMessage(orderInsertResponse.getMessage());
+                            response.setData(transactionTokenModel);
                         }
                     } else {
                         response.setCode(ErrorLog.TIF1300);
                         response.setMessage(ErrorLog.TransactionInitiationFailed);
-                        response.setData(ErrorLog.TransactionTokenNotAvailable);
                     }
 
                 } else {
                     response.setCode(verifyOrderResponse.getCode());
                     response.setMessage(verifyOrderResponse.getMessage());
-                    response.setData(ErrorLog.TransactionTokenNotAvailable);
                 }
             }
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1261);
-            response.setData(ErrorLog.TransactionTokenNotAvailable);
+            response.setMessage(ErrorLog.TransactionTokenNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
@@ -132,7 +139,7 @@ public class OrderDao {
 
     public Response<String> insertOrderItem(OrderItemListModel orderItemModelList) {
         Response<String> response = new Response<>();
-        String orderId = orderItemModelList.getTransactionModel().getOrderModel().getId();
+        Integer orderId = orderItemModelList.getTransactionModel().getOrderModel().getId();
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource();
@@ -158,7 +165,7 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<String> placeOrder(String orderId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> placeOrder(Integer orderId, RequestHeaderModel requestHeaderModel) {
         /*
          *   1. verify the transaction status api and
          *   2. Insert the transaction in the transaction table
@@ -205,7 +212,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, orderId, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, orderId.toString(), priority));
         return response;
     }
 
@@ -451,7 +458,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), shopId.toString(), shopId.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(),shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -477,7 +484,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<TransactionModel> getOrderById(String orderId, RequestHeaderModel requestHeaderModel) {
+    public Response<TransactionModel> getOrderById(Integer orderId, RequestHeaderModel requestHeaderModel) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel;
         Priority priority = Priority.MEDIUM;
@@ -513,11 +520,11 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), id, null, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(),orderId, null, priority));
         return response;
     }
 
-    public Response<OrderModel> getOrderDetailById(String id) {
+    public Response<OrderModel> getOrderDetailById(Integer id) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
 
@@ -825,7 +832,7 @@ public class OrderDao {
         return response;
     }
 
-    public Response<TransactionModel> verifyOrder(String orderId, int flag) {
+    public Response<TransactionModel> verifyOrder(Integer orderId, int flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
@@ -864,7 +871,7 @@ public class OrderDao {
     public Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
         Response<String> response = new Response<>();
 
-        String orderId = orderModel.getId();
+        Integer orderId = orderModel.getId();
 
         //TODO: Implement API to get Transaction Token From Payment Gateway using OrderId & merchantId
         //String transactionToken = getTransactionToken(orderId, merchantId);
@@ -916,7 +923,7 @@ public class OrderDao {
 
     /**************************************************/
 
-    public Response<TransactionModel> getTransactionStatus(String orderId) {
+    public Response<TransactionModel> getTransactionStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
         //TODO: GET Transaction Status from Payment Gateway
@@ -933,7 +940,7 @@ public class OrderDao {
         transactionModel.setBankName("HDFC");
         transactionModel.setPaymentMode("UPI");
         transactionModel.setChecksumHash("XXXXX");
-        transactionModel.getOrderModel().setId(orderId);
+        transactionModel.getOrderModel(). setId(orderId);
 
         transactionModelResponse.setCode(ErrorLog.CodeSuccess);
         transactionModelResponse.setMessage(ErrorLog.Success);
@@ -941,7 +948,7 @@ public class OrderDao {
         return transactionModelResponse;
     }
 
-    public Response<TransactionModel> getRefundStatus(String orderId) {
+    public Response<TransactionModel> getRefundStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
         //TODO: GET Transaction Status from Payment Gateway

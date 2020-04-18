@@ -46,7 +46,7 @@ create table item_log (
 );
 
 create table orders_log (
-	id VARCHAR(16) DEFAULT NULL,
+	id INTEGER DEFAULT NULL,
     error_code INT NOT NULL,
 	mobile VARCHAR(10) NOT NULL,
 	message VARCHAR(128) NOT NULL,
