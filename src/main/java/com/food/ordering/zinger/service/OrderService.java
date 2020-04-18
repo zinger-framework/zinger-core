@@ -13,43 +13,43 @@ public class OrderService {
     @Autowired
     OrderDao orderDao;
 
-    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.insertOrder(orderItemListModel, requestHeaderModel);
     }
 
-    public Response<String> placeOrder(Integer orderId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> placeOrder(Integer orderId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.placeOrder(orderId, requestHeaderModel);
     }
 
-    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, String oauthId, String mobileRh, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.getOrderByUserId(userId, pageNum, pageCount, requestHeaderModel);
     }
 
-    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount, requestHeaderModel);
     }
 
-    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.getOrderByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<TransactionModel> getOrderById(Integer id, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<TransactionModel> getOrderById(Integer id, String oauthId, Integer idRh, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, idRh, role);
         return orderDao.getOrderById(id, requestHeaderModel);
     }
 
-    public Response<String> updateOrderRating(OrderModel orderModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateOrderRating(OrderModel orderModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.updateOrderRating(orderModel, requestHeaderModel);
     }
 
-    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateOrderStatus(OrderModel orderModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return orderDao.updateOrderStatus(orderModel, requestHeaderModel);
     }
 }

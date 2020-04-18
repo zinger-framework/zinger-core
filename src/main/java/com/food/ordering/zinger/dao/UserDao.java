@@ -48,7 +48,7 @@ public class UserDao {
     NotifyDao notifyDao;
 
     @Autowired
-    UtilsDao utilsDao;
+    InterceptorDao interceptorDao;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -95,7 +95,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), null, user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
         return response;
     }
 
@@ -146,7 +146,7 @@ public class UserDao {
             response.setCode(ErrorLog.CE1154);
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, user.getMobile(), null, user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, null, null, user.toString(), priority));
         return response;
     }
 
@@ -180,7 +180,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, mobile, null, shopId.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, null, null, shopId.toString(), priority));
         return response;
     }
 
@@ -190,7 +190,7 @@ public class UserDao {
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.IH1027);
                     response.setData(ErrorLog.InvalidHeader);
                 } else {
@@ -221,7 +221,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), null, userShopModel.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
         return response;
     }
 
@@ -231,7 +231,7 @@ public class UserDao {
         Response<UserInviteModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
 
         try {
-            if (inviteModelResponse.getCode().equals(CodeSuccess) && inviteModelResponse.getMessage().equals(Success)) {
+            if (inviteModelResponse.getCode().equals(CodeSuccess)) {
                 userShopModel.getUserModel().setRole(inviteModelResponse.getData().getUserModel().getRole());
                 Number responseValue = insertUser(userShopModel.getUserModel());
                 if (responseValue != null && responseValue.intValue() > 0) {
@@ -242,7 +242,7 @@ public class UserDao {
                     Response<UserModel> userModelResponse = getUserByMobile(userShopModel.getUserModel().getMobile());
                     if(userModelResponse != null) {
                         Response<String> updateRoleResponse = updateRole(userModelResponse.getData().getId(), inviteModelResponse.getData().getUserModel().getRole());
-                        if (updateRoleResponse.getCode().equals(CodeSuccess) && updateRoleResponse.getMessage().equals(Success)) {
+                        if (updateRoleResponse.getCode().equals(CodeSuccess)) {
                             response = updateShop(userShopModel);
                             priority = Priority.LOW;
                         } else {
@@ -261,7 +261,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getMobile(), null, userShopModel.getUserModel().getMobile(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getId(), null, userShopModel.getUserModel().getMobile(), priority));
         return response;
     }
 
@@ -401,7 +401,7 @@ public class UserDao {
                 userModelResponse.setCode(ErrorLog.IH1024);
                 userModelResponse.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 userModelResponse.setCode(ErrorLog.IH1023);
                 userModelResponse.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -429,7 +429,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getMobile(), null, shopId.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getId(), null, shopId.toString(), priority));
         return userModelResponse;
     }
 
@@ -440,7 +440,7 @@ public class UserDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1051);
                 response.setMessage(ErrorLog.Failure);
                 response.setData(ErrorLog.InvalidHeader);
@@ -469,7 +469,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), user.getId(), user.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), user.getId(), user.toString(), priority));
         return response;
     }
 
@@ -540,7 +540,7 @@ public class UserDao {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
-        if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+        if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.IH1052);
             response.setMessage(ErrorLog.InvalidHeader);
             priority = Priority.HIGH;
@@ -563,7 +563,7 @@ public class UserDao {
             }
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString(), priority));
         return response;
     }
 
@@ -575,7 +575,7 @@ public class UserDao {
             if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
                 response.setCode(ErrorLog.IH1025);
                 response.setData(ErrorLog.InvalidHeader);
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1026);
                 response.setData(ErrorLog.InvalidHeader);
             } else {
@@ -600,7 +600,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), userId, null, priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userId, null, priority));
         return response;
     }
 
@@ -610,7 +610,7 @@ public class UserDao {
 
         try {
             if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+                if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                     response.setCode(ErrorLog.IH1050);
                     response.setData(ErrorLog.InvalidHeader);
                 } else {
@@ -640,7 +640,7 @@ public class UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getMobile(), null, userShopModel.toString(), priority));
+        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString(), priority));
         return response;
     }
 

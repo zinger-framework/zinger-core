@@ -19,7 +19,7 @@ public class RatingDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    UtilsDao utilsDao;
+    InterceptorDao interceptorDao;
 
     public Response<RatingModel> getRatingByShopId(ShopModel shopModel) {
         Response<RatingModel> response = new Response<>();
@@ -53,7 +53,7 @@ public class RatingDao {
             shopModel.setId(shopId);
             Response<RatingModel> ratingModelResponse = getRatingByShopId(shopModel);
 
-            if (ratingModelResponse.getCode().equals(ErrorLog.CodeSuccess) && ratingModelResponse.getMessage().equals(ErrorLog.Success)) {
+            if (ratingModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 RatingModel ratingModel = ratingModelResponse.getData();
                 Double oldRating = ratingModel.getRating() * ratingModel.getUserCount();
                 Double newRating = (oldRating + rating) / (ratingModel.getUserCount() + 1);

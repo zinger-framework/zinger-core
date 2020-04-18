@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 public class ItemLogModel {
     private Integer id;
     private Integer errorCode;
-    private String mobile;
+    private Integer userId;
     private String message;
     private String updatedValue;
 
@@ -18,10 +18,10 @@ public class ItemLogModel {
 
     private Priority priority;
 
-    public ItemLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
+    public ItemLogModel(Response response, Integer userId, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
-        this.mobile = mobile;
+        this.userId = userId;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
         this.priority = priority;
@@ -46,12 +46,12 @@ public class ItemLogModel {
         this.errorCode = errorCode;
     }
 
-    public String getMobile() {
-        return mobile;
+    public Integer getUserId() {
+        return userId;
     }
 
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
+    public void setUserId(Integer userId) {
+        this.userId = userId;
     }
 
     public String getMessage() {
@@ -91,11 +91,11 @@ public class ItemLogModel {
         return "ItemLogModel{" +
                 "id=" + id +
                 ", errorCode=" + errorCode +
-                ", mobile='" + mobile + '\'' +
+                ", userId=" + userId +
                 ", message='" + message + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
                 ", date=" + date +
-                ", priority='" + priority + '\'' +
+                ", priority=" + priority +
                 '}';
     }
 }

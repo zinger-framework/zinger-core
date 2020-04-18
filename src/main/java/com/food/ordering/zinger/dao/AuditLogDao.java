@@ -25,7 +25,7 @@ public class AuditLogDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(PlaceLogColumn.id, placeLogModel.getId())
                     .addValue(PlaceLogColumn.errorCode, placeLogModel.getErrorCode())
-                    .addValue(PlaceLogColumn.mobile, placeLogModel.getMobile())
+                    .addValue(PlaceLogColumn.userId, placeLogModel.getUserId())
                     .addValue(PlaceLogColumn.message, placeLogModel.getMessage())
                     .addValue(PlaceLogColumn.updatedValue, placeLogModel.getUpdatedValue())
                     .addValue(PlaceLogColumn.priority, placeLogModel.getPriority().name());
@@ -51,7 +51,7 @@ public class AuditLogDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopLogColumn.id, ShopLogModel.getId())
                     .addValue(ShopLogColumn.errorCode, ShopLogModel.getErrorCode())
-                    .addValue(ShopLogColumn.mobile, ShopLogModel.getMobile())
+                    .addValue(ShopLogColumn.userId, ShopLogModel.getUserId())
                     .addValue(ShopLogColumn.message, ShopLogModel.getMessage())
                     .addValue(ShopLogColumn.updatedValue, ShopLogModel.getUpdatedValue())
                     .addValue(ShopLogColumn.priority, ShopLogModel.getPriority().name());
@@ -77,7 +77,7 @@ public class AuditLogDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserLogColumn.id, UserLogModel.getId())
                     .addValue(UserLogColumn.errorCode, UserLogModel.getErrorCode())
-                    .addValue(UserLogColumn.mobile, UserLogModel.getMobile())
+                    .addValue(UserLogColumn.userId, UserLogModel.getUserId())
                     .addValue(UserLogColumn.message, UserLogModel.getMessage())
                     .addValue(UserLogColumn.updatedValue, UserLogModel.getUpdatedValue())
                     .addValue(UserLogColumn.priority, UserLogModel.getPriority().name());
@@ -99,11 +99,10 @@ public class AuditLogDao {
         Response<String> response = new Response<>();
 
         try {
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ItemLogColumn.id, ItemLogModel.getId())
                     .addValue(ItemLogColumn.errorCode, ItemLogModel.getErrorCode())
-                    .addValue(ItemLogColumn.mobile, ItemLogModel.getMobile())
+                    .addValue(ItemLogColumn.userId, ItemLogModel.getUserId())
                     .addValue(ItemLogColumn.message, ItemLogModel.getMessage())
                     .addValue(ItemLogColumn.updatedValue, ItemLogModel.getUpdatedValue())
                     .addValue(ItemLogColumn.priority, ItemLogModel.getPriority().name());
@@ -130,7 +129,7 @@ public class AuditLogDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(OrderLogColumn.id, OrderLogModel.getId())
                     .addValue(OrderLogColumn.errorCode, OrderLogModel.getErrorCode())
-                    .addValue(OrderLogColumn.mobile, OrderLogModel.getMobile())
+                    .addValue(OrderLogColumn.userId, OrderLogModel.getUserId())
                     .addValue(OrderLogColumn.message, OrderLogModel.getMessage())
                     .addValue(OrderLogColumn.updatedValue, OrderLogModel.getUpdatedValue())
                     .addValue(OrderLogColumn.priority, OrderLogModel.getPriority().name());

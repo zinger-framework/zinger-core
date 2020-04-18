@@ -21,8 +21,8 @@ public class UserService {
         return userDao.verifySeller(user);
     }
 
-    public Response<String> inviteSeller(UserShopModel userShopModel, String oauthId, String mobileRh, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+    public Response<String> inviteSeller(UserShopModel userShopModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.inviteSeller(userShopModel, requestHeaderModel);
     }
 
@@ -32,8 +32,8 @@ public class UserService {
 
     /**************************************************/
 
-    public Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, String mobileRh, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+    public Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.getSellerByShopId(shopId, requestHeaderModel);
     }
 
@@ -43,23 +43,23 @@ public class UserService {
 
     /**************************************************/
 
-    public Response<String> updateUser(UserModel userModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateUser(UserModel userModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.updateUser(userModel, requestHeaderModel);
     }
 
-    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.updateUserPlaceData(userPlaceModel, requestHeaderModel);
     }
 
-    public Response<String> deleteSeller(Integer shopId, Integer userId, String oauthId, String mobileRh, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+    public Response<String> deleteSeller(Integer shopId, Integer userId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.deleteSeller(shopId, userId, requestHeaderModel);
     }
 
-    public Response<String> deleteInvite(UserShopModel userShopModel, String oauthId, String mobileRh, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobileRh, role);
+    public Response<String> deleteInvite(UserShopModel userShopModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return userDao.deleteInvite(userShopModel, requestHeaderModel);
     }
 }

@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 public class OrderLogModel {
     private Integer id;
     private Integer errorCode;
-    private String mobile;
+    private Integer userId;
     private String message;
     private String updatedValue;
 
@@ -21,10 +21,10 @@ public class OrderLogModel {
     public OrderLogModel() {
     }
 
-    public OrderLogModel(Response response, String mobile, Integer id, String updatedValue, Priority priority) {
+    public OrderLogModel(Response response, Integer userId, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
-        this.mobile = mobile;
+        this.userId = userId;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
         this.priority = priority;
@@ -38,20 +38,20 @@ public class OrderLogModel {
         this.id = id;
     }
 
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     public Integer getErrorCode() {
         return errorCode;
     }
 
     public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
-    }
-
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
     }
 
     public String getMessage() {
@@ -88,14 +88,14 @@ public class OrderLogModel {
 
     @Override
     public String toString() {
-        return "OrdersLogModel{" +
+        return "OrderLogModel{" +
                 "id=" + id +
                 ", errorCode=" + errorCode +
-                ", mobile='" + mobile + '\'' +
+                ", userId=" + userId +
                 ", message='" + message + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
                 ", date=" + date +
-                ", priority='" + priority + '\'' +
+                ", priority=" + priority +
                 '}';
     }
 }

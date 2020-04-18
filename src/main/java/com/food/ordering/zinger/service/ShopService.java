@@ -16,18 +16,18 @@ public class ShopService {
     @Autowired
     ShopDao shopDao;
 
-    public Response<String> insertShop(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> insertShop(ConfigurationModel configurationModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return shopDao.insertShop(configurationModel, requestHeaderModel);
     }
 
-    public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return shopDao.getShopsByPlaceId(placeId, requestHeaderModel);
     }
 
-    public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return shopDao.updateShopConfigurationModel(configurationModel, requestHeaderModel);
     }
 }

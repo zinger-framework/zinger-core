@@ -11,7 +11,7 @@ public class PlaceLogRowMapperLambda {
         PlaceLogModel place = new PlaceLogModel();
         place.setId(rs.getInt(id));
         place.setErrorCode(rs.getInt(errorCode));
-        place.setMobile(rs.getString(mobile));
+        place.setUserId(rs.getInt(userId));
         place.setMessage(rs.getString(message));
         place.setUpdatedValue(rs.getString(updatedValue));
         place.setDate(rs.getTimestamp(date));

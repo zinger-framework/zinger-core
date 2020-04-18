@@ -143,7 +143,7 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -155,7 +155,7 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -167,7 +167,7 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -179,7 +179,7 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -191,7 +191,7 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String mobile = "mobile";
+        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";

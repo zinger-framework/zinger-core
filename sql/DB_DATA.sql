@@ -1,3 +1,5 @@
+insert into users(mobile, oauth_id, role) values('sfdbgffed','sfdbgffed','SUPER_ADMIN');
+
 insert into place values(1,'SSN College of Engineering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
 insert into place values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
 insert into place values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Ramapuram',0);

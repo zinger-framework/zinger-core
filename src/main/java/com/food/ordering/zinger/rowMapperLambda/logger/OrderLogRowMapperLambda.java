@@ -12,7 +12,7 @@ public class OrderLogRowMapperLambda {
         OrderLogModel orders = new OrderLogModel();
         orders.setId(rs.getInt(id));
         orders.setErrorCode(rs.getInt(errorCode));
-        orders.setMobile(rs.getString(mobile));
+        orders.setUserId(rs.getInt(userId));
         orders.setMessage(rs.getString(message));
         orders.setUpdatedValue(rs.getString(updatedValue));
         orders.setDate(rs.getTimestamp(date));

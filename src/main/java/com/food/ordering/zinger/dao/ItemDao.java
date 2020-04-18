@@ -13,15 +13,11 @@ import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderItemRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.PreparedStatementSetter;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
@@ -33,7 +29,7 @@ public class ItemDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    UtilsDao utilsDao;
+    InterceptorDao interceptorDao;
 
     @Autowired
     ShopDao shopDao;
@@ -50,7 +46,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1009);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1010);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -83,7 +79,7 @@ public class ItemDao {
         }
 
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), null, itemModelList.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemModelList.toString(), priority));
         return response;
     }
 
@@ -93,7 +89,7 @@ public class ItemDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1011);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -122,7 +118,7 @@ public class ItemDao {
             }
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), shopId, shopId.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -132,7 +128,7 @@ public class ItemDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1012);
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
@@ -165,7 +161,7 @@ public class ItemDao {
             }
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), null, itemName, priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemName, priority));
         return response;
     }
 
@@ -214,7 +210,7 @@ public class ItemDao {
                     orderItemModelList.stream().forEach(s -> {
                         s.setOrderModel(null);
                         Response<ItemModel> itemModelResponse = getItemById(s.getItemModel().getId());
-                        if (itemModelResponse.getCode().equals(ErrorLog.CodeSuccess) && itemModelResponse.getMessage().equals(ErrorLog.Success)) {
+                        if (itemModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             itemModelResponse.getData().setShopModel(null);
                             s.setItemModel(itemModelResponse.getData());
                         } else {
@@ -241,7 +237,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1013);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1014);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -271,7 +267,7 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
@@ -284,7 +280,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1015);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1016);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -308,7 +304,7 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
         return response;
     }
 
@@ -321,7 +317,7 @@ public class ItemDao {
                 response.setCode(ErrorLog.IH1017);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1018);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -346,7 +342,7 @@ public class ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getMobile(), itemId, null, priority));
+        auditLogDao.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
         return response;
     }
 }

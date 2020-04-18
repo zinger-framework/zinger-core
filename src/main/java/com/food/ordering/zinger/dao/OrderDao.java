@@ -37,7 +37,7 @@ public class OrderDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    UtilsDao utilsDao;
+    InterceptorDao interceptorDao;
 
     @Autowired
     TransactionDao transactionDao;
@@ -78,7 +78,7 @@ public class OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1053);
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
@@ -91,7 +91,6 @@ public class OrderDao {
                     if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
                         OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-
                         MapSqlParameterSource parameter = new MapSqlParameterSource()
                                 .addValue(userId, order.getUserModel().getId())
                                 .addValue(shopId, order.getShopModel().getId())
@@ -110,11 +109,18 @@ public class OrderDao {
                         } else {
                             orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
                             Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
-                            transactionTokenModel.setOrderId(responseValue.intValue());
-                            transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
-                            response.setCode(orderInsertResponse.getCode());
-                            response.setMessage(orderInsertResponse.getMessage());
-                            response.setData(transactionTokenModel);
+                            if(orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                                response.setCode(orderInsertResponse.getCode());
+                                response.setMessage(orderInsertResponse.getMessage());
+
+                                transactionTokenModel.setOrderId(responseValue.intValue());
+                                transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
+                                response.setData(transactionTokenModel);
+                            }
+                            else {
+                                response.setCode(ErrorLog.OIDNU1296);
+                                response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
+                            }
                         }
                     } else {
                         response.setCode(ErrorLog.TIF1300);
@@ -133,7 +139,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
 
@@ -174,20 +180,20 @@ public class OrderDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1003);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
             } else {
                 Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
 
-                if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess) && verifyOrderResponse.getMessage().equals(ErrorLog.Success)) {
+                if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     Response<String> insertTransactionResponse = transactionDao.insertTransactionDetails(verifyOrderResponse.getData());
 
-                    if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess) && insertTransactionResponse.getMessage().equals(ErrorLog.Success)) {
+                    if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                         Response<String> updateOrderStatusResponse = updateOrderStatus(verifyOrderResponse.getData().getOrderModel(), requestHeaderModel);
 
-                        if (updateOrderStatusResponse.getCode().equals(ErrorLog.CodeSuccess) && updateOrderStatusResponse.getMessage().equals(ErrorLog.Success)) {
+                        if (updateOrderStatusResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             response.setCode(ErrorLog.CodeSuccess);
                             response.setMessage(ErrorLog.Success);
                             response.setData(ErrorLog.Success);
@@ -212,7 +218,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, orderId.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, orderId.toString(), priority));
         return response;
     }
 
@@ -225,7 +231,7 @@ public class OrderDao {
         List<OrderItemListModel> orderItemListByMobile;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1055);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -293,7 +299,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, userId + "-" + pageNum, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, userId + "-" + pageNum, priority));
         return response;
     }
 
@@ -309,7 +315,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1056);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1057);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -375,7 +381,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), null, shopId + "-" + pageNum, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, shopId + "-" + pageNum, priority));
         return response;
     }
 
@@ -391,7 +397,7 @@ public class OrderDao {
                 response.setCode(ErrorLog.IH1020);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1021);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -458,7 +464,7 @@ public class OrderDao {
             }
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(),shopId, shopId.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(),shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -490,7 +496,7 @@ public class OrderDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1058);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -520,7 +526,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(),orderId, null, priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(),orderId, null, priority));
         return response;
     }
 
@@ -600,7 +606,7 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -691,12 +697,12 @@ public class OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getMobile(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
     public void updatePendingOrder() {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.PENDING);
         Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(orderStatuses);
@@ -729,7 +735,7 @@ public class OrderDao {
     }
 
     public void updatedRefundOrder() {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), env.getProperty(Constant.mobileSA), env.getProperty(Constant.roleSA));
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.REFUND_INITIATED);
         orderStatuses.add(OrderStatus.CANCELLED_BY_USER);
@@ -847,9 +853,7 @@ public class OrderDao {
             Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
 
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
-                    transactionModelResponse.getMessage().equals(ErrorLog.Success) &&
-                    orderModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
-                    orderModelResponse.getMessage().equals(ErrorLog.Success)
+                    orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)
                 //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
                 //&& orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().transactionAmountGet())
             ) {

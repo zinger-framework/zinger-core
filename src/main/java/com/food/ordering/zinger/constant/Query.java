@@ -16,13 +16,13 @@ public class Query {
         public static final String insertPlaceLog = INSERT_INTO + PlaceLogColumn.tableName + LEFT_PARANTHESIS +
                 PlaceLogColumn.id + COMMA +
                 PlaceLogColumn.errorCode + COMMA +
-                PlaceLogColumn.mobile + COMMA +
+                PlaceLogColumn.userId + COMMA +
                 PlaceLogColumn.message + COMMA +
                 PlaceLogColumn.updatedValue + COMMA +
                 PlaceLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + PlaceLogColumn.id +
                 COMMA_COLON + PlaceLogColumn.errorCode +
-                COMMA_COLON + PlaceLogColumn.mobile +
+                COMMA_COLON + PlaceLogColumn.userId +
                 COMMA_COLON + PlaceLogColumn.message +
                 COMMA_COLON + PlaceLogColumn.updatedValue +
                 COMMA_COLON + PlaceLogColumn.priority + RIGHT_PARANTHESIS;
@@ -30,13 +30,13 @@ public class Query {
         public static final String insertShopLog = INSERT_INTO + ShopLogColumn.tableName + LEFT_PARANTHESIS +
                 ShopLogColumn.id + COMMA +
                 ShopLogColumn.errorCode + COMMA +
-                ShopLogColumn.mobile + COMMA +
+                ShopLogColumn.userId + COMMA +
                 ShopLogColumn.message + COMMA +
                 ShopLogColumn.updatedValue + COMMA +
                 ShopLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ShopLogColumn.id +
                 COMMA_COLON + ShopLogColumn.errorCode +
-                COMMA_COLON + ShopLogColumn.mobile +
+                COMMA_COLON + ShopLogColumn.userId +
                 COMMA_COLON + ShopLogColumn.message +
                 COMMA_COLON + ShopLogColumn.updatedValue +
                 COMMA_COLON + ShopLogColumn.priority + RIGHT_PARANTHESIS;
@@ -44,13 +44,13 @@ public class Query {
         public static final String insertUserLog = INSERT_INTO + UserLogColumn.tableName + LEFT_PARANTHESIS +
                 UserLogColumn.id + COMMA +
                 UserLogColumn.errorCode + COMMA +
-                UserLogColumn.mobile + COMMA +
+                UserLogColumn.userId + COMMA +
                 UserLogColumn.message + COMMA +
                 UserLogColumn.updatedValue + COMMA +
                 UserLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + UserLogColumn.id +
                 COMMA_COLON + UserLogColumn.errorCode +
-                COMMA_COLON + UserLogColumn.mobile +
+                COMMA_COLON + UserLogColumn.userId +
                 COMMA_COLON + UserLogColumn.message +
                 COMMA_COLON + UserLogColumn.updatedValue +
                 COMMA_COLON + UserLogColumn.priority + RIGHT_PARANTHESIS;
@@ -58,26 +58,26 @@ public class Query {
         public static final String insertItemLog = INSERT_INTO + ItemLogColumn.tableName + LEFT_PARANTHESIS +
                 ItemLogColumn.id + COMMA +
                 ItemLogColumn.errorCode + COMMA +
-                ItemLogColumn.mobile + COMMA +
+                ItemLogColumn.userId + COMMA +
                 ItemLogColumn.message + COMMA +
                 ItemLogColumn.updatedValue + COMMA +
                 ItemLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ItemLogColumn.id + COMMA_COLON +
                 ItemLogColumn.errorCode + COMMA_COLON +
-                ItemLogColumn.mobile + COMMA_COLON +
+                ItemLogColumn.userId + COMMA_COLON +
                 ItemLogColumn.message + COMMA_COLON +
                 ItemLogColumn.updatedValue + COMMA_COLON + ItemLogColumn.priority + RIGHT_PARANTHESIS;
 
         public static final String insertOrderLog = INSERT_INTO + OrderLogColumn.tableName + LEFT_PARANTHESIS +
                 OrderLogColumn.id + COMMA +
                 OrderLogColumn.errorCode + COMMA +
-                OrderLogColumn.mobile + COMMA +
+                OrderLogColumn.userId + COMMA +
                 OrderLogColumn.message + COMMA +
                 OrderLogColumn.updatedValue + COMMA +
                 OrderLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + OrderLogColumn.id +
                 COMMA_COLON + OrderLogColumn.errorCode +
-                COMMA_COLON + OrderLogColumn.mobile +
+                COMMA_COLON + OrderLogColumn.userId +
                 COMMA_COLON + OrderLogColumn.message +
                 COMMA_COLON + OrderLogColumn.updatedValue +
                 COMMA_COLON + OrderLogColumn.priority + RIGHT_PARANTHESIS;
@@ -643,7 +643,9 @@ public class Query {
                 UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 notDeleted;
 
-        public static final String validateUser = loginUserByMobileOauth + AND +
+        public static final String validateUser = getUserById + AND +
+                notDeleted + AND +
+                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 UserColumn.role + EQUAL_COLON + UserColumn.role;
     }
 

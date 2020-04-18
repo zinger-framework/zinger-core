@@ -20,17 +20,17 @@ public class ShopController {
     ShopService shopService;
 
     @PostMapping(value = insertShop)
-    public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.insertShop(configurationModel, oauthId, mobile, role);
+    public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.insertShop(configurationModel, oauthId, id, role);
     }
 
     @GetMapping(value = getShopsByPlaceId)
-    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByPlaceId(placeId, oauthId, mobile, role);
+    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.getShopByPlaceId(placeId, oauthId, id, role);
     }
 
     @PatchMapping(value = updateShopConfiguration)
-    Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.updateShopConfiguration(configurationModel, oauthId, mobile, role);
+    Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
+        return shopService.updateShopConfiguration(configurationModel, oauthId, id, role);
     }
 }

@@ -11,7 +11,7 @@ public class UserLogRowMapperLambda {
         UserLogModel users = new UserLogModel();
         users.setId(rs.getInt(id));
         users.setErrorCode(rs.getInt(errorCode));
-        users.setMobile(rs.getString(mobile));
+        users.setUserId(rs.getInt(userId));
         users.setMessage(rs.getString(message));
         users.setUpdatedValue(rs.getString(updatedValue));
         users.setDate(rs.getTimestamp(date));

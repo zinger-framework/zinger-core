@@ -11,7 +11,7 @@ public class ItemLogRowMapperLambda {
         ItemLogModel item = new ItemLogModel();
         item.setId(rs.getInt(id));
         item.setErrorCode(rs.getInt(errorCode));
-        item.setMobile(rs.getString(mobile));
+        item.setUserId(rs.getInt(userId));
         item.setMessage(rs.getString(message));
         item.setUpdatedValue(rs.getString(updatedValue));
         item.setDate(rs.getTimestamp(date));

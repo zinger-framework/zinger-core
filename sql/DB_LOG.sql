@@ -8,7 +8,7 @@
 create table place_log (
 	id INT DEFAULT NULL,
     error_code INT NOT NULL,
-	mobile VARCHAR(10) NOT NULL,
+	user_id INT NOT NULL,
 	message VARCHAR(128) NOT NULL,
 	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -18,7 +18,7 @@ create table place_log (
 create table shop_log (
 	id INT DEFAULT NULL,
     error_code INT NOT NULL,
-	mobile VARCHAR(10) NOT NULL,
+	user_id INT NOT NULL,
 	message VARCHAR(128) NOT NULL,
 	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -28,7 +28,7 @@ create table shop_log (
 create table users_log (
 	id INT DEFAULT NULL,
     error_code INT NOT NULL,
-	mobile VARCHAR(10) NOT NULL,
+	user_id INT DEFAULT NULL,
 	message VARCHAR(128) NOT NULL,
 	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -38,7 +38,7 @@ create table users_log (
 create table item_log (
 	id INT DEFAULT NULL,
 	error_code INT NOT NULL,
-	mobile VARCHAR(10) NOT NULL,
+	user_id INT NOT NULL,
 	message VARCHAR(128) NOT NULL,
 	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -48,7 +48,7 @@ create table item_log (
 create table orders_log (
 	id INTEGER DEFAULT NULL,
     error_code INT NOT NULL,
-	mobile VARCHAR(10) NOT NULL,
+	user_id INT NOT NULL,
 	message VARCHAR(128) NOT NULL,
 	updated_value VARCHAR(4096) DEFAULT NULL,
 	date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

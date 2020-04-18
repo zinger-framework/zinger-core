@@ -16,35 +16,35 @@ public class ItemService {
     ItemDao itemDao;
 
 
-    public Response<String> insertItem(List<ItemModel> itemModelList, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> insertItem(List<ItemModel> itemModelList, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         if(itemModelList != null && itemModelList.size()>0)
             return itemDao.insertItem(itemModelList, requestHeaderModel);
         return new Response<>();
     }
 
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return itemDao.getItemsByShopId(shopId, requestHeaderModel);
     }
 
-    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return itemDao.getItemsByName(placeId, itemName, requestHeaderModel);
     }
 
-    public Response<String> updateItemById(ItemModel itemModel, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> updateItemById(ItemModel itemModel, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return itemDao.updateItemById(itemModel, requestHeaderModel);
     }
 
-    public Response<String> deleteItemById(Integer itemId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> deleteItemById(Integer itemId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return itemDao.deleteItemById(itemId, requestHeaderModel);
     }
 
-    public Response<String> unDeleteItemById(Integer itemId, String oauthId, String mobile, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, mobile, role);
+    public Response<String> unDeleteItemById(Integer itemId, String oauthId, Integer id, String role) {
+        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
         return itemDao.unDeleteItemById(itemId, requestHeaderModel);
     }
 

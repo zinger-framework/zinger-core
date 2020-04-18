@@ -16,7 +16,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class UtilsDao {
+public class InterceptorDao {
 
     @Autowired
     Environment env;
@@ -29,7 +29,7 @@ public class UtilsDao {
         Response<UserModel> response = new Response<>();
 
         try {
-            if (requestHeaderModel.getOauthId().equals(env.getProperty(Constant.authIdSA)) && requestHeaderModel.getMobile().equals(env.getProperty(Constant.mobileSA)) && requestHeaderModel.getRole().equals(env.getProperty(Constant.roleSA))) {
+            if (requestHeaderModel.getOauthId().equals(env.getProperty(Constant.authIdSA)) && requestHeaderModel.getId().equals(env.getProperty(Constant.idSA)) && requestHeaderModel.getRole().equals(env.getProperty(Constant.roleSA))) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 return response;
@@ -37,7 +37,7 @@ public class UtilsDao {
 
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.oauthId, requestHeaderModel.getOauthId())
-                    .addValue(UserColumn.mobile, requestHeaderModel.getMobile())
+                    .addValue(UserColumn.id, requestHeaderModel.getId())
                     .addValue(UserColumn.role, requestHeaderModel.getRole());
 
             try {

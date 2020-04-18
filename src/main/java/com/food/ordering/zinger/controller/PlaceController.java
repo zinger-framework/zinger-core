@@ -19,12 +19,12 @@ public class PlaceController {
     PlaceService placeService;
 
     @PostMapping(value = insertPlace)
-    public Response<String> insertPlace(@RequestBody PlaceModel placeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return placeService.insertPlace(placeModel, oauthId, mobile, role);
+    public Response<String> insertPlace(@RequestBody PlaceModel placeModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
+        return placeService.insertPlace(placeModel, oauthId, id, role);
     }
 
     @GetMapping(value = getAllPlaces)
-    public Response<List<PlaceModel>> getAllPlaces(@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.mobile) String mobile, @RequestHeader(value = UserColumn.role) String role) {
-        return placeService.getAllPlaces(oauthId, mobile, role);
+    public Response<List<PlaceModel>> getAllPlaces(@RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
+        return placeService.getAllPlaces(oauthId, id, role);
     }
 }

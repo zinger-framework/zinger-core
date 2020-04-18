@@ -2,15 +2,15 @@ package com.food.ordering.zinger.model;
 
 public class RequestHeaderModel {
     String oauthId;
-    String mobile;
+    Integer id;
     String role;
 
     public RequestHeaderModel() {
     }
 
-    public RequestHeaderModel(String oauthId, String mobile, String role) {
+    public RequestHeaderModel(String oauthId, Integer id, String role) {
         this.oauthId = oauthId;
-        this.mobile = mobile;
+        this.id = id;
         this.role = role;
     }
 
@@ -22,14 +22,6 @@ public class RequestHeaderModel {
         this.oauthId = oauthId;
     }
 
-    public String getMobile() {
-        return mobile;
-    }
-
-    public void setMobile(String mobile) {
-        this.mobile = mobile;
-    }
-
     public String getRole() {
         return role;
     }
@@ -38,11 +30,19 @@ public class RequestHeaderModel {
         this.role = role;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
-        return "ResponseHeaderModel{" +
+        return "RequestHeaderModel{" +
                 "oauthId='" + oauthId + '\'' +
-                ", mobile='" + mobile + '\'' +
+                ", id=" + id +
                 ", role='" + role + '\'' +
                 '}';
     }

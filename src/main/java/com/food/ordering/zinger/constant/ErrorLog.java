@@ -25,6 +25,7 @@ public class ErrorLog {
     public static final String PlaceDetailNotUpdated = "Place detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Order detail not updated";
+    public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
     public static final String ItemDetailNotUpdated = "Item detail not updated";
 
     public static final String UserDetailNotDeleted = "User detail not deleted";
@@ -192,7 +193,7 @@ public class ErrorLog {
     public static final Integer UDNA1293 = 1293;
     public static final Integer SDNA1294 = 1294;
     public static final Integer ODNU1295 = 1295;
-    public static final Integer CE1296 = 1296;
+    public static final Integer OIDNU1296 = 1296;
     public static final Integer OIDNA1297 = 1297;
     public static final Integer OIDNA1298 = 1298;
     public static final Integer ODNA1299 = 1299;

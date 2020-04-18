@@ -11,7 +11,7 @@ public class ShopLogRowMapperLambda {
         ShopLogModel shop = new ShopLogModel();
         shop.setId(rs.getInt(id));
         shop.setErrorCode(rs.getInt(errorCode));
-        shop.setMobile(rs.getString(mobile));
+        shop.setUserId(rs.getInt(userId));
         shop.setMessage(rs.getString(message));
         shop.setUpdatedValue(rs.getString(updatedValue));
         shop.setDate(rs.getTimestamp(date));

@@ -27,7 +27,7 @@ public class PlaceDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    UtilsDao utilsDao;
+    InterceptorDao interceptorDao;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -42,7 +42,7 @@ public class PlaceDao {
                 response.setCode(ErrorLog.IH1000);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
-            } else if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            } else if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1001);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -67,7 +67,7 @@ public class PlaceDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, placeModel.toString(), priority));
+        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, placeModel.toString(), priority));
         return response;
     }
 
@@ -78,7 +78,7 @@ public class PlaceDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!utilsDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
+            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.IH1002);
                 response.setMessage(ErrorLog.InvalidHeader);
                 priority = Priority.HIGH;
@@ -103,7 +103,7 @@ public class PlaceDao {
             }
         }
 
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getMobile(), null, null, priority));
+        auditLogDao.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, null, priority));
         return response;
     }
 
