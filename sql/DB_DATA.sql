@@ -3,7 +3,7 @@ insert into users(mobile, oauth_id, role) values('sfdbgffed','sfdbgffed','SUPER_
 insert into place values(1,'SSN College of Engineering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
 insert into place values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
 insert into place values(3,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Ramapuram',0);
-insert into place values(4,'SRM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
+insert into place values(4,'SVCE University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
 insert into place values(5,'SSN University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
 insert into place values(6,'IBM University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Ramapuram',0);
 insert into place values(7,'HCL University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
@@ -85,18 +85,18 @@ insert into configurations(shop_id, delivery_price, merchant_id) values(9, 25.0,
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,
 -- payment_mode,checksum_hash) values("3","O00012","dsfs","RS","01","success","STRIPE","DBS","UPI","3232");
 
-select * from users;
-select * from place;
-select * from place_log;
-select * from shop;
-select * from item;
-select * from item_log;
-select * from users_log;
-select * from users_place;
-select * from users_shop;
-select * from users_invite;
-select * from transactions;
-select * from orders;
-select * from orders_item;
-select * from rating;
-select * from configurations;
+-- select * from users;
+-- select * from place;
+-- select * from place_log;
+-- select * from shop;
+-- select * from item;
+-- select * from item_log;
+-- select * from users_log;
+-- select * from users_place;
+-- select * from users_shop;
+-- select * from users_invite;
+-- select * from transactions;
+-- select * from orders;
+-- select * from orders_item;
+-- select * from rating;
+-- select * from configurations;
