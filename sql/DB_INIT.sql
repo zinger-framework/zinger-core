@@ -200,13 +200,15 @@ CREATE TRIGGER seller_archive
     INSERT INTO seller_archive(user_id, shop_id)
     VALUES (OLD.user_id, OLD.shop_id);
 
+DELIMITER \\
 CREATE TRIGGER order_placed_time
     BEFORE UPDATE
     ON orders
     FOR EACH ROW
-        IF (NEW.status LIKE 'PLACED' || NEW.status LIKE 'PENDING' || NEW.status LIKE 'TXN_FAILURE') THEN
+        IF (NEW.status LIKE 'PLACED' OR NEW.status LIKE 'PENDING' OR NEW.status LIKE 'TXN_FAILURE') THEN
             SET NEW.date = CURRENT_TIMESTAMP;
         END IF;
+\\
 
 ####################################################
 
