@@ -124,6 +124,7 @@ public class ErrorLog {
     public static final Integer UDNU1165 = 1165;
     public static final Integer IE1166 = 1166;
     public static final Integer ODNA1167 = 1167;
+    public static final Integer SDNA1168 = 1168;
 
     /**********************************************************************/
     // Item Controller Error Code 1200-1250

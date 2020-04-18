@@ -656,11 +656,6 @@ public class Query {
                 COLON + UserShopColumn.userId +
                 COMMA_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
 
-        public static final String getUserByShopId = SELECT +
-                UserShopColumn.userId + COMMA +
-                UserShopColumn.shopId + FROM + UserShopColumn.tableName + WHERE +
-                UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId;
-
         public static final String getShopByUserId = SELECT +
                 UserShopColumn.userId + COMMA +
                 UserShopColumn.shopId + FROM + UserShopColumn.tableName + WHERE +

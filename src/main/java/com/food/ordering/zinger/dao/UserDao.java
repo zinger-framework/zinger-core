@@ -76,7 +76,7 @@ public class UserDao {
                 priority = Priority.LOW;
                 response.setCode(ErrorLog.CodeSuccess);
             } else {
-                Number responseValue = insertUser(userModel);
+                Number responseValue = insertUser(user);
                 if (responseValue != null && responseValue.intValue() > 0) {
                     priority = Priority.LOW;
                     response.setCode(ErrorLog.PDNA1163);
@@ -342,51 +342,52 @@ public class UserDao {
 
     public Response<UserShopListModel> getShopByUserId(UserModel userModel) {
         Response<UserShopListModel> response = new Response<>();
-        List<ShopModel> shopModelList = null;
+        UserShopListModel userShopListModel = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
+        List<UserShopModel> userShopModelList = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserShopColumn.userId, userModel.getId());
 
             try {
-                shopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByUserId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
+                userShopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByUserId, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (shopModelList != null && !shopModelList.isEmpty()) {
+            if (userShopModelList != null && !userShopModelList.isEmpty()) {
+                userShopListModel = new UserShopListModel();
+                shopConfigurationModelList = new ArrayList<>();
+
+                for (int i = 0; i < userShopModelList.size(); i++) {
+                    ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
+
+                    Response<ShopModel> shopModelResponse = shopDao.getShopById(userShopModelList.get(i).getShopModel().getId());
+                    shopConfigurationModel.setShopModel(shopModelResponse.getData());
+
+                    Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
+                    ratingModelResponse.getData().setShopModel(null);
+                    shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
+
+                    Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
+                    configurationModelResponse.getData().setShopModel(null);
+                    shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
+
+                    shopConfigurationModelList.add(shopConfigurationModel);
+                }
+                userShopListModel.setUserModel(userModel);
+                userShopListModel.setShopModelList(shopConfigurationModelList);
+
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-
-                shopConfigurationModelList = new ArrayList<>();
-                UserShopListModel userShopListModel = new UserShopListModel();
-                userShopListModel.setUserModel(userModel);
-
-                for (int i = 0; i < shopModelList.size(); i++) {
-                    if (shopModelList.get(i).getName() == null || shopModelList.get(i).getName().isEmpty()) {
-                        ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-
-                        Response<ShopModel> shopModelResponse = shopDao.getShopById(shopModelList.get(i).getId());
-                        shopConfigurationModel.setShopModel(shopModelResponse.getData());
-
-                        Response<RatingModel> ratingModelResponse = ratingDao.getRatingByShopId(shopModelResponse.getData());
-                        ratingModelResponse.getData().setShopModel(null);
-                        shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
-
-                        Response<ConfigurationModel> configurationModelResponse = configurationDao.getConfigurationByShopId(shopModelResponse.getData());
-                        configurationModelResponse.getData().setShopModel(null);
-                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
-
-                        shopConfigurationModelList.add(shopConfigurationModel);
-                    }
-                }
-                userShopListModel.setShopModelList(shopConfigurationModelList);
                 response.setData(userShopListModel);
-            } else
+            } else {
+                response.setCode(ErrorLog.SDNA1168);
                 response.setMessage(ErrorLog.ShopDetailNotAvailable);
+            }
         }
         return response;
     }

@@ -58,7 +58,7 @@ CREATE TABLE users
 
 CREATE TABLE users_invite
 (
-    mobile    INT                                     NOT NULL,
+    mobile     VARCHAR(10)                             NOT NULL,
     shop_id    INT                                     NOT NULL,
     invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     role       ENUM ('SELLER','DELIVERY','SHOP_OWNER') NOT NULL,
@@ -85,15 +85,15 @@ CREATE TABLE item
 CREATE TABLE orders
 (
     id                       INT AUTO_INCREMENT NOT NULL,
-    user_id                  INT         NOT NULL,
-    shop_id                  INT         NOT NULL,
+    user_id                  INT                NOT NULL,
+    shop_id                  INT                NOT NULL,
     date                     TIMESTAMP                       DEFAULT CURRENT_TIMESTAMP,
     status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
         'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
         'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
         'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
     last_status_updated_time DATETIME                        DEFAULT NULL,
-    price                    DOUBLE      NOT NULL,
+    price                    DOUBLE             NOT NULL,
     delivery_price           DOUBLE                          DEFAULT NULL,
     delivery_location        VARCHAR(128)                    DEFAULT NULL,
     cooking_info             VARCHAR(128)                    DEFAULT NULL,
@@ -107,7 +107,7 @@ CREATE TABLE orders
 CREATE TABLE transactions
 (
     transaction_id      VARCHAR(64)  NOT NULL,
-    order_id            INT  NOT NULL,
+    order_id            INT          NOT NULL,
     bank_transaction_id VARCHAR(64)  NOT NULL,
     currency            VARCHAR(3)   DEFAULT NULL,
     response_code       VARCHAR(10)  NOT NULL,
@@ -126,7 +126,7 @@ CREATE TABLE transactions
 CREATE TABLE users_shop
 (
     user_id INT NOT NULL,
-    shop_id INT         NOT NULL,
+    shop_id INT NOT NULL,
     CONSTRAINT users_shop_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
     CONSTRAINT users_shop_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT users_shop_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
@@ -135,7 +135,7 @@ CREATE TABLE users_shop
 CREATE TABLE users_place
 (
     user_id  INT NOT NULL,
-    place_id INT         NOT NULL,
+    place_id INT NOT NULL,
     CONSTRAINT users_place_user_id_pk PRIMARY KEY (user_id),
     CONSTRAINT users_place_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT users_place_place_id_fk FOREIGN KEY (place_id) REFERENCES place (id)
@@ -143,10 +143,10 @@ CREATE TABLE users_place
 
 CREATE TABLE orders_item
 (
-    order_id INT NOT NULL,
-    item_id  INT         NOT NULL,
-    quantity INT         NOT NULL,
-    price    DOUBLE      NOT NULL,
+    order_id INT    NOT NULL,
+    item_id  INT    NOT NULL,
+    quantity INT    NOT NULL,
+    price    DOUBLE NOT NULL,
     CONSTRAINT orders_item_order_id_item_id_pk PRIMARY KEY (order_id, item_id),
     CONSTRAINT orders_item_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id),
     CONSTRAINT orders_item_item_id_fk FOREIGN KEY (item_id) REFERENCES item (id)
@@ -177,7 +177,7 @@ CREATE TABLE configurations
 CREATE TABLE seller_archive
 (
     user_id    INT NOT NULL,
-    shop_id    INT         NOT NULL,
+    shop_id    INT NOT NULL,
     deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT seller_archive_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
     CONSTRAINT seller_archive_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
