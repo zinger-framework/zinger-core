@@ -22,7 +22,22 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
+import static com.food.ordering.zinger.constant.Sql.PERCENT;
 
+/**
+ * ItemDao is responsible for CRUD operations in
+ * Item table in MySQL.
+ *
+ * @implNote Request Header (RH) parameter is sent in all endpoints
+ * to avoid unauthorized access to our service.
+ *
+ * @implNote Please check the Shop and Order table for better understanding.
+ *
+ * @implNote All endpoint services are audited for both success and error responses
+ * using "AuditLogDaoImpl".
+ *
+ * Endpoints starting with "/menu" invoked here.
+ */
 @Repository
 public class ItemDaoImpl implements ItemDao {
 
@@ -38,6 +53,13 @@ public class ItemDaoImpl implements ItemDao {
     @Autowired
     AuditLogDaoImpl auditLogDaoImpl;
 
+    /**
+     * Inserts the list of item details for the shop.
+     * Authorized by SHOP_OWNER and workers(SELLER/DELIVERY) only.
+     *
+     * @param itemModelList List<ItemModel>
+     * @return success response if both the insertion is successful.
+     */
     @Override
     public Response<String> insertItem(List<ItemModel> itemModelList, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -85,6 +107,12 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Gets list of items by shop id.
+     *
+     * @param shopId Integer
+     * @return the details of the list of items for the given shop id.
+     */
     @Override
     public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
@@ -125,6 +153,16 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Gets list of items matching the item name, along with
+     * the shop details, located in the given place.
+     *
+     * @implNote Used mainly for search/filter the items by name.
+     *
+     * @param placeId Integer
+     * @param itemName String
+     * @return the details of the list of items, if the match is successful.
+     */
     @Override
     public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel) {
         Response<List<ItemModel>> response = new Response<>();
@@ -137,7 +175,7 @@ public class ItemDaoImpl implements ItemDao {
                 response.setMessage(ErrorLog.InvalidHeader);
             } else {
                 SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.name, "%" + itemName + "%")
+                        .addValue(ItemColumn.name, PERCENT + itemName + PERCENT)
                         .addValue(ShopColumn.placeId, placeId);
 
                 try {
@@ -169,6 +207,12 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Gets item by id.
+     *
+     * @param id Integer
+     * @return the details of the item.
+     */
     @Override
     public Response<ItemModel> getItemById(Integer id) {
         ItemModel item = null;
@@ -195,6 +239,12 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Gets list of items for the given order id.
+     *
+     * @param orderModel OrderModel
+     * @return the details of the list of items.
+     */
     @Override
     public Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel) {
 
@@ -234,6 +284,13 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Updates the item details for the given item.
+     * Authorized by SHOP_OWNER only.
+     *
+     * @param itemModel ItemModel
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -278,6 +335,13 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Deletes the item by id
+     * Authorized by SHOP_OWNER and workers(SELLER/DELIVERY) only.
+     *
+     * @param itemId Integer
+     * @return success response if the delete is successful.
+     */
     @Override
     public Response<String> deleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -316,6 +380,13 @@ public class ItemDaoImpl implements ItemDao {
         return response;
     }
 
+    /**
+     * Undeletes the item by id
+     * Authorized by SHOP_OWNER and workers(SELLER/DELIVERY) only.
+     *
+     * @param itemId Integer
+     * @return success response if the delete is successful.
+     */
     @Override
     public Response<String> unDeleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
