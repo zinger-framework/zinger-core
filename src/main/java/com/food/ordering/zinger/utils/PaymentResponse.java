@@ -15,12 +15,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * PaymentResponse provides the transaction response code and message.
+ */
 @Configuration
 public class PaymentResponse {
 
     private String code;
     private String message;
 
+    /**
+     * Parse the file "responseStatus.json".
+     *
+     * @implNote This file contains the transaction response code and
+     * message from the payment gateway.
+     * It is left completely free to EDIT for the developer convenience
+     * with respect to the chosen payment gateway.
+     *
+     * Add/remove transaction status in the above mentioned file matching
+     * the TRANSACTION_STATUS enum.
+     *
+     * @return the string containing the entire json.
+     */
     @Bean
     public String parseResponseStatus() {
         try {
@@ -33,6 +49,13 @@ public class PaymentResponse {
         return null;
     }
 
+    /**
+     * If the above mentioned JSON file is edited,
+     * make the changes here accordingly.
+     *
+     * @param transactionModel TransactionModel
+     * @return the new order status for the given transaction status.
+     */
     public Enums.OrderStatus getOrderStatus(TransactionModel transactionModel) {
         String responseValue = parseResponseStatus();
         if (responseValue == null)
