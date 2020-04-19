@@ -14,12 +14,24 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+/**
+ * ConfigurationDao is responsible for CRUD operations in
+ * Configuration table in MySQL.
+ *
+ * @implNote Please check the Shop table for better understanding.
+ */
 @Repository
 public class ConfigurationDaoImpl implements ConfigurationDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    /**
+     * Insert the configuration details for the given shop
+     *
+     * @param configurationModel ConfigurationModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertConfiguration(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
@@ -43,6 +55,12 @@ public class ConfigurationDaoImpl implements ConfigurationDao {
         return response;
     }
 
+    /**
+     * Gets configuration by shop id.
+     *
+     * @param shopModel ShopModel
+     * @return the details of the shop configuration for the given shop.
+     */
     @Override
     public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
         Response<ConfigurationModel> response = new Response<>();
@@ -70,6 +88,12 @@ public class ConfigurationDaoImpl implements ConfigurationDao {
         return response;
     }
 
+    /**
+     * Updates the shop configuration for the given shop.
+     *
+     * @param configurationModel ConfigurationModel
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> updateConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
