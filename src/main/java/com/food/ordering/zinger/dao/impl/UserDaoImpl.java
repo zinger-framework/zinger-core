@@ -72,13 +72,13 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * Customer Authentication
-     * Handles both Login/Register process
+     * Handles both Login/Register process.
      *
-     * @implNote If the user credentials doesn't match, then register process is invoked.
+     * @implNote If the user credentials doesn't exist, then registration process is executed.
      *
      * @param user UserModel
-     * @return whether the user credentials matches with our database,
-     * along with the details of the user and place he(she) belongs.
+     * @return whether the user credentials exist, along with the
+     * details of the user and place he(she) belongs.
      */
     @Override
     public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
@@ -137,7 +137,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     /**
-     * Inserts the User details in the database
+     * Inserts the User details in the database.
      *
      * @param userModel UserModel
      * @return User id, the last generated(auto-incremented) id in the Users table.
@@ -205,9 +205,9 @@ public class UserDaoImpl implements UserDao {
      * Invite new Seller, ShopOwner, Delivery Boy, etc to the shop.
      * Authorized by SHOP_OWNER only.
      *
-     * Invitation is sent through SMS to the new user in this
-     * format: http://domain-name.com/user/verify/invite/{shopId}/{newUserMobileNumber}
-     * @implNote Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
+     * @implNote Invitation is sent through SMS to the new user in the below format:
+     * http://domain-name.com/user/verify/invite/{shopId}/{newUserMobileNumber}
+     * Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
      *
      * @param userShopModel UserShopModel
      * @return success response if the invite is sent successfully.
