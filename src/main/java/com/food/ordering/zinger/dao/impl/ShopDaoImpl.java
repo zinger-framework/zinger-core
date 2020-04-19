@@ -19,6 +19,20 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ShopDao is responsible for CRUD operations in
+ * Shop table in MySQL.
+ *
+ * @implNote Request Header (RH) parameter is sent in all endpoints
+ * to avoid unauthorized access to our service.
+ *
+ * @implNote Please check the Rating and Configuration table for better understanding.
+ *
+ * @implNote All endpoint services are audited for both success and error responses
+ * using "AuditLogDaoImpl".
+ *
+ * Endpoints starting with "/shop" invoked here.
+ */
 @Repository
 public class ShopDaoImpl implements ShopDao {
 
@@ -40,6 +54,16 @@ public class ShopDaoImpl implements ShopDao {
     @Autowired
     AuditLogDaoImpl auditLogDaoImpl;
 
+    /**
+     * Inserts the shop details.
+     * Authorized by SUPER_ADMIN only.
+     *
+     * Insert the shop details in the Shop table
+     * Insert the shop configuration details in the Configuration table
+     *
+     * @param configurationModel ConfigurationModel
+     * @return success response if both the insertion is successful.
+     */
     @Override
     public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -97,6 +121,13 @@ public class ShopDaoImpl implements ShopDao {
         return response;
     }
 
+    /**
+     * Gets list of shops by place id.
+     *
+     * @param placeId Integer
+     * @return the details along with the configuration
+     * of the list of shops for the given place id.
+     */
     @Override
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId, RequestHeaderModel requestHeaderModel) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
@@ -176,6 +207,12 @@ public class ShopDaoImpl implements ShopDao {
         return response;
     }
 
+    /**
+     * Gets shop by id.
+     *
+     * @param shopId Integer
+     * @return the details of the shop.
+     */
     @Override
     public Response<ShopModel> getShopById(Integer shopId) {
         Response<ShopModel> response = new Response<>();
@@ -206,6 +243,13 @@ public class ShopDaoImpl implements ShopDao {
         return response;
     }
 
+    /**
+     * Updates the shop details and configuration for the given shop.
+     * Authorized by SHOP_OWNER only.
+     *
+     * @param configurationModel ConfigurationModel
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();

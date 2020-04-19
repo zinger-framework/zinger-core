@@ -14,6 +14,7 @@ public class Sql {
     public static final String EQUAL_COLON = " = :";
     public static final String EQUALS = " = ";
     public static final String LESS_THAN = " < ";
+    public static final String PERCENT = "%";
     public static final String LEFT_PARANTHESIS = "(";
     public static final String RIGHT_PARANTHESIS = ")";
     public static final String COMMA = ", ";

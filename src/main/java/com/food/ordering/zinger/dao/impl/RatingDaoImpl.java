@@ -14,6 +14,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+/**
+ * RatingDao is responsible for CRUD operations in
+ * Rating table in MySQL.
+ *
+ * @implNote Please check the Shop table for better understanding.
+ */
 @Repository
 public class RatingDaoImpl implements RatingDao {
 
@@ -23,6 +29,12 @@ public class RatingDaoImpl implements RatingDao {
     @Autowired
     InterceptorDaoImpl interceptorDaoImpl;
 
+    /**
+     * Gets rating by shop id.
+     *
+     * @param shopModel ShopModel
+     * @return the details of the rating for the given shop.
+     */
     @Override
     public Response<RatingModel> getRatingByShopId(ShopModel shopModel) {
         Response<RatingModel> response = new Response<>();
@@ -50,6 +62,13 @@ public class RatingDaoImpl implements RatingDao {
         return response;
     }
 
+    /**
+     * Updates the rating for given shop id.
+     *
+     * @param shopId Integer
+     * @param rating Double
+     * @return success response if the update is successful.
+     */
     @Override
     public void updateShopRating(Integer shopId, Double rating) {
         try {

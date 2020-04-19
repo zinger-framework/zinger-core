@@ -32,7 +32,7 @@ import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 /**
  * UserDao is responsible for CRUD operations in
- * Users table in MySQL.
+ * Users, UsersPlace, UsersShop table in MySQL.
  *
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.

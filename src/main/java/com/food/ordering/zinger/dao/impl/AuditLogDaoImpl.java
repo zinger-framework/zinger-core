@@ -13,12 +13,27 @@ import org.springframework.stereotype.Repository;
 
 import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
 
+/**
+ * AuditLogDao is responsible for CRUD operations in
+ * ShopLog, PlaceLog, UserLog, OrderLog and ItemLog tables in MySQL.
+ *
+ * @implNote Please check corresponding actual table for better understanding.
+ *
+ * @implNote All endpoint services are audited for both success and error responses
+ * invoked here.
+ */
 @Repository
 public class AuditLogDaoImpl implements AuditLogDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    /**
+     * Inserts the place log details.
+     *
+     * @param placeLogModel PlaceLogModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertPlaceLog(PlaceLogModel placeLogModel) {
         Response<String> response = new Response<>();
@@ -45,6 +60,12 @@ public class AuditLogDaoImpl implements AuditLogDao {
         return response;
     }
 
+    /**
+     * Inserts the shop log details.
+     *
+     * @param ShopLogModel ShopLogModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertShopLog(ShopLogModel ShopLogModel) {
         Response<String> response = new Response<>();
@@ -72,6 +93,12 @@ public class AuditLogDaoImpl implements AuditLogDao {
         return response;
     }
 
+    /**
+     * Inserts the user log details.
+     *
+     * @param UserLogModel UserLogModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertUserLog(UserLogModel UserLogModel) {
         Response<String> response = new Response<>();
@@ -99,6 +126,12 @@ public class AuditLogDaoImpl implements AuditLogDao {
         return response;
     }
 
+    /**
+     * Inserts the item log details.
+     *
+     * @param ItemLogModel ItemLogModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertItemLog(ItemLogModel ItemLogModel) {
         Response<String> response = new Response<>();
@@ -125,6 +158,12 @@ public class AuditLogDaoImpl implements AuditLogDao {
         return response;
     }
 
+    /**
+     * Inserts the order log details.
+     *
+     * @param OrderLogModel OrderLogModel
+     * @return success response if the insertion is successful.
+     */
     @Override
     public Response<String> insertOrderLog(OrderLogModel OrderLogModel) {
         Response<String> response = new Response<>();
