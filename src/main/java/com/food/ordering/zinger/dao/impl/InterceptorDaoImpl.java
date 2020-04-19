@@ -16,15 +16,32 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+/**
+ * InterceptorDao is responsible for validating the user details who
+ * request our service, thus avoiding unauthorized access to the endpoints.
+ *
+ * All endpoints sent with the request header(RH) invoked here.
+ */
 @Repository
 public class InterceptorDaoImpl implements InterceptorDao {
 
+    /**
+     * Environment is used here to fetch SUPER_ADMIN credentials
+     * from "application.properties" file
+     */
     @Autowired
     Environment env;
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    /**
+     * Validates the user details.
+     *
+     * @param requestHeaderModel RequestHeaderModel
+     * @return success response if the user details exist (or)
+     * matches with the SUPER_ADMIN credentials
+     */
     @Override
     public Response<UserModel> validateUser(RequestHeaderModel requestHeaderModel) {
         UserModel userModel = null;
