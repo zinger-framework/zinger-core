@@ -30,6 +30,19 @@ import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
+/**
+ * UserDao is responsible for CRUD operations in
+ * Users table in MySQL.
+ *
+ * @implNote Request Header (RH) parameter is sent in all endpoints
+ * to avoid unauthorized access to our service.
+ * @implNote Authentication & Invitation Apis alone won't have RH parameter.
+ *
+ * @implNote All endpoint services are audited for both success and error responses
+ * using "AuditLogDaoImpl".
+ *
+ * Endpoints starting with "/user" invoked here.
+ */
 @Repository
 public class UserDaoImpl implements UserDao {
 
@@ -57,6 +70,16 @@ public class UserDaoImpl implements UserDao {
     @Autowired
     AuditLogDaoImpl auditLogDaoImpl;
 
+    /**
+     * Customer Authentication
+     * Handles both Login/Register process.
+     *
+     * @implNote If the user credentials doesn't exist, then registration process is executed.
+     *
+     * @param user UserModel
+     * @return whether the user credentials exist, along with the
+     * details of the user and place he(she) belongs.
+     */
     @Override
     public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
         Response<UserPlaceModel> response = new Response<>();
@@ -113,6 +136,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Inserts the User details in the database.
+     *
+     * @param userModel UserModel
+     * @return User id, the last generated(auto-incremented) id in the Users table.
+     */
     private Number insertUser(UserModel userModel) {
         if (userModel.getRole() == null)
             userModel.setRole(UserRole.CUSTOMER);
@@ -133,6 +162,14 @@ public class UserDaoImpl implements UserDao {
         return null;
     }
 
+    /**
+     * Seller Authentication
+     * Handles only Login and NOT Register process
+     *
+     * @param user UserModel
+     * @return whether the user credentials matches with our database,
+     * along with the details of the seller and shop he(she) works.
+     */
     @Override
     public Response<UserShopListModel> verifySeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
@@ -164,41 +201,17 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
-    @Override
-    public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
-        Response<UserInviteModel> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
-        UserInviteModel userInviteModel = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(Column.UserInviteColumn.shopId, shopId)
-                    .addValue(Column.UserInviteColumn.mobile, mobile);
-
-            try {
-                userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                if (userInviteModel != null) {
-                    response.setCode(CodeSuccess);
-                    response.setMessage(Success);
-                    userInviteModel.getShopModel().setPlaceModel(null);
-                    response.setData(userInviteModel);
-                } else {
-                    response.setCode(ErrorLog.IE1166);
-                    response.setMessage(ErrorLog.InviteExpired);
-                }
-            }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1108);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, shopId.toString(), priority));
-        return response;
-    }
-
+    /**
+     * Invite new Seller, ShopOwner, Delivery Boy, etc to the shop.
+     * Authorized by SHOP_OWNER only.
+     *
+     * @implNote Invitation is sent through SMS to the new user in the below format:
+     * http://domain-name.com/user/verify/invite/{shopId}/{newUserMobileNumber}
+     * Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
+     *
+     * @param userShopModel UserShopModel
+     * @return success response if the invite is sent successfully.
+     */
     @Override
     public Response<String> inviteSeller(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -241,6 +254,57 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Verify the invited user with the help of URL.
+     * Invite URL Expiration Time: 15 minutes
+     *
+     * @implNote Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
+     *
+     * @param shopId Integer
+     * @param mobile String
+     * @return success response unless the invite is invalid or expired.
+     */
+    @Override
+    public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
+        Response<UserInviteModel> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+        UserInviteModel userInviteModel = null;
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(Column.UserInviteColumn.shopId, shopId)
+                    .addValue(Column.UserInviteColumn.mobile, mobile);
+
+            try {
+                userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
+            } catch (Exception e) {
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            } finally {
+                if (userInviteModel != null) {
+                    response.setCode(CodeSuccess);
+                    response.setMessage(Success);
+                    userInviteModel.getShopModel().setPlaceModel(null);
+                    response.setData(userInviteModel);
+                } else {
+                    response.setCode(ErrorLog.IE1166);
+                    response.setMessage(ErrorLog.InviteExpired);
+                }
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1108);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, shopId.toString(), priority));
+        return response;
+    }
+
+    /**
+     * Add the invited user to the shop.
+     *
+     * @param userShopModel UserShopModel
+     * @return success response if the mobile number verification is completed successfully.
+     */
     @Override
     public Response<String> acceptInvite(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
@@ -281,8 +345,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
-    /**************************************************/
-
+    /**
+     * Gets place by user id.
+     *
+     * @param userModel UserModel
+     * @return the details of the place, the user belongs.
+     */
     public Response<UserPlaceModel> getPlaceByUserId(UserModel userModel) {
         Response<UserPlaceModel> response = new Response<>();
         UserPlaceModel userPlaceModel = null;
@@ -312,6 +380,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Gets user by id.
+     *
+     * @param id Integer
+     * @return the details of the user.
+     */
     public Response<UserModel> getUserById(Integer id) {
         Response<UserModel> response = new Response<>();
         UserModel userModel = null;
@@ -334,6 +408,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Gets user by mobile.
+     *
+     * @param mobile String
+     * @return the details of the user.
+     */
     public Response<UserModel> getUserByMobile(String mobile) {
         Response<UserModel> response = new Response<>();
         UserModel userModel = null;
@@ -356,6 +436,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Gets shop by user id.
+     *
+     * @param userModel UserModel
+     * @return the details of the shop, the user works.
+     */
     public Response<UserShopListModel> getShopByUserId(UserModel userModel) {
         Response<UserShopListModel> response = new Response<>();
         UserShopListModel userShopListModel = null;
@@ -408,6 +494,13 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Gets shop by user id.
+     * Authorized by SHOP_OWNER only.
+     *
+     * @param shopId Integer
+     * @return the details of the workers for the given shop.
+     */
     @Override
     public Response<List<UserModel>> getSellerByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
         Response<List<UserModel>> userModelResponse = new Response<>();
@@ -453,6 +546,12 @@ public class UserDaoImpl implements UserDao {
 
     /**************************************************/
 
+    /**
+     * Updates the user details
+     *
+     * @param user UserModel
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> updateUser(UserModel user, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -492,6 +591,13 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Updates the user role.
+     *
+     * @param id Integer
+     * @param role UserRole
+     * @return success response if the update is successful.
+     */
     public Response<String> updateRole(Integer id, UserRole role) {
         Response<String> response = new Response<>();
 
@@ -512,6 +618,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Update place details.
+     *
+     * @param userPlaceModel UserPlaceModel
+     * @return success response if the update is successful.
+     */
     public Response<String> updatePlace(UserPlaceModel userPlaceModel) {
         Response<String> response = new Response<>();
 
@@ -533,6 +645,12 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Links the user to the given shop
+     *
+     * @param userShopModel userShopModel
+     * @return success response if the update is successful.
+     */
     public Response<String> updateShop(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
 
@@ -555,6 +673,13 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Updates the user details and
+     * links the user to the given place.
+     *
+     * @param userPlaceModel UserPlaceModel
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -587,6 +712,14 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Deletes the workers in the shop
+     * Authorized by SHOP_OWNER only.
+     *
+     * @param shopId Integer
+     * @param userId Integer
+     * @return success response if the delete is successful.
+     */
     @Override
     public Response<String> deleteSeller(Integer shopId, Integer userId, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
@@ -625,6 +758,13 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
+    /**
+     * Deletes the new user invite sent
+     * Authorized by SHOP_OWNER only.
+     *
+     * @param userShopModel UserShopModel
+     * @return success response if the delete is successful.
+     */
     @Override
     public Response<String> deleteInvite(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
         Response<String> response = new Response<>();
