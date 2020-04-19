@@ -21,6 +21,18 @@ import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
+/**
+ * PlaceDao is responsible for CRUD operations in
+ * Place table in MySQL.
+ *
+ * @implNote Request Header (RH) parameter is sent in all endpoints
+ * to avoid unauthorized access to our service.
+ *
+ * @implNote All endpoint services are audited for both success and error responses
+ * using "AuditLogDaoImpl".
+ *
+ * Endpoints starting with "/place" invoked here.
+ */
 @Repository
 public class PlaceDaoImpl implements PlaceDao {
 
@@ -33,6 +45,13 @@ public class PlaceDaoImpl implements PlaceDao {
     @Autowired
     AuditLogDaoImpl auditLogDaoImpl;
 
+    /**
+     * Inserts the place details.
+     * Authorized by SUPER_ADMIN only.
+     *
+     * @param placeModel PlaceModel
+     * @return success response if the insert is successful.
+     */
     @Override
     public Response<String> insertPlace(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
 
@@ -73,6 +92,14 @@ public class PlaceDaoImpl implements PlaceDao {
         return response;
     }
 
+    /**
+     * Gets all places
+     *
+     * @implNote Used in the registration process to choose the
+     * place the user belongs.
+     *
+     * @return the list of place details
+     */
     @Override
     public Response<List<PlaceModel>> getAllPlaces(RequestHeaderModel requestHeaderModel) {
 
@@ -110,6 +137,12 @@ public class PlaceDaoImpl implements PlaceDao {
         return response;
     }
 
+    /**
+     * Gets place by id.
+     *
+     * @param placeId Integer
+     * @return the details of the place.
+     */
     @Override
     public Response<PlaceModel> getPlaceById(Integer placeId) {
         Response<PlaceModel> response = new Response<>();
