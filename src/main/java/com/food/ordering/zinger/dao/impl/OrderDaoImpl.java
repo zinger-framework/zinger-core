@@ -37,7 +37,7 @@ import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.
  * @implNote All endpoint services are audited for both success and error responses
- * * using "AuditLogDaoImpl".
+ * * using "AuditLogDao".
  */
 @Repository
 public class OrderDaoImpl implements OrderDao {

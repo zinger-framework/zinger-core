@@ -31,7 +31,7 @@ import static com.food.ordering.zinger.constant.Sql.PERCENT;
  * to avoid unauthorized access to our service.
  * @implNote Please check the Shop and Order table for better understanding.
  * @implNote All endpoint services are audited for both success and error responses
- * using "AuditLogDaoImpl".
+ * using "AuditLogDao".
  * <p>
  * Endpoints starting with "/menu" invoked here.
  */
