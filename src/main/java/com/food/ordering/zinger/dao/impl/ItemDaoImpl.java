@@ -104,8 +104,8 @@ public class ItemDaoImpl implements ItemDao {
             response.setMessage(ItemDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (list != null && !list.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
+            if (list != null) {
+                response.setCode(list.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
                 response.prioritySet(Priority.LOW);
@@ -140,8 +140,8 @@ public class ItemDaoImpl implements ItemDao {
             response.setMessage(ItemDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (items != null && !items.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
+            if (items != null) {
+                response.setCode(items.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(items);
                 response.prioritySet(Priority.LOW);

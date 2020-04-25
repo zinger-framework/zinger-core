@@ -89,8 +89,8 @@ public class PlaceDaoImpl implements PlaceDao {
             response.setMessage(PlaceDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (list != null && !list.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
+            if (list != null) {
+                response.setCode(list.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
                 response.prioritySet(Priority.LOW);
