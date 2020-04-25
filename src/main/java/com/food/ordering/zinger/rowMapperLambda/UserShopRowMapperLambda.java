@@ -10,7 +10,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.food.ordering.zinger.constant.Column.UserShopColumn.*;
+import static com.food.ordering.zinger.constant.Column.UserShopColumn.shopId;
 import static com.food.ordering.zinger.constant.Column.UserShopColumn.userId;
 
 public class UserShopRowMapperLambda {
@@ -36,7 +36,6 @@ public class UserShopRowMapperLambda {
         userModel.setId(rs.getInt(Column.UserColumn.id));
         userModel.setName(rs.getString(Column.UserColumn.name));
         userModel.setEmail(rs.getString(Column.UserColumn.email));
-        userModel.setMobile(rs.getString(Column.UserColumn.mobile));
         userModel.setRole(Enums.UserRole.valueOf(rs.getString(Column.UserColumn.role)));
         sellerLoginResponse.setUserModel(userModel);
 

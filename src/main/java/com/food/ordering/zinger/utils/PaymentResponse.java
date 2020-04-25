@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.model.TransactionModel;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.annotation.Bean;
@@ -29,15 +28,14 @@ public class PaymentResponse {
     /**
      * Parse the file "responseStatus.json".
      *
+     * @return the string containing the entire json.
      * @implNote This file contains the transaction response code and
      * message from the payment gateway.
      * It is left completely free to EDIT for the developer convenience
      * with respect to the chosen payment gateway.
-     *
+     * <p>
      * Add/remove transaction status in the above mentioned file matching
      * the TRANSACTION_STATUS enum.
-     *
-     * @return the string containing the entire json.
      */
     @Bean
     public void parseResponseStatus() {

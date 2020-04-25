@@ -3,7 +3,7 @@ package com.food.ordering.zinger.dao.impl;
 import com.food.ordering.zinger.constant.Column.RatingColumn;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.RatingQuery;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.RatingDao;
 import com.food.ordering.zinger.model.RatingModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopModel;

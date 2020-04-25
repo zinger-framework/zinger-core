@@ -1,9 +1,6 @@
 package com.food.ordering.zinger.service.interfaces;
 
-import com.food.ordering.zinger.dao.impl.OrderDaoImpl;
 import com.food.ordering.zinger.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 

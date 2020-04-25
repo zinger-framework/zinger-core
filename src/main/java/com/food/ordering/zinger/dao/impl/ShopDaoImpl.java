@@ -2,10 +2,9 @@ package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
-import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
@@ -26,12 +25,10 @@ import java.util.List;
  *
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.
- *
  * @implNote Please check the Rating and Configuration table for better understanding.
- *
  * @implNote All endpoint services are audited for both success and error responses
  * using "AuditLogDaoImpl".
- *
+ * <p>
  * Endpoints starting with "/shop" invoked here.
  */
 @Repository
@@ -58,7 +55,7 @@ public class ShopDaoImpl implements ShopDao {
     /**
      * Inserts the shop details.
      * Authorized by SUPER_ADMIN only.
-     *
+     * <p>
      * Insert the shop details in the Shop table
      * Insert the shop configuration details in the Configuration table
      *

@@ -13,8 +13,6 @@ import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.UserLogModel;
-import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
@@ -39,7 +37,7 @@ import static com.food.ordering.zinger.constant.ErrorLog.*;
  * to avoid unauthorized access to our service.
  * @implNote Authentication & Invitation Apis alone won't have RH parameter.
  * @implNote All endpoint services are audited for both success and error responses
- * using "AuditLogDaoImpl".
+ * using "AuditLogDao".
  * <p>
  * Endpoints starting with "/user" invoked here.
  */
@@ -50,25 +48,7 @@ public class UserDaoImpl implements UserDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    PlaceDaoImpl placeDaoImpl;
-
-    @Autowired
-    ShopDaoImpl shopDaoImpl;
-
-    @Autowired
-    ConfigurationDaoImpl configurationDaoImpl;
-
-    @Autowired
-    RatingDaoImpl ratingDaoImpl;
-
-    @Autowired
     NotifyDaoImpl notifyDaoImpl;
-
-    @Autowired
-    InterceptorDaoImpl interceptorDaoImpl;
-
-    @Autowired
-    AuditLogDaoImpl auditLogDaoImpl;
 
     /**
      * Customer Authentication
@@ -103,7 +83,7 @@ public class UserDaoImpl implements UserDao {
             } else {
                 UserModel userModel = null;
                 try {
-                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userRowMapperLambda);
+                    userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.loginUserByMobileOauth, parameters, UserRowMapperLambda.userLoginRowMapperLambda);
                 } catch (Exception e) {
                     System.err.println(e.getClass().getName() + ": " + e.getMessage());
                 }
@@ -139,7 +119,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, user.toString()));
         return response;
     }
 
@@ -182,13 +161,13 @@ public class UserDaoImpl implements UserDao {
     public Response<UserShopListModel> verifySeller(UserModel user) {
         Response<UserShopListModel> response = new Response<>();
         response.prioritySet(Priority.HIGH);
+        List<SellerLoginResponse> sellerLoginResponseList = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.mobile, user.getMobile())
                     .addValue(UserColumn.oauthId, user.getOauthId());
 
-            List<SellerLoginResponse> sellerLoginResponseList = null;
             try {
                 sellerLoginResponseList = namedParameterJdbcTemplate.query(UserQuery.sellerLogin, parameters, UserShopRowMapperLambda.userShopDetailRowMapperLambda);
             } catch (Exception e) {
@@ -223,7 +202,6 @@ public class UserDaoImpl implements UserDao {
             response.setCode(ErrorLog.CE1154);
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, user.toString()));
         return response;
     }
 
@@ -276,10 +254,9 @@ public class UserDaoImpl implements UserDao {
      * @implNote Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
      */
     @Override
-    public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
-        Response<UserInviteModel> response = new Response<>();
-        response.prioritySet(Priority.MEDIUM);
-        UserInviteModel userInviteModel = null;
+    public Response<UserModel> verifyInvite(Integer shopId, String mobile) {
+        Response<UserModel> response = new Response<>();
+        UserModel userModel = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -287,17 +264,15 @@ public class UserDaoImpl implements UserDao {
                     .addValue(Column.UserInviteColumn.mobile, mobile);
 
             try {
-                userInviteModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserInviteRowMapperLambda.sellerInviteModelRowMapper);
+                userModel = namedParameterJdbcTemplate.queryForObject(Query.UserInviteQuery.verifyInvite, parameters, UserRowMapperLambda.userRoleRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             } finally {
-                if (userInviteModel != null) {
-                    userInviteModel.getShopModel().setPlaceModel(null);
-
+                if (userModel != null) {
                     response.setCode(CodeSuccess);
                     response.setMessage(Success);
                     response.prioritySet(Priority.LOW);
-                    response.setData(userInviteModel);
+                    response.setData(userModel);
                 } else {
                     response.setCode(ErrorLog.IE1166);
                     response.setMessage(ErrorLog.InviteExpired);
@@ -308,7 +283,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, shopId.toString()));
         return response;
     }
 
@@ -321,34 +295,26 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<UserShopListModel> acceptInvite(UserShopModel userShopModel) {
         Response<UserShopListModel> response = new Response<>();
-        response.prioritySet(Priority.MEDIUM);
-        Response<UserInviteModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
+        Response<UserModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
 
         try {
             if (inviteModelResponse.getCode().equals(CodeSuccess)) {
-                userShopModel.getUserModel().setRole(inviteModelResponse.getData().getUserModel().getRole());
+                userShopModel.getUserModel().setRole(inviteModelResponse.getData().getRole());
                 Number responseValue = insertUser(userShopModel.getUserModel());
                 if (responseValue != null && responseValue.intValue() > 0) {
                     userShopModel.getUserModel().setId(responseValue.intValue());
-                    Response<String> updateShopResponse = updateShop(userShopModel);
-                    if (updateShopResponse.getCode().equals(CodeSuccess))
-                        response = verifySeller(userShopModel.getUserModel());
-                    else {
-                        response.setCode(ErrorLog.SDNU1214);
-                        response.setMessage(ShopDetailNotUpdated);
-                    }
+                    updateShop(userShopModel);
+                    deleteInvite(userShopModel);
+                    response = verifySeller(userShopModel.getUserModel());
                 } else {
-                    Response<UserModel> userModelResponse = getUserByMobile(userShopModel.getUserModel().getMobile());
+                    Response<UserModel> userModelResponse = getUserIdByMobile(userShopModel.getUserModel().getMobile());
+                    userShopModel.getUserModel().setId(userModelResponse.getData().getId());
                     if (userModelResponse != null) {
-                        Response<String> updateRoleResponse = updateRole(userModelResponse.getData().getId(), inviteModelResponse.getData().getUserModel().getRole());
+                        Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getId(), inviteModelResponse.getData().getRole());
                         if (updateRoleResponse.getCode().equals(CodeSuccess)) {
-                            Response<String> updateShopResponse = updateShop(userShopModel);
-                            if (updateShopResponse.getCode().equals(CodeSuccess))
-                                response = verifySeller(userShopModel.getUserModel());
-                            else {
-                                response.setCode(ErrorLog.SDNU1215);
-                                response.setMessage(ShopDetailNotUpdated);
-                            }
+                            updateShop(userShopModel);
+                            deleteInvite(userShopModel);
+                            response = verifySeller(userShopModel.getUserModel());
                         } else {
                             response.setCode(ErrorLog.UDNU1153);
                             response.setMessage(UserDetailNotUpdated);
@@ -364,7 +330,11 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, userShopModel.getUserModel().getMobile()));
+        if (response.getCode().equals(CodeFailure)) {
+            response.setCode(inviteModelResponse.getCode());
+            response.setMessage(inviteModelResponse.getMessage());
+        }
+
         return response;
     }
 
@@ -375,6 +345,7 @@ public class UserDaoImpl implements UserDao {
      * @return the details of the user.
      */
     public Response<UserModel> getUserById(Integer id) {
+        //TODO: May not be needed
         Response<UserModel> response = new Response<>();
         UserModel userModel = null;
 
@@ -402,7 +373,8 @@ public class UserDaoImpl implements UserDao {
      * @param mobile String
      * @return the details of the user.
      */
-    public Response<UserModel> getUserByMobile(String mobile) {
+    public Response<UserModel> getUserIdByMobile(String mobile) {
+        //TODO: THINK TWICE TO MODIFY
         Response<UserModel> response = new Response<>();
         UserModel userModel = null;
 
@@ -410,7 +382,7 @@ public class UserDaoImpl implements UserDao {
                 .addValue(UserColumn.mobile, mobile);
 
         try {
-            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserByMobile, parameters, UserRowMapperLambda.userRowMapperLambda);
+            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserIdByMobile, parameters, UserRowMapperLambda.userIdRowMapperLambda);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
@@ -426,64 +398,6 @@ public class UserDaoImpl implements UserDao {
 
     /**
      * Gets shop by user id.
-     *
-     * @param userModel UserModel
-     * @return the details of the shop, the user works.
-     */
-    public Response<UserShopListModel> getShopByUserId(UserModel userModel) {
-        Response<UserShopListModel> response = new Response<>();
-        UserShopListModel userShopListModel = null;
-        List<ShopConfigurationModel> shopConfigurationModelList = null;
-        List<UserShopModel> userShopModelList = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.userId, userModel.getId());
-
-            try {
-                userShopModelList = namedParameterJdbcTemplate.query(UserShopQuery.getShopByUserId, parameters, UserShopRowMapperLambda.userShopRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (userShopModelList != null && !userShopModelList.isEmpty()) {
-                userShopListModel = new UserShopListModel();
-                shopConfigurationModelList = new ArrayList<>();
-
-                for (int i = 0; i < userShopModelList.size(); i++) {
-                    ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-
-                    Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(userShopModelList.get(i).getShopModel().getId());
-                    shopConfigurationModel.setShopModel(shopModelResponse.getData());
-
-                    Response<RatingModel> ratingModelResponse = ratingDaoImpl.getRatingByShopId(shopModelResponse.getData());
-                    ratingModelResponse.getData().setShopModel(null);
-                    shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
-
-                    Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(shopModelResponse.getData());
-                    configurationModelResponse.getData().setShopModel(null);
-                    shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
-
-                    shopConfigurationModelList.add(shopConfigurationModel);
-                }
-                userShopListModel.setUserModel(userModel);
-                userShopListModel.setShopModelList(shopConfigurationModelList);
-
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(userShopListModel);
-            } else {
-                response.setCode(ErrorLog.SDNA1168);
-                response.setMessage(ErrorLog.ShopDetailNotAvailable);
-            }
-        }
-        return response;
-    }
-
-    /**
-     * Gets shop by user id.
      * Authorized by SHOP_OWNER only.
      *
      * @param shopId Integer
@@ -493,14 +407,13 @@ public class UserDaoImpl implements UserDao {
     public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
         Response<List<UserModel>> userModelResponse = new Response<>();
         List<UserModel> userModelList = null;
-        userModelResponse.prioritySet(Priority.MEDIUM);
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserShopColumn.shopId, shopId);
 
             try {
-                userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
+                userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userDetailRowMapperLambda);
             } catch (Exception e) {
                 userModelResponse.setCode(ErrorLog.CE1104);
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -518,7 +431,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(userModelResponse, null, shopId.toString()));
         return userModelResponse;
     }
 
@@ -533,7 +445,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> updateUser(UserModel user) {
         Response<String> response = new Response<>();
-        response.prioritySet(Priority.MEDIUM);
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -551,7 +462,6 @@ public class UserDaoImpl implements UserDao {
                 response.setData(ErrorLog.Success);
             } else {
                 response.setCode(ErrorLog.UDNU1157);
-                response.setMessage(ErrorLog.Failure);
                 response.setMessage(ErrorLog.UserDetailNotUpdated);
             }
         } catch (Exception e) {
@@ -559,7 +469,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, user.getId(), user.toString()));
         return response;
     }
 
@@ -596,9 +505,7 @@ public class UserDaoImpl implements UserDao {
      * @param userPlaceModel UserPlaceModel
      * @return success response if the update is successful.
      */
-    public Response<String> updatePlace(UserPlaceModel userPlaceModel) {
-        Response<String> response = new Response<>();
-
+    public void updatePlace(UserPlaceModel userPlaceModel) {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserPlaceColumn.userId, userPlaceModel.getUserModel().getId())
@@ -607,14 +514,9 @@ public class UserDaoImpl implements UserDao {
             int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceByMobile, parameters);
             if (result <= 0)
                 namedParameterJdbcTemplate.update(UserPlaceQuery.insertUserPlace, parameters);
-
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.Success);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
-        return response;
     }
 
     /**
@@ -623,9 +525,7 @@ public class UserDaoImpl implements UserDao {
      * @param userShopModel userShopModel
      * @return success response if the update is successful.
      */
-    public Response<String> updateShop(UserShopModel userShopModel) {
-        Response<String> response = new Response<>();
-
+    public void updateShop(UserShopModel userShopModel) {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserShopColumn.userId, userShopModel.getUserModel().getId())
@@ -634,15 +534,9 @@ public class UserDaoImpl implements UserDao {
             int result = namedParameterJdbcTemplate.update(UserShopQuery.updateShopById, parameters);
             if (result <= 0)
                 namedParameterJdbcTemplate.update(UserShopQuery.insertUserShop, parameters);
-
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.Success);
-            response.setData(ErrorLog.Success);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
-        return response;
     }
 
     /**
@@ -654,26 +548,8 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
-        Response<String> response = new Response<>();
-        response.prioritySet(Priority.MEDIUM);
-
-        Response<String> responseUser = updateUser(userPlaceModel.getUserModel());
-        Response<String> responsePlace = updatePlace(userPlaceModel);
-
-        if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.CodeSuccess);
-            response.setMessage(ErrorLog.Success);
-            response.setData(ErrorLog.Success);
-        } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.UDNU1159);
-            response.setMessage(ErrorLog.Failure);
-            response.setData(ErrorLog.UserDetailNotUpdated);
-        } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.CDNU1160);
-            response.setMessage(ErrorLog.Failure);
-            response.setData(ErrorLog.PlaceDetailNotUpdated);
-        }
-
+        Response<String> response = updateUser(userPlaceModel.getUserModel());
+        updatePlace(userPlaceModel);
         return response;
     }
 
@@ -711,7 +587,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, userId, null));
         return response;
     }
 
@@ -725,7 +600,6 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> deleteInvite(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
-        response.prioritySet(Priority.MEDIUM);
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -748,7 +622,6 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, userShopModel.toString()));
         return response;
     }
 }

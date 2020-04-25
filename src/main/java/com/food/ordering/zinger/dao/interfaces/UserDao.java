@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.dao.interfaces;
 
 import com.food.ordering.zinger.model.*;
+
 import java.util.List;
 
 public interface UserDao {
@@ -8,7 +9,7 @@ public interface UserDao {
 
     Response<UserShopListModel> verifySeller(UserModel user);
 
-    Response<UserInviteModel> verifyInvite(Integer shopId, String mobile);
+    Response<UserModel> verifyInvite(Integer shopId, String mobile);
 
     Response<String> inviteSeller(UserShopModel userShopModel);
 

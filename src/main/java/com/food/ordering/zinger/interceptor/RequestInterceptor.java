@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,21 +27,19 @@ import static org.springframework.http.HttpMethod.*;
 @Component
 public class RequestInterceptor extends HandlerInterceptorAdapter {
 
+    private static final int whiteListFlag = 0;
+    private static final int superAdminFlag = 1;
+    private static final int shopOwnerFlag = 2;
+    private static final int sellerFlag = 3;
     @Autowired
     InterceptorDao interceptorDao;
-
     private ArrayList<Map<String, HttpMethod>> whiteListUrls;
     private ArrayList<Map<String, HttpMethod>> superAdminUrls;
     private ArrayList<Map<String, HttpMethod>> shopOwnerUrls;
     private ArrayList<Map<String, HttpMethod>> sellerUrls;
 
-    private static final int whiteListFlag = 0;
-    private static final int superAdminFlag = 1;
-    private static final int shopOwnerFlag = 2;
-    private static final int sellerFlag = 3;
-
     @Bean
-    public void populateUrls(){
+    public void populateUrls() {
         whiteListUrls = new ArrayList<>();
         superAdminUrls = new ArrayList<>();
         shopOwnerUrls = new ArrayList<>();

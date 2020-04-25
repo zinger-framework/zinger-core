@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.controller;
 
-import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +46,7 @@ public class UserController {
     }
 
     @GetMapping(value = verifyInvite)
-    public Response<UserInviteModel> verifyInvite(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile) {
+    public Response<UserModel> verifyInvite(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile) {
         return userService.verifyInvite(shopId, mobile);
     }
 

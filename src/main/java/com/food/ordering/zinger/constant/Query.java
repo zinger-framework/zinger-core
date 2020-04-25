@@ -4,14 +4,11 @@ import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.OrderItemModel;
-import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
-import jdk.nashorn.internal.objects.annotations.Where;
 
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.Column.OrderItemColumn.*;
-import static com.food.ordering.zinger.constant.Enums.UserRole.DELIVERY;
-import static com.food.ordering.zinger.constant.Enums.UserRole.SELLER;
+import static com.food.ordering.zinger.constant.Enums.UserRole.*;
 import static com.food.ordering.zinger.constant.Sql.*;
 
 public class Query {
@@ -377,10 +374,7 @@ public class Query {
                 COMMA_COLON + UserInviteColumn.shopId + RIGHT_PARANTHESIS;
 
         public static final String verifyInvite = SELECT +
-                UserInviteColumn.mobile + COMMA +
-                UserInviteColumn.role + COMMA +
-                UserInviteColumn.shopId + COMMA +
-                UserInviteColumn.invitedAt + FROM + UserInviteColumn.tableName + WHERE +
+                UserInviteColumn.role + FROM + UserInviteColumn.tableName + WHERE +
                 UserInviteColumn.mobile + EQUAL_COLON + UserInviteColumn.mobile + AND +
                 UserInviteColumn.shopId + EQUAL_COLON + UserInviteColumn.shopId + AND +
                 notDeleted + AND +
@@ -594,29 +588,34 @@ public class Query {
                 UserColumn.role + FROM + UserColumn.tableName + WHERE +
                 UserColumn.id + EQUAL_COLON + UserColumn.id;
 
-        public static final String getUserByMobile = SELECT +
-                UserColumn.id + COMMA +
-                UserColumn.oauthId + COMMA +
-                UserColumn.notifToken + COMMA +
-                UserColumn.name + COMMA +
-                UserColumn.email + COMMA +
-                UserColumn.mobile + COMMA +
-                UserColumn.role + FROM + UserColumn.tableName + WHERE +
+        public static final String getUserIdByMobile = SELECT +
+                UserColumn.id + FROM + UserColumn.tableName + WHERE +
                 UserColumn.mobile + EQUAL_COLON + UserColumn.mobile;
 
         public static final String getSellerByShopId = SELECT +
-                UserColumn.id + COMMA +
-                UserColumn.oauthId + COMMA +
-                UserColumn.name + COMMA +
-                UserColumn.email + COMMA +
-                UserColumn.mobile + COMMA +
-                UserColumn.role + FROM + UserColumn.tableName + WHERE +
-                notDeleted + AND +
-                UserColumn.role + IN + LEFT_PARANTHESIS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE + DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS + AND +
-                UserColumn.id + IN + LEFT_PARANTHESIS + SELECT +
-                UserShopColumn.userId + FROM + UserShopColumn.tableName + WHERE +
-                UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + RIGHT_PARANTHESIS;
+                UserColumn.tableName + DOT + UserColumn.id + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + COMMA +
+                UserColumn.tableName + DOT + UserColumn.email + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + COMMA +
+                UserColumn.tableName + DOT + UserColumn.role + FROM + UserColumn.tableName +
+                INNER_JOIN + UserShopColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + UserShopColumn.tableName + DOT + UserShopColumn.userId + AND +
+                UserColumn.tableName + DOT + notDeleted + AND +
+                UserShopColumn.tableName + DOT + UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + AND +
+                UserColumn.tableName + DOT + UserColumn.role + IN + LEFT_PARANTHESIS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                UNION + SELECT +
+                "0" + COMMA +
+                SINGLE_QUOTE + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + SINGLE_QUOTE + COMMA +
+                UserInviteColumn.mobile + COMMA +
+                UserInviteColumn.role + FROM + UserInviteColumn.tableName + WHERE +
+                UserInviteColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + AND +
+                UserInviteQuery.notDeleted + AND +
+                TIMESTAMPDIFF + LEFT_PARANTHESIS + MINUTE + COMMA + UserInviteColumn.invitedAt + COMMA + CURRENT_TIMESTAMP + RIGHT_PARANTHESIS + LESS_THAN + 15 + AND +
+                UserInviteColumn.role + IN + LEFT_PARANTHESIS + SINGLE_QUOTE + SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + DELIVERY.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + SHOP_OWNER.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS;
 
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
@@ -660,7 +659,6 @@ public class Query {
                 UserColumn.tableName + DOT + UserColumn.id + COMMA +
                 UserColumn.tableName + DOT + UserColumn.name + COMMA +
                 UserColumn.tableName + DOT + UserColumn.email + COMMA +
-                UserColumn.tableName + DOT + UserColumn.mobile + COMMA +
                 UserColumn.tableName + DOT + UserColumn.role + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.id + AS + UserShopColumn.shopId + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.name + AS + Column.shopName + COMMA +
@@ -690,10 +688,12 @@ public class Query {
                 UserColumn.tableName + DOT + UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 UserColumn.tableName + DOT + UserColumn.role + NOT_EQUALS + SINGLE_QUOTE + Enums.UserRole.CUSTOMER.name() + SINGLE_QUOTE;
 
-        public static final String validateUser = getUserById + AND +
-                notDeleted + AND +
+        public static final String validateUser = SELECT +
+                UserColumn.id + FROM + UserColumn.tableName + WHERE +
+                UserColumn.id + EQUAL_COLON + UserColumn.id + AND +
                 UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
-                UserColumn.role + EQUAL_COLON + UserColumn.role;
+                UserColumn.role + EQUAL_COLON + UserColumn.role + AND +
+                notDeleted;
     }
 
     public static final class UserShopQuery {

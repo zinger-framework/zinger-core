@@ -6,12 +6,11 @@ import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
-import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
@@ -323,7 +322,7 @@ public class OrderDaoImpl implements OrderDao {
                         break;
                     } else {
                         transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<UserModel> userModelResponse = userDaoImpl.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
+                        Response<UserModel> userModelResponse = userDaoImpl.getUserIdByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
                         if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             priority = Priority.MEDIUM;
                             response.setCode(ErrorLog.UDNA1277);
@@ -394,7 +393,7 @@ public class OrderDaoImpl implements OrderDao {
                         break;
                     } else {
                         transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<UserModel> userModelResponse = userDaoImpl.getUserByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
+                        Response<UserModel> userModelResponse = userDaoImpl.getUserIdByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
                         if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                             priority = Priority.MEDIUM;
                             response.setCode(ErrorLog.UDNA1290);
@@ -550,7 +549,7 @@ public class OrderDaoImpl implements OrderDao {
                     priority = Priority.LOW;
                 } else {
                     response.setCode(ErrorLog.ODNU1285);
-                    response.setData(ErrorLog.OrderDetailNotUpdated);
+                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
                 }
             } else {
                 response.setCode(transactionModelResponse.getCode());

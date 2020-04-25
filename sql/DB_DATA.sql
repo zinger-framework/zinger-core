@@ -98,21 +98,3 @@ select * from orders;
 select * from orders_item;
 select * from rating;
 select * from configurations;
- 
- SELECT users.id, users.name, users.email, users.mobile, users.role, 
- shop.id AS shop_id, shop.name AS shop_name, shop.mobile AS shop_mobile, shop.photo_url, shop.cover_urls, shop.opening_time, shop.closing_time, 
- configurations.merchant_id, configurations.delivery_price, configurations.is_delivery_available, configurations.is_order_taken, 
- rating.rating, rating.user_count 
- FROM users 
- INNER JOIN users_shop ON 
- users.id = users_shop.user_id AND 
- users.role != 'CUSTOMER' AND 
- users.is_delete = 0 
- INNER JOIN shop ON 
- shop.id = users_shop.shop_id AND 
- shop.is_delete = 0 
- INNER JOIN configurations ON 
- shop.id = configurations.shop_id 
- INNER JOIN rating ON 
- shop.id = rating.shop_id
- WHERE users.mobile = '9176786581' AND users.oauth_id = 'auth_9176786581';

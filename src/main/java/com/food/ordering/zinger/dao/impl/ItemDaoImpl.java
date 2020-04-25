@@ -7,7 +7,7 @@ import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.ItemDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
@@ -29,12 +29,10 @@ import static com.food.ordering.zinger.constant.Sql.PERCENT;
  *
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.
- *
  * @implNote Please check the Shop and Order table for better understanding.
- *
  * @implNote All endpoint services are audited for both success and error responses
  * using "AuditLogDaoImpl".
- *
+ * <p>
  * Endpoints starting with "/menu" invoked here.
  */
 @Repository
@@ -140,11 +138,10 @@ public class ItemDaoImpl implements ItemDao {
      * Gets list of items matching the item name, along with
      * the shop details, located in the given place.
      *
-     * @implNote Used mainly for search/filter the items by name.
-     *
-     * @param placeId Integer
+     * @param placeId  Integer
      * @param itemName String
      * @return the details of the list of items, if the match is successful.
+     * @implNote Used mainly for search/filter the items by name.
      */
     @Override
     public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName) {

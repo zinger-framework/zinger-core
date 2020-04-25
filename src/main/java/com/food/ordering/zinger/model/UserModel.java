@@ -80,7 +80,7 @@ public class UserModel {
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", oauthId='" + oauthId + '\'' +
-                ", notificationToken='" + notificationToken + '\'' +
+                ", notificationToken=" + notificationToken +
                 ", role=" + role +
                 '}';
     }

@@ -20,6 +20,7 @@ public class Sql {
     public static final String LEFT_PARANTHESIS = "(";
     public static final String RIGHT_PARANTHESIS = ")";
     public static final String COMMA = ", ";
+    public static final String UNION = " UNION ";
     public static final String SINGLE_QUOTE = "'";
     public static final String IN = " IN ";
     public static final String AS = " AS ";

@@ -1,10 +1,7 @@
 package com.food.ordering.zinger.service.impl;
 
-import com.food.ordering.zinger.constant.Enums;
-import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.dao.impl.AuditLogDaoImpl;
-import com.food.ordering.zinger.dao.impl.InterceptorDaoImpl;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
+import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
 import com.food.ordering.zinger.service.interfaces.UserService;
@@ -20,66 +17,79 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
 
     @Autowired
-    InterceptorDao interceptorDao;
-
-    @Autowired
     AuditLogDao auditLogDao;
 
     @Override
     public Response<UserPlaceModel> loginRegisterCustomer(UserModel user) {
-        return userDao.loginRegisterCustomer(user);
+        Response<UserPlaceModel> response = userDao.loginRegisterCustomer(user);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, user.toString()));
+        return response;
     }
 
     @Override
     public Response<UserShopListModel> verifySeller(UserModel user) {
-        return userDao.verifySeller(user);
+        Response<UserShopListModel> response = userDao.verifySeller(user);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, user.toString()));
+        return response;
     }
 
     @Override
     public Response<String> inviteSeller(UserShopModel userShopModel) {
-        Response<String> response = new Response<>();
+        Response<String> response = userDao.inviteSeller(userShopModel);
         auditLogDao.insertUserLog(new UserLogModel(response, null, userShopModel.toString()));
         return response;
     }
 
     @Override
     public Response<UserShopListModel> acceptInvite(UserShopModel userShopModel) {
-        return userDao.acceptInvite(userShopModel);
+        Response<UserShopListModel> response = userDao.acceptInvite(userShopModel);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, userShopModel.getUserModel().getMobile()));
+        return response;
     }
 
     /**************************************************/
 
     @Override
     public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
-        return userDao.getSellerByShopId(shopId);
+        Response<List<UserModel>> response = userDao.getSellerByShopId(shopId);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, shopId.toString()));
+        return response;
     }
 
     @Override
-    public Response<UserInviteModel> verifyInvite(Integer shopId, String mobile) {
-        return userDao.verifyInvite(shopId, mobile);
+    public Response<UserModel> verifyInvite(Integer shopId, String mobile) {
+        Response<UserModel> response = userDao.verifyInvite(shopId, mobile);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, shopId.toString()));
+        return response;
     }
 
     /**************************************************/
 
     @Override
     public Response<String> updateUser(UserModel userModel) {
-        return userDao.updateUser(userModel);
+        Response<String> response = userDao.updateUser(userModel);
+        auditLogDao.insertUserLog(new UserLogModel(response, userModel.getId(), userModel.toString()));
+        return response;
     }
 
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
-        Response<String> response = updateUserPlaceData(userPlaceModel);
+        Response<String> response = userDao.updateUserPlaceData(userPlaceModel);
         auditLogDao.insertUserLog(new UserLogModel(response, userPlaceModel.getUserModel().getId(), userPlaceModel.toString()));
         return response;
     }
 
     @Override
     public Response<String> deleteSeller(Integer shopId, Integer userId) {
-        return userDao.deleteSeller(shopId, userId);
+        Response<String> response = userDao.deleteSeller(shopId, userId);
+        auditLogDao.insertUserLog(new UserLogModel(response, userId, null));
+        return response;
     }
 
     @Override
     public Response<String> deleteInvite(UserShopModel userShopModel) {
-        return userDao.deleteInvite(userShopModel);
+        Response<String> response = userDao.deleteInvite(userShopModel);
+        auditLogDao.insertUserLog(new UserLogModel(response, null, userShopModel.toString()));
+        return response;
     }
 }

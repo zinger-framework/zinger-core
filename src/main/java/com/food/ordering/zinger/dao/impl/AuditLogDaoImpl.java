@@ -18,7 +18,6 @@ import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
  * ShopLog, PlaceLog, UserLog, OrderLog and ItemLog tables in MySQL.
  *
  * @implNote Please check corresponding actual table for better understanding.
- *
  * @implNote All endpoint services are audited for both success and error responses
  * invoked here.
  */
@@ -165,7 +164,6 @@ public class AuditLogDaoImpl implements AuditLogDao {
         Response<String> response = new Response<>();
 
         try {
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(OrderLogColumn.id, OrderLogModel.getId())
                     .addValue(OrderLogColumn.errorCode, OrderLogModel.getErrorCode())

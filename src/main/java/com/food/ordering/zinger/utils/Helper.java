@@ -14,7 +14,7 @@ public class Helper {
         return result;
     }
 
-    public static Boolean isNotNull(String string){
+    public static Boolean isNotNull(String string) {
         return string != null && string.length() > 0;
     }
 }

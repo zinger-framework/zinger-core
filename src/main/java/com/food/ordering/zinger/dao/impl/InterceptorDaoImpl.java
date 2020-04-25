@@ -19,7 +19,7 @@ import org.springframework.stereotype.Repository;
 /**
  * InterceptorDao is responsible for validating the user details who
  * request our service, thus avoiding unauthorized access to the endpoints.
- *
+ * <p>
  * All endpoints sent with the request header(RH) invoked here.
  */
 @Repository
@@ -61,7 +61,7 @@ public class InterceptorDaoImpl implements InterceptorDao {
                     .addValue(UserColumn.role, requestHeaderModel.getRole());
 
             try {
-                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userRowMapperLambda);
+                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userIdRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }

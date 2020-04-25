@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.controller;
 
-import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.service.interfaces.PlaceService;

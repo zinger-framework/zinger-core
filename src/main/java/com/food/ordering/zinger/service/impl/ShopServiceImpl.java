@@ -1,9 +1,7 @@
 package com.food.ordering.zinger.service.impl;
 
-import com.food.ordering.zinger.dao.impl.ShopDaoImpl;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.model.ConfigurationModel;
-import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
 import com.food.ordering.zinger.service.interfaces.ShopService;

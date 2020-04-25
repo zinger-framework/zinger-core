@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class InvalidExceptionHandler {
 
     @ExceptionHandler
-    public ResponseEntity<String> handleInvalidFieldException(InvalidException exception){
-        if(exception.getMessage().equals(ErrorLog.InvalidHeader))
+    public ResponseEntity<String> handleInvalidFieldException(InvalidException exception) {
+        if (exception.getMessage().equals(ErrorLog.InvalidHeader))
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.PRECONDITION_FAILED);
-        else if(exception.getMessage().equals(ErrorLog.UnAuthorizedAccess))
+        else if (exception.getMessage().equals(ErrorLog.UnAuthorizedAccess))
             return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.PRECONDITION_REQUIRED);
     }

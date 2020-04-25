@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.controller;
 
-import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.service.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;

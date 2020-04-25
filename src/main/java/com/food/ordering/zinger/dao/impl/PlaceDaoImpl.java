@@ -2,12 +2,10 @@ package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.PlaceColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
-import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.PlaceQuery;
-import com.food.ordering.zinger.dao.interfaces.*;
+import com.food.ordering.zinger.dao.interfaces.PlaceDao;
 import com.food.ordering.zinger.model.PlaceModel;
-import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.logger.PlaceLogModel;
 import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
@@ -27,10 +25,9 @@ import static com.food.ordering.zinger.constant.ErrorLog.*;
  *
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.
- *
  * @implNote All endpoint services are audited for both success and error responses
  * using "AuditLogDaoImpl".
- *
+ * <p>
  * Endpoints starting with "/place" invoked here.
  */
 @Repository
@@ -85,10 +82,9 @@ public class PlaceDaoImpl implements PlaceDao {
     /**
      * Gets all places
      *
+     * @return the list of place details
      * @implNote Used in the registration process to choose the
      * place the user belongs.
-     *
-     * @return the list of place details
      */
     @Override
     public Response<List<PlaceModel>> getAllPlaces() {

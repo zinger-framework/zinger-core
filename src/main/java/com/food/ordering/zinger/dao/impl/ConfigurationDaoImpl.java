@@ -50,6 +50,7 @@ public class ConfigurationDaoImpl implements ConfigurationDao {
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            e.printStackTrace();
         }
 
         return response;

@@ -2,7 +2,6 @@ package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.dao.interfaces.ItemDao;
 import com.food.ordering.zinger.model.ItemModel;
-import com.food.ordering.zinger.model.RequestHeaderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.service.interfaces.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;

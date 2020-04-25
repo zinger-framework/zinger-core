@@ -1,9 +1,6 @@
 package com.food.ordering.zinger.service.interfaces;
 
-import com.food.ordering.zinger.dao.impl.UserDaoImpl;
 import com.food.ordering.zinger.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public interface UserService {
 
     Response<List<UserModel>> getSellerByShopId(Integer shopId);
 
-    Response<UserInviteModel> verifyInvite(Integer shopId, String mobile);
+    Response<UserModel> verifyInvite(Integer shopId, String mobile);
 
     /**************************************************/
 
