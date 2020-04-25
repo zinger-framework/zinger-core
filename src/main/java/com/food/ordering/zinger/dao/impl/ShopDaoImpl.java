@@ -95,10 +95,10 @@ public class ShopDaoImpl implements ShopDao {
             } else if (responseValue.intValue() <= 0) {
                 priority = Priority.HIGH;
                 response.setCode(ErrorLog.SDNU1251);
-                response.setData(ErrorLog.ShopDetailNotUpdated);
+                response.setMessage(ErrorLog.ShopDetailNotUpdated);
             } else {
                 response.setCode(ErrorLog.CDNU1252);
-                response.setData(ErrorLog.ConfigurationDetailNotUpdated);
+                response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1253);

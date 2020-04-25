@@ -579,7 +579,7 @@ public class UserDaoImpl implements UserDao {
                 response.setData(ErrorLog.Success);
             } else {
                 response.setCode(ErrorLog.UDND1164);
-                response.setData(ErrorLog.UserDetailNotDeleted);
+                response.setMessage(ErrorLog.UserDetailNotDeleted);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1106);
