@@ -138,7 +138,6 @@ public class ShopDaoImpl implements ShopDao {
         return response;
     }
 
-
     /**
      * Gets shop by id.
      *
@@ -151,7 +150,6 @@ public class ShopDaoImpl implements ShopDao {
         ShopConfigurationModel shopConfigurationModel = null;
 
         try {
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.id, shopId);
             shopConfigurationModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopConfigurationRatingById, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
@@ -173,7 +171,7 @@ public class ShopDaoImpl implements ShopDao {
     @Override
     public Response<ShopModel> getShopById(Integer shopId) {
 
-        // TODO remove it in future
+        //TODO: May not be needed
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
 
@@ -181,11 +179,7 @@ public class ShopDaoImpl implements ShopDao {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.id, shopId);
 
-            try {
-                shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {

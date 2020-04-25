@@ -392,7 +392,6 @@ public class Query {
     public static final class ShopQuery {
         public static final String notDeleted = ShopColumn.isDelete + " = 0";
 
-
         public static final String getShopConfigurationRatingByPlaceId = SELECT +
                 ShopColumn.tableName + DOT + ShopColumn.id + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.name + COMMA +
@@ -412,7 +411,6 @@ public class Query {
                 INNER_JOIN + RatingColumn.tableName +
                 ON + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
 
-
         public static final String getShopConfigurationRatingById = SELECT +
                 ShopColumn.tableName + DOT + ShopColumn.id + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.name + COMMA +
@@ -431,7 +429,6 @@ public class Query {
                 AND + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
                 INNER_JOIN + RatingColumn.tableName +
                 ON + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
-
 
         public static final String getShopById = SELECT +
                 ShopColumn.id + COMMA +
@@ -456,7 +453,6 @@ public class Query {
         public static final String deleteShop = UPDATE + ShopColumn.tableName + SET +
                 ShopColumn.isDelete + " = 1" + WHERE +
                 ShopColumn.id + EQUAL_COLON + ShopColumn.id;
-
     }
 
     public static final class TransactionQuery {
