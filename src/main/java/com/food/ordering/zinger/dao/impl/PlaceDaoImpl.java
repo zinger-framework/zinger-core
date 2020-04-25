@@ -106,7 +106,6 @@ public class PlaceDaoImpl implements PlaceDao {
      * @param placeId Integer
      * @return the details of the place.
      */
-    @Override
     public Response<PlaceModel> getPlaceById(Integer placeId) {
         //TODO: May not be needed
         Response<PlaceModel> response = new Response<>();

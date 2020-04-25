@@ -162,18 +162,21 @@ public class Query {
                 ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
                 ItemColumn.shopId + EQUAL_COLON + ItemColumn.shopId + AND +
                 notDeleted;
+
         public static final String getItemsByName = SELECT +
-                ItemColumn.id + COMMA +
-                ItemColumn.name + COMMA +
-                ItemColumn.price + COMMA +
-                ItemColumn.photoUrl + COMMA +
-                ItemColumn.category + COMMA +
-                ItemColumn.shopId + COMMA +
-                ItemColumn.isVeg + COMMA +
-                ItemColumn.isAvailable + FROM + ItemColumn.tableName + WHERE +
-                ItemColumn.name + LIKE + COLON + ItemColumn.name + AND +
-                notDeleted + AND +
-                ItemColumn.shopId + IN + LEFT_PARANTHESIS + ShopQuery.getShopIdByPlaceId + RIGHT_PARANTHESIS;
+                ItemColumn.tableName + DOT + ItemColumn.id + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.name + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.price + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.photoUrl + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.category + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.shopId + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.isVeg + COMMA +
+                ItemColumn.tableName + DOT + ItemColumn.isAvailable + FROM + ItemColumn.tableName +
+                INNER_JOIN + ShopColumn.tableName + ON +
+                ItemColumn.tableName + DOT + ItemColumn.shopId + EQUALS + ShopColumn.tableName + DOT + ShopColumn.id + AND +
+                ShopColumn.tableName + DOT + ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + WHERE +
+                ItemColumn.tableName + DOT + ItemColumn.name + LIKE + COLON + ItemColumn.name + AND +
+                ItemColumn.tableName + DOT + notDeleted;
         public static final String updateItem = UPDATE + ItemColumn.tableName + SET +
                 ItemColumn.name + EQUAL_COLON + ItemColumn.name + COMMA +
                 ItemColumn.price + EQUAL_COLON + ItemColumn.price + COMMA +
@@ -185,9 +188,7 @@ public class Query {
         public static final String deleteItem = UPDATE + ItemColumn.tableName + SET +
                 ItemColumn.isDelete + " = 1" + WHERE +
                 ItemColumn.id + EQUAL_COLON + ItemColumn.id;
-        public static final String unDeleteItem = UPDATE + ItemColumn.tableName + SET +
-                ItemColumn.isDelete + " = 0" + WHERE +
-                ItemColumn.id + EQUAL_COLON + ItemColumn.id;
+
 
         public static String getInsertItem(List<ItemModel> itemModelList) {
             StringBuilder insertItem = new StringBuilder(INSERT_INTO + ItemColumn.tableName + LEFT_PARANTHESIS +
@@ -391,22 +392,6 @@ public class Query {
     public static final class ShopQuery {
         public static final String notDeleted = ShopColumn.isDelete + " = 0";
 
-        public static final String insertShop = INSERT_INTO + ShopColumn.tableName + LEFT_PARANTHESIS +
-                ShopColumn.name + COMMA +
-                ShopColumn.photoUrl + COMMA +
-                ShopColumn.mobile + COMMA +
-                ShopColumn.placeId + COMMA +
-                ShopColumn.coverUrls + COMMA +
-                ShopColumn.openingTime + COMMA +
-                ShopColumn.closingTime + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + ShopColumn.name +
-                COMMA_COLON + ShopColumn.photoUrl +
-                COMMA_COLON + ShopColumn.mobile +
-                COMMA_COLON + ShopColumn.placeId +
-                COMMA_COLON + ShopColumn.coverUrls +
-                COMMA_COLON + ShopColumn.openingTime +
-                COMMA_COLON + ShopColumn.closingTime + RIGHT_PARANTHESIS;
-
 
         public static final String getShopConfigurationRatingByPlaceId = SELECT +
                 ShopColumn.tableName + DOT + ShopColumn.id + COMMA +
@@ -447,9 +432,6 @@ public class Query {
                 INNER_JOIN + RatingColumn.tableName +
                 ON + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
 
-        public static final String getShopIdByPlaceId = SELECT +
-                ShopColumn.id + FROM + ShopColumn.tableName + WHERE +
-                ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted;
 
         public static final String getShopById = SELECT +
                 ShopColumn.id + COMMA +
@@ -475,9 +457,6 @@ public class Query {
                 ShopColumn.isDelete + " = 1" + WHERE +
                 ShopColumn.id + EQUAL_COLON + ShopColumn.id;
 
-        public static final String unDeleteShop = UPDATE + ShopColumn.tableName + SET +
-                ShopColumn.isDelete + " = 0" + WHERE +
-                ShopColumn.id + EQUAL_COLON + ShopColumn.id;
     }
 
     public static final class TransactionQuery {

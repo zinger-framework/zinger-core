@@ -15,9 +15,8 @@ public class ApiConfig {
         public static final String insertItem = EMPTY_QUOTES;
         public static final String getItemsByShopId = "/shop/{shopId}";
         public static final String getItemsByName = "/{placeId}/{itemName}";
-        public static final String updateItemById = EMPTY_QUOTES;
+        public static final String updateItem = EMPTY_QUOTES;
         public static final String deleteItemById = "/delete/{itemId}";
-        public static final String unDeleteItemById = "/undelete/{itemId}";
     }
 
     public static class OrderApi {

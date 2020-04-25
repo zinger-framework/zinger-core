@@ -32,18 +32,13 @@ public class ItemController {
         return itemService.getItemsByName(placeId, itemName);
     }
 
-    @PatchMapping(value = updateItemById)
-    public Response<String> updateItemById(@RequestBody ItemModel itemModel) {
-        return itemService.updateItemById(itemModel);
+    @PatchMapping(value = updateItem)
+    public Response<String> updateItem(@RequestBody List<ItemModel> itemModelList) {
+        return itemService.updateItem(itemModelList);
     }
 
     @DeleteMapping(value = deleteItemById)
     public Response<String> deleteItemById(@PathVariable("itemId") Integer itemId) {
         return itemService.deleteItemById(itemId);
-    }
-
-    @DeleteMapping(value = unDeleteItemById)
-    public Response<String> unDeleteItemById(@PathVariable("itemId") Integer itemId) {
-        return itemService.unDeleteItemById(itemId);
     }
 }

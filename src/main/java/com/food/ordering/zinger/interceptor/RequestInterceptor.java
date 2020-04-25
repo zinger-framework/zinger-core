@@ -17,7 +17,7 @@ import java.util.Map;
 
 import static com.food.ordering.zinger.constant.ApiConfig.*;
 import static com.food.ordering.zinger.constant.ApiConfig.ItemApi.insertItem;
-import static com.food.ordering.zinger.constant.ApiConfig.ItemApi.updateItemById;
+import static com.food.ordering.zinger.constant.ApiConfig.ItemApi.updateItem;
 import static com.food.ordering.zinger.constant.ApiConfig.ShopApi.updateShopConfiguration;
 import static com.food.ordering.zinger.constant.ApiConfig.UserApi.*;
 import static com.food.ordering.zinger.constant.Column.UserColumn.*;
@@ -60,7 +60,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/seller/", DELETE));
 
         sellerUrls.add(Collections.singletonMap(ItemApi.BASE_URL + insertItem, POST));
-        sellerUrls.add(Collections.singletonMap(ItemApi.BASE_URL + updateItemById, PATCH));
+        sellerUrls.add(Collections.singletonMap(ItemApi.BASE_URL + updateItem, PATCH));
         sellerUrls.add(Collections.singletonMap(ItemApi.BASE_URL + "/delete/", DELETE));
         sellerUrls.add(Collections.singletonMap(ItemApi.BASE_URL + "/undelete/", DELETE));
     }

@@ -12,9 +12,7 @@ public interface ItemService {
 
     Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName);
 
-    Response<String> updateItemById(ItemModel itemModel);
+    Response<String> updateItem(List<ItemModel> itemModelList);
 
     Response<String> deleteItemById(Integer itemId);
-
-    Response<String> unDeleteItemById(Integer itemId);
 }

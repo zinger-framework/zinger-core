@@ -6,7 +6,6 @@ import com.food.ordering.zinger.model.Response;
 import java.util.List;
 
 public interface PlaceService {
-
     Response<String> insertPlace(PlaceModel placeModel);
 
     Response<List<PlaceModel>> getAllPlaces();

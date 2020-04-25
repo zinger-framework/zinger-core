@@ -9,6 +9,4 @@ public interface PlaceDao {
     Response<String> insertPlace(PlaceModel placeModel);
 
     Response<List<PlaceModel>> getAllPlaces();
-
-    Response<PlaceModel> getPlaceById(Integer placeId);
 }
