@@ -17,15 +17,15 @@ public class ItemLogModel {
 
     private Priority priority;
 
-    public ItemLogModel(Response response, Integer id, String updatedValue, Priority priority) {
+    public ItemLogModel() {
+    }
+
+    public ItemLogModel(Response response, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority = priority;
-    }
-
-    public ItemLogModel() {
+        this.priority = response.priorityGet();
     }
 
     public Integer getId() {
