@@ -1,8 +1,6 @@
 package com.food.ordering.zinger.dao.interfaces;
 
 import com.food.ordering.zinger.model.ItemModel;
-import com.food.ordering.zinger.model.OrderItemModel;
-import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.Response;
 
 import java.util.List;

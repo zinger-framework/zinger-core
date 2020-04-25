@@ -26,8 +26,7 @@ public class NotifyServiceImpl implements NotifyService {
         if (inviteModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
             userShopModel.getUserModel().setRole(inviteModelResponse.getData().getRole());
             return notifyDao.notifyInvitation(userShopModel);
-        }
-        else {
+        } else {
             response.setCode(inviteModelResponse.getCode());
             response.setMessage(inviteModelResponse.getMessage());
         }

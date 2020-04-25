@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.Column.ConfigurationColumn.*;
-import static com.food.ordering.zinger.constant.Column.RatingColumn.*;
+import static com.food.ordering.zinger.constant.Column.RatingColumn.rating;
+import static com.food.ordering.zinger.constant.Column.RatingColumn.userCount;
 import static com.food.ordering.zinger.constant.Column.ShopColumn.*;
 
 public class ShopRowMapperLambda {
@@ -38,7 +39,7 @@ public class ShopRowMapperLambda {
         return shop;
     };
 
-    public static final RowMapper<ShopConfigurationModel> shopConfigurationRowMapperLambda = (rs,rownum) -> {
+    public static final RowMapper<ShopConfigurationModel> shopConfigurationRowMapperLambda = (rs, rownum) -> {
 
         ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
 

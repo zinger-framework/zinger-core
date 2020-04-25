@@ -17,7 +17,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static com.food.ordering.zinger.constant.ErrorLog.SDND1257;
 import static com.food.ordering.zinger.constant.ErrorLog.ShopDetailNotDeleted;
 
 /**
@@ -44,7 +43,6 @@ public class ShopDaoImpl implements ShopDao {
     @Autowired
     PlaceDaoImpl placeDaoImpl;
 
-
     /**
      * Inserts the shop details.
      * Authorized by SUPER_ADMIN only.
@@ -58,12 +56,10 @@ public class ShopDaoImpl implements ShopDao {
     @Override
     public Response<String> insertShop(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
-        MapSqlParameterSource parameters;
-        response.prioritySet(Priority.MEDIUM);
 
         try {
             ShopModel shopModel = configurationModel.getShopModel();
-            parameters = new MapSqlParameterSource()
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.name, shopModel.getName())
                     .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
                     .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(shopModel.getCoverUrls()))
@@ -120,7 +116,8 @@ public class ShopDaoImpl implements ShopDao {
                     .addValue(ShopColumn.placeId, placeId);
             shopConfigurationModelList = namedParameterJdbcTemplate.query(ShopQuery.getShopConfigurationRatingByPlaceId, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1254);
+            response.setCode(ErrorLog.SDNA1256);
+            response.setMessage(ErrorLog.ShopDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (shopConfigurationModelList != null) {
@@ -139,8 +136,8 @@ public class ShopDaoImpl implements ShopDao {
      * @param shopId Integer
      * @return the details of the shop.
      */
-
     public Response<ShopConfigurationModel> getShopConfigurationById(Integer shopId) {
+        //TODO: change method name
         Response<ShopConfigurationModel> response = new Response<>();
         ShopConfigurationModel shopConfigurationModel = null;
 
@@ -165,7 +162,6 @@ public class ShopDaoImpl implements ShopDao {
 
     @Override
     public Response<ShopModel> getShopById(Integer shopId) {
-
         //TODO: May not be needed
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
@@ -236,14 +232,12 @@ public class ShopDaoImpl implements ShopDao {
     @Override
     public Response<String> deleteShopById(Integer shopId) {
         Response<String> response = new Response<>();
-        MapSqlParameterSource parameters;
 
         try {
-            parameters = new MapSqlParameterSource()
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.id, shopId);
 
             int responseValue = namedParameterJdbcTemplate.update(ShopQuery.deleteShop, parameters);
-
             if (responseValue > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
@@ -253,11 +247,9 @@ public class ShopDaoImpl implements ShopDao {
                 response.setCode(ErrorLog.SDND1257);
                 response.setMessage(ShopDetailNotDeleted);
             }
-
-
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1258);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

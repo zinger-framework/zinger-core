@@ -407,10 +407,11 @@ public class Query {
                 RatingColumn.tableName + DOT + RatingColumn.rating + COMMA +
                 RatingColumn.tableName + DOT + RatingColumn.userCount + FROM + ShopColumn.tableName +
                 INNER_JOIN + ConfigurationColumn.tableName + ON +
-                ShopColumn.tableName + DOT + ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND + notDeleted +
-                AND + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
-                INNER_JOIN + RatingColumn.tableName +
-                ON + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
+                ShopColumn.tableName + DOT + ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + AND +
+                notDeleted + AND +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
+                INNER_JOIN + RatingColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
 
         public static final String getShopConfigurationRatingById = SELECT +
                 ShopColumn.tableName + DOT + ShopColumn.id + COMMA +
@@ -427,10 +428,11 @@ public class Query {
                 RatingColumn.tableName + DOT + RatingColumn.rating + COMMA +
                 RatingColumn.tableName + DOT + RatingColumn.userCount + FROM + ShopColumn.tableName +
                 INNER_JOIN + ConfigurationColumn.tableName + ON +
-                ShopColumn.tableName + DOT + ShopColumn.id + EQUAL_COLON + ShopColumn.id + AND + notDeleted +
-                AND + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
-                INNER_JOIN + RatingColumn.tableName +
-                ON + ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUAL_COLON + ShopColumn.id + AND +
+                notDeleted + AND +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
+                INNER_JOIN + RatingColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
 
         public static final String getShopById = SELECT +
                 ShopColumn.id + COMMA +

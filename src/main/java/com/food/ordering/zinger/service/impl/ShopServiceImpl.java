@@ -52,7 +52,7 @@ public class ShopServiceImpl implements ShopService {
     @Override
     public Response<String> deleteShopById(Integer shopId) {
         Response<String> response = shopDao.deleteShopById(shopId);
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, shopId, shopId.toString(), response.priorityGet()));
+        auditLogDao.insertShopLog(new ShopLogModel(response, shopId, shopId.toString()));
         return response;
     }
 }

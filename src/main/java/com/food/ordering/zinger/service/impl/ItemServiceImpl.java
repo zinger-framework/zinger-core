@@ -8,6 +8,7 @@ import com.food.ordering.zinger.model.logger.ItemLogModel;
 import com.food.ordering.zinger.service.interfaces.ItemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.IDNU1207;
@@ -50,8 +51,7 @@ public class ItemServiceImpl implements ItemService {
         Response<String> response = new Response<>();
         try {
             response = itemDao.updateItem(itemModelList);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             response.setCode(IDNU1207);
             response.setMessage(ItemDetailNotUpdated);
         }

@@ -5,7 +5,6 @@ import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
 import com.food.ordering.zinger.service.interfaces.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class ShopController {
     }
 
     @GetMapping(value = getShopById)
-    public Response<ShopConfigurationModel> getShopById(@PathVariable("shopId") Integer shopId){
+    public Response<ShopConfigurationModel> getShopById(@PathVariable("shopId") Integer shopId) {
         return shopService.getShopById(shopId);
     }
 
@@ -40,7 +39,7 @@ public class ShopController {
     }
 
     @DeleteMapping(value = deleteShop)
-    Response<String> deleteShop(@PathVariable("shopId") Integer shopId){
+    Response<String> deleteShop(@PathVariable("shopId") Integer shopId) {
         return shopService.deleteShopById(shopId);
     }
 }

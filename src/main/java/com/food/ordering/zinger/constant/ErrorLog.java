@@ -157,7 +157,7 @@ public class ErrorLog {
     public static final Integer CE1253 = 1253;
     public static final Integer CE1254 = 1254;
     public static final Integer CE1255 = 1255;
-    public static final Integer SCDNA1256 = 1256;
+    public static final Integer SDNA1256 = 1256;
     public static final Integer SDND1257 = 1257;
     public static final Integer CE1258 = 1258;
     public static final Integer CE1259 = 1259;
