@@ -26,12 +26,12 @@ public class OrderRowMapperLambda {
         if (rs.getString(status) != null)
             orderModel.setOrderStatus(OrderStatus.valueOf(rs.getString(status)));
 
-        orderModel.setLastStatusUpdatedTime(rs.getTimestamp(lastStatusUpdatedTime));
         orderModel.setPrice(rs.getDouble(price));
         orderModel.setDeliveryPrice(rs.getDouble(deliveryPrice));
         orderModel.setDeliveryLocation(rs.getString(deliveryLocation));
         orderModel.setCookingInfo(rs.getString(cookingInfo));
         orderModel.setRating(rs.getDouble(rating));
+        //orderModel.setFeedback(rs.getString(feedback));
         orderModel.setSecretKey(rs.getString(secretKey));
         return orderModel;
     };

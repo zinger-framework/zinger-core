@@ -3,7 +3,6 @@ package com.food.ordering.zinger.dao.impl;
 import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.OrderColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
-import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
@@ -100,11 +99,8 @@ public class OrderDaoImpl implements OrderDao {
 
         try {
             Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
-
             if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-
                 Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), verifyOrderResponse.getData());
-
                 if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
                     OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
@@ -259,6 +255,79 @@ public class OrderDaoImpl implements OrderDao {
      */
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
+        Response<List<OrderItemListModel>> response = new Response<>();
+        Priority priority = Priority.MEDIUM;
+        List<TransactionModel> transactionModelList = null;
+        List<OrderItemListModel> orderItemListByMobile;
+
+        try {
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.userId, userId)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
+
+            try {
+                transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+            } catch (Exception e) {
+                response.setCode(ErrorLog.CE1269);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1270);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            if (transactionModelList != null && !transactionModelList.isEmpty()) {
+                priority = Priority.LOW;
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+
+                orderItemListByMobile = new ArrayList<>();
+
+                for (TransactionModel transactionModel : transactionModelList) {
+                    Response<OrderModel> orderModelResponse = getOrderDetailById(transactionModel.getOrderModel().getId());
+
+                    if (!orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        priority = Priority.MEDIUM;
+                        response.setCode(ErrorLog.ODNA1271);
+                        response.setMessage(ErrorLog.OrderDetailNotAvailable);
+                        break;
+                    } else {
+                        transactionModel.setOrderModel(orderModelResponse.getData());
+                        Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(transactionModel.getOrderModel().getShopModel().getId());
+                        if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            priority = Priority.MEDIUM;
+                            response.setCode(ErrorLog.SDNA1272);
+                            response.setMessage(ErrorLog.ShopDetailNotAvailable);
+                            break;
+                        } else {
+                            shopModelResponse.getData().setPlaceModel(null);
+                            transactionModel.getOrderModel().setShopModel(shopModelResponse.getData());
+                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
+                            if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                                priority = Priority.MEDIUM;
+                                response.setCode(ErrorLog.OIDNA1273);
+                                response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
+                                break;
+                            } else {
+                                OrderItemListModel orderItemListModel = new OrderItemListModel();
+                                transactionModel.getOrderModel().setUserModel(null);
+                                orderItemListModel.setTransactionModel(transactionModel);
+                                orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
+                                orderItemListByMobile.add(orderItemListModel);
+                            }
+                        }
+                    }
+                }
+                response.setData(orderItemListByMobile);
+            }
+        }
+
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, userId + "-" + pageNum, priority));
+        return response;
+    }
+
+    @Override
+    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
@@ -763,7 +832,6 @@ public class OrderDaoImpl implements OrderDao {
      * This method is a helper function to update the order status
      */
     public void updatePendingOrder() {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.PENDING);
         Response<List<OrderModel>> pendingOrderResponse = getOrdersByStatus(orderStatuses);
@@ -771,7 +839,7 @@ public class OrderDaoImpl implements OrderDao {
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
             List<OrderModel> orderModelList = pendingOrderResponse.getData();
 
-            if (orderModelList != null && orderModelList.size() > 0) {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 2);
 
@@ -799,7 +867,6 @@ public class OrderDaoImpl implements OrderDao {
      * This is a helper method to update the refund order
      */
     public void updatedRefundOrder() {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.REFUND_INITIATED);
         orderStatuses.add(OrderStatus.CANCELLED_BY_USER);
@@ -876,16 +943,14 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     /**
-     * This method is used to verify if the shop is accepting orders currently , order items are available and total calculated bill
-     * amount is correct
+     * This method is used to verify if the shop is accepting orders currently ,
+     * order items are available and total calculated bill amount is correct.
      *
      * @param orderItemListModel OrderItemListModel
      * @return If all the above conditions are satisfied success response is returned
      */
     public Response<String> verifyOrderDetails(OrderItemListModel orderItemListModel) {
-
         Response<String> response = new Response<>();
-
         try {
             OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
             ShopModel shopModel = order.getShopModel();

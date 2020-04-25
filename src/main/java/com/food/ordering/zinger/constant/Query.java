@@ -251,28 +251,12 @@ public class Query {
         public static final String pageNum = "pageNum";
         public static final String pageCount = "pageCount";
 
-        public static final String insertOrder = INSERT_INTO + OrderColumn.tableName + LEFT_PARANTHESIS +
-                OrderColumn.userId + COMMA +
-                OrderColumn.shopId + COMMA +
-                OrderColumn.price + COMMA +
-                OrderColumn.deliveryPrice + COMMA +
-                OrderColumn.deliveryLocation + COMMA +
-                OrderColumn.cookingInfo + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + OrderColumn.id +
-                COMMA_COLON + OrderColumn.userId +
-                COMMA_COLON + OrderColumn.shopId +
-                COMMA_COLON + OrderColumn.price +
-                COMMA_COLON + OrderColumn.deliveryPrice +
-                COMMA_COLON + OrderColumn.deliveryLocation +
-                COMMA_COLON + OrderColumn.cookingInfo + RIGHT_PARANTHESIS;
-
         public static final String getOrderByOrderId = SELECT +
                 OrderColumn.id + COMMA +
                 OrderColumn.userId + COMMA +
                 OrderColumn.shopId + COMMA +
                 OrderColumn.date + COMMA +
                 OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + COMMA +
                 OrderColumn.price + COMMA +
                 OrderColumn.deliveryPrice + COMMA +
                 OrderColumn.deliveryLocation + COMMA +
@@ -318,8 +302,7 @@ public class Query {
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
         public static final String updateOrderStatus = UPDATE + OrderColumn.tableName + SET +
-                OrderColumn.status + EQUAL_COLON + OrderColumn.status + COMMA +
-                OrderColumn.lastStatusUpdatedTime + EQUALS + CURRENT_TIMESTAMP + WHERE +
+                OrderColumn.status + EQUAL_COLON + OrderColumn.status + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
         public static String getOrderByStatus(List<OrderStatus> orderStatusList) {
@@ -329,7 +312,6 @@ public class Query {
                     OrderColumn.shopId + COMMA +
                     OrderColumn.date + COMMA +
                     OrderColumn.status + COMMA +
-                    OrderColumn.lastStatusUpdatedTime + COMMA +
                     OrderColumn.price + COMMA +
                     OrderColumn.deliveryPrice + COMMA +
                     OrderColumn.deliveryLocation + COMMA +

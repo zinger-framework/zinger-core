@@ -14,7 +14,6 @@ import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -168,7 +167,7 @@ public class UserDaoImpl implements UserDao {
                     .addValue(UserColumn.oauthId, user.getOauthId());
 
             try {
-                sellerLoginResponseList = namedParameterJdbcTemplate.query(UserQuery.sellerLogin, parameters, UserShopRowMapperLambda.userShopDetailRowMapperLambda);
+                sellerLoginResponseList = namedParameterJdbcTemplate.query(UserQuery.sellerLogin, parameters, UserRowMapperLambda.userShopDetailRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }

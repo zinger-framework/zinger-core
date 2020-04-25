@@ -30,6 +30,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
+        return orderDao.getOrderByUserNameOrOrderId(searchItem, pageNum, pageCount);
+    }
+
+    @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
         return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount);
     }

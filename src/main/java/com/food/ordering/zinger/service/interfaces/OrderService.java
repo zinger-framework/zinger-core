@@ -12,6 +12,8 @@ public interface OrderService {
 
     Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount);
 
+    Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount);
+
     Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount);
 
     Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId);

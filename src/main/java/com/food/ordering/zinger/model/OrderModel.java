@@ -15,14 +15,12 @@ public class OrderModel {
 
     private OrderStatus orderStatus;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
-    private Timestamp lastStatusUpdatedTime;
-
     private Double price;
     private Double deliveryPrice;
     private String deliveryLocation;
     private String cookingInfo;
     private Double rating;
+    private String feedback;
     private String secretKey;
 
     public OrderModel() {
@@ -70,14 +68,6 @@ public class OrderModel {
         this.orderStatus = orderStatus;
     }
 
-    public Timestamp getLastStatusUpdatedTime() {
-        return lastStatusUpdatedTime;
-    }
-
-    public void setLastStatusUpdatedTime(Timestamp lastStatusUpdatedTime) {
-        this.lastStatusUpdatedTime = lastStatusUpdatedTime;
-    }
-
     public Double getPrice() {
         return price;
     }
@@ -118,6 +108,14 @@ public class OrderModel {
         this.rating = rating;
     }
 
+    public String getFeedback() {
+        return feedback;
+    }
+
+    public void setFeedback(String feedback) {
+        this.feedback = feedback;
+    }
+
     public String getSecretKey() {
         return secretKey;
     }
@@ -129,17 +127,17 @@ public class OrderModel {
     @Override
     public String toString() {
         return "OrderModel{" +
-                "id='" + id + '\'' +
+                "id=" + id +
                 ", userModel=" + userModel +
                 ", shopModel=" + shopModel +
                 ", date=" + date +
                 ", orderStatus=" + orderStatus +
-                ", lastStatusUpdatedTime=" + lastStatusUpdatedTime +
                 ", price=" + price +
                 ", deliveryPrice=" + deliveryPrice +
                 ", deliveryLocation='" + deliveryLocation + '\'' +
                 ", cookingInfo='" + cookingInfo + '\'' +
                 ", rating=" + rating +
+                ", feedback='" + feedback + '\'' +
                 ", secretKey='" + secretKey + '\'' +
                 '}';
     }

@@ -12,7 +12,6 @@ import static com.food.ordering.zinger.constant.ApiConfig.OrderApi.*;
 @RestController
 @RequestMapping(BASE_URL)
 public class OrderController {
-
     @Autowired
     OrderService orderService;
 
@@ -29,6 +28,11 @@ public class OrderController {
     @GetMapping(value = getOrderByUserId)
     public Response<List<OrderItemListModel>> getOrderByUserId(@PathVariable("userId") Integer userId, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount) {
         return orderService.getOrderByUserId(userId, pageNum, pageCount);
+    }
+
+    @GetMapping(value = getOrderByUserNameOrOrderId)
+    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(@PathVariable("searchItem") String searchItem, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount) {
+        return orderService.getOrderByUserNameOrOrderId(searchItem, pageNum, pageCount);
     }
 
     @GetMapping(value = getOrderByShopIdPagination)

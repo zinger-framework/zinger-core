@@ -93,16 +93,28 @@ CREATE TABLE orders
         'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
         'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
         'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
-    last_status_updated_time DATETIME                        DEFAULT NULL,
     price                    DOUBLE NOT NULL,
     delivery_price           DOUBLE                          DEFAULT NULL,
     delivery_location        VARCHAR(128)                    DEFAULT NULL,
     cooking_info             VARCHAR(128)                    DEFAULT NULL,
     rating                   DOUBLE(2, 1)                    DEFAULT NULL,
+    feedback                 VARCHAR(1024)                   DEFAULT NULL,
     secret_key               VARCHAR(10)                     DEFAULT NULL,
     CONSTRAINT orders_id_pk PRIMARY KEY (id),
     CONSTRAINT orders_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
+);
+
+create table orders_status
+(
+    order_id     INT NOT NULL,
+    status       ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+        'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
+        'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
+        'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') NOT NULL,
+    updated_time DATETIME                                    DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT orders_status_order_id_status_pk PRIMARY KEY (order_id, status),
+    CONSTRAINT orders_status_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 
 CREATE TABLE transactions

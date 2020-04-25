@@ -49,13 +49,21 @@ public class Column {
         public static final String shopId = "shop_id";
         public static final String date = "date";
         public static final String status = "status";
-        public static final String lastStatusUpdatedTime = "last_status_updated_time";
         public static final String price = "price";
         public static final String deliveryPrice = "delivery_price";
         public static final String deliveryLocation = "delivery_location";
         public static final String cookingInfo = "cooking_info";
         public static final String rating = "rating";
+        public static final String feedback = "feedback";
         public static final String secretKey = "secret_key";
+    }
+
+    public static final class OrderStatusColumn {
+        public static final String tableName = "orders_status";
+
+        public static final String id = "order_id";
+        public static final String status = "status";
+        public static final String updatedTime = "updated_time";
     }
 
     public static final class OrderItemColumn {
