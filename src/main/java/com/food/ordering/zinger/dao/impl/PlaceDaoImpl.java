@@ -7,7 +7,6 @@ import com.food.ordering.zinger.constant.Query.PlaceQuery;
 import com.food.ordering.zinger.dao.interfaces.PlaceDao;
 import com.food.ordering.zinger.model.PlaceModel;
 import com.food.ordering.zinger.model.Response;
-import com.food.ordering.zinger.model.logger.PlaceLogModel;
 import com.food.ordering.zinger.rowMapperLambda.PlaceRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -36,12 +35,6 @@ public class PlaceDaoImpl implements PlaceDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    InterceptorDaoImpl interceptorDaoImpl;
-
-    @Autowired
-    AuditLogDaoImpl auditLogDaoImpl;
-
     /**
      * Inserts the place details.
      * Authorized by SUPER_ADMIN only.
@@ -51,9 +44,7 @@ public class PlaceDaoImpl implements PlaceDao {
      */
     @Override
     public Response<String> insertPlace(PlaceModel placeModel) {
-
         Response<String> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
@@ -66,16 +57,16 @@ public class PlaceDaoImpl implements PlaceDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                priority = Priority.LOW;
+                response.prioritySet(Priority.LOW);
             } else {
                 response.setCode(CDNU1100);
+                response.setMessage(PlaceDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(CE1101);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, null, placeModel.toString(), priority));
         return response;
     }
 
@@ -88,10 +79,8 @@ public class PlaceDaoImpl implements PlaceDao {
      */
     @Override
     public Response<List<PlaceModel>> getAllPlaces() {
-
         Response<List<PlaceModel>> response = new Response<>();
         List<PlaceModel> list = null;
-        Priority priority = Priority.MEDIUM;
 
         try {
             list = namedParameterJdbcTemplate.query(PlaceQuery.getAllPlaces, PlaceRowMapperLambda.placeRowMapperLambda);
@@ -104,11 +93,10 @@ public class PlaceDaoImpl implements PlaceDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
-                priority = Priority.LOW;
+                response.prioritySet(Priority.LOW);
             }
         }
 
-        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, null, null, priority));
         return response;
     }
 
@@ -120,6 +108,7 @@ public class PlaceDaoImpl implements PlaceDao {
      */
     @Override
     public Response<PlaceModel> getPlaceById(Integer placeId) {
+        //TODO: May not be needed
         Response<PlaceModel> response = new Response<>();
         PlaceModel place = null;
 

@@ -12,8 +12,8 @@ public class ScheduledTasks {
     OrderDaoImpl orderDaoImpl;
 
     /**
-     *   This is a scheduled method used to handle the pending transaction. This method will update the latest
-     *   transaction status of all pending orders every 2 mins after contacting the payment gateway.
+     * This is a scheduled method used to handle the pending transaction. This method will update the latest
+     * transaction status of all pending orders every 2 mins after contacting the payment gateway.
      */
     @Scheduled(fixedDelay = 120000)
     public void updatePendingOrder() {
@@ -22,8 +22,8 @@ public class ScheduledTasks {
 
 
     /**
-     *   This is a scheduled method used to handle the refunded transaction . This method will update the latest
-     *   refund status once every 24 hours after contacting the payment gateway.
+     * This is a scheduled method used to handle the refunded transaction . This method will update the latest
+     * refund status once every 24 hours after contacting the payment gateway.
      */
     @Scheduled(fixedDelay = 86400000)
     public void updateRefundedOrder() {

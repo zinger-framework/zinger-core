@@ -20,12 +20,12 @@ public class PlaceLogModel {
     public PlaceLogModel() {
     }
 
-    public PlaceLogModel(Response response, Integer id, String updatedValue, Priority priority) {
+    public PlaceLogModel(Response response, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority = priority;
+        this.priority = response.priorityGet();
     }
 
     public Integer getId() {
