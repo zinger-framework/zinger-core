@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.service.impl;
 
+import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.ItemDao;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.Response;
@@ -15,9 +16,12 @@ public class ItemServiceImpl implements ItemService {
     @Autowired
     ItemDao itemDao;
 
+    @Autowired
+    AuditLogDao auditLogDao;
+
     @Override
     public Response<String> insertItem(List<ItemModel> itemModelList) {
-        if (itemModelList != null && itemModelList.size() > 0)
+        if (itemModelList != null && !itemModelList.isEmpty())
             return itemDao.insertItem(itemModelList);
         return new Response<>();
     }
