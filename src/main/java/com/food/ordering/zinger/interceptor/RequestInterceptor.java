@@ -48,7 +48,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + loginRegisterCustomer, POST));
         whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + verifySeller, POST));
         whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + acceptInvite, POST));
-        whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + verifyInvite, GET));
+        whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/verify/invite/", GET));
 
         superAdminUrls.add(Collections.singletonMap(ShopApi.BASE_URL, POST));
         superAdminUrls.add(Collections.singletonMap(PlaceApi.BASE_URL, POST));
