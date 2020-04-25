@@ -20,12 +20,12 @@ public class ShopLogModel {
     public ShopLogModel() {
     }
 
-    public ShopLogModel(Response response, Integer id, String updatedValue, Priority priority) {
+    public ShopLogModel(Response response, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority = priority;
+        this.priority = response.priorityGet();
     }
 
     public Integer getId() {

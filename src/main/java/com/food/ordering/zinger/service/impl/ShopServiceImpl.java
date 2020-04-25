@@ -19,33 +19,33 @@ public class ShopServiceImpl implements ShopService {
     ShopDao shopDao;
 
     @Autowired
-    AuditLogDao auditLogDaoImpl;
+    AuditLogDao auditLogDao;
 
     @Override
     public Response<String> insertShop(ConfigurationModel configurationModel) {
         Response<String> response = shopDao.insertShop(configurationModel);
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, configurationModel.toString(), response.priorityGet()));
+        auditLogDao.insertShopLog(new ShopLogModel(response, null, configurationModel.toString()));
         return response;
     }
 
     @Override
     public Response<ShopConfigurationModel> getShopById(Integer shopId) {
         Response<ShopConfigurationModel> response = shopDao.getShopConfigurationById(shopId);
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, shopId.toString(),response.priorityGet()));
+        auditLogDao.insertShopLog(new ShopLogModel(response, null, shopId.toString()));
         return response;
     }
 
     @Override
     public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId) {
         Response<List<ShopConfigurationModel>> response = shopDao.getShopsByPlaceId(placeId);
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, placeId.toString(),response.priorityGet()));
+        auditLogDao.insertShopLog(new ShopLogModel(response, null, placeId.toString()));
         return response;
     }
 
     @Override
     public Response<String> updateShopConfiguration(ConfigurationModel configurationModel) {
         Response<String> response = shopDao.updateShopConfigurationModel(configurationModel);
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, configurationModel.getShopModel().getId(), configurationModel.toString(), response.priorityGet()));
+        auditLogDao.insertShopLog(new ShopLogModel(response, configurationModel.getShopModel().getId(), configurationModel.toString()));
         return response;
     }
 }
