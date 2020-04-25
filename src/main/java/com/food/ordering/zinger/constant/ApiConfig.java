@@ -55,6 +55,7 @@ public class ApiConfig {
         public static final String BASE_URL = "/shop";
         public static final String insertShop = EMPTY_QUOTES;
         public static final String getShopsByPlaceId = "/place/{placeId}";
+        public static final String getShopById = "/{shopId}";
         public static final String updateShopConfiguration = "/config";
     }
 }

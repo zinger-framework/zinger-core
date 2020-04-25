@@ -6,7 +6,6 @@ import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,6 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -66,7 +64,7 @@ public class ShopDaoImpl implements ShopDao {
     public Response<String> insertShop(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
-        Priority priority = Priority.MEDIUM;
+        response.prioritySet(Priority.MEDIUM);
 
         try {
             ShopModel shopModel = configurationModel.getShopModel();
@@ -91,12 +89,13 @@ public class ShopDaoImpl implements ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                priority = Priority.LOW;
+                response.prioritySet(Priority.LOW);
             } else if (responseValue.intValue() <= 0) {
-                priority = Priority.HIGH;
+                response.prioritySet(Priority.HIGH);
                 response.setCode(ErrorLog.SDNU1251);
                 response.setMessage(ErrorLog.ShopDetailNotUpdated);
             } else {
+                response.prioritySet(Priority.HIGH);
                 response.setCode(ErrorLog.CDNU1252);
                 response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
             }
@@ -105,7 +104,6 @@ public class ShopDaoImpl implements ShopDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, configurationModel.toString(), priority));
         return response;
     }
 
@@ -116,73 +114,30 @@ public class ShopDaoImpl implements ShopDao {
      * @return the details along with the configuration
      * of the list of shops for the given place id.
      */
+
     @Override
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
-        List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.placeId, placeId);
-
-            list = namedParameterJdbcTemplate.query(ShopQuery.getShopByPlaceId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
+            shopConfigurationModelList = namedParameterJdbcTemplate.query(ShopQuery.getShopConfigurationRatingByPlaceId, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1254);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (list != null && !list.isEmpty()) {
-                priority = Priority.LOW;
-                response.setCode(ErrorLog.CodeSuccess);
+            if (shopConfigurationModelList != null) {
+                response.prioritySet(Priority.LOW);
+                response.setCode(shopConfigurationModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-
-                shopConfigurationModelList = new ArrayList<>();
-                for (int i = 0; i < list.size(); i++) {
-                    list.get(i).setPlaceModel(null);
-
-                    Response<ShopModel> shopModelResponse = getShopById(list.get(i).getId());
-                    Response<RatingModel> ratingModelResponse = ratingDaoImpl.getRatingByShopId(list.get(i));
-                    Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(list.get(i));
-
-                    ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
-                    shopModelResponse.getData().setPlaceModel(null);
-                    ratingModelResponse.getData().setShopModel(null);
-                    configurationModelResponse.getData().setShopModel(null);
-
-                    if (shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        shopConfigurationModel.setShopModel(shopModelResponse.getData());
-                    } else {
-                        priority = Priority.HIGH;
-                        response.setCode(ErrorLog.SDNA1256);
-                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                    }
-
-                    if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess))
-                        shopConfigurationModel.setConfigurationModel(configurationModelResponse.getData());
-                    else {
-                        priority = Priority.HIGH;
-                        response.setCode(ErrorLog.CDNA1257);
-                        response.setMessage(ErrorLog.ConfigurationDetailNotAvailable);
-                    }
-
-                    if (ratingModelResponse.getCode().equals(ErrorLog.CodeSuccess))
-                        shopConfigurationModel.setRatingModel(ratingModelResponse.getData());
-                    else {
-                        priority = Priority.HIGH;
-                        response.setCode(ErrorLog.SDNA1258);
-                        response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                    }
-
-                    shopConfigurationModelList.add(shopConfigurationModel);
-                }
                 response.setData(shopConfigurationModelList);
             }
         }
-
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, placeId.toString(), priority));
         return response;
     }
+
 
     /**
      * Gets shop by id.
@@ -190,8 +145,35 @@ public class ShopDaoImpl implements ShopDao {
      * @param shopId Integer
      * @return the details of the shop.
      */
+
+    public Response<ShopConfigurationModel> getShopConfigurationById(Integer shopId) {
+        Response<ShopConfigurationModel> response = new Response<>();
+        ShopConfigurationModel shopConfigurationModel = null;
+
+        try {
+
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.id, shopId);
+            shopConfigurationModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopConfigurationRatingById, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            if (shopConfigurationModel != null) {
+                response.prioritySet(Priority.LOW);
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(shopConfigurationModel);
+            }
+        }
+
+        return response;
+    }
+
     @Override
     public Response<ShopModel> getShopById(Integer shopId) {
+
+        // TODO remove it in future
         Response<ShopModel> response = new Response<>();
         ShopModel shopModel = null;
 
@@ -231,7 +213,6 @@ public class ShopDaoImpl implements ShopDao {
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
-        Priority priority = Priority.MEDIUM;
 
         try {
             Response<String> configResponse = configurationDaoImpl.updateConfigurationModel(configurationModel);
@@ -250,7 +231,7 @@ public class ShopDaoImpl implements ShopDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
-                priority = Priority.LOW;
+                response.prioritySet(Priority.LOW);
             } else {
                 response.setCode(ErrorLog.CDNU1260);
                 response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
@@ -260,7 +241,6 @@ public class ShopDaoImpl implements ShopDao {
             response.setCode(ErrorLog.CE1259);
         }
 
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
         return response;
     }
 }

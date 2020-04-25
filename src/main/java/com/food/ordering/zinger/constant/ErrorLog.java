@@ -3,6 +3,7 @@ package com.food.ordering.zinger.constant;
 public class ErrorLog {
     public static final Integer CodeFailure = 0;
     public static final Integer CodeSuccess = 1;
+    public static final Integer CodeEmpty = 2;
 
     public static final String MissingRequestHeader = "Missing Request Header";
     public static final String InvalidHeader = "Invalid Header Values";
@@ -155,7 +156,7 @@ public class ErrorLog {
     public static final Integer CE1253 = 1253;
     public static final Integer CE1254 = 1254;
     public static final Integer CE1255 = 1255;
-    public static final Integer SDNA1256 = 1256;
+    public static final Integer SCDNA1256 = 1256;
     public static final Integer CDNA1257 = 1257;
     public static final Integer SDNA1258 = 1258;
     public static final Integer CE1259 = 1259;

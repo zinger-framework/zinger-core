@@ -10,6 +10,8 @@ public interface ShopService {
 
     Response<String> insertShop(ConfigurationModel configurationModel);
 
+    Response<ShopConfigurationModel> getShopById(Integer placeId);
+
     Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId);
 
     Response<String> updateShopConfiguration(ConfigurationModel configurationModel);

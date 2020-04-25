@@ -23,6 +23,11 @@ public class ShopController {
         return shopService.insertShop(configurationModel);
     }
 
+    @GetMapping(value = getShopById)
+    public Response<ShopConfigurationModel> getShopById(@PathVariable("shopId") Integer shopId){
+        return shopService.getShopById(shopId);
+    }
+
     @GetMapping(value = getShopsByPlaceId)
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId) {
         return shopService.getShopByPlaceId(placeId);

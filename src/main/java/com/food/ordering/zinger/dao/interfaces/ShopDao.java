@@ -12,6 +12,8 @@ public interface ShopDao {
 
     Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId);
 
+    Response<ShopConfigurationModel> getShopConfigurationById(Integer shopId);
+
     Response<ShopModel> getShopById(Integer shopId);
 
     Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel);
