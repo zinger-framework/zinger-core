@@ -9,6 +9,7 @@ import com.food.ordering.zinger.dao.interfaces.*;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
+import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -65,59 +66,49 @@ public class ShopDaoImpl implements ShopDao {
      * @return success response if both the insertion is successful.
      */
     @Override
-    public Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertShop(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!requestHeaderModel.getRole().equals(UserRole.SUPER_ADMIN.name())) {
-                response.setCode(ErrorLog.IH1004);
-                response.setMessage(ErrorLog.InvalidHeader);
+            ShopModel shopModel = configurationModel.getShopModel();
+            parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.name, shopModel.getName())
+                    .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
+                    .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(shopModel.getCoverUrls()))
+                    .addValue(ShopColumn.mobile, shopModel.getMobile())
+                    .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
+                    .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
+                    .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
+                    .addValue(ShopColumn.isDelete, 0);
+
+            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+            simpleJdbcInsert.withTableName(ShopColumn.tableName).usingGeneratedKeyColumns(ShopColumn.id);
+            Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
+
+            configurationModel.getShopModel().setId(responseValue.intValue());
+            Response<String> configurationModelResponse = configurationDaoImpl.insertConfiguration(configurationModel);
+
+            if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else if (responseValue.intValue() <= 0) {
                 priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1005);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
+                response.setCode(ErrorLog.SDNU1251);
+                response.setData(ErrorLog.ShopDetailNotUpdated);
             } else {
-                ShopModel shopModel = configurationModel.getShopModel();
-                parameters = new MapSqlParameterSource()
-                        .addValue(ShopColumn.name, shopModel.getName())
-                        .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
-                        .addValue(ShopColumn.coverUrls, shopModel.toFormattedCoverUrls())
-                        .addValue(ShopColumn.mobile, shopModel.getMobile())
-                        .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
-                        .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
-                        .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
-                        .addValue(ShopColumn.isDelete, 0);
-
-                SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-                simpleJdbcInsert.withTableName(ShopColumn.tableName).usingGeneratedKeyColumns(ShopColumn.id);
-                Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
-
-                configurationModel.getShopModel().setId(responseValue.intValue());
-                Response<String> configurationModelResponse = configurationDaoImpl.insertConfiguration(configurationModel);
-
-                if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else if (responseValue.intValue() <= 0) {
-                    priority = Priority.HIGH;
-                    response.setCode(ErrorLog.SDNU1251);
-                    response.setData(ErrorLog.ShopDetailNotUpdated);
-                } else {
-                    response.setCode(ErrorLog.CDNU1252);
-                    response.setData(ErrorLog.ConfigurationDetailNotUpdated);
-                }
+                response.setCode(ErrorLog.CDNU1252);
+                response.setData(ErrorLog.ConfigurationDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1253);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, configurationModel.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, configurationModel.toString(), priority));
         return response;
     }
 
@@ -129,30 +120,19 @@ public class ShopDaoImpl implements ShopDao {
      * of the list of shops for the given place id.
      */
     @Override
-    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<ShopModel> list = null;
         List<ShopConfigurationModel> shopConfigurationModelList = null;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1006);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ShopColumn.placeId, placeId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.placeId, placeId);
 
-                try {
-                    list = namedParameterJdbcTemplate.query(ShopQuery.getShopByPlaceId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(ErrorLog.CE1254);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
-            }
+            list = namedParameterJdbcTemplate.query(ShopQuery.getShopByPlaceId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1255);
+            response.setCode(ErrorLog.CE1254);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null && !list.isEmpty()) {
@@ -203,7 +183,7 @@ public class ShopDaoImpl implements ShopDao {
             }
         }
 
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), null, placeId.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, null, placeId.toString(), priority));
         return response;
     }
 
@@ -251,49 +231,39 @@ public class ShopDaoImpl implements ShopDao {
      * @return success response if the update is successful.
      */
     @Override
-    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!requestHeaderModel.getRole().equals((UserRole.SHOP_OWNER).name())) {
-                response.setCode(ErrorLog.IH1007);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1008);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
+            Response<String> configResponse = configurationDaoImpl.updateConfigurationModel(configurationModel);
+
+            parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
+                    .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
+                    .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(configurationModel.getShopModel().getCoverUrls()))
+                    .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
+                    .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
+                    .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
+                    .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
+
+            int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
+            if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
             } else {
-                Response<String> configResponse = configurationDaoImpl.updateConfigurationModel(configurationModel);
-
-                parameters = new MapSqlParameterSource()
-                        .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
-                        .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
-                        .addValue(ShopColumn.coverUrls, configurationModel.getShopModel().toFormattedCoverUrls())
-                        .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
-                        .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
-                        .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
-                        .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
-
-                int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
-                if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(ErrorLog.CDNU1260);
-                    response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
-                }
+                response.setCode(ErrorLog.CDNU1260);
+                response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1259);
         }
 
-        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, requestHeaderModel.getId(), configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
+        auditLogDaoImpl.insertShopLog(new ShopLogModel(response, configurationModel.getShopModel().getId(), configurationModel.toString(), priority));
         return response;
     }
 }

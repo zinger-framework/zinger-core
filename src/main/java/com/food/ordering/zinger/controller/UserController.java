@@ -30,8 +30,8 @@ public class UserController {
     /**************************************************/
 
     @PostMapping(value = inviteSeller)
-    public Response<String> inviteSeller(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.inviteSeller(userShopModel, oauthId, id, role);
+    public Response<String> inviteSeller(@RequestBody UserShopModel userShopModel) {
+        return userService.inviteSeller(userShopModel);
     }
 
     @PostMapping(value = acceptInvite)
@@ -42,8 +42,8 @@ public class UserController {
     /**************************************************/
 
     @GetMapping(value = getSellerByShopId)
-    public Response<List<UserModel>> getSellerByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.getSellerByShopId(shopId, oauthId, id, role);
+    public Response<List<UserModel>> getSellerByShopId(@PathVariable("shopId") Integer shopId) {
+        return userService.getSellerByShopId(shopId);
     }
 
     @GetMapping(value = verifyInvite)
@@ -54,24 +54,24 @@ public class UserController {
     /**************************************************/
 
     @PatchMapping(value = updateUser)
-    public Response<String> updateUser(@RequestBody UserModel userModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.updateUser(userModel, oauthId, id, role);
+    public Response<String> updateUser(@RequestBody UserModel userModel) {
+        return userService.updateUser(userModel);
     }
 
     @PatchMapping(value = updateUserPlaceData)
-    public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.updateUserPlaceData(userPlaceModel, oauthId, id, role);
+    public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel) {
+        return userService.updateUserPlaceData(userPlaceModel);
     }
 
     @PatchMapping(value = deleteInvite)
-    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.deleteInvite(userShopModel, oauthId, id, role);
+    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel) {
+        return userService.deleteInvite(userShopModel);
     }
 
     /**************************************************/
 
     @DeleteMapping(value = deleteSeller)
-    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("userId") Integer userId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return userService.deleteSeller(shopId, userId, oauthId, id, role);
+    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("userId") Integer userId) {
+        return userService.deleteSeller(shopId, userId);
     }
 }

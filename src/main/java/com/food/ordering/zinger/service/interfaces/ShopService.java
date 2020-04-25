@@ -12,9 +12,9 @@ import java.util.List;
 
 public interface ShopService {
 
-    Response<String> insertShop(ConfigurationModel configurationModel, String oauthId, Integer id, String role);
+    Response<String> insertShop(ConfigurationModel configurationModel);
 
-    Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId, String oauthId, Integer id, String role);
+    Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId);
 
-    Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, Integer id, String role);
+    Response<String> updateShopConfiguration(ConfigurationModel configurationModel);
 }

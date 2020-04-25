@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 public class UserLogModel {
     private Integer id;
     private Integer errorCode;
-    private Integer userId;
     private String message;
     private String updatedValue;
 
@@ -21,10 +20,9 @@ public class UserLogModel {
     public UserLogModel() {
     }
 
-    public UserLogModel(Response response, Integer userId, Integer id, String updatedValue) {
+    public UserLogModel(Response response, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
-        this.userId = userId;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
         this.priority = response.priorityGet();
@@ -44,14 +42,6 @@ public class UserLogModel {
 
     public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public String getMessage() {
@@ -91,7 +81,6 @@ public class UserLogModel {
         return "UserLogModel{" +
                 "id=" + id +
                 ", errorCode=" + errorCode +
-                ", userId=" + userId +
                 ", message='" + message + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
                 ", date=" + date +

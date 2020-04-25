@@ -19,20 +19,17 @@ public class ShopServiceImpl implements ShopService {
     ShopDao shopDao;
 
     @Override
-    public Response<String> insertShop(ConfigurationModel configurationModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return shopDao.insertShop(configurationModel, requestHeaderModel);
+    public Response<String> insertShop(ConfigurationModel configurationModel) {
+        return shopDao.insertShop(configurationModel);
     }
 
     @Override
-    public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return shopDao.getShopsByPlaceId(placeId, requestHeaderModel);
+    public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId) {
+        return shopDao.getShopsByPlaceId(placeId);
     }
 
     @Override
-    public Response<String> updateShopConfiguration(ConfigurationModel configurationModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return shopDao.updateShopConfigurationModel(configurationModel, requestHeaderModel);
+    public Response<String> updateShopConfiguration(ConfigurationModel configurationModel) {
+        return shopDao.updateShopConfigurationModel(configurationModel);
     }
 }

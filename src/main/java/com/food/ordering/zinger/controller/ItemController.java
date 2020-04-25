@@ -19,32 +19,32 @@ public class ItemController {
     ItemService itemService;
 
     @PostMapping(value = insertItem)
-    public Response<String> insertItem(@RequestBody List<ItemModel> itemModelList, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.insertItem(itemModelList, oauthId, id, role);
+    public Response<String> insertItem(@RequestBody List<ItemModel> itemModelList) {
+        return itemService.insertItem(itemModelList);
     }
 
     @GetMapping(value = getItemsByShopId)
-    public Response<List<ItemModel>> getItemsByShopId(@PathVariable("shopId") Integer shopId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.getItemsByShopId(shopId, oauthId, id, role);
+    public Response<List<ItemModel>> getItemsByShopId(@PathVariable("shopId") Integer shopId) {
+        return itemService.getItemsByShopId(shopId);
     }
 
     @GetMapping(value = getItemsByName)
-    public Response<List<ItemModel>> getItemsByName(@PathVariable("placeId") Integer placeId, @PathVariable("itemName") String itemName, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.getItemsByName(placeId, itemName, oauthId, id, role);
+    public Response<List<ItemModel>> getItemsByName(@PathVariable("placeId") Integer placeId, @PathVariable("itemName") String itemName) {
+        return itemService.getItemsByName(placeId, itemName);
     }
 
     @PatchMapping(value = updateItemById)
-    public Response<String> updateItemById(@RequestBody ItemModel itemModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.updateItemById(itemModel, oauthId, id, role);
+    public Response<String> updateItemById(@RequestBody ItemModel itemModel) {
+        return itemService.updateItemById(itemModel);
     }
 
     @DeleteMapping(value = deleteItemById)
-    public Response<String> deleteItemById(@PathVariable("itemId") Integer itemId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.deleteItemById(itemId, oauthId, id, role);
+    public Response<String> deleteItemById(@PathVariable("itemId") Integer itemId) {
+        return itemService.deleteItemById(itemId);
     }
 
     @DeleteMapping(value = unDeleteItemById)
-    public Response<String> unDeleteItemById(@PathVariable("itemId") Integer itemId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return itemService.unDeleteItemById(itemId, oauthId, id, role);
+    public Response<String> unDeleteItemById(@PathVariable("itemId") Integer itemId) {
+        return itemService.unDeleteItemById(itemId);
     }
 }

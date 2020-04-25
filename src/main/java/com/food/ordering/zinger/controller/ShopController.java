@@ -20,17 +20,17 @@ public class ShopController {
     ShopService shopService;
 
     @PostMapping(value = insertShop)
-    public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.insertShop(configurationModel, oauthId, id, role);
+    public Response<String> insertShop(@RequestBody ConfigurationModel configurationModel) {
+        return shopService.insertShop(configurationModel);
     }
 
     @GetMapping(value = getShopsByPlaceId)
-    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.getShopByPlaceId(placeId, oauthId, id, role);
+    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(@PathVariable("placeId") Integer placeId) {
+        return shopService.getShopByPlaceId(placeId);
     }
 
     @PatchMapping(value = updateShopConfiguration)
-    Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel, @RequestHeader(value = UserColumn.oauthId) String oauthId, @RequestHeader(value = UserColumn.id) Integer id, @RequestHeader(value = UserColumn.role) String role) {
-        return shopService.updateShopConfiguration(configurationModel, oauthId, id, role);
+    Response<String> updateShopConfiguration(@RequestBody ConfigurationModel configurationModel) {
+        return shopService.updateShopConfiguration(configurationModel);
     }
 }

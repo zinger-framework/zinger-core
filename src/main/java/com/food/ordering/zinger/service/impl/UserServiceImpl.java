@@ -36,24 +36,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response<String> inviteSeller(UserShopModel userShopModel, String oauthId, Integer id, String role) {
+    public Response<String> inviteSeller(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-
-        if (requestHeaderModel.getRole().equals(Enums.UserRole.SHOP_OWNER.name())) {
-            if (!interceptorDao.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1027);
-                response.setMessage(ErrorLog.InvalidHeader);
-            }
-            else
-                response = userDao.inviteSeller(userShopModel, requestHeaderModel);
-        }
-        else {
-            response.setCode(ErrorLog.IH1061);
-            response.setMessage(ErrorLog.InvalidHeader);
-        }
-
-        auditLogDao.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString()));
+        auditLogDao.insertUserLog(new UserLogModel(response, null, userShopModel.toString()));
         return response;
     }
 
@@ -65,9 +50,8 @@ public class UserServiceImpl implements UserService {
     /**************************************************/
 
     @Override
-    public Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return userDao.getSellerByShopId(shopId, requestHeaderModel);
+    public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
+        return userDao.getSellerByShopId(shopId);
     }
 
     @Override
@@ -78,26 +62,24 @@ public class UserServiceImpl implements UserService {
     /**************************************************/
 
     @Override
-    public Response<String> updateUser(UserModel userModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return userDao.updateUser(userModel, requestHeaderModel);
+    public Response<String> updateUser(UserModel userModel) {
+        return userDao.updateUser(userModel);
     }
 
     @Override
-    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return userDao.updateUserPlaceData(userPlaceModel, requestHeaderModel);
+    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
+        Response<String> response = updateUserPlaceData(userPlaceModel);
+        auditLogDao.insertUserLog(new UserLogModel(response, userPlaceModel.getUserModel().getId(), userPlaceModel.toString()));
+        return response;
     }
 
     @Override
-    public Response<String> deleteSeller(Integer shopId, Integer userId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return userDao.deleteSeller(shopId, userId, requestHeaderModel);
+    public Response<String> deleteSeller(Integer shopId, Integer userId) {
+        return userDao.deleteSeller(shopId, userId);
     }
 
     @Override
-    public Response<String> deleteInvite(UserShopModel userShopModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return userDao.deleteInvite(userShopModel, requestHeaderModel);
+    public Response<String> deleteInvite(UserShopModel userShopModel) {
+        return userDao.deleteInvite(userShopModel);
     }
 }

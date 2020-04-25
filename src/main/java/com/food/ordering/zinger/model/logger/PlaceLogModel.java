@@ -9,7 +9,6 @@ import java.sql.Timestamp;
 public class PlaceLogModel {
     private Integer id;
     private Integer errorCode;
-    private Integer userId;
     private String message;
     private String updatedValue;
 
@@ -21,10 +20,9 @@ public class PlaceLogModel {
     public PlaceLogModel() {
     }
 
-    public PlaceLogModel(Response response, Integer userId, Integer id, String updatedValue, Priority priority) {
+    public PlaceLogModel(Response response, Integer id, String updatedValue, Priority priority) {
         this.id = id;
         this.errorCode = response.getCode();
-        this.userId = userId;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
         this.priority = priority;
@@ -44,14 +42,6 @@ public class PlaceLogModel {
 
     public void setErrorCode(Integer errorCode) {
         this.errorCode = errorCode;
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
     }
 
     public String getMessage() {
@@ -91,7 +81,6 @@ public class PlaceLogModel {
         return "PlaceLogModel{" +
                 "id=" + id +
                 ", errorCode=" + errorCode +
-                ", userId=" + userId +
                 ", message='" + message + '\'' +
                 ", updatedValue='" + updatedValue + '\'' +
                 ", date=" + date +

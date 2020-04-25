@@ -20,7 +20,6 @@ public class UserPlaceRowMapperLambda {
         try{
             UserModel userModel = new UserModel();
             userModel.setId(rs.getInt(id));
-            userModel.setMobile(rs.getString(mobile));
             userModel.setName(rs.getString(name));
             userModel.setEmail(rs.getString(email));
             userModel.setRole(Enums.UserRole.valueOf(rs.getString(role)));

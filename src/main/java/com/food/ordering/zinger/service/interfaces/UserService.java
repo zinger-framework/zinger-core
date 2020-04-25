@@ -12,23 +12,23 @@ public interface UserService {
 
     Response<UserShopListModel> verifySeller(UserModel user);
 
-    Response<String> inviteSeller(UserShopModel userShopModel, String oauthId, Integer id, String role);
+    Response<String> inviteSeller(UserShopModel userShopModel);
 
     Response<UserShopListModel> acceptInvite(UserShopModel userShopModel);
 
     /**************************************************/
 
-    Response<List<UserModel>> getSellerByShopId(Integer shopId, String oauthId, Integer id, String role);
+    Response<List<UserModel>> getSellerByShopId(Integer shopId);
 
     Response<UserInviteModel> verifyInvite(Integer shopId, String mobile);
 
     /**************************************************/
 
-    Response<String> updateUser(UserModel userModel, String oauthId, Integer id, String role);
+    Response<String> updateUser(UserModel userModel);
 
-    Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, String oauthId, Integer id, String role);
+    Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel);
 
-    Response<String> deleteSeller(Integer shopId, Integer userId, String oauthId, Integer id, String role);
+    Response<String> deleteSeller(Integer shopId, Integer userId);
 
-    Response<String> deleteInvite(UserShopModel userShopModel, String oauthId, Integer id, String role);
+    Response<String> deleteInvite(UserShopModel userShopModel);
 }

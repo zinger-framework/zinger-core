@@ -19,11 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface ShopDao {
-    Response<String> insertShop(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel);
+    Response<String> insertShop(ConfigurationModel configurationModel);
 
-    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId, RequestHeaderModel requestHeaderModel);
+    public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId);
 
     public Response<ShopModel> getShopById(Integer shopId);
 
-    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel, RequestHeaderModel requestHeaderModel);
+    public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel);
 }

@@ -53,42 +53,32 @@ public class PlaceDaoImpl implements PlaceDao {
      * @return success response if the insert is successful.
      */
     @Override
-    public Response<String> insertPlace(PlaceModel placeModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertPlace(PlaceModel placeModel) {
 
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!requestHeaderModel.getRole().equals((UserRole.SUPER_ADMIN).name())) {
-                response.setCode(ErrorLog.IH1000);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1001);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(PlaceColumn.name, placeModel.getName())
-                        .addValue(PlaceColumn.address, placeModel.getAddress())
-                        .addValue(PlaceColumn.iconUrl, placeModel.getIconUrl());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(PlaceColumn.name, placeModel.getName())
+                    .addValue(PlaceColumn.address, placeModel.getAddress())
+                    .addValue(PlaceColumn.iconUrl, placeModel.getIconUrl());
 
-                int responseValue = namedParameterJdbcTemplate.update(PlaceQuery.insertPlace, parameters);
-                if (responseValue > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(CDNU1100);
-                }
+            int responseValue = namedParameterJdbcTemplate.update(PlaceQuery.insertPlace, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else {
+                response.setCode(CDNU1100);
             }
         } catch (Exception e) {
             response.setCode(CE1101);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, placeModel.toString(), priority));
+        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, null, placeModel.toString(), priority));
         return response;
     }
 
@@ -101,29 +91,18 @@ public class PlaceDaoImpl implements PlaceDao {
      * @return the list of place details
      */
     @Override
-    public Response<List<PlaceModel>> getAllPlaces(RequestHeaderModel requestHeaderModel) {
+    public Response<List<PlaceModel>> getAllPlaces() {
 
         Response<List<PlaceModel>> response = new Response<>();
         List<PlaceModel> list = null;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1002);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                try {
-                    list = namedParameterJdbcTemplate.query(PlaceQuery.getAllPlaces, PlaceRowMapperLambda.placeRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(CDNA1102);
-                    response.setMessage(PlaceDetailNotAvailable);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
-            }
+            list = namedParameterJdbcTemplate.query(PlaceQuery.getAllPlaces, PlaceRowMapperLambda.placeRowMapperLambda);
         } catch (Exception e) {
+            response.setCode(CDNA1102);
+            response.setMessage(PlaceDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            response.setCode(CE1103);
         } finally {
             if (list != null && !list.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -133,7 +112,7 @@ public class PlaceDaoImpl implements PlaceDao {
             }
         }
 
-        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, requestHeaderModel.getId(), null, null, priority));
+        auditLogDaoImpl.insertPlaceLog(new PlaceLogModel(response, null, null, priority));
         return response;
     }
 

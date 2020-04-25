@@ -30,25 +30,25 @@ import java.util.Random;
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 public interface OrderDao {
-    Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel);
+    Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel);
 
     /**************************************************/
 
-    Response<String> placeOrder(Integer orderId, RequestHeaderModel requestHeaderModel);
+    Response<String> placeOrder(Integer orderId);
 
     /**************************************************/
 
-    Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel);
+    Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount);
 
-    Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel);
+    Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount);
 
-    Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel);
+    Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId);
 
-    Response<TransactionModel> getOrderById(Integer orderId, RequestHeaderModel requestHeaderModel);
+    Response<TransactionModel> getOrderById(Integer orderId);
 
     /**************************************************/
 
-    Response<String> updateOrderRating(OrderModel orderModel, RequestHeaderModel requestHeaderModel);
+    Response<String> updateOrderRating(OrderModel orderModel);
 
-    Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel requestHeaderModel);
+    Response<String> updateOrderStatus(OrderModel orderModel);
 }

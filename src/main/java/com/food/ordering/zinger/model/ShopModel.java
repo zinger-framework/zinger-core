@@ -87,17 +87,6 @@ public class ShopModel {
         this.coverUrls = coverUrls;
     }
 
-    public String toFormattedCoverUrls() {
-        String result = "[";
-        for (int i = 0; i < coverUrls.size(); i++) {
-            result += "\"" + coverUrls.get(i) + "\"";
-            if (i < coverUrls.size() - 1)
-                result += ",";
-        }
-        result += "]";
-        return result;
-    }
-
     @Override
     public String toString() {
         return "ShopModel{" +

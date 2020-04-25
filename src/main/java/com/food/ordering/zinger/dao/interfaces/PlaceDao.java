@@ -21,9 +21,9 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 public interface PlaceDao {
-    Response<String> insertPlace(PlaceModel placeModel, RequestHeaderModel requestHeaderModel);
+    Response<String> insertPlace(PlaceModel placeModel);
 
-    Response<List<PlaceModel>> getAllPlaces(RequestHeaderModel requestHeaderModel);
+    Response<List<PlaceModel>> getAllPlaces();
 
     Response<PlaceModel> getPlaceById(Integer placeId);
 }

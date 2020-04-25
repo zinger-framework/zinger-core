@@ -17,40 +17,34 @@ public class ItemServiceImpl implements ItemService {
     ItemDao itemDao;
 
     @Override
-    public Response<String> insertItem(List<ItemModel> itemModelList, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
+    public Response<String> insertItem(List<ItemModel> itemModelList) {
         if (itemModelList != null && itemModelList.size() > 0)
-            return itemDao.insertItem(itemModelList, requestHeaderModel);
+            return itemDao.insertItem(itemModelList);
         return new Response<>();
     }
 
     @Override
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return itemDao.getItemsByShopId(shopId, requestHeaderModel);
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId) {
+        return itemDao.getItemsByShopId(shopId);
     }
 
     @Override
-    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return itemDao.getItemsByName(placeId, itemName, requestHeaderModel);
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName) {
+        return itemDao.getItemsByName(placeId, itemName);
     }
 
     @Override
-    public Response<String> updateItemById(ItemModel itemModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return itemDao.updateItemById(itemModel, requestHeaderModel);
+    public Response<String> updateItemById(ItemModel itemModel) {
+        return itemDao.updateItemById(itemModel);
     }
 
     @Override
-    public Response<String> deleteItemById(Integer itemId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return itemDao.deleteItemById(itemId, requestHeaderModel);
+    public Response<String> deleteItemById(Integer itemId) {
+        return itemDao.deleteItemById(itemId);
     }
 
     @Override
-    public Response<String> unDeleteItemById(Integer itemId, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return itemDao.unDeleteItemById(itemId, requestHeaderModel);
+    public Response<String> unDeleteItemById(Integer itemId) {
+        return itemDao.unDeleteItemById(itemId);
     }
 }

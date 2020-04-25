@@ -23,19 +23,19 @@ import java.util.List;
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 
 public interface ItemDao {
-    Response<String> insertItem(List<ItemModel> itemModelList, RequestHeaderModel requestHeaderModel);
+    Response<String> insertItem(List<ItemModel> itemModelList);
 
-    Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel);
+    Response<List<ItemModel>> getItemsByShopId(Integer shopId);
 
-    Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel);
+    Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName);
 
     Response<ItemModel> getItemById(Integer id);
 
     Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel);
 
-    Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel);
+    Response<String> updateItemById(ItemModel itemModel);
 
-    Response<String> deleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel);
+    Response<String> deleteItemById(Integer itemId);
 
-    Response<String> unDeleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel);
+    Response<String> unDeleteItemById(Integer itemId);
 }

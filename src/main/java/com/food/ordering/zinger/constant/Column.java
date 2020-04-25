@@ -130,6 +130,7 @@ public class Column {
         public static final String name = "name";
         public static final String email = "email";
         public static final String oauthId = "oauth_id";
+        public static final String notifToken = "notif_token";
         public static final String role = "role";
         public static final String isDelete = "is_delete";
     }
@@ -148,7 +149,6 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -160,7 +160,6 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -172,7 +171,6 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -184,7 +182,6 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";
@@ -196,7 +193,6 @@ public class Column {
 
         public static final String id = "id";
         public static final String errorCode = "error_code";
-        public static final String userId = "user_id";
         public static final String message = "message";
         public static final String updatedValue = "updated_value";
         public static final String date = "date";

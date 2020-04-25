@@ -4,7 +4,6 @@ import com.food.ordering.zinger.constant.Column.ItemColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
-import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
@@ -61,41 +60,31 @@ public class ItemDaoImpl implements ItemDao {
      * @return success response if both the insertion is successful.
      */
     @Override
-    public Response<String> insertItem(List<ItemModel> itemModelList, RequestHeaderModel requestHeaderModel) {
+    public Response<String> insertItem(List<ItemModel> itemModelList) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
-                response.setCode(ErrorLog.IH1009);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1010);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                MapSqlParameterSource parameter = new MapSqlParameterSource();
-                for (int i = 0; i < itemModelList.size(); i++) {
-                    ItemModel itemModel = itemModelList.get(i);
-                    parameter.addValue(ItemColumn.name + i, itemModel.getName())
-                            .addValue(ItemColumn.price + i, itemModel.getPrice())
-                            .addValue(ItemColumn.photoUrl + i, itemModel.getPhotoUrl())
-                            .addValue(ItemColumn.category + i, itemModel.getCategory())
-                            .addValue(ItemColumn.shopId + i, itemModel.getShopModel().getId())
-                            .addValue(ItemColumn.isVeg + i, itemModel.getIsVeg());
-                }
+            MapSqlParameterSource parameter = new MapSqlParameterSource();
+            for (int i = 0; i < itemModelList.size(); i++) {
+                ItemModel itemModel = itemModelList.get(i);
+                parameter.addValue(ItemColumn.name + i, itemModel.getName())
+                        .addValue(ItemColumn.price + i, itemModel.getPrice())
+                        .addValue(ItemColumn.photoUrl + i, itemModel.getPhotoUrl())
+                        .addValue(ItemColumn.category + i, itemModel.getCategory())
+                        .addValue(ItemColumn.shopId + i, itemModel.getShopModel().getId())
+                        .addValue(ItemColumn.isVeg + i, itemModel.getIsVeg());
+            }
 
-                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.getInsertItem(itemModelList), parameter);
-                if (responseValue > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(IDNU1201);
-                    response.setMessage(ItemDetailNotUpdated);
-                }
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.getInsertItem(itemModelList), parameter);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else {
+                response.setCode(IDNU1201);
+                response.setMessage(ItemDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(CE1202);
@@ -103,7 +92,7 @@ public class ItemDaoImpl implements ItemDao {
         }
 
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemModelList.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, null, itemModelList.toString(), priority));
         return response;
     }
 
@@ -114,26 +103,20 @@ public class ItemDaoImpl implements ItemDao {
      * @return the details of the list of items for the given shop id.
      */
     @Override
-    public Response<List<ItemModel>> getItemsByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ItemModel>> getItemsByShopId(Integer shopId) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> list = null;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1011);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.shopId, shopId);
-                try {
-                    list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(IDNA1203);
-                    response.setMessage(ItemDetailNotAvailable);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.shopId, shopId);
+            try {
+                list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            } catch (Exception e) {
+                response.setCode(IDNA1203);
+                response.setMessage(ItemDetailNotAvailable);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
             response.setCode(CE1204);
@@ -149,7 +132,7 @@ public class ItemDaoImpl implements ItemDao {
             }
         }
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -164,27 +147,22 @@ public class ItemDaoImpl implements ItemDao {
      * @return the details of the list of items, if the match is successful.
      */
     @Override
-    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName, RequestHeaderModel requestHeaderModel) {
+    public Response<List<ItemModel>> getItemsByName(Integer placeId, String itemName) {
         Response<List<ItemModel>> response = new Response<>();
         List<ItemModel> items = null;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1012);
-                response.setMessage(ErrorLog.InvalidHeader);
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.name, PERCENT + itemName + PERCENT)
-                        .addValue(ShopColumn.placeId, placeId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name, PERCENT + itemName + PERCENT)
+                    .addValue(ShopColumn.placeId, placeId);
 
-                try {
-                    items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(IDNA1205);
-                    response.setMessage(ItemDetailNotAvailable);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
+            try {
+                items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
+            } catch (Exception e) {
+                response.setCode(IDNA1205);
+                response.setMessage(ItemDetailNotAvailable);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
         } catch (Exception e) {
             response.setCode(CE1206);
@@ -203,7 +181,7 @@ public class ItemDaoImpl implements ItemDao {
             }
         }
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), null, itemName, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, null, itemName, priority));
         return response;
     }
 
@@ -292,46 +270,36 @@ public class ItemDaoImpl implements ItemDao {
      * @return success response if the update is successful.
      */
     @Override
-    public Response<String> updateItemById(ItemModel itemModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateItemById(ItemModel itemModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
-                response.setCode(ErrorLog.IH1013);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1014);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.name, itemModel.getName())
-                        .addValue(ItemColumn.price, itemModel.getPrice())
-                        .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
-                        .addValue(ItemColumn.category, itemModel.getCategory())
-                        .addValue(ItemColumn.isVeg, itemModel.getIsVeg())
-                        .addValue(ItemColumn.isAvailable, itemModel.getIsAvailable())
-                        .addValue(ItemColumn.id, itemModel.getId());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.name, itemModel.getName())
+                    .addValue(ItemColumn.price, itemModel.getPrice())
+                    .addValue(ItemColumn.photoUrl, itemModel.getPhotoUrl())
+                    .addValue(ItemColumn.category, itemModel.getCategory())
+                    .addValue(ItemColumn.isVeg, itemModel.getIsVeg())
+                    .addValue(ItemColumn.isAvailable, itemModel.getIsAvailable())
+                    .addValue(ItemColumn.id, itemModel.getId());
 
-                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.updateItem, parameters);
-                if (responseValue > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(IDNU1207);
-                    response.setMessage(ItemDetailNotUpdated);
-                }
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.updateItem, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else {
+                response.setCode(IDNU1207);
+                response.setMessage(ItemDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(CE1208);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemModel.getId(), itemModel.toString(), priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, itemModel.getId(), itemModel.toString(), priority));
         return response;
     }
 
@@ -343,40 +311,30 @@ public class ItemDaoImpl implements ItemDao {
      * @return success response if the delete is successful.
      */
     @Override
-    public Response<String> deleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> deleteItemById(Integer itemId) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
-                response.setCode(ErrorLog.IH1015);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1016);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.id, itemId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id, itemId);
 
-                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
-                if (responseValue > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(IDNU1210);
-                    response.setMessage(ItemDetailNotUpdated);
-                }
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.deleteItem, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else {
+                response.setCode(IDNU1210);
+                response.setMessage(ItemDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(CE1209);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, itemId, null, priority));
         return response;
     }
 
@@ -388,33 +346,23 @@ public class ItemDaoImpl implements ItemDao {
      * @return success response if the delete is successful.
      */
     @Override
-    public Response<String> unDeleteItemById(Integer itemId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> unDeleteItemById(Integer itemId) {
         Response<String> response = new Response<>();
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.CUSTOMER.name()) || requestHeaderModel.getRole().equals(UserRole.DELIVERY.name())) {
-                response.setCode(ErrorLog.IH1017);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1018);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(ItemColumn.id, itemId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(ItemColumn.id, itemId);
 
-                int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
-                if (responseValue > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(IDNU1211);
-                    response.setMessage(ItemDetailNotUpdated);
-                }
+            int responseValue = namedParameterJdbcTemplate.update(ItemQuery.unDeleteItem, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                priority = Priority.LOW;
+            } else {
+                response.setCode(IDNU1211);
+                response.setMessage(ItemDetailNotUpdated);
             }
 
         } catch (Exception e) {
@@ -422,7 +370,7 @@ public class ItemDaoImpl implements ItemDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, requestHeaderModel.getId(), itemId, null, priority));
+        auditLogDaoImpl.insertItemLog(new ItemLogModel(response, itemId, null, priority));
         return response;
     }
 }

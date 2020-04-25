@@ -68,7 +68,7 @@ public class OrderDaoImpl implements OrderDao {
     PaymentResponse paymentResponse;
 
     @Override
-    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel, RequestHeaderModel requestHeaderModel) {
+    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
         /*
          *   1. Verify the amount and availability of the items using verify order
          *   2. Generate the transaction token from payment gateway
@@ -80,67 +80,61 @@ public class OrderDaoImpl implements OrderDao {
         Priority priority = Priority.HIGH;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1053);
-                response.setMessage(ErrorLog.InvalidHeader);
-            } else {
-                Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
+            Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
 
-                if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-                    Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), verifyOrderResponse.getData());
+                Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), verifyOrderResponse.getData());
 
-                    if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-                        OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-                        MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                .addValue(userId, order.getUserModel().getId())
-                                .addValue(shopId, order.getShopModel().getId())
-                                .addValue(price, order.getPrice())
-                                .addValue(deliveryPrice, order.getDeliveryPrice())
-                                .addValue(deliveryLocation, order.getDeliveryLocation())
-                                .addValue(cookingInfo, order.getCookingInfo());
+                    OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
+                    MapSqlParameterSource parameter = new MapSqlParameterSource()
+                            .addValue(userId, order.getUserModel().getId())
+                            .addValue(shopId, order.getShopModel().getId())
+                            .addValue(price, order.getPrice())
+                            .addValue(deliveryPrice, order.getDeliveryPrice())
+                            .addValue(deliveryLocation, order.getDeliveryLocation())
+                            .addValue(cookingInfo, order.getCookingInfo());
 
-                        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-                        simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
-                        Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
+                    SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+                    simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
+                    Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
 
-                        if (responseValue.intValue() <= 0) {
-                            response.setCode(ErrorLog.ODNU1263);
-                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                        } else {
-                            orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
-                            Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
-                            if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                response.setCode(orderInsertResponse.getCode());
-                                response.setMessage(orderInsertResponse.getMessage());
-
-                                transactionTokenModel.setOrderId(responseValue.intValue());
-                                transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
-                                response.setData(transactionTokenModel);
-                            } else {
-                                response.setCode(ErrorLog.OIDNU1296);
-                                response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
-                            }
-                        }
+                    if (responseValue.intValue() <= 0) {
+                        response.setCode(ErrorLog.ODNU1263);
+                        response.setMessage(ErrorLog.OrderDetailNotUpdated);
                     } else {
-                        response.setCode(ErrorLog.TIF1300);
-                        response.setMessage(ErrorLog.TransactionInitiationFailed);
+                        orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
+                        Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
+                        if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                            response.setCode(orderInsertResponse.getCode());
+                            response.setMessage(orderInsertResponse.getMessage());
+
+                            transactionTokenModel.setOrderId(responseValue.intValue());
+                            transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
+                            response.setData(transactionTokenModel);
+                        } else {
+                            response.setCode(ErrorLog.OIDNU1296);
+                            response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
+                        }
                     }
-
                 } else {
-                    response.setCode(verifyOrderResponse.getCode());
-                    response.setMessage(verifyOrderResponse.getMessage());
+                    response.setCode(ErrorLog.TIF1300);
+                    response.setMessage(ErrorLog.TransactionInitiationFailed);
                 }
-            }
 
+            } else {
+                response.setCode(verifyOrderResponse.getCode());
+                response.setMessage(verifyOrderResponse.getMessage());
+            }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1261);
             response.setMessage(ErrorLog.TransactionTokenNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
         return response;
     }
 
@@ -173,7 +167,7 @@ public class OrderDaoImpl implements OrderDao {
     /**************************************************/
 
     @Override
-    public Response<String> placeOrder(Integer orderId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> placeOrder(Integer orderId) {
         /*
          *   1. verify the transaction status api and
          *   2. Insert the transaction in the transaction table
@@ -182,37 +176,31 @@ public class OrderDaoImpl implements OrderDao {
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1003);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
+            Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
 
-                if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    Response<String> insertTransactionResponse = transactionDaoImpl.insertTransactionDetails(verifyOrderResponse.getData());
+            if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                Response<String> insertTransactionResponse = transactionDaoImpl.insertTransactionDetails(verifyOrderResponse.getData());
 
-                    if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        Response<String> updateOrderStatusResponse = updateOrderStatus(verifyOrderResponse.getData().getOrderModel(), requestHeaderModel);
+                if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    Response<String> updateOrderStatusResponse = updateOrderStatus(verifyOrderResponse.getData().getOrderModel());
 
-                        if (updateOrderStatusResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            response.setCode(ErrorLog.CodeSuccess);
-                            response.setMessage(ErrorLog.Success);
-                            response.setData(ErrorLog.Success);
-                            priority = Priority.LOW;
-                        } else {
-                            response.setCode(ErrorLog.ODNU1156);
-                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                        }
+                    if (updateOrderStatusResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        response.setCode(ErrorLog.CodeSuccess);
+                        response.setMessage(ErrorLog.Success);
+                        response.setData(ErrorLog.Success);
+                        priority = Priority.LOW;
                     } else {
-                        response.setCode(ErrorLog.TDNU1264);
-                        response.setMessage(ErrorLog.TransactionDetailNotUpdated);
+                        response.setCode(ErrorLog.ODNU1156);
+                        response.setMessage(ErrorLog.OrderDetailNotUpdated);
                     }
                 } else {
-                    response.setCode(ErrorLog.ODNA1167);
-                    response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                    priority = Priority.HIGH;
+                    response.setCode(ErrorLog.TDNU1264);
+                    response.setMessage(ErrorLog.TransactionDetailNotUpdated);
                 }
+            } else {
+                response.setCode(ErrorLog.ODNA1167);
+                response.setMessage(ErrorLog.OrderDetailNotAvailable);
+                priority = Priority.HIGH;
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1109);
@@ -220,38 +208,31 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, orderId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, orderId.toString(), priority));
         return response;
     }
 
     /**************************************************/
 
     @Override
-    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
+    public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
         List<OrderItemListModel> orderItemListByMobile;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1055);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.userId, userId)
-                        .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                        .addValue(OrderQuery.pageCount, pageCount);
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.userId, userId)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
 
-                try {
-                    transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(ErrorLog.CE1269);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
+            try {
+                transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+            } catch (Exception e) {
+                response.setCode(ErrorLog.CE1269);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
-
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1270);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -302,12 +283,12 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, userId + "-" + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, userId + "-" + pageNum, priority));
         return response;
     }
 
     @Override
-    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount, RequestHeaderModel requestHeaderModel) {
+    public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -315,29 +296,14 @@ public class OrderDaoImpl implements OrderDao {
         List<OrderItemListModel> orderItemListByMobile;
 
         try {
-            if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
-                response.setCode(ErrorLog.IH1056);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1057);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.shopId, shopId)
-                        .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                        .addValue(OrderQuery.pageCount, pageCount);
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.shopId, shopId)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
 
-                try {
-                    transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByShopIdPagination, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(ErrorLog.CE1274);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
-            }
+            transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByShopIdPagination, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1275);
+            response.setCode(ErrorLog.CE1274);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (transactionModelList != null && !transactionModelList.isEmpty()) {
@@ -385,12 +351,12 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), null, shopId + "-" + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + "-" + pageNum, priority));
         return response;
     }
 
     @Override
-    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
@@ -398,31 +364,19 @@ public class OrderDaoImpl implements OrderDao {
         List<OrderItemListModel> orderItemListByMobile;
 
         try {
-            if (requestHeaderModel.getRole().equals((UserRole.CUSTOMER).name())) {
-                response.setCode(ErrorLog.IH1020);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1021);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.shopId, shopId);
-                try {
-                    transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByShopId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-                } catch (Exception e) {
-                    response.setCode(ErrorLog.ODNA1287);
-                    response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                }
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.shopId, shopId);
+            try {
+                transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByShopId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+            } catch (Exception e) {
+                response.setCode(ErrorLog.ODNA1287);
+                response.setMessage(ErrorLog.OrderDetailNotAvailable);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
-
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1289);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-
             if (transactionModelList != null && !transactionModelList.isEmpty()) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
@@ -469,7 +423,7 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), shopId, shopId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, shopId, shopId.toString(), priority));
         return response;
     }
 
@@ -496,43 +450,37 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Response<TransactionModel> getOrderById(Integer orderId, RequestHeaderModel requestHeaderModel) {
+    public Response<TransactionModel> getOrderById(Integer orderId) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel;
         Priority priority = Priority.MEDIUM;
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1058);
-                response.setMessage(ErrorLog.InvalidHeader);
-                priority = Priority.HIGH;
-            } else {
-                Response<TransactionModel> transactionModelResponse = transactionDaoImpl.getTransactionByOrderId(orderId);
+            Response<TransactionModel> transactionModelResponse = transactionDaoImpl.getTransactionByOrderId(orderId);
 
-                if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    transactionModel = transactionModelResponse.getData();
-                    Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
+            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                transactionModel = transactionModelResponse.getData();
+                Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
 
-                    if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        transactionModel.setOrderModel(orderModelResponse.getData());
-                        response.setCode(ErrorLog.CodeSuccess);
-                        response.setMessage(ErrorLog.Success);
-                        response.setData(transactionModel);
-                    } else {
-                        response.setCode(orderModelResponse.getCode());
-                        response.setMessage(orderModelResponse.getMessage());
-                    }
+                if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                    transactionModel.setOrderModel(orderModelResponse.getData());
+                    response.setCode(ErrorLog.CodeSuccess);
+                    response.setMessage(ErrorLog.Success);
+                    response.setData(transactionModel);
                 } else {
-                    response.setCode(ErrorLog.TDNA1292);
-                    response.setMessage(ErrorLog.TransactionDetailNotAvailable);
+                    response.setCode(orderModelResponse.getCode());
+                    response.setMessage(orderModelResponse.getMessage());
                 }
+            } else {
+                response.setCode(ErrorLog.TDNA1292);
+                response.setMessage(ErrorLog.TransactionDetailNotAvailable);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderId, null, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderId, null, priority));
         return response;
     }
 
@@ -580,12 +528,12 @@ public class OrderDaoImpl implements OrderDao {
     /**************************************************/
 
     @Override
-    public Response<String> updateOrderRating(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId());
 
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -613,7 +561,7 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -639,12 +587,12 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     @Override
-    public Response<String> updateOrderStatus(OrderModel orderModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateOrderStatus(OrderModel orderModel) {
         Response<String> response = new Response<>();
         Priority priority = Priority.HIGH;
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId(), requestHeaderModel);
+            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId());
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
 
@@ -705,7 +653,7 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, requestHeaderModel.getId(), orderModel.getId(), orderModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString(), priority));
         return response;
     }
 
@@ -734,7 +682,7 @@ public class OrderDaoImpl implements OrderDao {
                     }
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
-                        updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
+                        updateOrderStatus(transactionModelResponse.getData().getOrderModel());
                         transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
@@ -758,7 +706,7 @@ public class OrderDaoImpl implements OrderDao {
                     Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 1);
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
-                        updateOrderStatus(transactionModelResponse.getData().getOrderModel(), requestHeaderModel);
+                        updateOrderStatus(transactionModelResponse.getData().getOrderModel());
                         transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }

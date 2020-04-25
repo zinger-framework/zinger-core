@@ -23,8 +23,8 @@ CREATE TABLE place
 (
     id        INT AUTO_INCREMENT,
     name      VARCHAR(64) UNIQUE NOT NULL,
-    icon_url  VARCHAR(512) NOT NULL,
-    address   VARCHAR(256) NOT NULL,
+    icon_url  VARCHAR(512)       NOT NULL,
+    address   VARCHAR(256)       NOT NULL,
     is_delete INT DEFAULT 0,
     CONSTRAINT place_id_pk PRIMARY KEY (id)
 );
@@ -46,13 +46,14 @@ CREATE TABLE shop
 
 CREATE TABLE users
 (
-    id        INT AUTO_INCREMENT,
-    mobile    VARCHAR(10) UNIQUE                                               NOT NULL,
-    name      VARCHAR(32) DEFAULT NULL,
-    email     VARCHAR(64) DEFAULT NULL,
-    oauth_id  VARCHAR(64) UNIQUE                                               NOT NULL,
-    role      ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
-    is_delete INT         DEFAULT 0,
+    id          INT AUTO_INCREMENT,
+    mobile      VARCHAR(10) UNIQUE                                               NOT NULL,
+    name        VARCHAR(32) DEFAULT NULL,
+    email       VARCHAR(64) DEFAULT NULL,
+    oauth_id    VARCHAR(64) UNIQUE                                               NOT NULL,
+    notif_token JSON                                                             NOT NULL,
+    role        ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
+    is_delete   INT         DEFAULT 0,
     CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
 
@@ -85,15 +86,15 @@ CREATE TABLE item
 CREATE TABLE orders
 (
     id                       INT AUTO_INCREMENT,
-    user_id                  INT                NOT NULL,
-    shop_id                  INT                NOT NULL,
+    user_id                  INT    NOT NULL,
+    shop_id                  INT    NOT NULL,
     date                     TIMESTAMP                       DEFAULT CURRENT_TIMESTAMP,
     status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
         'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
         'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
         'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
     last_status_updated_time DATETIME                        DEFAULT NULL,
-    price                    DOUBLE             NOT NULL,
+    price                    DOUBLE NOT NULL,
     delivery_price           DOUBLE                          DEFAULT NULL,
     delivery_location        VARCHAR(128)                    DEFAULT NULL,
     cooking_info             VARCHAR(128)                    DEFAULT NULL,
@@ -205,9 +206,9 @@ CREATE TRIGGER order_placed_time
     BEFORE UPDATE
     ON orders
     FOR EACH ROW
-        IF (NEW.status LIKE 'PLACED' OR NEW.status LIKE 'PENDING' OR NEW.status LIKE 'TXN_FAILURE') THEN
-            SET NEW.date = CURRENT_TIMESTAMP;
-        END IF;
+    IF (NEW.status LIKE 'PLACED' OR NEW.status LIKE 'PENDING' OR NEW.status LIKE 'TXN_FAILURE') THEN
+        SET NEW.date = CURRENT_TIMESTAMP;
+    END IF;
 \\
 
 ####################################################

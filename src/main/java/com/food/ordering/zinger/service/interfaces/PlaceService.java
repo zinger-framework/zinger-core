@@ -11,7 +11,7 @@ import java.util.List;
 
 public interface PlaceService {
 
-    Response<String> insertPlace(PlaceModel placeModel, String oauthId, Integer id, String role);
+    Response<String> insertPlace(PlaceModel placeModel);
 
-    Response<List<PlaceModel>> getAllPlaces(String oauthId, Integer id, String role);
+    Response<List<PlaceModel>> getAllPlaces();
 }

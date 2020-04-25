@@ -18,14 +18,12 @@ public class PlaceServiceImpl implements PlaceService {
     PlaceDao placeDao;
 
     @Override
-    public Response<String> insertPlace(PlaceModel placeModel, String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return placeDao.insertPlace(placeModel, requestHeaderModel);
+    public Response<String> insertPlace(PlaceModel placeModel) {
+        return placeDao.insertPlace(placeModel);
     }
 
     @Override
-    public Response<List<PlaceModel>> getAllPlaces(String oauthId, Integer id, String role) {
-        RequestHeaderModel requestHeaderModel = new RequestHeaderModel(oauthId, id, role);
-        return placeDao.getAllPlaces(requestHeaderModel);
+    public Response<List<PlaceModel>> getAllPlaces() {
+        return placeDao.getAllPlaces();
     }
 }

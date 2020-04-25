@@ -1,4 +1,4 @@
-insert into users(mobile, oauth_id, role) values('sfdbgffed','sfdbgffed','SUPER_ADMIN');
+insert into users(mobile, oauth_id, notif_token, role) values('sfdbgffed','sfdbgffed','["token_sfdbgffed"]','SUPER_ADMIN');
 
 insert into place values(1,'SSN College of Engineering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
 insert into place values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
@@ -98,36 +98,6 @@ select * from orders;
 select * from orders_item;
 select * from rating;
 select * from configurations;
-
-select users.*, shop.*, configurations.*, rating.* from users
-inner join users_shop on 
-users.id = users_shop.user_id AND
-users.role != 'CUSTOMER' AND 
-users.is_delete = 0 
-inner join shop on
-shop.id = users_shop.shop_id AND
-shop.is_delete = 0
-inner join configurations on
-shop.id = configurations.shop_id
-inner join rating on
-shop.id = rating.shop_id;
-
- SELECT users.id, users.name, users.email, users.mobile, users.role, 
- shop.id AS shop_id, shop.name AS shop_name, shop.mobile AS shop_mobile, shop.photo_url, shop.cover_urls, shop.opening_time, shop.closing_time, 
- configurations.merchant_id, configurations.delivery_price, configurations.is_delivery_available, configurations.is_order_taken, 
- rating.rating, rating.user_count, FROM users 
- INNER JOIN users_shop ON 
- users.id = users_shop.user_id AND 
- users.role != 'CUSTOMER' AND 
- users.is_delete = 0 
- INNER JOIN shop ON 
- shop.id = users_shop.shop_id AND 
- shop.is_delete = 0 
- INNER JOIN configurations ON 
- shop.id = configurations.shop_id AND 
- INNER JOIN rating ON 
- shop.id = rating.shop_id AND 
- WHERE mobile = '9176786581' AND oauth_id = 'auth_9176786581';
  
  SELECT users.id, users.name, users.email, users.mobile, users.role, 
  shop.id AS shop_id, shop.name AS shop_name, shop.mobile AS shop_mobile, shop.photo_url, shop.cover_urls, shop.opening_time, shop.closing_time, 
@@ -142,7 +112,7 @@ shop.id = rating.shop_id;
  shop.id = users_shop.shop_id AND 
  shop.is_delete = 0 
  INNER JOIN configurations ON 
- shop.id = configurations.shop_id AND 
+ shop.id = configurations.shop_id 
  INNER JOIN rating ON 
  shop.id = rating.shop_id
  WHERE users.mobile = '9176786581' AND users.oauth_id = 'auth_9176786581';

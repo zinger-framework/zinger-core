@@ -2,12 +2,15 @@ package com.food.ordering.zinger.model;
 
 import com.food.ordering.zinger.constant.Enums.UserRole;
 
+import java.util.List;
+
 public class UserModel {
     private Integer id;
     private String mobile;
     private String name;
     private String email;
     private String oauthId;
+    private List<String> notificationToken;
     private UserRole role;
 
     public UserModel() {
@@ -61,13 +64,23 @@ public class UserModel {
         this.role = role;
     }
 
+    public List<String> getNotificationToken() {
+        return notificationToken;
+    }
+
+    public void setNotificationToken(List<String> notificationToken) {
+        this.notificationToken = notificationToken;
+    }
+
     @Override
     public String toString() {
         return "UserModel{" +
-                "mobile='" + mobile + '\'' +
+                "id=" + id +
+                ", mobile='" + mobile + '\'' +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
                 ", oauthId='" + oauthId + '\'' +
+                ", notificationToken='" + notificationToken + '\'' +
                 ", role=" + role +
                 '}';
     }

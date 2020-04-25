@@ -18,6 +18,7 @@ import com.food.ordering.zinger.rowMapperLambda.UserInviteRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
+import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -119,7 +120,9 @@ public class UserDaoImpl implements UserDao {
                     Number responseValue = insertUser(user);
                     if (responseValue != null && responseValue.intValue() > 0) {
                         user.setId(responseValue.intValue());
+                        user.setMobile(null);
                         user.setOauthId(null);
+                        user.setNotificationToken(null);
                         userPlaceModel = new UserPlaceModel();
                         userPlaceModel.setUserModel(user);
 
@@ -136,7 +139,7 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, user.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, user.toString()));
         return response;
     }
 
@@ -154,6 +157,7 @@ public class UserDaoImpl implements UserDao {
             MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.mobile, userModel.getMobile())
                     .addValue(UserColumn.oauthId, userModel.getOauthId())
+                    .addValue(UserColumn.notifToken, Helper.toJsonFormattedString(userModel.getNotificationToken()))
                     .addValue(UserColumn.role, userModel.getRole().name())
                     .addValue(UserColumn.isDelete, 0);
 
@@ -219,7 +223,7 @@ public class UserDaoImpl implements UserDao {
             response.setCode(ErrorLog.CE1154);
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, user.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, user.toString()));
         return response;
     }
 
@@ -234,7 +238,7 @@ public class UserDaoImpl implements UserDao {
      * Sample SMS URL: http://domain-name.com/user/verify/invite/1/9176712345
      */
     @Override
-    public Response<String> inviteSeller(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> inviteSeller(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
 
         try {
@@ -304,7 +308,7 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, null, shopId.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, shopId.toString()));
         return response;
     }
 
@@ -360,7 +364,7 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, userShopModel.getUserModel().getId(), null, userShopModel.getUserModel().getMobile()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, userShopModel.getUserModel().getMobile()));
         return response;
     }
 
@@ -486,45 +490,35 @@ public class UserDaoImpl implements UserDao {
      * @return the details of the workers for the given shop.
      */
     @Override
-    public Response<List<UserModel>> getSellerByShopId(Integer shopId, RequestHeaderModel requestHeaderModel) {
+    public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
         Response<List<UserModel>> userModelResponse = new Response<>();
         List<UserModel> userModelList = null;
         userModelResponse.prioritySet(Priority.MEDIUM);
 
         try {
-            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                userModelResponse.setCode(ErrorLog.IH1024);
-                userModelResponse.setMessage(ErrorLog.InvalidHeader);
-                userModelResponse.prioritySet(Priority.HIGH);
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                userModelResponse.setCode(ErrorLog.IH1023);
-                userModelResponse.setMessage(ErrorLog.InvalidHeader);
-                userModelResponse.prioritySet(Priority.HIGH);
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserShopColumn.shopId, shopId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserShopColumn.shopId, shopId);
 
-                try {
-                    userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
-                } catch (Exception e) {
+            try {
+                userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userRowMapperLambda);
+            } catch (Exception e) {
+                userModelResponse.setCode(ErrorLog.CE1104);
+                System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            } finally {
+                if (userModelList != null && !userModelList.isEmpty()) {
+                    userModelResponse.prioritySet(Priority.LOW);
+                    userModelResponse.setCode(ErrorLog.CodeSuccess);
+                    userModelResponse.setMessage(ErrorLog.Success);
+                    userModelResponse.setData(userModelList);
+                } else
                     userModelResponse.setCode(ErrorLog.CE1104);
-                    System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                } finally {
-                    if (userModelList != null && !userModelList.isEmpty()) {
-                        userModelResponse.prioritySet(Priority.LOW);
-                        userModelResponse.setCode(ErrorLog.CodeSuccess);
-                        userModelResponse.setMessage(ErrorLog.Success);
-                        userModelResponse.setData(userModelList);
-                    } else
-                        userModelResponse.setCode(ErrorLog.CE1104);
-                }
             }
         } catch (Exception e) {
             userModelResponse.setCode(ErrorLog.CE1105);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(userModelResponse, requestHeaderModel.getId(), null, shopId.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(userModelResponse, null, shopId.toString()));
         return userModelResponse;
     }
 
@@ -537,41 +531,35 @@ public class UserDaoImpl implements UserDao {
      * @return success response if the update is successful.
      */
     @Override
-    public Response<String> updateUser(UserModel user, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateUser(UserModel user) {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.MEDIUM);
 
         try {
-            if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1051);
-                response.setMessage(ErrorLog.Failure);
-                response.setData(ErrorLog.InvalidHeader);
-                response.prioritySet(Priority.HIGH);
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserColumn.name, user.getName())
-                        .addValue(UserColumn.mobile, user.getMobile())
-                        .addValue(UserColumn.email, user.getEmail())
-                        .addValue(UserColumn.id, user.getId());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.name, user.getName())
+                    .addValue(UserColumn.mobile, user.getMobile())
+                    .addValue(UserColumn.email, user.getEmail())
+                    .addValue(UserColumn.notifToken, Helper.toJsonFormattedString(user.getNotificationToken()))
+                    .addValue(UserColumn.id, user.getId());
 
-                int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
-                if (result > 0) {
-                    response.prioritySet(Priority.LOW);
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                } else {
-                    response.setCode(ErrorLog.UDNU1157);
-                    response.setMessage(ErrorLog.Failure);
-                    response.setMessage(ErrorLog.UserDetailNotUpdated);
-                }
+            int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
+            if (result > 0) {
+                response.prioritySet(Priority.LOW);
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            } else {
+                response.setCode(ErrorLog.UDNU1157);
+                response.setMessage(ErrorLog.Failure);
+                response.setMessage(ErrorLog.UserDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1158);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), user.getId(), user.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, user.getId(), user.toString()));
         return response;
     }
 
@@ -665,34 +653,27 @@ public class UserDaoImpl implements UserDao {
      * @return success response if the update is successful.
      */
     @Override
-    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.MEDIUM);
 
-        if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.IH1052);
-            response.setMessage(ErrorLog.InvalidHeader);
-            response.prioritySet(Priority.HIGH);
-        } else {
-            Response<String> responseUser = updateUser(userPlaceModel.getUserModel(), requestHeaderModel);
-            Response<String> responsePlace = updatePlace(userPlaceModel);
+        Response<String> responseUser = updateUser(userPlaceModel.getUserModel());
+        Response<String> responsePlace = updatePlace(userPlaceModel);
 
-            if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.UDNU1159);
-                response.setMessage(ErrorLog.Failure);
-                response.setData(ErrorLog.UserDetailNotUpdated);
-            } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.CDNU1160);
-                response.setMessage(ErrorLog.Failure);
-                response.setData(ErrorLog.PlaceDetailNotUpdated);
-            }
+        if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+            response.setData(ErrorLog.Success);
+        } else if (!responseUser.getCode().equals(ErrorLog.CodeSuccess) && responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
+            response.setCode(ErrorLog.UDNU1159);
+            response.setMessage(ErrorLog.Failure);
+            response.setData(ErrorLog.UserDetailNotUpdated);
+        } else if (responseUser.getCode().equals(ErrorLog.CodeSuccess) && !responsePlace.getCode().equals(ErrorLog.CodeSuccess)) {
+            response.setCode(ErrorLog.CDNU1160);
+            response.setMessage(ErrorLog.Failure);
+            response.setData(ErrorLog.PlaceDetailNotUpdated);
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userPlaceModel.getUserModel().getId(), userPlaceModel.toString()));
         return response;
     }
 
@@ -705,32 +686,24 @@ public class UserDaoImpl implements UserDao {
      * @return success response if the delete is successful.
      */
     @Override
-    public Response<String> deleteSeller(Integer shopId, Integer userId, RequestHeaderModel requestHeaderModel) {
+    public Response<String> deleteSeller(Integer shopId, Integer userId) {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.HIGH);
 
         try {
-            if (!requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                response.setCode(ErrorLog.IH1025);
-                response.setData(ErrorLog.InvalidHeader);
-            } else if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.IH1026);
-                response.setData(ErrorLog.InvalidHeader);
-            } else {
-                SqlParameterSource parameters = new MapSqlParameterSource()
-                        .addValue(UserShopColumn.userId, userId)
-                        .addValue(UserShopColumn.shopId, shopId);
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserShopColumn.userId, userId)
+                    .addValue(UserShopColumn.shopId, shopId);
 
-                int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
-                if (result > 0) {
-                    response.prioritySet(Priority.LOW);
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                } else {
-                    response.setCode(ErrorLog.UDND1164);
-                    response.setData(ErrorLog.UserDetailNotDeleted);
-                }
+            int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
+            if (result > 0) {
+                response.prioritySet(Priority.LOW);
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            } else {
+                response.setCode(ErrorLog.UDND1164);
+                response.setData(ErrorLog.UserDetailNotDeleted);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1106);
@@ -738,7 +711,7 @@ public class UserDaoImpl implements UserDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), userId, null));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, userId, null));
         return response;
     }
 
@@ -750,43 +723,32 @@ public class UserDaoImpl implements UserDao {
      * @return success response if the delete is successful.
      */
     @Override
-    public Response<String> deleteInvite(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel) {
+    public Response<String> deleteInvite(UserShopModel userShopModel) {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.MEDIUM);
 
         try {
-            if (requestHeaderModel.getRole().equals(UserRole.SHOP_OWNER.name())) {
-                if (!interceptorDaoImpl.validateUser(requestHeaderModel).getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setCode(ErrorLog.IH1050);
-                    response.setData(ErrorLog.InvalidHeader);
-                } else {
-                    SqlParameterSource parameters = new MapSqlParameterSource()
-                            .addValue(Column.UserInviteColumn.mobile, userShopModel.getUserModel().getMobile())
-                            .addValue(Column.UserInviteColumn.role, userShopModel.getUserModel().getRole().name())
-                            .addValue(Column.UserInviteColumn.shopId, userShopModel.getShopModel().getId());
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(Column.UserInviteColumn.mobile, userShopModel.getUserModel().getMobile())
+                    .addValue(Column.UserInviteColumn.role, userShopModel.getUserModel().getRole().name())
+                    .addValue(Column.UserInviteColumn.shopId, userShopModel.getShopModel().getId());
 
-                    int responseValue = namedParameterJdbcTemplate.update(Query.UserInviteQuery.deleteInvite, parameters);
-                    if (responseValue > 0) {
-                        response.setCode(ErrorLog.CodeSuccess);
-                        response.setMessage(ErrorLog.Success);
-                        response.setData(ErrorLog.Success);
-                        response.prioritySet(Priority.LOW);
-                    } else {
-                        response.setCode(ErrorLog.UDND1162);
-                        response.setMessage(UserDetailNotDeleted);
-                    }
-                }
+            int responseValue = namedParameterJdbcTemplate.update(Query.UserInviteQuery.deleteInvite, parameters);
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
             } else {
-                response.prioritySet(Priority.HIGH);
-                response.setCode(ErrorLog.IH1059);
-                response.setData(ErrorLog.InvalidHeader);
+                response.setCode(ErrorLog.UDND1162);
+                response.setMessage(UserDetailNotDeleted);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1161);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertUserLog(new UserLogModel(response, requestHeaderModel.getId(), null, userShopModel.toString()));
+        auditLogDaoImpl.insertUserLog(new UserLogModel(response, null, userShopModel.toString()));
         return response;
     }
 }

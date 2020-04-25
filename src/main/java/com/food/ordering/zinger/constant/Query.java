@@ -19,13 +19,11 @@ public class Query {
         public static final String insertPlaceLog = INSERT_INTO + PlaceLogColumn.tableName + LEFT_PARANTHESIS +
                 PlaceLogColumn.id + COMMA +
                 PlaceLogColumn.errorCode + COMMA +
-                PlaceLogColumn.userId + COMMA +
                 PlaceLogColumn.message + COMMA +
                 PlaceLogColumn.updatedValue + COMMA +
                 PlaceLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + PlaceLogColumn.id +
                 COMMA_COLON + PlaceLogColumn.errorCode +
-                COMMA_COLON + PlaceLogColumn.userId +
                 COMMA_COLON + PlaceLogColumn.message +
                 COMMA_COLON + PlaceLogColumn.updatedValue +
                 COMMA_COLON + PlaceLogColumn.priority + RIGHT_PARANTHESIS;
@@ -33,13 +31,11 @@ public class Query {
         public static final String insertShopLog = INSERT_INTO + ShopLogColumn.tableName + LEFT_PARANTHESIS +
                 ShopLogColumn.id + COMMA +
                 ShopLogColumn.errorCode + COMMA +
-                ShopLogColumn.userId + COMMA +
                 ShopLogColumn.message + COMMA +
                 ShopLogColumn.updatedValue + COMMA +
                 ShopLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ShopLogColumn.id +
                 COMMA_COLON + ShopLogColumn.errorCode +
-                COMMA_COLON + ShopLogColumn.userId +
                 COMMA_COLON + ShopLogColumn.message +
                 COMMA_COLON + ShopLogColumn.updatedValue +
                 COMMA_COLON + ShopLogColumn.priority + RIGHT_PARANTHESIS;
@@ -47,13 +43,11 @@ public class Query {
         public static final String insertUserLog = INSERT_INTO + UserLogColumn.tableName + LEFT_PARANTHESIS +
                 UserLogColumn.id + COMMA +
                 UserLogColumn.errorCode + COMMA +
-                UserLogColumn.userId + COMMA +
                 UserLogColumn.message + COMMA +
                 UserLogColumn.updatedValue + COMMA +
                 UserLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + UserLogColumn.id +
                 COMMA_COLON + UserLogColumn.errorCode +
-                COMMA_COLON + UserLogColumn.userId +
                 COMMA_COLON + UserLogColumn.message +
                 COMMA_COLON + UserLogColumn.updatedValue +
                 COMMA_COLON + UserLogColumn.priority + RIGHT_PARANTHESIS;
@@ -61,26 +55,22 @@ public class Query {
         public static final String insertItemLog = INSERT_INTO + ItemLogColumn.tableName + LEFT_PARANTHESIS +
                 ItemLogColumn.id + COMMA +
                 ItemLogColumn.errorCode + COMMA +
-                ItemLogColumn.userId + COMMA +
                 ItemLogColumn.message + COMMA +
                 ItemLogColumn.updatedValue + COMMA +
                 ItemLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + ItemLogColumn.id + COMMA_COLON +
                 ItemLogColumn.errorCode + COMMA_COLON +
-                ItemLogColumn.userId + COMMA_COLON +
                 ItemLogColumn.message + COMMA_COLON +
                 ItemLogColumn.updatedValue + COMMA_COLON + ItemLogColumn.priority + RIGHT_PARANTHESIS;
 
         public static final String insertOrderLog = INSERT_INTO + OrderLogColumn.tableName + LEFT_PARANTHESIS +
                 OrderLogColumn.id + COMMA +
                 OrderLogColumn.errorCode + COMMA +
-                OrderLogColumn.userId + COMMA +
                 OrderLogColumn.message + COMMA +
                 OrderLogColumn.updatedValue + COMMA +
                 OrderLogColumn.priority + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
                 COLON + OrderLogColumn.id +
                 COMMA_COLON + OrderLogColumn.errorCode +
-                COMMA_COLON + OrderLogColumn.userId +
                 COMMA_COLON + OrderLogColumn.message +
                 COMMA_COLON + OrderLogColumn.updatedValue +
                 COMMA_COLON + OrderLogColumn.priority + RIGHT_PARANTHESIS;
@@ -607,6 +597,7 @@ public class Query {
         public static final String getUserByMobile = SELECT +
                 UserColumn.id + COMMA +
                 UserColumn.oauthId + COMMA +
+                UserColumn.notifToken + COMMA +
                 UserColumn.name + COMMA +
                 UserColumn.email + COMMA +
                 UserColumn.mobile + COMMA +
@@ -630,14 +621,20 @@ public class Query {
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
                 UserColumn.email + EQUAL_COLON + UserColumn.email + COMMA +
-                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + WHERE +
+                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + COMMA +
+                UserColumn.notifToken + EQUAL_COLON + UserColumn.notifToken + WHERE +
                 UserColumn.id + EQUAL_COLON + UserColumn.id;
 
         public static final String updateRole = UPDATE + UserColumn.tableName + SET +
                 UserColumn.role + EQUAL_COLON + UserColumn.role + WHERE +
                 UserColumn.id + EQUAL_COLON + UserColumn.id;
 
-        public static final String loginUserByMobileOauth = getUserByMobile + AND +
+        public static final String loginUserByMobileOauth = SELECT +
+                UserColumn.id + COMMA +
+                UserColumn.name + COMMA +
+                UserColumn.email + COMMA +
+                UserColumn.role + FROM + UserColumn.tableName + WHERE +
+                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + AND +
                 UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 notDeleted;
 
@@ -645,7 +642,6 @@ public class Query {
                 UserColumn.tableName + DOT + UserColumn.id + COMMA +
                 UserColumn.tableName + DOT + UserColumn.name + COMMA +
                 UserColumn.tableName + DOT + UserColumn.email + COMMA +
-                UserColumn.tableName + DOT + UserColumn.mobile + COMMA +
                 UserColumn.tableName + DOT + UserColumn.role + COMMA +
                 PlaceColumn.tableName + DOT + PlaceColumn.id + AS + UserPlaceColumn.placeId + COMMA +
                 PlaceColumn.tableName + DOT + PlaceColumn.name + AS + Column.placeName + COMMA +
