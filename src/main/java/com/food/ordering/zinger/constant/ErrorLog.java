@@ -32,6 +32,7 @@ public class ErrorLog {
     public static final String ItemDetailNotUpdated = "Item detail not updated";
 
     public static final String UserDetailNotDeleted = "User detail not deleted";
+    public static final String ShopDetailNotDeleted = "Shop detail not deleted";
 
     public static final String InvalidOrderStatus = "Invalid Order status";
     public static final String SecretKeyMismatch = "Secret key mismatch";
@@ -157,8 +158,8 @@ public class ErrorLog {
     public static final Integer CE1254 = 1254;
     public static final Integer CE1255 = 1255;
     public static final Integer SCDNA1256 = 1256;
-    public static final Integer CDNA1257 = 1257;
-    public static final Integer SDNA1258 = 1258;
+    public static final Integer SDND1257 = 1257;
+    public static final Integer CE1258 = 1258;
     public static final Integer CE1259 = 1259;
     public static final Integer CDNU1260 = 1260;
 

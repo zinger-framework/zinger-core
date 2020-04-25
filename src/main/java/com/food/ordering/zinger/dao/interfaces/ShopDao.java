@@ -17,4 +17,6 @@ public interface ShopDao {
     Response<ShopModel> getShopById(Integer shopId);
 
     Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel);
+
+    Response<String> deleteShopById(Integer shopId);
 }

@@ -401,6 +401,7 @@ public class Query {
                 ShopColumn.tableName + DOT + ShopColumn.coverUrls + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.openingTime + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.closingTime + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.merchantId + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.deliveryPrice + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.isDeliveryAvailable + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.isOrderTaken + COMMA +
@@ -421,6 +422,7 @@ public class Query {
                 ShopColumn.tableName + DOT + ShopColumn.coverUrls + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.openingTime + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.closingTime + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.merchantId + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.deliveryPrice + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.isDeliveryAvailable + COMMA +
                 ConfigurationColumn.tableName + DOT + ConfigurationColumn.isOrderTaken + COMMA +

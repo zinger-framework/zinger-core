@@ -17,6 +17,9 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+import static com.food.ordering.zinger.constant.ErrorLog.SDND1257;
+import static com.food.ordering.zinger.constant.ErrorLog.ShopDetailNotDeleted;
+
 /**
  * ShopDao is responsible for CRUD operations in
  * Shop table in MySQL.
@@ -36,19 +39,11 @@ public class ShopDaoImpl implements ShopDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDaoImpl interceptorDaoImpl;
-
-    @Autowired
     ConfigurationDaoImpl configurationDaoImpl;
-
-    @Autowired
-    RatingDaoImpl ratingDaoImpl;
 
     @Autowired
     PlaceDaoImpl placeDaoImpl;
 
-    @Autowired
-    AuditLogDaoImpl auditLogDaoImpl;
 
     /**
      * Inserts the shop details.
@@ -239,6 +234,36 @@ public class ShopDaoImpl implements ShopDao {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1259);
+        }
+
+        return response;
+    }
+
+    @Override
+    public Response<String> deleteShopById(Integer shopId) {
+        Response<String> response = new Response<>();
+        MapSqlParameterSource parameters;
+
+        try {
+            parameters = new MapSqlParameterSource()
+                    .addValue(ShopColumn.id, shopId);
+
+            int responseValue = namedParameterJdbcTemplate.update(ShopQuery.deleteShop, parameters);
+
+            if (responseValue > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
+            } else {
+                response.setCode(ErrorLog.SDND1257);
+                response.setMessage(ShopDetailNotDeleted);
+            }
+
+
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            response.setCode(ErrorLog.CE1258);
         }
 
         return response;

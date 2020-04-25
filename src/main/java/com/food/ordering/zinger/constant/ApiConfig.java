@@ -56,5 +56,6 @@ public class ApiConfig {
         public static final String getShopsByPlaceId = "/place/{placeId}";
         public static final String getShopById = "/{shopId}";
         public static final String updateShopConfiguration = "/config";
+        public static final String deleteShop = "/{shopId}";
     }
 }

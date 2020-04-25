@@ -15,4 +15,6 @@ public interface ShopService {
     Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId);
 
     Response<String> updateShopConfiguration(ConfigurationModel configurationModel);
+
+    Response<String> deleteShopById(Integer shopId);
 }

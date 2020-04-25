@@ -65,6 +65,7 @@ public class ShopRowMapperLambda {
         configurationModel.setDeliveryPrice(rs.getDouble(deliveryPrice));
         configurationModel.setIsDeliveryAvailable(rs.getInt(isDeliveryAvailable));
         configurationModel.setIsOrderTaken(rs.getInt(isOrderTaken));
+        configurationModel.setMerchantId(rs.getString(merchantId));
 
 
         RatingModel ratingModel = new RatingModel();
