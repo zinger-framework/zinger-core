@@ -286,7 +286,7 @@ public class ItemDaoImpl implements ItemDao {
 
     /**
      * Updates the item details for the given item.
-     * Authorized by SHOP_OWNER only.
+     * Authorized by SHOP_OWNER and workers(SELLER/DELIVERY) only.
      *
      * @param itemModel ItemModel
      * @return success response if the update is successful.

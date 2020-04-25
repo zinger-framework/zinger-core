@@ -85,18 +85,64 @@ insert into configurations(shop_id, delivery_price, merchant_id) values(9, 25.0,
 -- insert into transactions (transaction_id,order_id,bank_transaction_id,currency,response_code,response_message,gateway_name,bank_name,
 -- payment_mode,checksum_hash) values("3","O00012","dsfs","RS","01","success","STRIPE","DBS","UPI","3232");
 
--- select * from users;
--- select * from place;
--- select * from place_log;
--- select * from shop;
--- select * from item;
--- select * from item_log;
--- select * from users_log;
--- select * from users_place;
--- select * from users_shop;
--- select * from users_invite;
--- select * from transactions;
--- select * from orders;
--- select * from orders_item;
--- select * from rating;
--- select * from configurations;
+select * from users;
+select * from place;
+select * from place_log;
+select * from shop;
+select * from item;
+select * from users_place;
+select * from users_shop;
+select * from users_invite;
+select * from transactions;
+select * from orders;
+select * from orders_item;
+select * from rating;
+select * from configurations;
+
+select users.*, shop.*, configurations.*, rating.* from users
+inner join users_shop on 
+users.id = users_shop.user_id AND
+users.role != 'CUSTOMER' AND 
+users.is_delete = 0 
+inner join shop on
+shop.id = users_shop.shop_id AND
+shop.is_delete = 0
+inner join configurations on
+shop.id = configurations.shop_id
+inner join rating on
+shop.id = rating.shop_id;
+
+ SELECT users.id, users.name, users.email, users.mobile, users.role, 
+ shop.id AS shop_id, shop.name AS shop_name, shop.mobile AS shop_mobile, shop.photo_url, shop.cover_urls, shop.opening_time, shop.closing_time, 
+ configurations.merchant_id, configurations.delivery_price, configurations.is_delivery_available, configurations.is_order_taken, 
+ rating.rating, rating.user_count, FROM users 
+ INNER JOIN users_shop ON 
+ users.id = users_shop.user_id AND 
+ users.role != 'CUSTOMER' AND 
+ users.is_delete = 0 
+ INNER JOIN shop ON 
+ shop.id = users_shop.shop_id AND 
+ shop.is_delete = 0 
+ INNER JOIN configurations ON 
+ shop.id = configurations.shop_id AND 
+ INNER JOIN rating ON 
+ shop.id = rating.shop_id AND 
+ WHERE mobile = '9176786581' AND oauth_id = 'auth_9176786581';
+ 
+ SELECT users.id, users.name, users.email, users.mobile, users.role, 
+ shop.id AS shop_id, shop.name AS shop_name, shop.mobile AS shop_mobile, shop.photo_url, shop.cover_urls, shop.opening_time, shop.closing_time, 
+ configurations.merchant_id, configurations.delivery_price, configurations.is_delivery_available, configurations.is_order_taken, 
+ rating.rating, rating.user_count 
+ FROM users 
+ INNER JOIN users_shop ON 
+ users.id = users_shop.user_id AND 
+ users.role != 'CUSTOMER' AND 
+ users.is_delete = 0 
+ INNER JOIN shop ON 
+ shop.id = users_shop.shop_id AND 
+ shop.is_delete = 0 
+ INNER JOIN configurations ON 
+ shop.id = configurations.shop_id AND 
+ INNER JOIN rating ON 
+ shop.id = rating.shop_id
+ WHERE users.mobile = '9176786581' AND users.oauth_id = 'auth_9176786581';

@@ -1,6 +1,11 @@
 package com.food.ordering.zinger.constant;
 
 public class Column {
+    public static final String placeAddress = "place_address";
+    public static final String placeName = "place_name";
+
+    public static final String shopName = "shop_name";
+    public static final String shopMobile = "shop_mobile";
 
     public static final class PlaceColumn {
         public static final String tableName = "place";

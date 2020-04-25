@@ -48,6 +48,7 @@ public class InterceptorDaoImpl implements InterceptorDao {
         Response<UserModel> response = new Response<>();
 
         try {
+            //TODO: check this flow
             if (requestHeaderModel.getOauthId().equals(env.getProperty(Constant.authIdSA)) && requestHeaderModel.getId().equals(env.getProperty(Constant.idSA)) && requestHeaderModel.getRole().equals(env.getProperty(Constant.roleSA))) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);

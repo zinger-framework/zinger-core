@@ -21,13 +21,13 @@ public class UserLogModel {
     public UserLogModel() {
     }
 
-    public UserLogModel(Response response, Integer userId, Integer id, String updatedValue, Priority priority) {
+    public UserLogModel(Response response, Integer userId, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
         this.userId = userId;
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority = priority;
+        this.priority = response.priorityGet();
     }
 
     public Integer getId() {

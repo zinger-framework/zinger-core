@@ -1,15 +1,18 @@
 package com.food.ordering.zinger.model;
 
+import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.constant.ErrorLog;
 
 public class Response<T> {
     private Integer code;
     private String message;
+    private Enums.Priority priority;
     private T data;
 
     public Response() {
         code = ErrorLog.CodeFailure;
         message = ErrorLog.Failure;
+        priority = Enums.Priority.MEDIUM;
     }
 
     public Integer getCode() {
@@ -26,6 +29,14 @@ public class Response<T> {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Enums.Priority priorityGet() {
+        return priority;
+    }
+
+    public void prioritySet(Enums.Priority priority) {
+        this.priority = priority;
     }
 
     public T getData() {

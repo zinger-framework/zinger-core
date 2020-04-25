@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.model.TransactionModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
 import org.springframework.context.annotation.Bean;
@@ -23,6 +24,7 @@ public class PaymentResponse {
 
     private String code;
     private String message;
+    private String responseValue;
 
     /**
      * Parse the file "responseStatus.json".
@@ -38,15 +40,13 @@ public class PaymentResponse {
      * @return the string containing the entire json.
      */
     @Bean
-    public String parseResponseStatus() {
+    public void parseResponseStatus() {
         try {
             List<String> list = Files.readAllLines(new File("src/main/resources/responseStatus.json").toPath());
-            return list.stream().collect(Collectors.joining());
+            responseValue = list.stream().collect(Collectors.joining());
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
-        return null;
     }
 
     /**
@@ -57,7 +57,6 @@ public class PaymentResponse {
      * @return the new order status for the given transaction status.
      */
     public Enums.OrderStatus getOrderStatus(TransactionModel transactionModel) {
-        String responseValue = parseResponseStatus();
         if (responseValue == null)
             return null;
 

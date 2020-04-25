@@ -4,6 +4,8 @@ import com.food.ordering.zinger.constant.Column.*;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.OrderItemModel;
+import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
+import jdk.nashorn.internal.objects.annotations.Where;
 
 import java.util.List;
 
@@ -638,6 +640,59 @@ public class Query {
         public static final String loginUserByMobileOauth = getUserByMobile + AND +
                 UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
                 notDeleted;
+
+        public static final String customerLogin = SELECT +
+                UserColumn.tableName + DOT + UserColumn.id + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + COMMA +
+                UserColumn.tableName + DOT + UserColumn.email + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + COMMA +
+                UserColumn.tableName + DOT + UserColumn.role + COMMA +
+                PlaceColumn.tableName + DOT + PlaceColumn.id + AS + UserPlaceColumn.placeId + COMMA +
+                PlaceColumn.tableName + DOT + PlaceColumn.name + AS + Column.placeName + COMMA +
+                PlaceColumn.tableName + DOT + PlaceColumn.iconUrl + COMMA +
+                PlaceColumn.tableName + DOT + PlaceColumn.address + AS + Column.placeAddress + FROM + UserColumn.tableName +
+                INNER_JOIN + UserPlaceColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + UserPlaceColumn.tableName + DOT + UserPlaceColumn.userId + AND +
+                UserColumn.tableName + DOT + notDeleted +
+                INNER_JOIN + PlaceColumn.tableName + ON +
+                PlaceColumn.tableName + DOT + PlaceColumn.id + EQUALS + UserPlaceColumn.tableName + DOT + UserPlaceColumn.placeId + AND +
+                PlaceColumn.tableName + DOT + PlaceQuery.notDeleted + WHERE +
+                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + AND +
+                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId;
+
+        public static final String sellerLogin = SELECT +
+                UserColumn.tableName + DOT + UserColumn.id + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + COMMA +
+                UserColumn.tableName + DOT + UserColumn.email + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + COMMA +
+                UserColumn.tableName + DOT + UserColumn.role + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.id + AS + UserShopColumn.shopId + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.name + AS + Column.shopName + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.mobile + AS + Column.shopMobile + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.photoUrl + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.coverUrls + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.openingTime + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.closingTime + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.merchantId + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.deliveryPrice + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.isDeliveryAvailable + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.isOrderTaken + COMMA +
+                RatingColumn.tableName + DOT + RatingColumn.rating + COMMA +
+                RatingColumn.tableName + DOT + RatingColumn.userCount + FROM + UserColumn.tableName +
+                INNER_JOIN + UserShopColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + UserShopColumn.tableName + DOT + UserShopColumn.userId + AND +
+                UserColumn.tableName + DOT + UserColumn.role + NOT_EQUALS + SINGLE_QUOTE + Enums.UserRole.CUSTOMER.name() + SINGLE_QUOTE + AND +
+                UserColumn.tableName + DOT + notDeleted +
+                INNER_JOIN + ShopColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + UserShopColumn.tableName + DOT + UserShopColumn.shopId + AND +
+                ShopColumn.tableName + DOT + ShopQuery.notDeleted +
+                INNER_JOIN + ConfigurationColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId +
+                INNER_JOIN + RatingColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId + WHERE +
+                UserColumn.tableName + DOT + UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + AND +
+                UserColumn.tableName + DOT + UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + AND +
+                UserColumn.tableName + DOT + UserColumn.role + NOT_EQUALS + SINGLE_QUOTE + Enums.UserRole.CUSTOMER.name() + SINGLE_QUOTE;
 
         public static final String validateUser = getUserById + AND +
                 notDeleted + AND +

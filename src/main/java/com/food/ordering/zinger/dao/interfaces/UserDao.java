@@ -38,7 +38,7 @@ public interface UserDao {
 
     Response<String> inviteSeller(UserShopModel userShopModel, RequestHeaderModel requestHeaderModel);
 
-    Response<String> acceptInvite(UserShopModel userShopModel);
+    Response<UserShopListModel> acceptInvite(UserShopModel userShopModel);
 
     /**************************************************/
 

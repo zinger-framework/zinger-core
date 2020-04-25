@@ -4,10 +4,12 @@ public class ErrorLog {
     public static final Integer CodeFailure = 0;
     public static final Integer CodeSuccess = 1;
 
+    public static final String MissingRequestHeader = "Missing Request Header";
+    public static final String InvalidHeader = "Invalid Header Values";
+    public static final String UnAuthorizedAccess = "Unauthorized Access";
+
     public static final String Success = "Success";
     public static final String Failure = "Failure";
-
-    public static final String InvalidHeader = "Invalid Header Values";
 
     public static final String UserDetailNotAvailable = "User detail not available";
     public static final String PlaceDetailNotAvailable = "Place detail not available";
@@ -111,7 +113,7 @@ public class ErrorLog {
     public static final Integer CE1152 = 1152;
     public static final Integer UDNU1153 = 1153;
     public static final Integer CE1154 = 1154;
-    public static final Integer UDNU1155 = 1155;
+    public static final Integer UDNA1155 = 1155;
     public static final Integer ODNU1156 = 1156;
     public static final Integer UDNU1157 = 1157;
     public static final Integer CE1158 = 1158;
@@ -142,6 +144,8 @@ public class ErrorLog {
     public static final Integer IDNU1211 = 1211;
     public static final Integer CE1212 = 1212;
     public static final Integer CE1213 = 1213;
+    public static final Integer SDNU1214 = 1214;
+    public static final Integer SDNU1215 = 1215;
 
     /**********************************************************************/
     // Shop Controller Error Code 1251-1260

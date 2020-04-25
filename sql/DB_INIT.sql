@@ -23,7 +23,7 @@ CREATE TABLE place
 (
     id        INT AUTO_INCREMENT,
     name      VARCHAR(64) UNIQUE NOT NULL,
-    icon_url  VARCHAR(128) NOT NULL,
+    icon_url  VARCHAR(512) NOT NULL,
     address   VARCHAR(256) NOT NULL,
     is_delete INT DEFAULT 0,
     CONSTRAINT place_id_pk PRIMARY KEY (id)
@@ -33,7 +33,7 @@ CREATE TABLE shop
 (
     id           INT AUTO_INCREMENT,
     name         VARCHAR(32) UNIQUE NOT NULL,
-    photo_url    VARCHAR(128) DEFAULT NULL,
+    photo_url    VARCHAR(512) DEFAULT NULL,
     cover_urls   JSON         DEFAULT NULL,
     mobile       VARCHAR(10)        NOT NULL,
     place_id     INT                NOT NULL,
@@ -71,7 +71,7 @@ CREATE TABLE item
     id           INT AUTO_INCREMENT,
     name         VARCHAR(32) NOT NULL,
     price        DOUBLE      NOT NULL,
-    photo_url    VARCHAR(128) DEFAULT NULL,
+    photo_url    VARCHAR(512) DEFAULT NULL,
     category     VARCHAR(16) NOT NULL,
     shop_id      INT         NOT NULL,
     is_veg       INT          DEFAULT 1,

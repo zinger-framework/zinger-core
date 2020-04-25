@@ -14,7 +14,7 @@ public interface UserService {
 
     Response<String> inviteSeller(UserShopModel userShopModel, String oauthId, Integer id, String role);
 
-    Response<String> acceptInvite(UserShopModel userShopModel);
+    Response<UserShopListModel> acceptInvite(UserShopModel userShopModel);
 
     /**************************************************/
 
