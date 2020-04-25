@@ -30,8 +30,19 @@ import java.util.Random;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
+/**
+ *  OrderDao is responsible for performing CRUD operation related to the order table in the database.
+ *  End points starting with '/order' starts here
+ *
+ *  @implNote Request Header (RH) parameter is sent in all endpoints
+ *  to avoid unauthorized access to our service.
+ *
+ *  @implNote All endpoint services are audited for both success and error responses
+ *  * using "AuditLogDaoImpl".
+ */
 @Repository
 public class OrderDaoImpl implements OrderDao {
+
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -66,6 +77,16 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     PaymentResponse paymentResponse;
 
+    /**
+     *  Insert order method
+     *   -> checks for availability of each item and calculates the total order amount.
+     *   -> Fetches transaction token from the payment gateway
+     *   -> Order is inserted into the orders's table
+     *   -> Transaction token along with orderId returned to the user
+     *
+     * @param orderItemListModel OrderItemModelList
+     * @return Transaction token and orderId returned to the user
+     */
     @Override
     public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
         /*
@@ -137,6 +158,12 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * Insert order item inserts all the items in orderItemModels list in the OrderItem table
+     *
+     * @param orderItemModelList OrderItemModelList
+     * @return success response if insert operation was successful otherwise failure response is returned
+     */
     public Response<String> insertOrderItem(OrderItemListModel orderItemModelList) {
         Response<String> response = new Response<>();
         Integer orderId = orderItemModelList.getTransactionModel().getOrderModel().getId();
@@ -165,6 +192,15 @@ public class OrderDaoImpl implements OrderDao {
 
     /**************************************************/
 
+    /**
+     * Place order
+     *  -> Verifies the transaction status of the order by contacting the payment gateway
+     *  -> If the transaction status is success or pending then the transaction details are inserted into the transaction table
+     *  -> The order status is updated to PLACED or PENDING accordingly.
+     *
+     * @param orderId Integer
+     * @return success response if insert operation was successful otherwise failure response is returned
+     */
     @Override
     public Response<String> placeOrder(Integer orderId) {
         /*
@@ -213,6 +249,15 @@ public class OrderDaoImpl implements OrderDao {
 
     /**************************************************/
 
+    /**
+     * This method is responsible for fetching orders placed by a given user in a paginated manner. The pageCount determines number of rows to
+     * be returned and pageNum determines the offset.
+     *
+     * @param userId Integer
+     * @param pageNum Integer
+     * @param pageCount Integer
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
@@ -286,6 +331,16 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is responsible for fetching all orders with status COMPLETED,DELIVERED,CANCELLED_BY_SELLER,CANCELLED_BY_USER,REFUND_INITIATED
+     * and REFUND_COMPLETED by the shop in a paginated manner. The pageCount determines number of rows to be returned and
+     * pageNum determines the offset.
+     *
+     * @param shopId Integer
+     * @param pageNum Integer
+     * @param pageCount Integer
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
 
@@ -354,6 +409,12 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is responsible for fetching orders with status PLACED, ACCEPTED, READY
+     *
+     * @param shopId Integer
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId) {
 
@@ -426,6 +487,12 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is responsible for fetching orders with status passed in the orderStatusList
+     *
+     * @param orderStatusList List<OrderStatus>
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
     private Response<List<OrderModel>> getOrdersByStatus(List<OrderStatus> orderStatusList) {
 
         Response<List<OrderModel>> response = new Response<>();
@@ -448,6 +515,12 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is responsible for fetching orders with given orderId along with its transaction details
+     *
+     * @param orderId Integer
+     * @return Returns all transaction and order details if orderId is found in the database
+     */
     @Override
     public Response<TransactionModel> getOrderById(Integer orderId) {
         Response<TransactionModel> response = new Response<>();
@@ -483,6 +556,12 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method responsible for fetching orders with given orderId
+     *
+     * @param id Integer
+     * @return order details if orderId is found in the database
+     */
     public Response<OrderModel> getOrderDetailById(Integer id) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
@@ -526,6 +605,13 @@ public class OrderDaoImpl implements OrderDao {
 
     /**************************************************/
 
+    /**
+     * This model updates the rating for a given order.
+     * @implNote Database trigger is used for updating the rating of the shop which serviced the order
+     *
+     * @param orderModel orderModel
+     * @return If the update operation is success then success response is returned
+     */
     @Override
     public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = new Response<>();
@@ -564,6 +650,13 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * Update order key response updates the secret key in the order table.
+     * @implNote secret key is generated when the status of the order is updated to READY or COMPLETED
+     *
+     * @param orderModel OrderModel
+     * @return success response is returned if update operation is successful
+     */
     public Response<String> updateOrderKey(OrderModel orderModel) {
         Response<String> response = new Response<>();
 
@@ -585,6 +678,17 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * Update order status
+     *  -> Checks if the order status change is valid
+     *  -> If new state is READY or OUT_FOR_DELIVERY then secret key is generated and updated
+     *  -> If new state is COMPLETED or DELIVERED then secret key sent is checked with secret key in database to validate status change
+     *  -> If new state is CANCELLED_BY_SELLER or CANCELLED_BY_USER then refund is initiated
+     *  -> The new state is updated in the database
+     *
+     * @param orderModel the order model
+     * @return success response is returned if update operation is successful
+     */
     @Override
     public Response<String> updateOrderStatus(OrderModel orderModel) {
         Response<String> response = new Response<>();
@@ -656,6 +760,9 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is a helper function to update the order status
+     */
     public void updatePendingOrder() {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
@@ -689,6 +796,9 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
+    /**
+     * This is a helper method to update the refund order
+     */
     public void updatedRefundOrder() {
         RequestHeaderModel requestHeaderModel = new RequestHeaderModel(env.getProperty(Constant.authIdSA), Integer.parseInt(env.getProperty(Constant.idSA)), env.getProperty(Constant.roleSA));
         List<OrderStatus> orderStatuses = new ArrayList<>();
@@ -713,8 +823,14 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
-    /**************************************************/
-
+    /**
+     * This is a helper method to calculate the total price of an order by adding the cost of ordered items and delivery price.
+     * The function verifies if the total bill amount calculated in the client side is correct
+     *
+     * @param orderItemListModel OrderItemListModel
+     * @param configurationModel ConfigurationModel
+     * @return Returns success if the order amount calculated in the client side is correct
+     */
     public String verifyPricing(OrderItemListModel orderItemListModel, ConfigurationModel configurationModel) {
         Double deliveryPrice = 0.0;
         OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
@@ -741,6 +857,12 @@ public class OrderDaoImpl implements OrderDao {
         return ErrorLog.Success;
     }
 
+    /**
+     * This is a helper method to calculate the cost of all items in the order items list
+     *
+     * @param orderItemModelList OrderItemModel
+     * @return the total cost calculated
+     */
     public Double calculatePricing(List<OrderItemModel> orderItemModelList) {
         Double totalPrice = 0.0;
         for (OrderItemModel orderItemModel : orderItemModelList) {
@@ -754,6 +876,13 @@ public class OrderDaoImpl implements OrderDao {
         return totalPrice;
     }
 
+    /**
+     * This method is used to verify if the shop is accepting orders currently , order items are available and total calculated bill
+     * amount is correct
+     *
+     * @param orderItemListModel OrderItemListModel
+     * @return If all the above conditions are satisfied success response is returned
+     */
     public Response<String> verifyOrderDetails(OrderItemListModel orderItemListModel) {
 
         Response<String> response = new Response<>();
@@ -793,7 +922,15 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
-    public Response<TransactionModel> verifyOrder(Integer orderId, int flag) {
+    /**
+     * This method contacts the payment gateway to check the status of transaction or status of refund.
+     * If Flag is 1 then refund Status is checked else transaction status is checked.
+     *
+     * @param orderId Integer
+     * @param flag Integer
+     * @return returns the status of the order after contacting the payment gateway
+     */
+    public Response<TransactionModel> verifyOrder(Integer orderId, Integer flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
@@ -827,6 +964,14 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This is a helper method to get the transaction token from the payment gateway. The orderId and merchantId
+     * are passed to the payment gateway
+     *
+     * @param orderModel OrderModel
+     * @param merchantId String
+     * @return token fetched from payment gateway is returned
+     */
     public Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
         Response<String> response = new Response<>();
 
@@ -843,18 +988,26 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
-    /**************************************************/
-
+    /**
+     *  Helper method to check the order state change validity. The valid state changes are mentioned below.
+     *
+     * starting states -> FAILURE,PENDING,PLACED
+     * terminal states -> CANCELLED_BY_SELLER,CANCELLED_BY_USER, DELIVERED, COMPLETED
+     *
+     * Valid state changes
+     * PENDING -> FAILURE ,PLACED
+     * PLACED  -> CANCELLED_BY_SELLER,CANCELLED_BY_USER , ACCEPTED
+     * CANCELLED_BY_SELLER,CANCELLED_BY_USER -> refund table entry must be added
+     * ACCEPTED -> READY, OUT_FOR_DELIVERY , CANCELLED_BY_SELLER -> refund table entry must be added
+     * READY -> secret key must be updated in table, COMPLETED
+     * OUT_FOR_DELIVERY -> secret key must be updated in table, DELIVERED
+     *
+     * @param currentStatus the current status
+     * @param newStatus     the new status
+     * @return True is returned if the state change is valid else false
+     */
     boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus) {
-        // starting states -> failure,pending,placed
-        // terminal states -> cancelled by seller or user, delivered, completed
 
-        // pending -> failure ,placed
-        // placed  -> cancelled by user or seller , accepted
-        // cancelled by user or seller -> refund table entry must be added
-        // accepted -> ready, out_for_delivery , cancelled by seller -> refund table entry must be added
-        // ready -> secret key must be updated in table, completed
-        // out_for_delivery -> secret key must be updated in table, delivered
 
         if (currentStatus == null)
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
@@ -880,8 +1033,12 @@ public class OrderDaoImpl implements OrderDao {
         return false;
     }
 
-    /**************************************************/
-
+    /**
+     *  Helper method to get transaction Status from payment gateway
+     *
+     * @param orderId the order id
+     * @return the latest transaction data from payment gateway is returned
+     */
     public Response<TransactionModel> getTransactionStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
@@ -907,6 +1064,12 @@ public class OrderDaoImpl implements OrderDao {
         return transactionModelResponse;
     }
 
+    /**
+     *  This method is used for fetching the refund status from the Payment gateway.
+     *
+     * @param orderId Integer
+     * @return the latest transaction data from payment gateway is returned
+     */
     public Response<TransactionModel> getRefundStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
@@ -932,6 +1095,9 @@ public class OrderDaoImpl implements OrderDao {
         return transactionModelResponse;
     }
 
+    /**
+     *  This method is used to initiate refund of payment
+     */
     public void initiateRefund() {
         //TODO: Initiate the refund using payment gateway
     }
