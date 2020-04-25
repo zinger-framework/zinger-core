@@ -13,7 +13,6 @@ import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.rowMapperLambda.UserPlaceRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.UserShopRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
@@ -71,7 +70,7 @@ public class UserDaoImpl implements UserDao {
                     .addValue(UserColumn.oauthId, user.getOauthId());
 
             try {
-                userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserQuery.customerLogin, parameters, UserPlaceRowMapperLambda.userPlaceRowMapperLambda);
+                userPlaceModel = namedParameterJdbcTemplate.queryForObject(UserQuery.customerLogin, parameters, UserRowMapperLambda.userPlaceRowMapperLambda);
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
