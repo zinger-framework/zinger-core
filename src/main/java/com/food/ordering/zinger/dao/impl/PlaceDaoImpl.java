@@ -25,7 +25,7 @@ import static com.food.ordering.zinger.constant.ErrorLog.*;
  * @implNote Request Header (RH) parameter is sent in all endpoints
  * to avoid unauthorized access to our service.
  * @implNote All endpoint services are audited for both success and error responses
- * using "AuditLogDaoImpl".
+ * using "AuditLogDao".
  * <p>
  * Endpoints starting with "/place" invoked here.
  */
@@ -89,8 +89,8 @@ public class PlaceDaoImpl implements PlaceDao {
             response.setMessage(PlaceDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (list != null && !list.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
+            if (list != null) {
+                response.setCode(list.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
                 response.prioritySet(Priority.LOW);

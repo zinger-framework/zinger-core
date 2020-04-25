@@ -31,6 +31,7 @@ public class NotifyDaoImpl implements NotifyDao {
 
         response.setCode(ErrorLog.CodeSuccess);
         response.setMessage(ErrorLog.Success);
+        response.setData(ErrorLog.Success);
         return response;
     }
 }

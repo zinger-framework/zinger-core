@@ -172,7 +172,7 @@ public class UserDaoImpl implements UserDao {
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
-            if (sellerLoginResponseList != null && !sellerLoginResponseList.isEmpty()) {
+            if (sellerLoginResponseList != null) {
                 UserShopListModel userShopListModel = new UserShopListModel();
                 userShopListModel.setUserModel(sellerLoginResponseList.get(0).getUserModel());
 
@@ -187,7 +187,7 @@ public class UserDaoImpl implements UserDao {
                 userShopListModel.setShopModelList(shopConfigurationModelList);
 
                 response.prioritySet(Priority.LOW);
-                response.setCode(CodeSuccess);
+                response.setCode(sellerLoginResponseList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(Success);
                 response.setData(userShopListModel);
 
@@ -417,9 +417,9 @@ public class UserDaoImpl implements UserDao {
                 userModelResponse.setCode(ErrorLog.CE1104);
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             } finally {
-                if (userModelList != null && !userModelList.isEmpty()) {
+                if (userModelList != null) {
                     userModelResponse.prioritySet(Priority.LOW);
-                    userModelResponse.setCode(ErrorLog.CodeSuccess);
+                    userModelResponse.setCode(userModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                     userModelResponse.setMessage(ErrorLog.Success);
                     userModelResponse.setData(userModelList);
                 } else
