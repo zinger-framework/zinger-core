@@ -100,3 +100,107 @@ select * from rating;
 select * from configurations;
 
 
+select SUM(oi.quantity*i.price)+(select IFNULL(SUM(c.delivery_price), 0)
+								 from configurations as c
+								 inner join orders as o 
+                                 on o.shop_id=c.shop_id and 
+                                 c.is_delivery_available=(SELECT IF(o.delivery_location is NULL,-1,1)) and o.id=4)  as TOTAL
+from orders_item as oi
+inner join item as i
+on oi.item_id = i.id and oi.order_id=4;
+
+
+
+select o.id,t.id,oi.*
+from orders as o
+inner join 
+transactions as t
+on o.id=t.order_id and o.user_id=3
+inner join 
+orders_item as oi
+on oi.order_id=o.id;
+
+select SUM(oi.quantity * i.price) +
+(select IFNULL(SUM(c.delivery_price), 0)
+from configurations as c
+inner join orders as o
+on o.shop_id = c.shop_id and
+c.is_delivery_available =
+(SELECT IF(o.delivery_location is NULL, -1, 1)) and
+o.id = 1) as TOTAL
+from orders_item as oi
+inner join item as i
+on oi.item_id = i.id and
+oi.order_id = 1;
+
+DROP PROCEDURE GetCustomerLevel;
+
+DELIMITER $$
+CREATE PROCEDURE GetCustomerLevel(IN order_id INT,OUT price INT)
+BEGIN
+DECLARE ids INT DEFAULT 0;
+SELECT id
+INTO ids
+FROM orders
+where id=order_id;
+
+-- IF ids > 0 THEN
+SET price = ids;
+-- END IF;
+END$$
+DELIMITER ;
+
+
+-- -1 -> order not taken
+-- -2 -> delivery not available
+-- 0 or actual_delivery_price
+DROP PROCEDURE GetDeliveryPrice;
+DELIMITER $$
+CREATE PROCEDURE GetDeliveryPrice(
+IN order_id INT,
+OUT d_price INT 
+)
+BEGIN
+DECLARE actual_delivery_price DOUBLE;
+DECLARE actual_is_delivery_available INT;
+DECLARE actual_is_order_taken INT;
+DECLARE actual_shop_id INT;
+DECLARE order_type CHAR;
+
+SELECT o.shop_id,IF(o.delivery_location is null,'P','D'),c.delivery_price,c.is_delivery_available,c.is_order_taken
+into actual_shop_id,order_type,actual_delivery_price,actual_is_delivery_available,actual_is_order_taken
+from orders as o 
+inner join configurations as c
+on o.id = order_id and o.shop_id=c.shop_id;
+
+IF actual_is_order_taken = 0 THEN
+	set d_price = -1;
+ELSE 
+	IF order_type = 'D' THEN
+		IF actual_is_delivery_available=1  THEN
+			set d_price = actual_delivery_price;
+		ELSE 
+			set d_price =-2;
+		END IF;
+	ELSE 
+		set d_price = 0;
+	END IF;    
+END IF;
+
+END$$
+DELIMITER ;
+
+
+
+call GetDeliveryPrice(3,@delivery_price);
+select @delivery_price;
+
+select * from configurations;
+select * from orders;
+
+
+
+call GetCustomerLevel(2, @price);
+select @price;
+
+
