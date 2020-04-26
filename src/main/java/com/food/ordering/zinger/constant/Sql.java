@@ -38,4 +38,8 @@ public class Sql {
     public static final String CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP";
     public static final String TIMESTAMPDIFF = "TIMESTAMPDIFF";
     public static final String MINUTE = "MINUTE";
+    public static final String LHS = "LHS";
+    public static final String RHS = "RHS";
+    public static final String GROUP_CONCAT = "GROUP_CONCAT";
+    public static final String GROUP_BY = " GROUP BY ";
 }

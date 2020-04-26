@@ -7,6 +7,11 @@ public class Column {
     public static final String shopName = "shop_name";
     public static final String shopMobile = "shop_mobile";
 
+    public static final String itemName = "item_name";
+    public static final String itemPrice = "item_price";
+
+    public static final String orderItemPrice = "order_item_price";
+
     public static final class PlaceColumn {
         public static final String tableName = "place";
 
@@ -61,7 +66,7 @@ public class Column {
     public static final class OrderStatusColumn {
         public static final String tableName = "orders_status";
 
-        public static final String id = "order_id";
+        public static final String orderId = "order_id";
         public static final String status = "status";
         public static final String updatedTime = "updated_time";
     }

@@ -21,15 +21,15 @@ select * from configurations;
 select o.id, o.date, o.price, o.delivery_price, o.delivery_location, o.cooking_info, o.rating, o.feedback, o.secret_key,
  o.transaction_id, o.payment_mode,
  o.shop_name,o.photo_url,o.shop_mobile,
- o.item_name,o.item_price,o.item_is_veg,
- o.order_item_quantity,o.order_item_price,
- y.status,y.status_time
+ o.item_name,o.item_price,o.is_veg,
+ o.quantity,o.order_item_price,
+ y.status,y.updated_time
  from
 (select o.*,
  t.transaction_id, t.payment_mode,
  s.name as shop_name, s.photo_url, s.mobile as shop_mobile,
- group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as item_is_veg,
- group_concat(oi.quantity) as order_item_quantity, group_concat(oi.price) as order_item_price
+ group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as is_veg,
+ group_concat(oi.quantity) as quantity, group_concat(oi.price) as order_item_price
 from orders as o
 inner join transactions as t on
 o.id = t.order_id and
@@ -43,7 +43,8 @@ s.id = o.shop_id
 group by o.id, t.transaction_id
 order by o.date desc
 limit 5 offset 0) as o,
-(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as status_time
+
+(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as updated_time
 from orders as o
 inner join orders_status as os on
 os.order_id = o.id and
@@ -59,15 +60,15 @@ where o.id = y.id;
 select o.id, o.date, o.price, o.delivery_price, o.delivery_location, o.cooking_info, o.rating, o.feedback, o.secret_key,
  o.transaction_id, o.payment_mode,
  o.user_name,o.user_mobile,
- o.item_name,o.item_price,o.item_is_veg,
- o.order_item_quantity,o.order_item_price,
- y.status,y.status_time
+ o.item_name,o.item_price,o.is_veg,
+ o.quantity,o.order_item_price,
+ y.status,y.updated_time
  from
 (select o.*,
  t.transaction_id, t.payment_mode,
  u.name as user_name, u.mobile as user_mobile,
- group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as item_is_veg,
- group_concat(oi.quantity) as order_item_quantity, group_concat(oi.price) as order_item_price
+ group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as is_veg,
+ group_concat(oi.quantity) as quantity, group_concat(oi.price) as order_item_price
 from orders as o
 inner join transactions as t on
 o.id = t.order_id and
@@ -82,7 +83,7 @@ u.id = o.user_id
 group by o.id, t.transaction_id
 order by o.date desc
 limit 5 offset 0) as o,
-(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as status_time
+(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as updated_time
 from orders as o
 inner join orders_status as os on
 os.order_id = o.id and
@@ -99,15 +100,15 @@ where o.id = y.id;
 select o.id, o.date, o.price, o.delivery_price, o.delivery_location, o.cooking_info, o.rating, o.feedback, o.secret_key,
  o.transaction_id, o.payment_mode,
  o.user_name,o.user_mobile,
- o.item_name,o.item_price,o.item_is_veg,
- o.order_item_quantity,o.order_item_price,
- y.status,y.status_time
+ o.item_name,o.item_price,o.is_veg,
+ o.quantity,o.order_item_price,
+ y.status,y.updated_time
  from
 (select o.*,
  t.transaction_id, t.payment_mode,
  u.name as user_name, u.mobile as user_mobile,
- group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as item_is_veg,
- group_concat(oi.quantity) as order_item_quantity, group_concat(oi.price) as order_item_price
+ group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as is_veg,
+ group_concat(oi.quantity) as quantity, group_concat(oi.price) as order_item_price
 from orders as o
 inner join transactions as t on
 o.id = t.order_id and
@@ -122,7 +123,7 @@ u.id = o.user_id
 group by o.id, t.transaction_id
 order by o.date desc
 limit 5 offset 0) as o,
-(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as status_time
+(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as updated_time
 from orders as o
 inner join orders_status as os on
 os.order_id = o.id and
@@ -139,15 +140,15 @@ where o.id = y.id;
 select o.id, o.date, o.price, o.delivery_price, o.delivery_location, o.cooking_info, o.rating, o.feedback, o.secret_key,
  o.transaction_id, o.payment_mode,
  o.user_name,o.user_mobile,
- o.item_name,o.item_price,o.item_is_veg,
- o.order_item_quantity,o.order_item_price,
- y.status,y.status_time
+ o.item_name,o.item_price,o.is_veg,
+ o.quantity,o.order_item_price,
+ y.status,y.updated_time
  from
 (select o.*,
  t.transaction_id, t.payment_mode,
  u.name as user_name, u.mobile as user_mobile,
- group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as item_is_veg,
- group_concat(oi.quantity) as order_item_quantity, group_concat(oi.price) as order_item_price
+ group_concat(i.name) as item_name, group_concat(i.price) as item_price, group_concat(i.is_veg) as is_veg,
+ group_concat(oi.quantity) as quantity, group_concat(oi.price) as order_item_price
 from orders as o
 inner join transactions as t on
 o.id = t.order_id and
@@ -164,7 +165,7 @@ group by o.id, t.transaction_id
 order by o.date desc
 limit 5 offset 0) as o,
 
-(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as status_time
+(select o.id, group_concat(os.status) as status, group_concat(os.updated_time) as updated_time
 from orders as o
 inner join orders_status as os on
 os.order_id = o.id and
@@ -177,3 +178,8 @@ group by o.id
 order by o.date desc
 limit 5 offset 0) as y
 where o.id = y.id;
+
+####################################################
+# Testing (1)
+
+
