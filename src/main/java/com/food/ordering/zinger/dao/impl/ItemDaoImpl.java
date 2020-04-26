@@ -104,7 +104,7 @@ public class ItemDaoImpl implements ItemDao {
             list = namedParameterJdbcTemplate.query(ItemQuery.getItemsByShopId, parameters, ItemRowMapperLambda.itemDetailRowMapperLambda);
         } catch (Exception e) {
             response.setCode(CE1204);
-            response.setMessage(ItemDetailNotAvailable);
+            response.setMessage(ItemsNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (list != null) {
@@ -140,7 +140,7 @@ public class ItemDaoImpl implements ItemDao {
             items = namedParameterJdbcTemplate.query(ItemQuery.getItemsByName, parameters, ItemRowMapperLambda.itemRowMapperLambda);
         } catch (Exception e) {
             response.setCode(IDNA1205);
-            response.setMessage(ItemDetailNotAvailable);
+            response.setMessage(ItemsNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (items != null) {
