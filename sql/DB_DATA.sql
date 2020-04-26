@@ -133,23 +133,6 @@ inner join item as i
 on oi.item_id = i.id and
 oi.order_id = 1;
 
-DROP PROCEDURE GetCustomerLevel;
-
-DELIMITER $$
-CREATE PROCEDURE GetCustomerLevel(IN order_id INT,OUT price INT)
-BEGIN
-DECLARE ids INT DEFAULT 0;
-SELECT id
-INTO ids
-FROM orders
-where id=order_id;
-
--- IF ids > 0 THEN
-SET price = ids;
--- END IF;
-END$$
-DELIMITER ;
-
 
 -- -1 -> order not taken
 -- -2 -> delivery not available
@@ -157,7 +140,8 @@ DELIMITER ;
 DROP PROCEDURE GetDeliveryPrice;
 DELIMITER $$
 CREATE PROCEDURE GetDeliveryPrice(
-IN order_id INT,
+IN s_id INT,
+IN order_type char,
 OUT d_price INT 
 )
 BEGIN
@@ -167,11 +151,10 @@ DECLARE actual_is_order_taken INT;
 DECLARE actual_shop_id INT;
 DECLARE order_type CHAR;
 
-SELECT o.shop_id,IF(o.delivery_location is null,'P','D'),c.delivery_price,c.is_delivery_available,c.is_order_taken
-into actual_shop_id,order_type,actual_delivery_price,actual_is_delivery_available,actual_is_order_taken
-from orders as o 
-inner join configurations as c
-on o.id = order_id and o.shop_id=c.shop_id;
+SELECT c.delivery_price,c.is_delivery_available,c.is_order_taken
+into actual_delivery_price,actual_is_delivery_available,actual_is_order_taken
+from configurations as c
+where c.shop_id=s_id;
 
 IF actual_is_order_taken = 0 THEN
 	set d_price = -1;
@@ -190,17 +173,53 @@ END IF;
 END$$
 DELIMITER ;
 
-
-
 call GetDeliveryPrice(3,@delivery_price);
 select @delivery_price;
 
-select * from configurations;
-select * from orders;
+
+DROP PROCEDURE calculatePrice;
+DELIMITER $$  
+CREATE PROCEDURE calculatePrice(
+IN item_list json,
+OUT total_price INT)  
+BEGIN  
+   
+	DECLARE item_length BIGINT UNSIGNED DEFAULT JSON_LENGTH(item_list);
+	DECLARE item_index BIGINT UNSIGNED DEFAULT 0;
+    DECLARE item_id INT DEFAULT 0;
+    DECLARE item_quantity INT DEFAULT 0;
+    DECLARE item_price INT;
+    set total_price = 0;
+    
+	item_loop:
+    WHILE item_index < item_length DO
+     set item_quantity = JSON_EXTRACT(item_list,CONCAT('$[', item_index, '].quantity'));
+     set item_id = JSON_EXTRACT(item_list,CONCAT('$[', item_index, '].itemId'));
+     
+     set item_price = null;
+     
+     select price 
+     into item_price
+     from item
+     where item.id = item_id and item.is_available=1 and item.is_delete=0;
+     
+     if(item_price is null ) then
+		   set total_price = -3;
+           LEAVE item_loop;
+	 end if;
+     
+     set total_price = total_price + (item_price*item_quantity);
+	 SET item_index = item_index + 1;
+	END WHILE item_loop;
+    
+END$$;  
+DELIMITER ;
 
 
+call calculatePrice('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2},{"itemId":3,"quantity":2}]',@total_price);
+select @total_price;
 
-call GetCustomerLevel(2, @price);
-select @price;
+select * from item order by id;
+
 
 
