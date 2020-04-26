@@ -136,10 +136,11 @@ oi.order_id = 1;
 
 -- -1 -> order not taken
 -- -2 -> delivery not available
+-- -3 -> item unavailable
 -- 0 or actual_delivery_price
-DROP PROCEDURE GetDeliveryPrice;
+DROP PROCEDURE getDeliveryPrice;
 DELIMITER $$
-CREATE PROCEDURE GetDeliveryPrice(
+CREATE PROCEDURE getDeliveryPrice(
 IN s_id INT,
 IN order_type char,
 OUT d_price INT 
@@ -148,13 +149,11 @@ BEGIN
 DECLARE actual_delivery_price DOUBLE;
 DECLARE actual_is_delivery_available INT;
 DECLARE actual_is_order_taken INT;
-DECLARE actual_shop_id INT;
-DECLARE order_type CHAR;
 
-SELECT c.delivery_price,c.is_delivery_available,c.is_order_taken
+SELECT delivery_price,is_delivery_available,is_order_taken
 into actual_delivery_price,actual_is_delivery_available,actual_is_order_taken
-from configurations as c
-where c.shop_id=s_id;
+from configurations
+where shop_id=s_id;
 
 IF actual_is_order_taken = 0 THEN
 	set d_price = -1;
@@ -173,9 +172,11 @@ END IF;
 END$$
 DELIMITER ;
 
-call GetDeliveryPrice(3,@delivery_price);
+call getDeliveryPrice(3,'D',@delivery_price);
 select @delivery_price;
 
+
+-- ##########################################################################################################
 
 DROP PROCEDURE calculatePrice;
 DELIMITER $$  
@@ -214,6 +215,7 @@ BEGIN
     
 END$$;  
 DELIMITER ;
+
 
 
 call calculatePrice('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2},{"itemId":3,"quantity":2}]',@total_price);
