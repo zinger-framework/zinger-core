@@ -105,18 +105,6 @@ CREATE TABLE orders
     CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
-create table orders_status
-(
-    order_id     INT NOT NULL,
-    status       ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
-        'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
-        'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
-        'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') NOT NULL,
-    updated_time DATETIME                                    DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT orders_status_order_id_status_pk PRIMARY KEY (order_id, status),
-    CONSTRAINT orders_status_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
-);
-
 CREATE TABLE transactions
 (
     transaction_id      VARCHAR(64)  NOT NULL,
@@ -163,6 +151,18 @@ CREATE TABLE orders_item
     CONSTRAINT orders_item_order_id_item_id_pk PRIMARY KEY (order_id, item_id),
     CONSTRAINT orders_item_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id),
     CONSTRAINT orders_item_item_id_fk FOREIGN KEY (item_id) REFERENCES item (id)
+);
+
+create table orders_status
+(
+    order_id     INT NOT NULL,
+    status       ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+        'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
+        'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
+        'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') NOT NULL,
+    updated_time DATETIME                                    DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT orders_status_order_id_status_pk PRIMARY KEY (order_id, status),
+    CONSTRAINT orders_status_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
 
 ####################################################
@@ -213,7 +213,7 @@ CREATE TRIGGER seller_archive
     INSERT INTO seller_archive(user_id, shop_id)
     VALUES (OLD.user_id, OLD.shop_id);
 
-DELIMITER \\
+DELIMITER $$
 CREATE TRIGGER order_placed_time
     BEFORE UPDATE
     ON orders
@@ -221,7 +221,18 @@ CREATE TRIGGER order_placed_time
     IF (NEW.status LIKE 'PLACED' OR NEW.status LIKE 'PENDING' OR NEW.status LIKE 'TXN_FAILURE') THEN
         SET NEW.date = CURRENT_TIMESTAMP;
     END IF;
-\\
+$$
+
+DELIMITER $$
+CREATE TRIGGER order_status_update
+    AFTER UPDATE
+    ON orders
+    FOR EACH ROW
+    IF (OLD.status != NEW.status) THEN
+		INSERT INTO orders_status(order_id, status)
+		VALUES (NEW.id, NEW.status);
+	END IF;
+$$
 
 ####################################################
 
