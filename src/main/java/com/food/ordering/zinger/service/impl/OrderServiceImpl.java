@@ -1,7 +1,9 @@
 package com.food.ordering.zinger.service.impl;
 
+import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.service.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,9 +16,14 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     OrderDao orderDao;
 
+    @Autowired
+    AuditLogDao auditLogDao;
+
     @Override
     public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
-        return orderDao.insertOrder(orderItemListModel);
+        Response<TransactionTokenModel> response = orderDao.insertOrder(orderItemListModel);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(),response.priorityGet()));
+        return response;
     }
 
     @Override

@@ -18,9 +18,9 @@ public class ErrorLog {
     public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";
     public static final String OrderDetailNotAvailable = "Order detail not available";
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
-    public static final String ItemDetailNotAvailable = "Item detail not available";
+    public static final String ItemsNotAvailable = "Some Items are not available";
     public static final String TransactionDetailNotAvailable = "Transaction detail not available";
-    public static final String DeliveryNotAvailable = "Delivery not available";
+    public static final String DELIVERY_OPTION_NOT_AVAILABLE = "Delivery Option not available";
 
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
@@ -39,7 +39,7 @@ public class ErrorLog {
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String ItemPriceMismatch = "Item price mismatch";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
-    public static final String OrderNotTaken = "Order not taken";
+    public static final String RESTAURANT_NOT_ACCEPTING_ORDERS_CURRENTLY = "Restaurant not accepting orders currently";
     public static final String InviteExpired = "Invite Expired";
     public static final String TransactionInitiationFailed = "Transaction Initiation Failed";
     public static final String TransactionTokenNotAvailable = "Transaction Token Not Available";
@@ -168,10 +168,10 @@ public class ErrorLog {
 
     public static final Integer CE1261 = 1261;
     public static final Integer UDNA1262 = 1262;
-    public static final Integer ODNU1263 = 1263;
+    public static final Integer DONA1263 = 1263;
     public static final Integer TDNU1264 = 1264;
     public static final Integer SDNA1265 = 1265;
-    public static final Integer ONT1266 = 1266;
+    public static final Integer RNAOC1266 = 1266;
     public static final Integer CE1267 = 1267;
     public static final Integer CE1268 = 1268;
     public static final Integer CE1269 = 1269;
@@ -180,7 +180,7 @@ public class ErrorLog {
     public static final Integer SDNA1272 = 1272;
     public static final Integer OIDNA1273 = 1273;
     public static final Integer CE1274 = 1274;
-    public static final Integer CE1275 = 1275;
+    public static final Integer ODNU1275 = 1275;
     public static final Integer ODNA1276 = 1276;
     public static final Integer UDNA1277 = 1277;
     public static final Integer CE1278 = 1278;
@@ -200,9 +200,10 @@ public class ErrorLog {
     public static final Integer UDNA1293 = 1293;
     public static final Integer SDNA1294 = 1294;
     public static final Integer ODNU1295 = 1295;
-    public static final Integer OIDNU1296 = 1296;
+    public static final Integer INA1296 = 1296;
     public static final Integer OIDNA1297 = 1297;
     public static final Integer OIDNA1298 = 1298;
     public static final Integer ODNA1299 = 1299;
-    public static final Integer TIF1300 = 1300;
+    public static final Integer OPM1300 = 1300;
+    public static final Integer OIDNU301 = 1301;
 }

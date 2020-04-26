@@ -3,6 +3,7 @@ package com.food.ordering.zinger.dao.impl;
 import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.OrderColumn;
 import com.food.ordering.zinger.constant.Column.OrderItemColumn;
+import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
@@ -14,18 +15,18 @@ import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
+import com.food.ordering.zinger.utils.Helper;
 import com.food.ordering.zinger.utils.PaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
@@ -95,53 +96,86 @@ public class OrderDaoImpl implements OrderDao {
 
         Response<TransactionTokenModel> response = new Response<>();
         TransactionTokenModel transactionTokenModel = new TransactionTokenModel();
-        Priority priority = Priority.HIGH;
 
         try {
-            Response<String> verifyOrderResponse = verifyOrderDetails(orderItemListModel);
-            if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), verifyOrderResponse.getData());
-                if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-                    OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-                    MapSqlParameterSource parameter = new MapSqlParameterSource()
-                            .addValue(userId, order.getUserModel().getId())
-                            .addValue(shopId, order.getShopModel().getId())
-                            .addValue(price, order.getPrice())
-                            .addValue(deliveryPrice, order.getDeliveryPrice())
-                            .addValue(deliveryLocation, order.getDeliveryLocation())
-                            .addValue(cookingInfo, order.getCookingInfo());
+            String orderTypeFlag = (orderItemListModel.getTransactionModel().getOrderModel().getDeliveryLocation() == null) ? Constant.pickUpOrderFlag : Constant.deliveryOrderFlag;
+            String inputJson = Helper.toOrderItemJsonString(orderItemListModel.getOrderItemsList());
 
-                    SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-                    simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
-                    Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
+            SimpleJdbcCall jdbcCall = new SimpleJdbcCall(namedParameterJdbcTemplate.getJdbcTemplate())
+                    .withProcedureName(Constant.VerifyPricingProcedure.procedureName);
 
-                    if (responseValue.intValue() <= 0) {
-                        response.setCode(ErrorLog.ODNU1263);
-                        response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                    } else {
-                        orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
-                        Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
-                        if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            response.setCode(orderInsertResponse.getCode());
-                            response.setMessage(orderInsertResponse.getMessage());
+            SqlParameterSource in = new MapSqlParameterSource()
+                    .addValue(Constant.VerifyPricingProcedure.itemList, inputJson)
+                    .addValue(Constant.VerifyPricingProcedure.shopId, orderItemListModel.getTransactionModel().getOrderModel().getShopModel().getId())
+                    .addValue(Constant.VerifyPricingProcedure.orderType, orderTypeFlag);
 
-                            transactionTokenModel.setOrderId(responseValue.intValue());
-                            transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
-                            response.setData(transactionTokenModel);
-                        } else {
-                            response.setCode(ErrorLog.OIDNU1296);
-                            response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
+            Map<String, Object> out = jdbcCall.execute(in);
+            Integer totalPrice = (Integer) out.get(Constant.VerifyPricingProcedure.totalPrice);
+            String merchantId = (String) out.get(Constant.VerifyPricingProcedure.merchantId);
+            System.out.print(totalPrice+" "+merchantId);
+
+
+            if (totalPrice != null) {
+                if (totalPrice < 0) {
+                    switch (totalPrice) {
+                        case -1: {
+                            response.setMessage(ErrorLog.RESTAURANT_NOT_ACCEPTING_ORDERS_CURRENTLY);
+                            response.setCode(ErrorLog.RNAOC1266);
+                        }
+                        break;
+                        case -2: {
+                            response.setMessage(ErrorLog.DELIVERY_OPTION_NOT_AVAILABLE);
+                            response.setCode(ErrorLog.DONA1263);
+                        }
+                        break;
+                        case -3: {
+                            response.setMessage(ErrorLog.ItemsNotAvailable);
+                            response.setCode(ErrorLog.INA1296);
                         }
                     }
+                } else if (totalPrice != orderItemListModel.getTransactionModel().getOrderModel().getPrice().intValue()) {
+                    response.setMessage(ErrorLog.OrderPriceMismatch);
+                    response.setCode(ErrorLog.OPM1300);
                 } else {
-                    response.setCode(ErrorLog.TIF1300);
-                    response.setMessage(ErrorLog.TransactionInitiationFailed);
-                }
+                    Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), merchantId);
 
-            } else {
-                response.setCode(verifyOrderResponse.getCode());
-                response.setMessage(verifyOrderResponse.getMessage());
+                    if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+
+                        OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
+                        MapSqlParameterSource parameter = new MapSqlParameterSource()
+                                .addValue(userId, order.getUserModel().getId())
+                                .addValue(shopId, order.getShopModel().getId())
+                                .addValue(price, order.getPrice())
+                                .addValue(deliveryPrice, order.getDeliveryPrice())
+                                .addValue(deliveryLocation, order.getDeliveryLocation())
+                                .addValue(cookingInfo, order.getCookingInfo());
+
+                        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+                        simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
+                        Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
+
+                        if (responseValue.intValue() <= 0) {
+                            response.setCode(ErrorLog.ODNU1275);
+                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                        } else {
+                            orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
+                            Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
+                            if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                                response.setCode(orderInsertResponse.getCode());
+                                response.setMessage(orderInsertResponse.getMessage());
+
+                                transactionTokenModel.setOrderId(responseValue.intValue());
+                                transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
+                                response.setData(transactionTokenModel);
+                            } else {
+                                response.setCode(ErrorLog.OIDNU301);
+                                response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
+                            }
+                        }
+                    }
+
+                }
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1261);
@@ -149,7 +183,7 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), priority));
+
         return response;
     }
 
@@ -889,102 +923,6 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
-    /**
-     * This is a helper method to calculate the total price of an order by adding the cost of ordered items and delivery price.
-     * The function verifies if the total bill amount calculated in the client side is correct
-     *
-     * @param orderItemListModel OrderItemListModel
-     * @param configurationModel ConfigurationModel
-     * @return Returns success if the order amount calculated in the client side is correct
-     */
-    public String verifyPricing(OrderItemListModel orderItemListModel, ConfigurationModel configurationModel) {
-        Double deliveryPrice = 0.0;
-        OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-
-        if (order.getDeliveryPrice() != null) {
-            if (configurationModel.getIsDeliveryAvailable() != 1)
-                return ErrorLog.DeliveryNotAvailable;
-
-            if (!configurationModel.getDeliveryPrice().equals(order.getDeliveryPrice()))
-                return ErrorLog.OrderDeliveryPriceMismatch;
-
-            deliveryPrice = order.getDeliveryPrice();
-        }
-
-        Double totalPrice = calculatePricing(orderItemListModel.getOrderItemsList());
-        if (totalPrice == null)
-            return ErrorLog.ItemPriceMismatch;
-        else if (totalPrice == -1.0)
-            return ErrorLog.ItemDetailNotAvailable;
-
-        if (totalPrice + deliveryPrice != order.getPrice())
-            return ErrorLog.OrderPriceMismatch;
-
-        return ErrorLog.Success;
-    }
-
-    /**
-     * This is a helper method to calculate the cost of all items in the order items list
-     *
-     * @param orderItemModelList OrderItemModel
-     * @return the total cost calculated
-     */
-    public Double calculatePricing(List<OrderItemModel> orderItemModelList) {
-        Double totalPrice = 0.0;
-        for (OrderItemModel orderItemModel : orderItemModelList) {
-            Response<ItemModel> itemModelResponse = itemDaoImpl.getItemById(orderItemModel.getItemModel().getId());
-            if (!itemModelResponse.getCode().equals(ErrorLog.CodeSuccess))
-                return null;
-            else if (itemModelResponse.getData().getIsAvailable() == 0)
-                return -1.0;
-            totalPrice += orderItemModel.getQuantity() * itemModelResponse.getData().getPrice();
-        }
-        return totalPrice;
-    }
-
-    /**
-     * This method is used to verify if the shop is accepting orders currently ,
-     * order items are available and total calculated bill amount is correct.
-     *
-     * @param orderItemListModel OrderItemListModel
-     * @return If all the above conditions are satisfied success response is returned
-     */
-    public Response<String> verifyOrderDetails(OrderItemListModel orderItemListModel) {
-        Response<String> response = new Response<>();
-        try {
-            OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-            ShopModel shopModel = order.getShopModel();
-
-            Response<ConfigurationModel> configurationModelResponse = configurationDaoImpl.getConfigurationByShopId(shopModel);
-            if (!configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                response.setCode(ErrorLog.SDNA1265);
-                response.setMessage(ErrorLog.ShopDetailNotAvailable);
-            } else {
-                ConfigurationModel configurationModel = configurationModelResponse.getData();
-                if (configurationModel.getIsOrderTaken() != 1) {
-                    response.setCode(ErrorLog.ONT1266);
-                    response.setMessage(ErrorLog.OrderNotTaken);
-                } else {
-                    String deliveryResponse = verifyPricing(orderItemListModel, configurationModel);
-                    if (!deliveryResponse.equals(ErrorLog.Success)) {
-                        response.setCode(ErrorLog.CE1267);
-                        response.setMessage(deliveryResponse);
-                        response.setData(deliveryResponse);
-                    } else {
-                        response.setCode(ErrorLog.CodeSuccess);
-                        response.setMessage(ErrorLog.Success);
-                        response.setData(configurationModelResponse.getData().getMerchantId());
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1268);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
 
     /**
      * This method contacts the payment gateway to check the status of transaction or status of refund.
