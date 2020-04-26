@@ -7,10 +7,14 @@ public class Column {
     public static final String shopName = "shop_name";
     public static final String shopMobile = "shop_mobile";
 
+    public static final String userName = "user_name";
+    public static final String userMobile = "user_mobile";
+
     public static final String itemName = "item_name";
     public static final String itemPrice = "item_price";
 
     public static final String orderItemPrice = "order_item_price";
+    public static final String searchQuery = "search_query";
 
     public static final class PlaceColumn {
         public static final String tableName = "place";

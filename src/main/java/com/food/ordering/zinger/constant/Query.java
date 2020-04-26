@@ -318,6 +318,310 @@ public class Query {
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
 
+        public static final String getOrderByShopPaginationIds = SELECT +
+                LHS + DOT + OrderColumn.id + COMMA +
+                LHS + DOT + OrderColumn.date + COMMA +
+                LHS + DOT + OrderColumn.price + COMMA +
+                LHS + DOT + OrderColumn.deliveryPrice + COMMA +
+                LHS + DOT + OrderColumn.deliveryLocation + COMMA +
+                LHS + DOT + OrderColumn.cookingInfo + COMMA +
+                LHS + DOT + OrderColumn.rating + COMMA +
+                LHS + DOT + OrderColumn.feedback + COMMA +
+                LHS + DOT + OrderColumn.secretKey + COMMA +
+                LHS + DOT + TransactionColumn.transactionId + COMMA +
+                LHS + DOT + TransactionColumn.paymentMode + COMMA +
+                LHS + DOT + userName + COMMA +
+                LHS + DOT + userMobile + COMMA +
+                LHS + DOT + itemName + COMMA +
+                LHS + DOT + itemPrice + COMMA +
+                LHS + DOT + ItemColumn.isVeg + COMMA +
+                LHS + DOT + quantity + COMMA +
+                LHS + DOT + orderItemPrice + COMMA +
+                RHS + DOT + OrderColumn.status + COMMA +
+                RHS + DOT + OrderStatusColumn.updatedTime + FROM + LEFT_PARANTHESIS + SELECT +
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.date + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.price + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryPrice + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryLocation + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.cookingInfo + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.rating + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.feedback + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.secretKey + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.paymentMode + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + AS + userName + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + AS + userMobile + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.name + RIGHT_PARANTHESIS + AS + itemName + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.price + RIGHT_PARANTHESIS + AS + itemPrice + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.isVeg + RIGHT_PARANTHESIS + AS + ItemColumn.isVeg + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + quantity + RIGHT_PARANTHESIS + AS + quantity + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + price + RIGHT_PARANTHESIS + AS + orderItemPrice + FROM + OrderColumn.tableName +
+                INNER_JOIN + TransactionColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                INNER_JOIN + OrderItemColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
+                INNER_JOIN + ItemColumn.tableName + ON +
+                ItemColumn.tableName + DOT + ItemColumn.id + EQUALS + OrderItemColumn.tableName + DOT + itemId +
+                INNER_JOIN + UserColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + LHS + COMMA + LEFT_PARANTHESIS + SELECT +
+
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.status + RIGHT_PARANTHESIS + AS + OrderStatusColumn.status + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.updatedTime + RIGHT_PARANTHESIS + AS + OrderStatusColumn.updatedTime + FROM + OrderColumn.tableName +
+                INNER_JOIN + OrderStatusColumn.tableName + ON +
+                OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
+                LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
+
+        public static final String getOrderByShopIds = SELECT +
+                LHS + DOT + OrderColumn.id + COMMA +
+                LHS + DOT + OrderColumn.date + COMMA +
+                LHS + DOT + OrderColumn.price + COMMA +
+                LHS + DOT + OrderColumn.deliveryPrice + COMMA +
+                LHS + DOT + OrderColumn.deliveryLocation + COMMA +
+                LHS + DOT + OrderColumn.cookingInfo + COMMA +
+                LHS + DOT + OrderColumn.rating + COMMA +
+                LHS + DOT + OrderColumn.feedback + COMMA +
+                LHS + DOT + OrderColumn.secretKey + COMMA +
+                LHS + DOT + TransactionColumn.transactionId + COMMA +
+                LHS + DOT + TransactionColumn.paymentMode + COMMA +
+                LHS + DOT + userName + COMMA +
+                LHS + DOT + userMobile + COMMA +
+                LHS + DOT + itemName + COMMA +
+                LHS + DOT + itemPrice + COMMA +
+                LHS + DOT + ItemColumn.isVeg + COMMA +
+                LHS + DOT + quantity + COMMA +
+                LHS + DOT + orderItemPrice + COMMA +
+                RHS + DOT + OrderColumn.status + COMMA +
+                RHS + DOT + OrderStatusColumn.updatedTime + FROM + LEFT_PARANTHESIS + SELECT +
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.date + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.price + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryPrice + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryLocation + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.cookingInfo + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.rating + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.feedback + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.secretKey + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.paymentMode + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + AS + userName + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + AS + userMobile + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.name + RIGHT_PARANTHESIS + AS + itemName + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.price + RIGHT_PARANTHESIS + AS + itemPrice + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.isVeg + RIGHT_PARANTHESIS + AS + ItemColumn.isVeg + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + quantity + RIGHT_PARANTHESIS + AS + quantity + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + price + RIGHT_PARANTHESIS + AS + orderItemPrice + FROM + OrderColumn.tableName +
+                INNER_JOIN + TransactionColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                INNER_JOIN + OrderItemColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
+                INNER_JOIN + ItemColumn.tableName + ON +
+                ItemColumn.tableName + DOT + ItemColumn.id + EQUALS + OrderItemColumn.tableName + DOT + itemId +
+                INNER_JOIN + UserColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + RIGHT_PARANTHESIS + AS + LHS + COMMA + LEFT_PARANTHESIS + SELECT +
+
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.status + RIGHT_PARANTHESIS + AS + OrderStatusColumn.status + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.updatedTime + RIGHT_PARANTHESIS + AS + OrderStatusColumn.updatedTime + FROM + OrderColumn.tableName +
+                INNER_JOIN + OrderStatusColumn.tableName + ON +
+                OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + RIGHT_PARANTHESIS + AS + RHS + WHERE +
+                LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
+
+        public static final String getOrderFilterByShopPaginationIds = SELECT +
+                LHS + DOT + OrderColumn.id + COMMA +
+                LHS + DOT + OrderColumn.date + COMMA +
+                LHS + DOT + OrderColumn.price + COMMA +
+                LHS + DOT + OrderColumn.deliveryPrice + COMMA +
+                LHS + DOT + OrderColumn.deliveryLocation + COMMA +
+                LHS + DOT + OrderColumn.cookingInfo + COMMA +
+                LHS + DOT + OrderColumn.rating + COMMA +
+                LHS + DOT + OrderColumn.feedback + COMMA +
+                LHS + DOT + OrderColumn.secretKey + COMMA +
+                LHS + DOT + TransactionColumn.transactionId + COMMA +
+                LHS + DOT + TransactionColumn.paymentMode + COMMA +
+                LHS + DOT + userName + COMMA +
+                LHS + DOT + userMobile + COMMA +
+                LHS + DOT + itemName + COMMA +
+                LHS + DOT + itemPrice + COMMA +
+                LHS + DOT + ItemColumn.isVeg + COMMA +
+                LHS + DOT + quantity + COMMA +
+                LHS + DOT + orderItemPrice + COMMA +
+                RHS + DOT + OrderColumn.status + COMMA +
+                RHS + DOT + OrderStatusColumn.updatedTime + FROM + LEFT_PARANTHESIS + SELECT +
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.date + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.price + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryPrice + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryLocation + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.cookingInfo + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.rating + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.feedback + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.secretKey + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.paymentMode + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + AS + userName + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + AS + userMobile + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.name + RIGHT_PARANTHESIS + AS + itemName + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.price + RIGHT_PARANTHESIS + AS + itemPrice + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.isVeg + RIGHT_PARANTHESIS + AS + ItemColumn.isVeg + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + quantity + RIGHT_PARANTHESIS + AS + quantity + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + price + RIGHT_PARANTHESIS + AS + orderItemPrice + FROM + OrderColumn.tableName +
+                INNER_JOIN + TransactionColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                INNER_JOIN + OrderItemColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
+                INNER_JOIN + ItemColumn.tableName + ON +
+                ItemColumn.tableName + DOT + ItemColumn.id + EQUALS + OrderItemColumn.tableName + DOT + itemId +
+                INNER_JOIN + UserColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId + WHERE +
+                OrderColumn.tableName + DOT + OrderColumn.id + LIKE + COLON + searchQuery + OR +
+                UserColumn.tableName + DOT + UserColumn.name + LIKE + COLON + searchQuery + OR +
+                UserColumn.tableName + DOT + UserColumn.mobile + LIKE + COLON + searchQuery +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + LHS + COMMA + LEFT_PARANTHESIS + SELECT +
+
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.status + RIGHT_PARANTHESIS + AS + OrderStatusColumn.status + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.updatedTime + RIGHT_PARANTHESIS + AS + OrderStatusColumn.updatedTime + FROM + OrderColumn.tableName +
+                INNER_JOIN + OrderStatusColumn.tableName + ON +
+                OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                INNER_JOIN + UserColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId + WHERE +
+                OrderColumn.tableName + DOT + OrderColumn.id + LIKE + COLON + searchQuery + OR +
+                UserColumn.tableName + DOT + UserColumn.name + LIKE + COLON + searchQuery + OR +
+                UserColumn.tableName + DOT + UserColumn.mobile + LIKE + COLON + searchQuery +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id +
+                ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
+                LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
+                LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
+
+        public static final String getOrderByOrderIds = SELECT +
+                LHS + DOT + OrderColumn.id + COMMA +
+                LHS + DOT + OrderColumn.date + COMMA +
+                LHS + DOT + OrderColumn.price + COMMA +
+                LHS + DOT + OrderColumn.deliveryPrice + COMMA +
+                LHS + DOT + OrderColumn.deliveryLocation + COMMA +
+                LHS + DOT + OrderColumn.cookingInfo + COMMA +
+                LHS + DOT + OrderColumn.rating + COMMA +
+                LHS + DOT + OrderColumn.feedback + COMMA +
+                LHS + DOT + OrderColumn.secretKey + COMMA +
+                LHS + DOT + TransactionColumn.transactionId + COMMA +
+                LHS + DOT + TransactionColumn.paymentMode + COMMA +
+                LHS + DOT + userName + COMMA +
+                LHS + DOT + userMobile + COMMA +
+                LHS + DOT + shopName + COMMA +
+                LHS + DOT + ShopColumn.photoUrl + COMMA +
+                LHS + DOT + shopMobile + COMMA +
+                LHS + DOT + itemName + COMMA +
+                LHS + DOT + itemPrice + COMMA +
+                LHS + DOT + ItemColumn.isVeg + COMMA +
+                LHS + DOT + quantity + COMMA +
+                LHS + DOT + orderItemPrice + COMMA +
+                RHS + DOT + OrderColumn.status + COMMA +
+                RHS + DOT + OrderStatusColumn.updatedTime + FROM + LEFT_PARANTHESIS + SELECT +
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.date + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.price + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryPrice + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.deliveryLocation + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.cookingInfo + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.rating + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.feedback + COMMA +
+                OrderColumn.tableName + DOT + OrderColumn.secretKey + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.paymentMode + COMMA +
+                UserColumn.tableName + DOT + UserColumn.name + AS + userName + COMMA +
+                UserColumn.tableName + DOT + UserColumn.mobile + AS + userMobile + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.name + AS + shopName + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.photoUrl + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.mobile + AS + shopMobile + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.name + RIGHT_PARANTHESIS + AS + itemName + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.price + RIGHT_PARANTHESIS + AS + itemPrice + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + ItemColumn.tableName + DOT + ItemColumn.isVeg + RIGHT_PARANTHESIS + AS + ItemColumn.isVeg + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + quantity + RIGHT_PARANTHESIS + AS + quantity + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderItemColumn.tableName + DOT + price + RIGHT_PARANTHESIS + AS + orderItemPrice + FROM + OrderColumn.tableName +
+                INNER_JOIN + TransactionColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUAL_COLON + OrderColumn.id +
+                INNER_JOIN + OrderItemColumn.tableName + ON +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
+                INNER_JOIN + ItemColumn.tableName + ON +
+                ItemColumn.tableName + DOT + ItemColumn.id + EQUALS + OrderItemColumn.tableName + DOT + itemId +
+                INNER_JOIN + UserColumn.tableName + ON +
+                UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId +
+                INNER_JOIN + ShopColumn.tableName + ON +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.shopId +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                TransactionColumn.tableName + DOT + TransactionColumn.transactionId + RIGHT_PARANTHESIS + AS + LHS + COMMA + LEFT_PARANTHESIS + SELECT +
+
+                OrderColumn.tableName + DOT + OrderColumn.id + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.status + RIGHT_PARANTHESIS + AS + OrderStatusColumn.status + COMMA +
+                GROUP_CONCAT + LEFT_PARANTHESIS + OrderStatusColumn.tableName + DOT + OrderStatusColumn.updatedTime + RIGHT_PARANTHESIS + AS + OrderStatusColumn.updatedTime + FROM + OrderColumn.tableName +
+                INNER_JOIN + OrderStatusColumn.tableName + ON +
+                OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
+                OrderColumn.tableName + DOT + OrderColumn.id + EQUAL_COLON + OrderColumn.id +
+                GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + RIGHT_PARANTHESIS + AS + RHS + WHERE +
+                LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
+
         public static final String getOrderByOrderId = SELECT +
                 OrderColumn.id + COMMA +
                 OrderColumn.userId + COMMA +

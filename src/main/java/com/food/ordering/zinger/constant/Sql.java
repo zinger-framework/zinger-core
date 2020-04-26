@@ -25,6 +25,7 @@ public class Sql {
     public static final String DUPLICATE_KEY = "DUPLICATE KEY";
     public static final String IN = " IN ";
     public static final String AS = " AS ";
+    public static final String OR = " OR ";
     public static final String DOT = ".";
     public static final String ORDER_BY = " ORDER BY ";
     public static final String ASC = " ASC";
