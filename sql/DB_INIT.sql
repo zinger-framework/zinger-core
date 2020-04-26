@@ -248,3 +248,120 @@ CREATE INDEX orders_shop_id_index
 
 CREATE INDEX orders_user_id_index
     ON orders (user_id);
+
+####################################################
+
+-- -1 -> order not taken
+-- -2 -> delivery not available
+-- -3 -> item unavailable
+-- 0 or actual_delivery_price
+
+DROP PROCEDURE IF EXISTS getDeliveryPrice;
+DROP PROCEDURE IF EXISTS calculatePrice;
+DROP PROCEDURE IF EXISTS verifyPricing;
+
+####################################################
+
+DELIMITER $$
+CREATE PROCEDURE getDeliveryPrice(
+    IN s_id INT,
+    IN order_type char,
+    OUT d_price INT
+)
+BEGIN
+    DECLARE actual_delivery_price DOUBLE;
+    DECLARE actual_is_delivery_available INT;
+    DECLARE actual_is_order_taken INT;
+
+    SELECT delivery_price, is_delivery_available, is_order_taken
+    into actual_delivery_price, actual_is_delivery_available, actual_is_order_taken
+    from configurations
+    where shop_id = s_id;
+
+    IF actual_is_order_taken = 0 THEN
+        set d_price = -1;
+    ELSE
+        IF order_type = 'D' THEN
+            IF actual_is_delivery_available = 1  THEN
+                set d_price = actual_delivery_price;
+            ELSE
+                set d_price = -2;
+            END IF;
+        ELSE
+            set d_price = 0;
+        END IF;
+    END IF;
+
+END$$
+DELIMITER ;
+
+####################################################
+
+DELIMITER $$
+CREATE PROCEDURE calculatePrice(
+    IN item_list json,
+    OUT total_price INT
+)
+BEGIN
+    DECLARE item_length BIGINT UNSIGNED DEFAULT JSON_LENGTH(item_list);
+    DECLARE item_index BIGINT UNSIGNED DEFAULT 0;
+    DECLARE item_id INT DEFAULT 0;
+    DECLARE item_quantity INT DEFAULT 0;
+    DECLARE item_price INT;
+    set total_price = 0;
+
+    item_loop:
+    WHILE item_index < item_length DO
+            set item_quantity = JSON_EXTRACT(item_list, CONCAT('$[', item_index, '].quantity'));
+            set item_id = JSON_EXTRACT(item_list, CONCAT('$[', item_index, '].itemId'));
+            set item_price = null;
+
+            select price
+            into item_price
+            from item
+            where item.id = item_id and
+                    item.is_available = 1 and
+                    item.is_delete = 0;
+
+            IF(item_price is null) THEN
+                set total_price = -3;
+                LEAVE item_loop;
+            end if;
+
+            set total_price = total_price + (item_price * item_quantity);
+            SET item_index = item_index + 1;
+        END WHILE item_loop;
+END$$;
+DELIMITER ;
+
+####################################################
+
+DELIMITER $$
+CREATE PROCEDURE verifyPricing(
+    IN item_list json,
+    IN s_id INT,
+    IN order_type char,
+    OUT total_price INT
+)
+BEGIN
+    CALL getDeliveryPrice(s_id, order_type, @delivery_price);
+
+    if(@delivery_price < 0) THEN
+        SET total_price = @delivery_price;
+    ELSE
+        CALL calculatePrice(item_list, total_price);
+
+        if(total_price > 0) THEN
+            SET total_price = total_price + @delivery_price;
+        END IF;
+    END IF;
+END$$;
+DELIMITER ;
+
+####################################################
+
+#CALL verifyPricing('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2}]', 1, 'P', @total_price);
+#select @total_price;
+
+####################################################
+
