@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.notification;
 
-
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.model.Response;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -24,19 +23,15 @@ public class PushNotification {
         FirebaseOptions options = null;
 
         try {
-            serviceAccount = new FileInputStream("/Users/harshavardhanp/eclipse-workspace/food_backend/src/main/resources/firebase/zinger-fb-adminsdk.json");
-
+            serviceAccount = new FileInputStream("src/main/resources/zinger-fb-adminsdk.json");
             options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://zinger-58902.firebaseio.com")
                     .build();
-
             FirebaseApp.initializeApp(options);
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     /*
@@ -108,30 +103,22 @@ public class PushNotification {
      * */
 
     public Response<String> sendMulticast() {
-
         Response<String> response = new Response<>();
 
         try {
             List<String> registrationTokens = Collections.singletonList("foJdPp1yTzmNbNCaDgBC6e:APA91bEOWbXEORRbH8_RA4C5vbB7TDgmhdYP8dsX3pIMAJsFKiGlzA2irx4TaoEV3oaoWskRVHQvc4hsVZ6IrVQVz4DaCgZ8fBP8qtK9zkUBFaKDl0V-ZXcuQ0XOGGs8X6KIibdkyeBI");
-
             MulticastMessage message = MulticastMessage.builder()
                     .putData("score", "850")
                     .putData("time", "2:45")
                     .addAllTokens(registrationTokens)
                     .build();
 
-            BatchResponse fbResponse = null;
-            fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
-
+            BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
-
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
-
         return response;
     }
-
-
 }

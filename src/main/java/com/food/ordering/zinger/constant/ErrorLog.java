@@ -26,10 +26,8 @@ public class ErrorLog {
     public static final String PlaceDetailNotUpdated = "Place detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
     public static final String OrderDetailNotUpdated = "Unable to place order";
-    public static final String OrderRatingNotUpdated = "Order rating not updated";
     public static final String OrderItemDetailNotUpdated = "Unable to place order";
     public static final String ItemDetailNotUpdated = "Unable to add or update current item";
-
 
     public static final String UnableToDeleteSeller = "Unable to delete seller";
     public static final String UnableToDeleteInvite = "Unable to delete invite";

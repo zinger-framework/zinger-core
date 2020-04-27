@@ -26,4 +26,4 @@ src/main/resources/static/
 src/main/resources/templates/
 src/test
 src/main/resources/application.properties
-/src/main/resources/firebase/zinger-fb-adminsdk.json
+/src/main/resources/zinger-fb-adminsdk.json
