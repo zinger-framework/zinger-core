@@ -1,6 +1,6 @@
 CREATE DATABASE sfdbgffed;
-
 USE sfdbgffed;
+
 
 # DROP TABLE seller_archive;
 # DROP TABLE users_invite;
@@ -267,25 +267,27 @@ CREATE INDEX orders_user_id_index
 -- -3 -> item unavailable
 -- 0 or actual_delivery_price
 
-DROP PROCEDURE IF EXISTS getDeliveryPrice;
-DROP PROCEDURE IF EXISTS calculatePrice;
-DROP PROCEDURE IF EXISTS verifyPricing;
+DROP PROCEDURE IF EXISTS get_delivery_price;
+DROP PROCEDURE IF EXISTS calculate_price;
+DROP PROCEDURE IF EXISTS verify_pricing;
 
 ####################################################
 
 DELIMITER $$
-CREATE PROCEDURE getDeliveryPrice(
+CREATE PROCEDURE get_delivery_price(
     IN s_id INT,
     IN order_type char,
-    OUT d_price INT
+    OUT d_price INT,
+    OUT m_id VARCHAR(32)
 )
 BEGIN
     DECLARE actual_delivery_price DOUBLE;
     DECLARE actual_is_delivery_available INT;
     DECLARE actual_is_order_taken INT;
+    DECLARE actual_m_id varchar(32) DEFAULT NULL;
 
-    SELECT delivery_price, is_delivery_available, is_order_taken
-    into actual_delivery_price, actual_is_delivery_available, actual_is_order_taken
+    SELECT delivery_price, is_delivery_available, is_order_taken,merchant_id
+    into actual_delivery_price, actual_is_delivery_available, actual_is_order_taken,actual_m_id
     from configurations
     where shop_id = s_id;
 
@@ -295,11 +297,13 @@ BEGIN
         IF order_type = 'D' THEN
             IF actual_is_delivery_available = 1  THEN
                 set d_price = actual_delivery_price;
+                set m_id = actual_m_id;
             ELSE
                 set d_price = -2;
             END IF;
         ELSE
             set d_price = 0;
+            set m_id = actual_m_id;
         END IF;
     END IF;
 
@@ -309,7 +313,7 @@ DELIMITER ;
 ####################################################
 
 DELIMITER $$
-CREATE PROCEDURE calculatePrice(
+CREATE PROCEDURE calculate_price(
     IN item_list json,
     OUT total_price INT
 )
@@ -348,22 +352,24 @@ DELIMITER ;
 ####################################################
 
 DELIMITER $$
-CREATE PROCEDURE verifyPricing(
+CREATE PROCEDURE verify_pricing(
     IN item_list json,
     IN s_id INT,
     IN order_type char,
-    OUT total_price INT
+    OUT total_price INT,
+    OUT m_id varchar(32)
 )
 BEGIN
-    CALL getDeliveryPrice(s_id, order_type, @delivery_price);
+    CALL get_delivery_price(s_id, order_type, @delivery_price, @merchant_id);
 
     if(@delivery_price < 0) THEN
         SET total_price = @delivery_price;
     ELSE
-        CALL calculatePrice(item_list, total_price);
+        CALL calculate_price(item_list, total_price);
 
         if(total_price > 0) THEN
             SET total_price = total_price + @delivery_price;
+            SET m_id = @merchant_id;
         END IF;
     END IF;
 END$$;
@@ -371,8 +377,8 @@ DELIMITER ;
 
 ####################################################
 
-#CALL verifyPricing('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2}]', 1, 'P', @total_price);
-#select @total_price;
+CALL verify_pricing('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2}]', 1, 'P', @total_price,@m_id);
+select @total_price,@m_id;
 
 ####################################################
 

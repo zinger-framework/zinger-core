@@ -110,13 +110,11 @@ public class OrderItemListRowMapperLambda {
         orderModel.setSecretKey(rs.getString(secretKey));
         orderModel.setShopModel(null);
 
-        ShopModel shopModel = new ShopModel();
-        shopModel.setName(rs.getString(Column.shopName));
-        shopModel.setPhotoUrl(rs.getString(Column.ShopColumn.photoUrl));
-        shopModel.setMobile(rs.getString(Column.shopMobile));
-        shopModel.setPlaceModel(null);
+        UserModel userModel = new UserModel();
+        userModel.setName(rs.getString(Column.userName));
+        userModel.setMobile(rs.getString(Column.userMobile));
 
-        orderModel.setShopModel(shopModel);
+        orderModel.setUserModel(userModel);
         transactionModel.setOrderModel(orderModel);
 
         ArrayList<OrderItemModel> orderItemListModelList = new ArrayList<>();
