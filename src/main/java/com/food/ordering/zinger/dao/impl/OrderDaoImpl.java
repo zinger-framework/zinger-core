@@ -496,6 +496,9 @@ public class OrderDaoImpl implements OrderDao {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.HIGH);
 
+        //TODO: Check Order Completed
+        //getOrderById();
+
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(OrderColumn.rating, orderModel.getRating())
@@ -565,7 +568,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<String> updateOrderStatus(OrderModel orderModel) {
         Response<String> response = new Response<>();
-        Priority priority = Priority.HIGH;
+        response.prioritySet(Priority.HIGH);
 
         try {
             //Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId());
