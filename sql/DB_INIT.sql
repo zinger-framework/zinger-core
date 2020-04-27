@@ -212,14 +212,29 @@ CREATE TRIGGER seller_archive
     INSERT INTO seller_archive(user_id, shop_id)
     VALUES (OLD.user_id, OLD.shop_id);
 
+DROP TRIGGER order_placed_time;
 DELIMITER $$
 CREATE TRIGGER order_placed_time
     BEFORE UPDATE
     ON orders
     FOR EACH ROW
-    IF (NEW.status LIKE 'PLACED' OR NEW.status LIKE 'PENDING' OR NEW.status LIKE 'TXN_FAILURE') THEN
-        SET NEW.date = CURRENT_TIMESTAMP;
-    END IF;
+		BEGIN
+			DECLARE actual_status ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+				'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
+				'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
+				'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL;
+			SELECT status
+            INTO actual_status
+            FROM orders
+            where id = NEW.ID;
+            
+			IF (NEW.status LIKE 'PLACED') OR (NEW.status = 'PENDING') OR (NEW.status = 'TXN_FAILURE') THEN
+				SET NEW.date = CURRENT_TIMESTAMP;
+			END IF;
+			IF (NEW.rating >= 0.0) AND (actual_status != 'COMPLETED') AND (actual_status != 'DELIVERED') THEN
+				SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated before order completes!';
+			END IF;
+        END;
 $$
 
 DELIMITER $$

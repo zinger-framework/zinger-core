@@ -636,6 +636,11 @@ public class Query {
                 OrderColumn.secretKey + FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
+        public static final String getOrderPriceById = SELECT +
+                OrderColumn.id + COMMA +
+                OrderColumn.price + FROM + OrderColumn.tableName + WHERE +
+                OrderColumn.id + EQUAL_COLON + OrderColumn.id;
+
         public static final String getOrderByUserId = SELECT +
                 OrderColumn.id +
                 FROM + OrderColumn.tableName + WHERE +

@@ -9,14 +9,11 @@ import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
-import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderItemListRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import com.food.ordering.zinger.utils.PaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +29,6 @@ import java.util.*;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 import static com.food.ordering.zinger.constant.Sql.PERCENT;
-import static com.food.ordering.zinger.utils.PaymentResponse.*;
 
 /**
  * OrderDao is responsible for performing CRUD operation related to the order table in the database.
@@ -405,16 +401,16 @@ public class OrderDaoImpl implements OrderDao {
         Response<OrderItemListModel> response = new Response<>();
         OrderItemListModel orderItemListModel = null;
 
-        try{
+        try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                                 .addValue(Column.OrderColumn.id, orderId);
+                    .addValue(Column.OrderColumn.id, orderId);
             orderItemListModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderIds, parameter,
                     OrderItemListRowMapperLambda.OrderItemListModelByOrderIdRowMapper);
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }finally {
-            if(orderItemListModel!=null){
+        } finally {
+            if (orderItemListModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(orderItemListModel);
@@ -430,7 +426,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param id Integer
      * @return order details if orderId is found in the database
      */
-    public Response<OrderModel> getOrderDetailById(Integer id) {
+    public Response<OrderModel> getOrderPriceById(Integer id) {
         Response<OrderModel> response = new Response<>();
         OrderModel orderModel = null;
 
@@ -438,34 +434,15 @@ public class OrderDaoImpl implements OrderDao {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(OrderColumn.id, id);
 
-            try {
-                orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderId, parameter, OrderRowMapperLambda.orderRowMapperLambda);
-            } catch (Exception e) {
-                response.setCode(ErrorLog.CE1278);
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderPriceById, parameter, OrderRowMapperLambda.orderPriceRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderModel != null) {
-                Response<UserModel> userModelResponse = userDaoImpl.getUserById(orderModel.getUserModel().getId());
-                Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(orderModel.getShopModel().getId());
-
-                if (userModelResponse.getCode().equals(ErrorLog.CodeSuccess) && shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    orderModel.setUserModel(userModelResponse.getData());
-                    orderModel.setShopModel(shopModelResponse.getData());
-
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(orderModel);
-                } else if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                    response.setCode(ErrorLog.UDNA1293);
-                    response.setMessage(ErrorLog.UserDetailNotAvailable);
-                } else {
-                    response.setCode(ErrorLog.SDNA1294);
-                    response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                }
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(orderModel);
             }
         }
         return response;
@@ -484,9 +461,6 @@ public class OrderDaoImpl implements OrderDao {
     public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.HIGH);
-
-        //TODO: Check Order Completed
-        //getOrderById();
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -701,7 +675,7 @@ public class OrderDaoImpl implements OrderDao {
      */
     private Response<TransactionModel> verifyOrder(Integer orderId, String flag) {
         Response<TransactionModel> response = new Response<>();
-        TransactionModel transactionModel = null;
+        TransactionModel transactionModel;
 
         try {
             Response<TransactionModel> transactionModelResponse;
@@ -711,7 +685,7 @@ public class OrderDaoImpl implements OrderDao {
             else
                 transactionModelResponse = paymentResponse.getTransactionStatus(orderId);
 
-            Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
+            Response<OrderModel> orderModelResponse = getOrderPriceById(orderId);
 
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
                     orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)

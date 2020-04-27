@@ -35,4 +35,13 @@ public class OrderRowMapperLambda {
         orderModel.setSecretKey(rs.getString(secretKey));
         return orderModel;
     };
+
+    public static final RowMapper<OrderModel> orderPriceRowMapperLambda = (rs, rownum) -> {
+        OrderModel orderModel = new OrderModel();
+        orderModel.setId(rs.getInt(id));
+        orderModel.setUserModel(null);
+        orderModel.setShopModel(null);
+        orderModel.setPrice(rs.getDouble(price));
+        return orderModel;
+    };
 }
