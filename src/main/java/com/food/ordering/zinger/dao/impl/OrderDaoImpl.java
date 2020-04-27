@@ -310,90 +310,47 @@ public class OrderDaoImpl implements OrderDao {
         finally {
             if(orderItemListModelList!=null){
                 response.setMessage(ErrorLog.Success);
-                response.setCode(ErrorLog.CodeSuccess);
+                response.setCode(orderItemListModelList.isEmpty()?ErrorLog.CodeEmpty:ErrorLog.CodeSuccess);
+                response.setData(orderItemListModelList);
+            }
+        }
+        return response;
+    }
+
+
+    @Override
+    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
+
+        Response<List<OrderItemListModel>> response =new Response<>();
+        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+
+        try{
+
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(Column.searchQuery, searchItem)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
+
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByUserIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
+
+        }catch (Exception e){
+            response.setCode(ErrorLog.CE1269);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        finally {
+            if(orderItemListModelList!=null){
+                response.setMessage(ErrorLog.Success);
+                response.setCode(orderItemListModelList.isEmpty()?ErrorLog.CodeEmpty:ErrorLog.CodeSuccess);
                 response.setData(orderItemListModelList);
             }
         }
 
-
         return response;
     }
 
 
-    public Response<List<OrderItemListModel>> getOrderByUserId1(Integer userId, Integer pageNum, Integer pageCount) {
-        Response<List<OrderItemListModel>> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
-        List<TransactionModel> transactionModelList = null;
-        List<OrderItemListModel> orderItemListByMobile;
 
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.userId, userId)
-                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                    .addValue(OrderQuery.pageCount, pageCount);
-
-            try {
-                transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-            } catch (Exception e) {
-                response.setCode(ErrorLog.CE1269);
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1270);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (transactionModelList != null && !transactionModelList.isEmpty()) {
-                priority = Priority.LOW;
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-
-                orderItemListByMobile = new ArrayList<>();
-
-                for (TransactionModel transactionModel : transactionModelList) {
-                    Response<OrderModel> orderModelResponse = getOrderDetailById(transactionModel.getOrderModel().getId());
-
-                    if (!orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        priority = Priority.MEDIUM;
-                        response.setCode(ErrorLog.ODNA1271);
-                        response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                        break;
-                    } else {
-                        transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(transactionModel.getOrderModel().getShopModel().getId());
-                        if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            priority = Priority.MEDIUM;
-                            response.setCode(ErrorLog.SDNA1272);
-                            response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                            break;
-                        } else {
-                            shopModelResponse.getData().setPlaceModel(null);
-                            transactionModel.getOrderModel().setShopModel(shopModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
-                            if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                priority = Priority.MEDIUM;
-                                response.setCode(ErrorLog.OIDNA1273);
-                                response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
-                                break;
-                            } else {
-                                OrderItemListModel orderItemListModel = new OrderItemListModel();
-                                transactionModel.getOrderModel().setUserModel(null);
-                                orderItemListModel.setTransactionModel(transactionModel);
-                                orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
-                                orderItemListByMobile.add(orderItemListModel);
-                            }
-                        }
-                    }
-                }
-                response.setData(orderItemListByMobile);
-            }
-        }
-
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, userId + "-" + pageNum, priority));
-        return response;
-    }
-
-    @Override
-    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
+    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId1(String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
