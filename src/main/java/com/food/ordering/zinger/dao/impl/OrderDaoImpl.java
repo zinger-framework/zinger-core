@@ -253,7 +253,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
-        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+        List<OrderItemListModel> orderItemListModelList = null;
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -279,7 +279,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
-        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+        List<OrderItemListModel> orderItemListModelList = null;
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -319,67 +319,28 @@ public class OrderDaoImpl implements OrderDao {
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
 
         Response<List<OrderItemListModel>> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
-        List<TransactionModel> transactionModelList = null;
-        List<OrderItemListModel> orderItemListByMobile;
+        List<OrderItemListModel> orderItemListModelList = null;
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.shopId, shopId)
+                    .addValue(Column.ShopColumn.id, shopId)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByShopIdPagination, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
+
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1274);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
-            if (transactionModelList != null && !transactionModelList.isEmpty()) {
-                priority = Priority.LOW;
-                response.setCode(ErrorLog.CodeSuccess);
+            if (orderItemListModelList != null) {
+                response.setCode(orderItemListModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-
-                orderItemListByMobile = new ArrayList<>();
-
-                for (TransactionModel transactionModel : transactionModelList) {
-                    Response<OrderModel> orderModelResponse = getOrderDetailById(transactionModel.getOrderModel().getId());
-
-                    if (!orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        priority = Priority.MEDIUM;
-                        response.setCode(ErrorLog.ODNA1276);
-                        response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                        break;
-                    } else {
-                        transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<UserModel> userModelResponse = userDaoImpl.getUserIdByMobile(transactionModel.getOrderModel().getUserModel().getMobile());
-                        if (!userModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            priority = Priority.MEDIUM;
-                            response.setCode(ErrorLog.UDNA1277);
-                            response.setMessage(ErrorLog.UserDetailNotAvailable);
-                            break;
-                        } else {
-                            transactionModel.getOrderModel().setUserModel(userModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
-                            if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                priority = Priority.MEDIUM;
-                                response.setCode(ErrorLog.OIDNA1297);
-                                response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
-                                break;
-                            } else {
-                                OrderItemListModel orderItemListModel = new OrderItemListModel();
-                                transactionModel.getOrderModel().setShopModel(null);
-                                orderItemListModel.setTransactionModel(transactionModel);
-                                orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
-                                orderItemListByMobile.add(orderItemListModel);
-                            }
-                        }
-                    }
-                }
-                response.setData(orderItemListByMobile);
+                response.setData(orderItemListModelList);
+                response.prioritySet(Priority.LOW);
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum, priority));
         return response;
     }
 
