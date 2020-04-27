@@ -21,6 +21,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,6 +41,7 @@ import static com.food.ordering.zinger.constant.ErrorLog.*;
  * Endpoints starting with "/user" invoked here.
  */
 @Repository
+@Transactional
 public class UserDaoImpl implements UserDao {
 
     @Autowired
@@ -108,8 +110,10 @@ public class UserDaoImpl implements UserDao {
                         response.setCode(ErrorLog.PDNA1163);
                         response.setMessage(ErrorLog.PlaceDetailNotAvailable);
                         response.setData(userPlaceModel);
-                    } else
+                    } else {
                         response.setCode(ErrorLog.UDNU1151);
+                        response.setMessage(ErrorLog.UserHasBeenBlocked);
+                    }
                 }
             }
         } catch (Exception e) {
@@ -171,7 +175,7 @@ public class UserDaoImpl implements UserDao {
             } catch (Exception e) {
                 System.err.println(e.getClass().getName() + ": " + e.getMessage());
             }
-            if (sellerLoginResponseList != null) {
+            if (sellerLoginResponseList != null && !sellerLoginResponseList.isEmpty()) {
                 UserShopListModel userShopListModel = new UserShopListModel();
                 userShopListModel.setUserModel(sellerLoginResponseList.get(0).getUserModel());
 
@@ -186,7 +190,7 @@ public class UserDaoImpl implements UserDao {
                 userShopListModel.setShopModelList(shopConfigurationModelList);
 
                 response.prioritySet(Priority.LOW);
-                response.setCode(sellerLoginResponseList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
+                response.setCode(CodeSuccess);
                 response.setMessage(Success);
                 response.setData(userShopListModel);
 
@@ -306,8 +310,8 @@ public class UserDaoImpl implements UserDao {
                     response = verifySeller(userShopModel.getUserModel());
                 } else {
                     Response<UserModel> userModelResponse = getUserIdByMobile(userShopModel.getUserModel().getMobile());
-                    userShopModel.getUserModel().setId(userModelResponse.getData().getId());
                     if (userModelResponse != null) {
+                        userShopModel.getUserModel().setId(userModelResponse.getData().getId());
                         Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getId(), inviteModelResponse.getData().getRole());
                         if (updateRoleResponse.getCode().equals(CodeSuccess)) {
                             updateShop(userShopModel);
@@ -547,7 +551,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = updateUser(userPlaceModel.getUserModel());
-        updatePlace(userPlaceModel);
+        if(response.getCode().equals(CodeSuccess))
+            updatePlace(userPlaceModel);
         return response;
     }
 
