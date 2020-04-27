@@ -18,7 +18,7 @@ public interface OrderService {
 
     Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId);
 
-    Response<TransactionModel> getOrderById(Integer id);
+    Response<OrderItemListModel> getOrderById(Integer id);
 
     Response<String> updateOrderRating(OrderModel orderModel);
 

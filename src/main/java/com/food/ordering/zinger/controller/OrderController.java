@@ -46,7 +46,7 @@ public class OrderController {
     }
 
     @GetMapping(value = getOrderById)
-    public Response<TransactionModel> getOrderById(@PathVariable("id") Integer id) {
+    public Response<OrderItemListModel> getOrderById(@PathVariable("id") Integer id) {
         return orderService.getOrderById(id);
     }
 

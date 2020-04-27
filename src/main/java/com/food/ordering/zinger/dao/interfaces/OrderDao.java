@@ -20,7 +20,7 @@ public interface OrderDao {
 
     Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId);
 
-    Response<TransactionModel> getOrderById(Integer orderId);
+    Response<OrderItemListModel> getOrderById(Integer orderId);
 
     /**************************************************/
 
