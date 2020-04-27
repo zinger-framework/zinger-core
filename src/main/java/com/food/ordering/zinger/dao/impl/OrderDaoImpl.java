@@ -200,10 +200,9 @@ public class OrderDaoImpl implements OrderDao {
          *   2. Insert the transaction in the transaction table
          * */
         Response<String> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
 
         try {
-            Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, 2);
+            Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, Constant.transactionFlag);
 
             if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 Response<String> insertTransactionResponse = transactionDaoImpl.insertTransactionDetails(verifyOrderResponse.getData());
@@ -215,7 +214,7 @@ public class OrderDaoImpl implements OrderDao {
                         response.setCode(ErrorLog.CodeSuccess);
                         response.setMessage(ErrorLog.Success);
                         response.setData(ErrorLog.Success);
-                        priority = Priority.LOW;
+                        response.prioritySet(Priority.LOW);
                     } else {
                         response.setCode(ErrorLog.ODNU1156);
                         response.setMessage(ErrorLog.OrderDetailNotUpdated);
@@ -227,15 +226,15 @@ public class OrderDaoImpl implements OrderDao {
             } else {
                 response.setCode(ErrorLog.ODNA1167);
                 response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                priority = Priority.HIGH;
+                response.prioritySet(Priority.HIGH);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1109);
-            priority = Priority.HIGH;
+            response.prioritySet(Priority.HIGH);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, orderId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, orderId.toString()));
         return response;
     }
 
@@ -253,7 +252,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
-        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+        List<OrderItemListModel> orderItemListModelList = null;
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -279,7 +278,7 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
-        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+        List<OrderItemListModel> orderItemListModelList = null;
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -289,7 +288,6 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(OrderQuery.pageCount, pageCount);
 
             orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderFilterByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
-
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1269);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -317,7 +315,6 @@ public class OrderDaoImpl implements OrderDao {
      */
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
-
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
@@ -379,7 +376,7 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum));
         return response;
     }
 
@@ -457,7 +454,7 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, shopId, shopId.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, shopId, shopId.toString()));
         return response;
     }
 
@@ -526,7 +523,7 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderId, null, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderId, null));
         return response;
     }
 
@@ -589,38 +586,32 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = new Response<>();
-        Priority priority = Priority.HIGH;
+        response.prioritySet(Priority.HIGH);
 
         try {
-            Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId());
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(OrderColumn.rating, orderModel.getRating())
+                    .addValue(feedback, orderModel.getFeedback())
+                    .addValue(id, orderModel.getId());
 
-            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                MapSqlParameterSource parameter = new MapSqlParameterSource()
-                        .addValue(OrderColumn.rating, orderModel.getRating())
-                        .addValue(id, orderModel.getId());
+            int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
+            if (updateStatus > 0) {
+                ratingDaoImpl.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
 
-                int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
-                if (updateStatus > 0) {
-                    ratingDaoImpl.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
-
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    priority = Priority.LOW;
-                } else {
-                    response.setCode(ErrorLog.ODNU1285);
-                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                }
-            } else {
-                response.setCode(transactionModelResponse.getCode());
-                response.setMessage(transactionModelResponse.getMessage());
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
             }
         } catch (Exception e) {
-            response.setCode(ErrorLog.CE1286);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString(), priority));
+        if(!response.getCode().equals(ErrorLog.CodeSuccess)){
+            response.setCode(ErrorLog.ODNU1285);
+            response.setMessage(ErrorLog.OrderDetailNotUpdated);
+        }
+
         return response;
     }
 
@@ -705,7 +696,7 @@ public class OrderDaoImpl implements OrderDao {
                                 response.setCode(ErrorLog.CodeSuccess);
                                 response.setMessage(ErrorLog.Success);
                                 response.setData(ErrorLog.Success);
-                                priority = Priority.LOW;
+                                response.prioritySet(Priority.LOW);
                             } else {
                                 response.setCode(ErrorLog.ODNU1295);
                                 response.setMessage(ErrorLog.OrderDetailNotUpdated);
@@ -730,7 +721,7 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString(), priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
         return response;
     }
 
@@ -748,7 +739,7 @@ public class OrderDaoImpl implements OrderDao {
 
             if (orderModelList != null && !orderModelList.isEmpty()) {
                 for (OrderModel orderModel : orderModelList) {
-                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 2);
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), Constant.transactionFlag);
 
                     if (transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PLACED)) {
                         Date currentDate = new Date();
@@ -786,9 +777,11 @@ public class OrderDaoImpl implements OrderDao {
 
             if (orderModelList != null && orderModelList.size() > 0) {
                 for (OrderModel orderModel : orderModelList) {
-                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), 1);
+                    Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), Constant.refundFlag);
 
-                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) && !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
+                    if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.REFUND_INITIATED) &&
+                            !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) &&
+                            !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel());
                         transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
                     }
@@ -805,14 +798,14 @@ public class OrderDaoImpl implements OrderDao {
      * @param flag    Integer
      * @return returns the status of the order after contacting the payment gateway
      */
-    private Response<TransactionModel> verifyOrder(Integer orderId, Integer flag) {
+    private Response<TransactionModel> verifyOrder(Integer orderId, String flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
         try {
             Response<TransactionModel> transactionModelResponse;
 
-            if (flag == 1)
+            if (flag.equals(Constant.refundFlag))
                 transactionModelResponse = getRefundStatus(orderId);
             else
                 transactionModelResponse = getTransactionStatus(orderId);

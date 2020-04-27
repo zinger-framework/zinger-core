@@ -20,12 +20,12 @@ public class OrderLogModel {
     public OrderLogModel() {
     }
 
-    public OrderLogModel(Response response, Integer id, String updatedValue, Priority priority) {
+    public OrderLogModel(Response response, Integer id, String updatedValue) {
         this.id = id;
         this.errorCode = response.getCode();
         this.message = response.getMessage();
         this.updatedValue = updatedValue;
-        this.priority = priority;
+        this.priority = response.priorityGet();
     }
 
     public Integer getId() {

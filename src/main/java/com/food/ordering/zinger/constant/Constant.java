@@ -8,6 +8,8 @@ public class Constant {
     public static final String deliveryOrderFlag = "D";
     public static final String pickUpOrderFlag = "P";
 
+    public static final String transactionFlag = "T";
+    public static final String refundFlag = "R";
 
     public static final class VerifyPricingProcedure {
 
