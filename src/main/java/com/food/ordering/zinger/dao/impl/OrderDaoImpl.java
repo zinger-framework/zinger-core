@@ -31,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
+import static com.food.ordering.zinger.constant.Sql.PERCENT;
 
 /**
  * OrderDao is responsible for performing CRUD operation related to the order table in the database.
@@ -266,9 +267,10 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderItemListModelList != null) {
-                response.setMessage(ErrorLog.Success);
                 response.setCode(orderItemListModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
                 response.setData(orderItemListModelList);
+                response.prioritySet(Priority.LOW);
             }
         }
         return response;
@@ -281,21 +283,22 @@ public class OrderDaoImpl implements OrderDao {
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(Column.searchQuery, searchItem)
+                    .addValue(Column.searchQuery, PERCENT + searchItem + PERCENT)
                     .addValue(Column.ShopColumn.id, shopId)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderFilterByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderFilterByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1269);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {
             if (orderItemListModelList != null) {
-                response.setMessage(ErrorLog.Success);
                 response.setCode(orderItemListModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
                 response.setData(orderItemListModelList);
+                response.prioritySet(Priority.LOW);
             }
         }
 
@@ -376,7 +379,7 @@ public class OrderDaoImpl implements OrderDao {
             }
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + "-" + pageNum, priority));
+        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum, priority));
         return response;
     }
 

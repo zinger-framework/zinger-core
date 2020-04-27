@@ -41,12 +41,16 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
-        return orderDao.getOrderByUserId(userId, pageNum, pageCount);
+        Response<List<OrderItemListModel>> response = orderDao.getOrderByUserId(userId, pageNum, pageCount);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, userId + " - " + pageNum, response.priorityGet()));
+        return response;
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
-        return orderDao.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
+        Response<List<OrderItemListModel>> response = orderDao.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + searchItem + " - " + pageNum, response.priorityGet()));
+        return response;
     }
 
     @Override
