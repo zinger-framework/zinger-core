@@ -591,9 +591,6 @@ public class OrderDaoImpl implements OrderDao {
                         }
                     }
 
-                    if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) || orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) || orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
-                        paymentResponse.initiateRefund();
-
                     if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
                         try {
                             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -602,6 +599,11 @@ public class OrderDaoImpl implements OrderDao {
 
                             int result = namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
                             if (result > 0) {
+                                if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) ||
+                                        orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) ||
+                                        orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
+                                    paymentResponse.initiateRefund();
+
                                 response.setCode(ErrorLog.CodeSuccess);
                                 response.setMessage(ErrorLog.Success);
                                 response.setData(ErrorLog.Success);
@@ -619,7 +621,6 @@ public class OrderDaoImpl implements OrderDao {
                     response.setCode(ErrorLog.IOS1282);
                     response.setMessage(ErrorLog.InvalidOrderStatus);
                 }
-
             } else {
                 response.setCode(transactionModelResponse.getCode());
                 response.setMessage(transactionModelResponse.getMessage());
