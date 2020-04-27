@@ -13,6 +13,7 @@ public class ErrorLog {
     public static final String Failure = "Failure";
 
     public static final String UserDetailNotAvailable = "User detail not available";
+    public static final String UserHasBeenBlocked = "User has been blocked";
     public static final String PlaceDetailNotAvailable = "Place detail not available";
     public static final String ShopDetailNotAvailable = "Shop detail not available";
     public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";

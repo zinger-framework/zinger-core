@@ -5,6 +5,7 @@ import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
+import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
@@ -14,6 +15,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -32,6 +34,7 @@ import static com.food.ordering.zinger.constant.ErrorLog.ShopDetailNotDeleted;
  * Endpoints starting with "/shop" invoked here.
  */
 @Repository
+@Transactional
 public class ShopDaoImpl implements ShopDao {
 
     @Autowired
@@ -57,42 +60,43 @@ public class ShopDaoImpl implements ShopDao {
     public Response<String> insertShop(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
 
-        try {
-            ShopModel shopModel = configurationModel.getShopModel();
-            MapSqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.name, shopModel.getName())
-                    .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
-                    .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(shopModel.getCoverUrls()))
-                    .addValue(ShopColumn.mobile, shopModel.getMobile())
-                    .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
-                    .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
-                    .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
-                    .addValue(ShopColumn.isDelete, 0);
+        ShopModel shopModel = configurationModel.getShopModel();
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue(ShopColumn.name, shopModel.getName())
+                .addValue(ShopColumn.photoUrl, shopModel.getPhotoUrl())
+                .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(shopModel.getCoverUrls()))
+                .addValue(ShopColumn.mobile, shopModel.getMobile())
+                .addValue(ShopColumn.placeId, shopModel.getPlaceModel().getId())
+                .addValue(ShopColumn.openingTime, shopModel.getOpeningTime())
+                .addValue(ShopColumn.closingTime, shopModel.getClosingTime())
+                .addValue(ShopColumn.isDelete, 0);
 
-            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-            simpleJdbcInsert.withTableName(ShopColumn.tableName).usingGeneratedKeyColumns(ShopColumn.id);
-            Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+        simpleJdbcInsert.withTableName(ShopColumn.tableName).usingGeneratedKeyColumns(ShopColumn.id);
+        Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameters);
 
+        if (responseValue.intValue() > 0) {
             configurationModel.getShopModel().setId(responseValue.intValue());
             Response<String> configurationModelResponse = configurationDaoImpl.insertConfiguration(configurationModel);
 
-            if (responseValue.intValue() > 0 && configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            if(configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
-            } else if (responseValue.intValue() <= 0) {
-                response.prioritySet(Priority.HIGH);
-                response.setCode(ErrorLog.SDNU1251);
-                response.setMessage(ErrorLog.ShopDetailNotUpdated);
-            } else {
+            }
+            else{
                 response.prioritySet(Priority.HIGH);
                 response.setCode(ErrorLog.CDNU1252);
                 response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
+                throw new GenericException(response);
             }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1253);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        else{
+            response.prioritySet(Priority.HIGH);
+            response.setCode(ErrorLog.SDNU1251);
+            response.setMessage(ErrorLog.ShopDetailNotUpdated);
+            throw new GenericException(response);
         }
 
         return response;

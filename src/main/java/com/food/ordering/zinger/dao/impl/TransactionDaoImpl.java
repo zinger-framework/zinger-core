@@ -18,13 +18,11 @@ import static com.food.ordering.zinger.constant.Column.TransactionColumn.*;
  * TransactionDao is responsible for CRUD operations in
  * Transaction table in MySQL.
  */
-
 @Repository
 public class TransactionDaoImpl implements TransactionDao {
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
 
     /**
      * This is a helper method to insert transaction details in the transaction table
@@ -32,7 +30,6 @@ public class TransactionDaoImpl implements TransactionDao {
      * @param transactionModel TransactionModel
      * @return If insertion is successful then success response is returned else failure response
      */
-
     @Override
     public Response<String> insertTransactionDetails(TransactionModel transactionModel) {
         Response<String> response = new Response<>();
@@ -104,7 +101,6 @@ public class TransactionDaoImpl implements TransactionDao {
      */
     @Override
     public void updatePendingTransaction(TransactionModel transactionModel) {
-
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(responseCode, transactionModel.getResponseCode())

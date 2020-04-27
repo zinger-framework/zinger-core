@@ -2,6 +2,7 @@ package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
+import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
@@ -23,7 +24,14 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Response<String> insertShop(ConfigurationModel configurationModel) {
-        Response<String> response = shopDao.insertShop(configurationModel);
+        Response<String> response = new Response<>();
+        try {
+            response = shopDao.insertShop(configurationModel);
+        } catch (GenericException e) {
+            response = e.getResponse();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
         auditLogDao.insertShopLog(new ShopLogModel(response, null, configurationModel.toString()));
         return response;
     }
