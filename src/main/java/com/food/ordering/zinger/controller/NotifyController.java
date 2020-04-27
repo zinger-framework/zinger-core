@@ -1,13 +1,11 @@
 package com.food.ordering.zinger.controller;
 
+import com.food.ordering.zinger.notification.PushNotification;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserShopModel;
 import com.food.ordering.zinger.service.interfaces.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static com.food.ordering.zinger.constant.ApiConfig.NotifyApi.BASE_URL;
 import static com.food.ordering.zinger.constant.ApiConfig.NotifyApi.inviteSeller;
@@ -19,8 +17,16 @@ public class NotifyController {
     @Autowired
     NotifyService notifyService;
 
+    @Autowired
+    PushNotification pushNotification;
+
     @PostMapping(value = inviteSeller)
     public Response<String> notifyInvitation(@RequestBody UserShopModel userShopModel) {
         return notifyService.notifyInvitation(userShopModel);
+    }
+
+    @GetMapping(value = "/test")
+    public Response<String> notifyCustomer(@RequestBody UserShopModel userShopModel) {
+        return pushNotification.sendMulticast();
     }
 }

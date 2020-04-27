@@ -509,7 +509,7 @@ public class OrderDaoImpl implements OrderDao {
 
         if (!response.getCode().equals(ErrorLog.CodeSuccess)) {
             response.setCode(ErrorLog.ODNU1285);
-            response.setMessage(ErrorLog.OrderDetailNotUpdated);
+            response.setMessage(ErrorLog.OrderRatingNotUpdated);
         }
 
         return response;
