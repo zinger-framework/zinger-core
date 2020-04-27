@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.notification;
 
 import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.NotificationModel;
 import com.food.ordering.zinger.model.Response;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -9,6 +10,7 @@ import com.google.firebase.messaging.BatchResponse;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.MulticastMessage;
+import com.google.gson.GsonBuilder;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileInputStream;
@@ -42,9 +44,10 @@ public class PushNotification {
      *   3. new arrivals and introductions -> shop id -> topic messaging
      *
      *   Seller side:
-     *   4. New Order -> order id, amount , No of items
-     *   5. Cancel -> order id, amount, No of items
-     *   6. New Seller added - > Seller phone number, seller name
+     *
+     *   4. New Order -> order id, amount , No of items,order_status , UserName -> topic
+     *   5. Cancel -> order id, amount, No of items , UserName  -> topic
+     *
      *
      *
      *   Notification Structure
@@ -77,6 +80,7 @@ public class PushNotification {
      *
      *   NEW_ORDER Payload
      *   {
+     *       "user_name": "Harsha"
      *       "order_id": "O001",
      *       "amount" : 54,
      *       "items_name": "idly*1,dosa*3"
@@ -85,20 +89,12 @@ public class PushNotification {
      *
      *   ORDER_CANCELLED Payload
      *    {
+     *       "user_name": "Harsha"
      *       "order_id": "O001",
      *       "amount" : 54,
      *       "items_name": "idly*1,dosa*3"
      *       "order_type": "pickup"
      *    }
-     *
-     *   NEW_SELLER Payload
-     *    {
-     *       "name": "O001",
-     *       "mobile" : 54,
-     *       "shop_name" : "Snow Qube"
-     *    }
-     *
-     *
      *
      * */
 
@@ -109,10 +105,27 @@ public class PushNotification {
             List<String> registrationTokens = Collections.singletonList("foJdPp1yTzmNbNCaDgBC6e:APA91bEOWbXEORRbH8_RA4C5vbB7TDgmhdYP8dsX3pIMAJsFKiGlzA2irx4TaoEV3oaoWskRVHQvc4hsVZ6IrVQVz4DaCgZ8fBP8qtK9zkUBFaKDl0V-ZXcuQ0XOGGs8X6KIibdkyeBI");
             MulticastMessage message = MulticastMessage.builder()
                     .putData("score", "850")
-                    .putData("time", "2:45")
                     .addAllTokens(registrationTokens)
                     .build();
 
+            BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+        } catch (FirebaseMessagingException e) {
+            e.printStackTrace();
+        }
+        return response;
+    }
+
+    public Response<String> sendMulticast(NotificationModel notificationModel,List<String> fcmTokenList) {
+        Response<String> response = new Response<>();
+
+        try {
+            List<String> registrationTokens = Collections.singletonList("foJdPp1yTzmNbNCaDgBC6e:APA91bEOWbXEORRbH8_RA4C5vbB7TDgmhdYP8dsX3pIMAJsFKiGlzA2irx4TaoEV3oaoWskRVHQvc4hsVZ6IrVQVz4DaCgZ8fBP8qtK9zkUBFaKDl0V-ZXcuQ0XOGGs8X6KIibdkyeBI");
+            MulticastMessage message = MulticastMessage.builder()
+                    .putData("notification_data",new GsonBuilder().create().toJson(notificationModel))
+                    .addAllTokens(fcmTokenList)
+                    .build();
             BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);

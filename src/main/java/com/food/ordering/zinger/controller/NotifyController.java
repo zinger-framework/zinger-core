@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.controller;
 
+import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserShopModel;
 import com.food.ordering.zinger.notification.PushNotification;
@@ -17,16 +18,11 @@ public class NotifyController {
     @Autowired
     NotifyService notifyService;
 
-    @Autowired
-    PushNotification pushNotification;
 
     @PostMapping(value = inviteSeller)
     public Response<String> notifyInvitation(@RequestBody UserShopModel userShopModel) {
         return notifyService.notifyInvitation(userShopModel);
     }
 
-    @GetMapping(value = "/test")
-    public Response<String> notifyCustomer(@RequestBody UserShopModel userShopModel) {
-        return pushNotification.sendMulticast();
-    }
+
 }
