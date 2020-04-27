@@ -32,6 +32,7 @@ import java.util.*;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 import static com.food.ordering.zinger.constant.Sql.PERCENT;
+import static com.food.ordering.zinger.utils.PaymentResponse.*;
 
 /**
  * OrderDao is responsible for performing CRUD operation related to the order table in the database.
@@ -68,9 +69,6 @@ public class OrderDaoImpl implements OrderDao {
     UserDaoImpl userDaoImpl;
 
     @Autowired
-    AuditLogDaoImpl auditLogDaoImpl;
-
-    @Autowired
     PaymentResponse paymentResponse;
 
     /**
@@ -99,7 +97,7 @@ public class OrderDaoImpl implements OrderDao {
         if (verifyPricingResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
             String merchantId = verifyPricingResponse.getData();
-            Response<String> initiateTransactionResponse = initiateTransaction(orderModel, merchantId);
+            Response<String> initiateTransactionResponse = paymentResponse.initiateTransaction(orderModel, merchantId);
             if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
                 MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -234,7 +232,6 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, orderId.toString()));
         return response;
     }
 
@@ -346,7 +343,6 @@ public class OrderDaoImpl implements OrderDao {
      * @param shopId Integer
      * @return Returns all the orders along with transaction details and orderItem details
      */
-
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId) {
 
@@ -369,7 +365,6 @@ public class OrderDaoImpl implements OrderDao {
         }
         return response;
     }
-
 
     /**
      * This method is responsible for fetching orders with status passed in the orderStatusList
@@ -597,7 +592,7 @@ public class OrderDaoImpl implements OrderDao {
                     }
 
                     if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) || orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) || orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
-                        initiateRefund();
+                        paymentResponse.initiateRefund();
 
                     if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
                         try {
@@ -635,7 +630,6 @@ public class OrderDaoImpl implements OrderDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
         return response;
     }
 
@@ -720,9 +714,9 @@ public class OrderDaoImpl implements OrderDao {
             Response<TransactionModel> transactionModelResponse;
 
             if (flag.equals(Constant.refundFlag))
-                transactionModelResponse = getRefundStatus(orderId);
+                transactionModelResponse = paymentResponse.getRefundStatus(orderId);
             else
-                transactionModelResponse = getTransactionStatus(orderId);
+                transactionModelResponse = paymentResponse.getTransactionStatus(orderId);
 
             Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
 
@@ -795,30 +789,6 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     /**
-     * This is a helper method to get the transaction token from the payment gateway. The orderId and merchantId
-     * are passed to the payment gateway
-     *
-     * @param orderModel OrderModel
-     * @param merchantId String
-     * @return token fetched from payment gateway is returned
-     */
-    private Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
-        Response<String> response = new Response<>();
-
-        Integer orderId = orderModel.getId();
-
-        //TODO: Implement API to get Transaction Token From Payment Gateway using OrderId & merchantId
-        //String transactionToken = getTransactionToken(orderId, merchantId);
-
-        String transactionToken = "12Abdsfds";
-
-        response.setCode(ErrorLog.CodeSuccess);
-        response.setMessage(ErrorLog.Success);
-        response.setData(transactionToken);
-        return response;
-    }
-
-    /**
      * Helper method to check the order state change validity. The valid state changes are mentioned below.
      * <p>
      * starting states -> FAILURE,PENDING,PLACED
@@ -861,74 +831,5 @@ public class OrderDaoImpl implements OrderDao {
             return newStatus.equals(OrderStatus.REFUND_COMPLETED);
 
         return false;
-    }
-
-    /**
-     * Helper method to get transaction Status from payment gateway
-     *
-     * @param orderId the order id
-     * @return the latest transaction data from payment gateway is returned
-     */
-    private Response<TransactionModel> getTransactionStatus(Integer orderId) {
-        Response<TransactionModel> transactionModelResponse = new Response<>();
-
-        //TODO: GET Transaction Status from Payment Gateway
-        TransactionModel transactionModel = new TransactionModel();
-
-        //Populating Dummy Values Here
-        transactionModel.setTransactionId("T" + orderId);
-        transactionModel.setBankTransactionId("BT0001");
-        transactionModel.transactionAmountSet(90.0);
-        transactionModel.setCurrency("INR");
-        transactionModel.setResponseCode("01");
-        transactionModel.setResponseMessage("Success");
-        transactionModel.setGatewayName("PAYTM");
-        transactionModel.setBankName("HDFC");
-        transactionModel.setPaymentMode("UPI");
-        transactionModel.setChecksumHash("XXXXX");
-        transactionModel.getOrderModel().setId(orderId);
-
-        transactionModelResponse.setCode(ErrorLog.CodeSuccess);
-        transactionModelResponse.setMessage(ErrorLog.Success);
-        transactionModelResponse.setData(transactionModel);
-        return transactionModelResponse;
-    }
-
-    /**
-     * This method is used for fetching the refund status from the Payment gateway.
-     *
-     * @param orderId Integer
-     * @return the latest transaction data from payment gateway is returned
-     */
-    private Response<TransactionModel> getRefundStatus(Integer orderId) {
-        Response<TransactionModel> transactionModelResponse = new Response<>();
-
-        //TODO: GET Transaction Status from Payment Gateway
-        TransactionModel transactionModel = new TransactionModel();
-
-        //Populating Dummy Values Here
-        transactionModel.setTransactionId("T" + orderId);
-        transactionModel.setBankTransactionId("BT0001");
-        transactionModel.transactionAmountSet(90.0);
-        transactionModel.setCurrency("INR");
-        transactionModel.setResponseCode("03");
-        transactionModel.setResponseMessage("Refund Completed");
-        transactionModel.setGatewayName("PAYTM");
-        transactionModel.setBankName("HDFC");
-        transactionModel.setPaymentMode("UPI");
-        transactionModel.setChecksumHash("XXXXX");
-        transactionModel.getOrderModel().setId(orderId);
-
-        transactionModelResponse.setCode(ErrorLog.CodeSuccess);
-        transactionModelResponse.setMessage(ErrorLog.Success);
-        transactionModelResponse.setData(transactionModel);
-        return transactionModelResponse;
-    }
-
-    /**
-     * This method is used to initiate refund of payment
-     */
-    private void initiateRefund() {
-        //TODO: Initiate the refund using payment gateway
     }
 }
