@@ -403,34 +403,23 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<OrderItemListModel> getOrderById(Integer orderId) {
         Response<OrderItemListModel> response = new Response<>();
-        TransactionModel transactionModel;
-        Priority priority = Priority.MEDIUM;
+        OrderItemListModel orderItemListModel = null;
 
-//        try {
-//            Response<TransactionModel> transactionModelResponse = transactionDaoImpl.getTransactionByOrderId(orderId);
-//
-//            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-//                transactionModel = transactionModelResponse.getData();
-//                Response<OrderModel> orderModelResponse = getOrderDetailById(orderId);
-//
-//                if (orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-//                    transactionModel.setOrderModel(orderModelResponse.getData());
-//                    response.setCode(ErrorLog.CodeSuccess);
-//                    response.setMessage(ErrorLog.Success);
-//                    response.setData(transactionModel);
-//                } else {
-//                    response.setCode(orderModelResponse.getCode());
-//                    response.setMessage(orderModelResponse.getMessage());
-//                }
-//            } else {
-//                response.setCode(ErrorLog.TDNA1292);
-//                response.setMessage(ErrorLog.TransactionDetailNotAvailable);
-//            }
-//        } catch (Exception e) {
-//            response.setCode(ErrorLog.CE1279);
-//            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-//        }
-
+        try{
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                                                 .addValue(Column.OrderColumn.id, orderId);
+            orderItemListModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderIds, parameter,
+                    OrderItemListRowMapperLambda.OrderItemListModelByOrderIdRowMapper);
+        }catch (Exception e){
+            response.setCode(ErrorLog.CE1279);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }finally {
+            if(orderItemListModel!=null){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(orderItemListModel);
+            }
+        }
 
         return response;
     }
