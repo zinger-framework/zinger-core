@@ -13,6 +13,7 @@ import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
+import com.food.ordering.zinger.rowMapperLambda.OrderItemListRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
@@ -289,6 +290,37 @@ public class OrderDaoImpl implements OrderDao {
      */
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
+
+        Response<List<OrderItemListModel>> response =new Response<>();
+        List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
+
+        try{
+
+            MapSqlParameterSource parameter = new MapSqlParameterSource()
+                    .addValue(Column.UserColumn.id, userId)
+                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
+                    .addValue(OrderQuery.pageCount, pageCount);
+
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByUserIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
+
+        }catch (Exception e){
+            response.setCode(ErrorLog.CE1270);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        finally {
+            if(orderItemListModelList!=null){
+                response.setMessage(ErrorLog.Success);
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setData(orderItemListModelList);
+            }
+        }
+
+
+        return response;
+    }
+
+
+    public Response<List<OrderItemListModel>> getOrderByUserId1(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
         Priority priority = Priority.MEDIUM;
         List<TransactionModel> transactionModelList = null;
