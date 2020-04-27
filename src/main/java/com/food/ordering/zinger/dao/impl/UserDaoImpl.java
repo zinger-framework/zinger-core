@@ -521,7 +521,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = updateUser(userPlaceModel.getUserModel());
-        if(response.getCode().equals(CodeSuccess))
+        if (response.getCode().equals(CodeSuccess))
             updatePlace(userPlaceModel);
         return response;
     }

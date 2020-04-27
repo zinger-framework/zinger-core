@@ -2,7 +2,10 @@ package com.food.ordering.zinger.rowMapperLambda;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.ConfigurationModel;
+import com.food.ordering.zinger.model.RatingModel;
+import com.food.ordering.zinger.model.ShopConfigurationModel;
+import com.food.ordering.zinger.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.util.ArrayList;

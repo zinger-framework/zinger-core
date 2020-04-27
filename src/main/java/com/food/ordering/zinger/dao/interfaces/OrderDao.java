@@ -1,7 +1,10 @@
 package com.food.ordering.zinger.dao.interfaces;
 
 import com.food.ordering.zinger.exception.GenericException;
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.OrderItemListModel;
+import com.food.ordering.zinger.model.OrderModel;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.TransactionTokenModel;
 
 import java.util.List;
 

@@ -3,7 +3,6 @@ package com.food.ordering.zinger.dao.interfaces;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
-import com.food.ordering.zinger.model.ShopModel;
 
 import java.util.List;
 

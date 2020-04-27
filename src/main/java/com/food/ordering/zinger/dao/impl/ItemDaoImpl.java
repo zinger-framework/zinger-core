@@ -105,8 +105,7 @@ public class ItemDaoImpl implements ItemDao {
                 response.setMessage(ErrorLog.Success);
                 response.setData(list);
                 response.prioritySet(Priority.LOW);
-            }
-            else{
+            } else {
                 response.setCode(CE1204);
                 response.setMessage(ItemsNotAvailable);
             }
@@ -143,8 +142,7 @@ public class ItemDaoImpl implements ItemDao {
                 response.setMessage(ErrorLog.Success);
                 response.setData(items);
                 response.prioritySet(Priority.LOW);
-            }
-            else{
+            } else {
                 response.setCode(IDNA1205);
                 response.setMessage(ItemsNotAvailable);
             }

@@ -194,28 +194,6 @@ public class Query {
         public static final String orderByDesc = ORDER_BY + OrderColumn.date + DESC;
         public static final String pageNum = "pageNum";
         public static final String pageCount = "pageCount";
-
-        public static String getInsertOrder(List<OrderItemModel> orderItemModelList) {
-            StringBuilder insertOrderItem = new StringBuilder(INSERT_INTO + OrderItemColumn.tableName + LEFT_PARANTHESIS +
-                    orderId + COMMA +
-                    itemId + COMMA +
-                    OrderItemColumn.quantity + COMMA +
-                    OrderItemColumn.price + RIGHT_PARANTHESIS + VALUES);
-
-            for (int i = 0; i < orderItemModelList.size(); i++) {
-                insertOrderItem.append(LEFT_PARANTHESIS)
-                        .append(COLON).append(orderId).append(i)
-                        .append(COMMA_COLON).append(itemId).append(i)
-                        .append(COMMA_COLON).append(quantity).append(i)
-                        .append(COMMA_COLON).append(price).append(i)
-                        .append(RIGHT_PARANTHESIS);
-                if (i < orderItemModelList.size() - 1)
-                    insertOrderItem.append(COMMA);
-            }
-
-            return insertOrderItem.toString();
-        }
-
         public static final String getOrderByUserId = SELECT +
                 LHS + DOT + OrderColumn.id + COMMA +
                 LHS + DOT + OrderColumn.date + COMMA +
@@ -281,7 +259,6 @@ public class Query {
                 ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
-
         public static final String getOrderByShopIdPaginated = SELECT +
                 LHS + DOT + OrderColumn.id + COMMA +
                 LHS + DOT + OrderColumn.date + COMMA +
@@ -325,12 +302,12 @@ public class Query {
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 INNER_JOIN + OrderItemColumn.tableName + ON +
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
                 INNER_JOIN + ItemColumn.tableName + ON +
@@ -349,17 +326,16 @@ public class Query {
                 OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id +
                 ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
-
         public static final String getOrderByShopId = SELECT +
                 LHS + DOT + OrderColumn.id + COMMA +
                 LHS + DOT + OrderColumn.date + COMMA +
@@ -403,10 +379,10 @@ public class Query {
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 INNER_JOIN + OrderItemColumn.tableName + ON +
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
                 INNER_JOIN + ItemColumn.tableName + ON +
@@ -424,14 +400,13 @@ public class Query {
                 OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.PLACED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.ACCEPTED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.READY.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.OUT_FOR_DELIVERY.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id +
                 ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
-
         public static final String getOrderByFilterPaginated = SELECT +
                 LHS + DOT + OrderColumn.id + COMMA +
                 LHS + DOT + OrderColumn.date + COMMA +
@@ -475,12 +450,12 @@ public class Query {
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + TransactionColumn.tableName + DOT + TransactionColumn.orderId + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 INNER_JOIN + OrderItemColumn.tableName + ON +
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUALS + OrderItemColumn.tableName + DOT + OrderItemColumn.orderId +
                 INNER_JOIN + ItemColumn.tableName + ON +
@@ -502,12 +477,12 @@ public class Query {
                 OrderStatusColumn.tableName + DOT + OrderStatusColumn.orderId + EQUALS + OrderColumn.tableName + DOT + OrderColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.shopId + EQUAL_COLON + ShopColumn.id + AND +
                 OrderColumn.tableName + DOT + OrderColumn.status + IN + LEFT_PARANTHESIS +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
-                SINGLE_QUOTE+OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + COMMA +
+                SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 INNER_JOIN + UserColumn.tableName + ON +
                 UserColumn.tableName + DOT + UserColumn.id + EQUALS + OrderColumn.tableName + DOT + OrderColumn.userId + WHERE +
                 OrderColumn.tableName + DOT + OrderColumn.id + LIKE + COLON + searchQuery + OR +
@@ -517,7 +492,6 @@ public class Query {
                 ORDER_BY + OrderColumn.tableName + DOT + OrderColumn.date + DESC +
                 LIMIT + COLON + pageCount + OFFSET + COLON + pageNum + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
-
         public static final String getOrderById = SELECT +
                 LHS + DOT + OrderColumn.id + COMMA +
                 LHS + DOT + OrderColumn.date + COMMA +
@@ -585,12 +559,10 @@ public class Query {
                 OrderColumn.tableName + DOT + OrderColumn.id + EQUAL_COLON + OrderColumn.id +
                 GROUP_BY + OrderColumn.tableName + DOT + OrderColumn.id + RIGHT_PARANTHESIS + AS + RHS + WHERE +
                 LHS + DOT + OrderColumn.id + EQUALS + RHS + DOT + OrderColumn.id;
-
         public static final String getOrderPriceById = SELECT +
                 OrderColumn.id + COMMA +
                 OrderColumn.price + FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
-
         public static final String getOrderByShopIdPagination = SELECT +
                 OrderColumn.id +
                 FROM + OrderColumn.tableName + WHERE +
@@ -602,11 +574,31 @@ public class Query {
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
                 OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
                 orderByDesc;
-
         public static final String updateOrderRating = UPDATE + OrderColumn.tableName + SET +
                 OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + COMMA +
                 OrderColumn.feedback + EQUAL_COLON + OrderColumn.feedback + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
+
+        public static String getInsertOrder(List<OrderItemModel> orderItemModelList) {
+            StringBuilder insertOrderItem = new StringBuilder(INSERT_INTO + OrderItemColumn.tableName + LEFT_PARANTHESIS +
+                    orderId + COMMA +
+                    itemId + COMMA +
+                    OrderItemColumn.quantity + COMMA +
+                    OrderItemColumn.price + RIGHT_PARANTHESIS + VALUES);
+
+            for (int i = 0; i < orderItemModelList.size(); i++) {
+                insertOrderItem.append(LEFT_PARANTHESIS)
+                        .append(COLON).append(orderId).append(i)
+                        .append(COMMA_COLON).append(itemId).append(i)
+                        .append(COMMA_COLON).append(quantity).append(i)
+                        .append(COMMA_COLON).append(price).append(i)
+                        .append(RIGHT_PARANTHESIS);
+                if (i < orderItemModelList.size() - 1)
+                    insertOrderItem.append(COMMA);
+            }
+
+            return insertOrderItem.toString();
+        }
 
         public static String getOrderByStatus(List<OrderStatus> orderStatusList) {
             StringBuilder getOrderByStatus = new StringBuilder(SELECT +

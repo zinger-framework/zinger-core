@@ -7,7 +7,10 @@ import com.food.ordering.zinger.constant.Query.ShopQuery;
 import com.food.ordering.zinger.dao.interfaces.ConfigurationDao;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.exception.GenericException;
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.ConfigurationModel;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.ShopConfigurationModel;
+import com.food.ordering.zinger.model.ShopModel;
 import com.food.ordering.zinger.rowMapperLambda.ShopRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,20 +80,18 @@ public class ShopDaoImpl implements ShopDao {
             configurationModel.getShopModel().setId(responseValue.intValue());
             Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
 
-            if(configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
+            if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
-            }
-            else{
+            } else {
                 response.prioritySet(Priority.HIGH);
                 response.setCode(ErrorLog.CDNU1252);
                 response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
                 throw new GenericException(response);
             }
-        }
-        else{
+        } else {
             response.prioritySet(Priority.HIGH);
             response.setCode(ErrorLog.SDNU1251);
             response.setMessage(ErrorLog.ShopDetailNotUpdated);
