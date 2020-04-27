@@ -56,7 +56,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum,response.priorityGet()));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum));
         return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount);
     }
 

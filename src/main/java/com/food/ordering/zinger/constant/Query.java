@@ -665,7 +665,8 @@ public class Query {
                 orderByDesc;
 
         public static final String updateOrderRating = UPDATE + OrderColumn.tableName + SET +
-                OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + WHERE +
+                OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + COMMA +
+                OrderColumn.feedback + EQUAL_COLON + OrderColumn.feedback + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
 
         public static final String updateOrderKey = UPDATE + OrderColumn.tableName + SET +
