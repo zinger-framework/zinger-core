@@ -11,7 +11,7 @@ DROP PROCEDURE IF EXISTS calculate_price;
 DROP PROCEDURE IF EXISTS verify_pricing;
 DROP PROCEDURE IF EXISTS validate_order_status;
 DROP PROCEDURE IF EXISTS order_status_update;
-DROP PROCEDURE shop_rating_update;
+DROP PROCEDURE IF EXISTS shop_rating_update;
 
 ####################################################
 

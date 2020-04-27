@@ -350,34 +350,6 @@ public class OrderDaoImpl implements OrderDao {
     }
 
     /**
-     * This method is responsible for fetching orders with status passed in the orderStatusList
-     *
-     * @param orderStatusList List<OrderStatus>
-     * @return Returns all the orders along with transaction details and orderItem details
-     */
-    private Response<List<OrderModel>> getOrdersByStatus(List<OrderStatus> orderStatusList) {
-        Response<List<OrderModel>> response = new Response<>();
-        List<OrderModel> orderModelList = null;
-
-        try {
-            if (orderStatusList != null && !orderStatusList.isEmpty())
-                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus(orderStatusList), OrderRowMapperLambda.orderByStatusRowMapperLambda);
-        } catch (Exception e) {
-            response.setCode(ErrorLog.ODNA1299);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (orderModelList != null && !orderModelList.isEmpty()) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(orderModelList);
-                response.prioritySet(Priority.LOW);
-            }
-        }
-
-        return response;
-    }
-
-    /**
      * This method is responsible for fetching orders with given orderId along with its transaction details
      *
      * @param orderId Integer
@@ -402,6 +374,34 @@ public class OrderDaoImpl implements OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(orderItemListModel);
+            }
+        }
+
+        return response;
+    }
+
+    /**
+     * This method is responsible for fetching orders with status passed in the orderStatusList
+     *
+     * @param orderStatusList List<OrderStatus>
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
+    private Response<List<OrderModel>> getOrdersByStatus(List<OrderStatus> orderStatusList) {
+        Response<List<OrderModel>> response = new Response<>();
+        List<OrderModel> orderModelList = null;
+
+        try {
+            if (orderStatusList != null && !orderStatusList.isEmpty())
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus(orderStatusList), OrderRowMapperLambda.orderByStatusRowMapperLambda);
+        } catch (Exception e) {
+            response.setCode(ErrorLog.ODNA1299);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } finally {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(orderModelList);
+                response.prioritySet(Priority.LOW);
             }
         }
 

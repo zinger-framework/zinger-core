@@ -213,7 +213,7 @@ CREATE TRIGGER seller_archive
     VALUES (OLD.user_id, OLD.shop_id);
 
 DELIMITER $$
-CREATE TRIGGER order_placed_time
+CREATE TRIGGER order_time_rating_update
     BEFORE UPDATE
     ON orders
     FOR EACH ROW
@@ -226,12 +226,12 @@ CREATE TRIGGER order_placed_time
 						'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
 						'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
 						'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL;
-                        
+
 					SELECT status
 					INTO actual_status
 					FROM orders
 					where id = NEW.id;
-				
+
 					IF (OLD.rating IS NOT NULL) THEN
 						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated if already done!';
 					ELSEIF ((actual_status IS NULL) OR ((actual_status != 'COMPLETED') AND (actual_status != 'DELIVERED'))) THEN
@@ -243,7 +243,7 @@ CREATE TRIGGER order_placed_time
 $$
 
 DELIMITER $$
-CREATE TRIGGER order_status_update
+CREATE TRIGGER order_status_rating_update
     AFTER UPDATE
     ON orders
     FOR EACH ROW

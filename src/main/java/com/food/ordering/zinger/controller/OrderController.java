@@ -15,6 +15,7 @@ import static com.food.ordering.zinger.constant.ApiConfig.OrderApi.*;
 @RestController
 @RequestMapping(BASE_URL)
 public class OrderController {
+
     @Autowired
     OrderService orderService;
 

@@ -20,7 +20,6 @@ public class ScheduledTasks {
         orderDao.updatePendingOrder();
     }
 
-
     /**
      * This is a scheduled method used to handle the refunded transaction . This method will update the latest
      * refund status once every 24 hours after contacting the payment gateway.

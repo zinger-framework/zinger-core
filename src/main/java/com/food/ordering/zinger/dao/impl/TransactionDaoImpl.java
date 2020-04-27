@@ -71,7 +71,7 @@ public class TransactionDaoImpl implements TransactionDao {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(responseCode, transactionModel.getResponseCode())
                     .addValue(responseMessage, transactionModel.getResponseMessage())
-                    .addValue(orderId, transactionModel.getTransactionId());
+                    .addValue(transactionId, transactionModel.getTransactionId());
 
             namedParameterJdbcTemplate.update(TransactionQuery.updateTransaction, parameter);
         } catch (Exception e) {

@@ -735,7 +735,7 @@ public class Query {
                 TransactionColumn.responseCode + EQUAL_COLON + TransactionColumn.responseCode + COMMA +
                 TransactionColumn.responseMessage + EQUAL_COLON + TransactionColumn.responseMessage + COMMA +
                 TransactionColumn.date + EQUALS + CURRENT_TIMESTAMP + WHERE +
-                TransactionColumn.orderId + EQUAL_COLON + TransactionColumn.orderId;
+                TransactionColumn.transactionId + EQUAL_COLON + TransactionColumn.transactionId;
     }
 
     public static final class UserPlaceQuery {

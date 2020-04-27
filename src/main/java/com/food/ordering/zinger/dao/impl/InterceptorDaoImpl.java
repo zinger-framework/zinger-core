@@ -25,13 +25,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class InterceptorDaoImpl implements InterceptorDao {
 
-    /**
-     * Environment is used here to fetch SUPER_ADMIN credentials
-     * from "application.properties" file
-     */
-    @Autowired
-    Environment env;
-
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -48,23 +41,12 @@ public class InterceptorDaoImpl implements InterceptorDao {
         Response<UserModel> response = new Response<>();
 
         try {
-            //TODO: check this flow
-            if (requestHeaderModel.getOauthId().equals(env.getProperty(Constant.authIdSA)) && requestHeaderModel.getId().equals(env.getProperty(Constant.idSA)) && requestHeaderModel.getRole().equals(env.getProperty(Constant.roleSA))) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                return response;
-            }
-
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.oauthId, requestHeaderModel.getOauthId())
                     .addValue(UserColumn.id, requestHeaderModel.getId())
                     .addValue(UserColumn.role, requestHeaderModel.getRole());
 
-            try {
-                userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userIdRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
+            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.validateUser, parameters, UserRowMapperLambda.userIdRowMapperLambda);
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         } finally {

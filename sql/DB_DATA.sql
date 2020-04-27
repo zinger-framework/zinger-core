@@ -14,6 +14,3 @@ select * from orders_item;
 select * from orders_status;
 select * from rating;
 select * from configurations;
-
-####################################################
-# Testing

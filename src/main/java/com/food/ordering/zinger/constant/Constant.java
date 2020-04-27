@@ -1,10 +1,6 @@
 package com.food.ordering.zinger.constant;
 
 public class Constant {
-    public static final String authIdSA = "sa_auth";
-    public static final String idSA = "sa_id";
-    public static final String roleSA = "sa_role";
-
     public static final String deliveryOrderFlag = "D";
     public static final String pickUpOrderFlag = "P";
 
@@ -12,7 +8,6 @@ public class Constant {
     public static final String refundFlag = "R";
 
     public static final class VerifyPricingProcedure {
-
         public static final String procedureName = "verify_pricing";
 
         // I/P parameters
@@ -23,12 +18,9 @@ public class Constant {
         // O/P parameters
         public static final String totalPrice = "total_price";
         public static final String merchantId = "m_id";
-
     }
 
-
     public static final class OrderStatusUpdate {
-
         public static final String procedureName = "order_status_update";
 
         // I/P parameters
@@ -39,5 +31,4 @@ public class Constant {
         // O/P parameters
         public static final String result = "result";
     }
-
 }
