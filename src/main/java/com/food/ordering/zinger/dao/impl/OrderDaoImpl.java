@@ -533,66 +533,33 @@ public class OrderDaoImpl implements OrderDao {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.HIGH);
 
-        try {
-            //Response<TransactionModel> transactionModelResponse = getOrderById(orderModel.getId());
-            Response<TransactionModel> transactionModelResponse = new Response<>();
-            if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
+        try{
+            SimpleJdbcCall jdbcCall = new SimpleJdbcCall(namedParameterJdbcTemplate.getJdbcTemplate())
+                    .withProcedureName(Constant.OrderStatusUpdate.procedureName);
 
-                if (checkOrderStatusValidity(currentOrderModel.getOrderStatus(), orderModel.getOrderStatus(), orderModel.getDeliveryLocation())) {
-                    if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
-                        String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
-                        currentOrderModel.setSecretKey(secretKey);
-                        Response<String> updateResponse = updateOrderKey(currentOrderModel);
-                        if (!updateResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            response.setCode(ErrorLog.ODNU1280);
-                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                        }
-                    }
+            SqlParameterSource in = new MapSqlParameterSource()
+                    .addValue(Constant.OrderStatusUpdate.orderId,orderModel.getId())
+                    .addValue(Constant.OrderStatusUpdate.newStatus, orderModel.getOrderStatus())
+                    .addValue(Constant.OrderStatusUpdate.newSecretKey, orderModel.getSecretKey());
 
-                    if (orderModel.getOrderStatus().equals(OrderStatus.COMPLETED) || orderModel.getOrderStatus().equals(OrderStatus.DELIVERED)) {
-                        if (!orderModel.getSecretKey().equals(currentOrderModel.getSecretKey())) {
-                            response.setCode(ErrorLog.SKM1281);
-                            response.setMessage(ErrorLog.SecretKeyMismatch);
-                        }
-                    }
+            Map<String, Object> out = jdbcCall.execute(in);
+            Integer result = (Integer) out.get(Constant.OrderStatusUpdate.result);
 
-                    if (!response.getCode().equals(ErrorLog.SKM1281) && !response.getCode().equals(ErrorLog.ODNU1280)) {
-                        try {
-                            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                    .addValue(status, orderModel.getOrderStatus().name())
-                                    .addValue(id, orderModel.getId());
-
-                            int result = namedParameterJdbcTemplate.update(OrderQuery.updateOrderStatus, parameter);
-                            if (result > 0) {
-                                if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) ||
-                                        orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) ||
-                                        orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
-                                    paymentResponse.initiateRefund();
-
-                                response.setCode(ErrorLog.CodeSuccess);
-                                response.setMessage(ErrorLog.Success);
-                                response.setData(ErrorLog.Success);
-                                response.prioritySet(Priority.LOW);
-                            } else {
-                                response.setCode(ErrorLog.ODNU1295);
-                                response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                            }
-                        } catch (Exception e) {
-                            response.setCode(ErrorLog.CE1283);
-                            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-                        }
-                    }
-                } else {
-                    response.setCode(ErrorLog.IOS1282);
-                    response.setMessage(ErrorLog.InvalidOrderStatus);
-                }
-            } else {
-                response.setCode(transactionModelResponse.getCode());
-                response.setMessage(transactionModelResponse.getMessage());
+            if(result == 1){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
+            }else if(result == -4){
+                response.setCode(ErrorLog.SKM1281);
+                response.setMessage(ErrorLog.SecretKeyMismatch);
+            }else{
+                response.setCode(ErrorLog.IOS1282);
+                response.setMessage(ErrorLog.InvalidOrderStatus);
             }
 
-        } catch (Exception e) {
+
+        }catch (Exception e){
             response.setCode(ErrorLog.CE1284);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
