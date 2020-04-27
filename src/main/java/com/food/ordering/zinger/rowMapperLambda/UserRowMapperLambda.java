@@ -47,16 +47,6 @@ public class UserRowMapperLambda {
         return userModel;
     };
 
-    //TODO: May not be needed
-    public static final RowMapper<UserModel> userRowMapperLambda = (rs, rownum) -> {
-        UserModel userModel = new UserModel();
-        userModel.setMobile(rs.getString(mobile));
-        userModel.setName(rs.getString(name));
-        userModel.setEmail(rs.getString(email));
-        userModel.setRole(UserRole.valueOf(rs.getString(role)));
-        return userModel;
-    };
-
     public static final RowMapper<UserPlaceModel> userPlaceRowMapperLambda = (rs, rownum) -> {
         UserPlaceModel userPlaceModel = new UserPlaceModel();
 

@@ -10,9 +10,9 @@ import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
+import com.food.ordering.zinger.dao.interfaces.TransactionDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.rowMapperLambda.OrderItemListRowMapperLambda;
 import com.food.ordering.zinger.rowMapperLambda.OrderRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import com.food.ordering.zinger.utils.PaymentResponse;
@@ -25,7 +25,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 import static com.food.ordering.zinger.constant.Sql.PERCENT;
@@ -47,22 +50,7 @@ public class OrderDaoImpl implements OrderDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    InterceptorDaoImpl interceptorDaoImpl;
-
-    @Autowired
-    TransactionDaoImpl transactionDaoImpl;
-
-    @Autowired
-    ItemDaoImpl itemDaoImpl;
-
-    @Autowired
-    ShopDaoImpl shopDaoImpl;
-
-    @Autowired
-    RatingDaoImpl ratingDaoImpl;
-
-    @Autowired
-    UserDaoImpl userDaoImpl;
+    TransactionDao transactionDao;
 
     @Autowired
     PaymentResponse paymentResponse;
@@ -164,7 +152,7 @@ public class OrderDaoImpl implements OrderDao {
                         .addValue(OrderItemColumn.price + i, orderItemModel.getPrice());
             }
 
-            int result = namedParameterJdbcTemplate.update(OrderItemQuery.getInsertOrder(orderItemModelList.getOrderItemsList()), parameter);
+            int result = namedParameterJdbcTemplate.update(OrderQuery.getInsertOrder(orderItemModelList.getOrderItemsList()), parameter);
             if (result > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
@@ -199,7 +187,7 @@ public class OrderDaoImpl implements OrderDao {
             Response<TransactionModel> verifyOrderResponse = verifyOrder(orderId, Constant.transactionFlag);
 
             if (verifyOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                Response<String> insertTransactionResponse = transactionDaoImpl.insertTransactionDetails(verifyOrderResponse.getData());
+                Response<String> insertTransactionResponse = transactionDao.insertTransactionDetails(verifyOrderResponse.getData());
 
                 if (insertTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                     Response<String> updateOrderStatusResponse = updateOrderStatus(verifyOrderResponse.getData().getOrderModel());
@@ -253,7 +241,7 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByUserIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByUserId, parameter, OrderRowMapperLambda.OrderByUserIdRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1270);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -280,7 +268,7 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderFilterByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByFilterPaginated, parameter, OrderRowMapperLambda.OrderBySearchQueryRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1269);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -317,7 +305,7 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
-            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIdPaginated, parameter, OrderRowMapperLambda.OrderBySearchQueryRowMapperLambda);
 
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1274);
@@ -347,7 +335,7 @@ public class OrderDaoImpl implements OrderDao {
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(Column.ShopColumn.id, shopId);
-            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserNameOrUserIdRowMapperLambda);
+            orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByShopId, parameter, OrderRowMapperLambda.OrderBySearchQueryRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1274);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -369,13 +357,12 @@ public class OrderDaoImpl implements OrderDao {
      * @return Returns all the orders along with transaction details and orderItem details
      */
     private Response<List<OrderModel>> getOrdersByStatus(List<OrderStatus> orderStatusList) {
-
         Response<List<OrderModel>> response = new Response<>();
         List<OrderModel> orderModelList = null;
 
         try {
-            if (orderStatusList != null && orderStatusList.size() > 0)
-                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus(orderStatusList), OrderRowMapperLambda.orderRowMapperLambda);
+            if (orderStatusList != null && !orderStatusList.isEmpty())
+                orderModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByStatus(orderStatusList), OrderRowMapperLambda.orderByStatusRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.ODNA1299);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -384,6 +371,7 @@ public class OrderDaoImpl implements OrderDao {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(orderModelList);
+                response.prioritySet(Priority.LOW);
             }
         }
 
@@ -404,8 +392,9 @@ public class OrderDaoImpl implements OrderDao {
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(Column.OrderColumn.id, orderId);
-            orderItemListModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderByOrderIds, parameter,
-                    OrderItemListRowMapperLambda.OrderItemListModelByOrderIdRowMapper);
+
+            orderItemListModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderById, parameter,
+                    OrderRowMapperLambda.OrderByIdRowMapper);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -460,7 +449,6 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = new Response<>();
-        response.prioritySet(Priority.HIGH);
 
         try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
@@ -470,47 +458,13 @@ public class OrderDaoImpl implements OrderDao {
 
             int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
             if (updateStatus > 0) {
-                ratingDaoImpl.updateShopRating(orderModel.getShopModel().getId(), orderModel.getRating());
-
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
             }
         } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        if (!response.getCode().equals(ErrorLog.CodeSuccess)) {
-            response.setCode(ErrorLog.ODNU1285);
-            response.setMessage(ErrorLog.OrderDetailNotUpdated);
-        }
-
-        return response;
-    }
-
-    /**
-     * Update order key response updates the secret key in the order table.
-     *
-     * @param orderModel OrderModel
-     * @return success response is returned if update operation is successful
-     * @implNote secret key is generated when the status of the order is updated to READY or COMPLETED
-     */
-    public Response<String> updateOrderKey(OrderModel orderModel) {
-        Response<String> response = new Response<>();
-
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.secretKey, orderModel.getSecretKey())
-                    .addValue(id, orderModel.getId());
-
-            int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderKey, parameter);
-            if (updateStatus > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            }
-        } catch (Exception e) {
+            response.setMessage(ErrorLog.OrderDetailNotAvailable);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
@@ -533,33 +487,36 @@ public class OrderDaoImpl implements OrderDao {
         Response<String> response = new Response<>();
         response.prioritySet(Priority.HIGH);
 
-        try{
+        try {
             SimpleJdbcCall jdbcCall = new SimpleJdbcCall(namedParameterJdbcTemplate.getJdbcTemplate())
                     .withProcedureName(Constant.OrderStatusUpdate.procedureName);
 
             SqlParameterSource in = new MapSqlParameterSource()
-                    .addValue(Constant.OrderStatusUpdate.orderId,orderModel.getId())
+                    .addValue(Constant.OrderStatusUpdate.orderId, orderModel.getId())
                     .addValue(Constant.OrderStatusUpdate.newStatus, orderModel.getOrderStatus())
                     .addValue(Constant.OrderStatusUpdate.newSecretKey, orderModel.getSecretKey());
 
             Map<String, Object> out = jdbcCall.execute(in);
             Integer result = (Integer) out.get(Constant.OrderStatusUpdate.result);
 
-            if(result == 1){
+            if (result == 1) {
+                if (orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER) ||
+                        orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) ||
+                        orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
+                    paymentResponse.initiateRefund();
+
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
-            }else if(result == -4){
+            } else if (result == -4) {
                 response.setCode(ErrorLog.SKM1281);
                 response.setMessage(ErrorLog.SecretKeyMismatch);
-            }else{
+            } else {
                 response.setCode(ErrorLog.IOS1282);
                 response.setMessage(ErrorLog.InvalidOrderStatus);
             }
-
-
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setCode(ErrorLog.CE1284);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
@@ -596,7 +553,7 @@ public class OrderDaoImpl implements OrderDao {
 
                     if (!transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.PENDING)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel());
-                        transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
+                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
             }
@@ -617,7 +574,7 @@ public class OrderDaoImpl implements OrderDao {
         if (pendingOrderResponse.getCode().equals(ErrorLog.CodeSuccess)) {
             List<OrderModel> orderModelList = pendingOrderResponse.getData();
 
-            if (orderModelList != null && orderModelList.size() > 0) {
+            if (orderModelList != null && !orderModelList.isEmpty()) {
                 for (OrderModel orderModel : orderModelList) {
                     Response<TransactionModel> transactionModelResponse = verifyOrder(orderModel.getId(), Constant.refundFlag);
 
@@ -625,7 +582,7 @@ public class OrderDaoImpl implements OrderDao {
                             !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) &&
                             !transactionModelResponse.getData().getOrderModel().getOrderStatus().equals(OrderStatus.CANCELLED_BY_USER)) {
                         updateOrderStatus(transactionModelResponse.getData().getOrderModel());
-                        transactionDaoImpl.updatePendingTransaction(transactionModelResponse.getData());
+                        transactionDao.updatePendingTransaction(transactionModelResponse.getData());
                     }
                 }
             }
@@ -720,50 +677,5 @@ public class OrderDaoImpl implements OrderDao {
         }
 
         return response;
-    }
-
-    /**
-     * Helper method to check the order state change validity. The valid state changes are mentioned below.
-     * <p>
-     * starting states -> FAILURE,PENDING,PLACED
-     * terminal states -> CANCELLED_BY_SELLER,CANCELLED_BY_USER, DELIVERED, COMPLETED
-     * <p>
-     * Valid state changes
-     * PENDING -> FAILURE ,PLACED
-     * PLACED  -> CANCELLED_BY_SELLER,CANCELLED_BY_USER , ACCEPTED
-     * CANCELLED_BY_SELLER,CANCELLED_BY_USER -> refund table entry must be added
-     * ACCEPTED -> READY, OUT_FOR_DELIVERY , CANCELLED_BY_SELLER -> refund table entry must be added
-     * READY -> secret key must be updated in table, COMPLETED
-     * OUT_FOR_DELIVERY -> secret key must be updated in table, DELIVERED
-     *
-     * @param currentStatus the current status
-     * @param newStatus     the new status
-     * @return True is returned if the state change is valid else false
-     */
-    private boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus, String deliveryLocation) {
-        if (currentStatus == null)
-            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
-
-        else if (currentStatus.equals(OrderStatus.PENDING))
-            return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PLACED) || newStatus.equals(OrderStatus.REFUND_INITIATED);
-
-        else if (currentStatus.equals(OrderStatus.PLACED))
-            return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
-
-        else if (currentStatus.equals(OrderStatus.ACCEPTED)) {
-            if (deliveryLocation == null)
-                return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
-            else
-                return newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
-        } else if (currentStatus.equals(OrderStatus.READY))
-            return newStatus.equals(OrderStatus.COMPLETED);
-
-        else if (currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY))
-            return newStatus.equals(OrderStatus.DELIVERED);
-
-        else if (currentStatus.equals(OrderStatus.CANCELLED_BY_USER) || currentStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || currentStatus.equals(OrderStatus.REFUND_INITIATED))
-            return newStatus.equals(OrderStatus.REFUND_COMPLETED);
-
-        return false;
     }
 }

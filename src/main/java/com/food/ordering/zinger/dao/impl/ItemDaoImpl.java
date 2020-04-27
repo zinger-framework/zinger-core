@@ -1,19 +1,14 @@
 package com.food.ordering.zinger.dao.impl;
 
 import com.food.ordering.zinger.constant.Column.ItemColumn;
-import com.food.ordering.zinger.constant.Column.OrderItemColumn;
 import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ItemQuery;
-import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.dao.interfaces.ItemDao;
 import com.food.ordering.zinger.model.ItemModel;
-import com.food.ordering.zinger.model.OrderItemModel;
-import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.rowMapperLambda.ItemRowMapperLambda;
-import com.food.ordering.zinger.rowMapperLambda.OrderItemRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -153,82 +148,6 @@ public class ItemDaoImpl implements ItemDao {
                 response.setCode(IDNA1205);
                 response.setMessage(ItemsNotAvailable);
             }
-        }
-
-        return response;
-    }
-
-    /**
-     * Gets item by id.
-     *
-     * @param id Integer
-     * @return the details of the item.
-     */
-    public Response<ItemModel> getItemById(Integer id) {
-        //TODO: May not be needed
-        ItemModel item = null;
-        Response<ItemModel> response = new Response<>();
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ItemColumn.id, id);
-            try {
-                item = namedParameterJdbcTemplate.queryForObject(ItemQuery.getItemById, parameters, ItemRowMapperLambda.itemRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (item != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                //Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(item.getShopModel().getId());
-                //item.setShopModel(shopModelResponse.getData());
-                response.setData(item);
-            }
-        }
-        return response;
-    }
-
-    /**
-     * Gets list of items for the given order id.
-     *
-     * @param orderModel OrderModel
-     * @return the details of the list of items.
-     */
-    public Response<List<OrderItemModel>> getItemsByOrderId(OrderModel orderModel) {
-        //TODO: May not be needed
-        Response<List<OrderItemModel>> response = new Response<>();
-        List<OrderItemModel> orderItemModelList = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(OrderItemColumn.orderId, orderModel.getId());
-
-            try {
-                orderItemModelList = namedParameterJdbcTemplate.query(OrderItemQuery.getItemByOrderId, parameters, OrderItemRowMapperLambda.orderItemRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                if (orderItemModelList != null && orderItemModelList.size() > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    orderItemModelList.stream().forEach(s -> {
-                        s.setOrderModel(null);
-                        Response<ItemModel> itemModelResponse = getItemById(s.getItemModel().getId());
-                        if (itemModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            itemModelResponse.getData().setShopModel(null);
-                            s.setItemModel(itemModelResponse.getData());
-                        } else {
-                            s.setItemModel(null);
-                        }
-                    });
-                    response.setData(orderItemModelList);
-                }
-            }
-
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
         return response;

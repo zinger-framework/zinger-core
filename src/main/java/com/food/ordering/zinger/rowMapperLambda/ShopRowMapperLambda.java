@@ -14,32 +14,7 @@ import static com.food.ordering.zinger.constant.Column.RatingColumn.userCount;
 import static com.food.ordering.zinger.constant.Column.ShopColumn.*;
 
 public class ShopRowMapperLambda {
-
-    public static final RowMapper<ShopModel> shopRowMapperLambda = (rs, rownum) -> {
-        ShopModel shop = new ShopModel();
-        shop.setId(rs.getInt(id));
-        shop.setName(rs.getString(name));
-        shop.setPhotoUrl(rs.getString(photoUrl));
-
-        try {
-            shop.setCoverUrls(new ObjectMapper().readValue(rs.getString(coverUrls), List.class));
-        } catch (JsonProcessingException e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            shop.setCoverUrls(new ArrayList<>());
-        }
-
-        shop.setMobile(rs.getString(mobile));
-
-        PlaceModel placeModel = new PlaceModel();
-        placeModel.setId(rs.getInt(placeId));
-        shop.setPlaceModel(placeModel);
-
-        shop.setOpeningTime(rs.getTime(openingTime));
-        shop.setClosingTime(rs.getTime(closingTime));
-        return shop;
-    };
-
-    public static final RowMapper<ShopConfigurationModel> shopConfigurationRowMapperLambda = (rs, rownum) -> {
+    public static final RowMapper<ShopConfigurationModel> shopRowMapperLambda = (rs, rownum) -> {
 
         ShopConfigurationModel shopConfigurationModel = new ShopConfigurationModel();
 

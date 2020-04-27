@@ -99,37 +99,4 @@ public class PlaceDaoImpl implements PlaceDao {
 
         return response;
     }
-
-    /**
-     * Gets place by id.
-     *
-     * @param placeId Integer
-     * @return the details of the place.
-     */
-    public Response<PlaceModel> getPlaceById(Integer placeId) {
-        //TODO: May not be needed
-        Response<PlaceModel> response = new Response<>();
-        PlaceModel place = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(PlaceColumn.id, placeId);
-
-            try {
-                place = namedParameterJdbcTemplate.queryForObject(PlaceQuery.getPlaceById, parameters, PlaceRowMapperLambda.placeRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (place != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(place);
-            }
-        }
-
-        return response;
-    }
 }

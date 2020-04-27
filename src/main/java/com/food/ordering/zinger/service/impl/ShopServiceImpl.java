@@ -38,7 +38,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     public Response<ShopConfigurationModel> getShopById(Integer shopId) {
-        Response<ShopConfigurationModel> response = shopDao.getShopConfigurationById(shopId);
+        Response<ShopConfigurationModel> response = shopDao.getShopById(shopId);
         auditLogDao.insertShopLog(new ShopLogModel(response, null, shopId.toString()));
         return response;
     }

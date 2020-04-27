@@ -6,7 +6,6 @@ import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.dao.interfaces.TransactionDao;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.TransactionModel;
-import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -52,39 +51,6 @@ public class TransactionDaoImpl implements TransactionDao {
             if (transactionResult > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
-
-    /**
-     * This is a helper method to get transaction details in the transaction table by orderId
-     *
-     * @param orderId Integer
-     * @return If transaction with given orderId exists then corresponding transaction data is returned
-     */
-    @Override
-    public Response<TransactionModel> getTransactionByOrderId(Integer orderId) {
-        Response<TransactionModel> response = new Response<>();
-        TransactionModel transactionModel = null;
-
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(TransactionColumn.orderId, orderId);
-
-            try {
-                transactionModel = namedParameterJdbcTemplate.queryForObject(TransactionQuery.getTransactionByOrderId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-
-            if (transactionModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(transactionModel);
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

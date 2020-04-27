@@ -6,12 +6,9 @@ import com.food.ordering.zinger.constant.Query.ConfigurationQuery;
 import com.food.ordering.zinger.dao.interfaces.ConfigurationDao;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
-import com.food.ordering.zinger.model.ShopModel;
-import com.food.ordering.zinger.rowMapperLambda.ConfigurationRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -53,39 +50,6 @@ public class ConfigurationDaoImpl implements ConfigurationDao {
             e.printStackTrace();
         }
 
-        return response;
-    }
-
-    /**
-     * Gets configuration by shop id.
-     *
-     * @param shopModel ShopModel
-     * @return the details of the shop configuration for the given shop.
-     */
-    @Override
-    public Response<ConfigurationModel> getConfigurationByShopId(ShopModel shopModel) {
-        Response<ConfigurationModel> response = new Response<>();
-        ConfigurationModel configurationModel = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ConfigurationColumn.shopId, shopModel.getId());
-
-            try {
-                configurationModel = namedParameterJdbcTemplate.queryForObject(ConfigurationQuery.getConfigurationByShopId, parameters, ConfigurationRowMapperLambda.configurationRowMapperLambda);
-            } catch (Exception e) {
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (configurationModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                configurationModel.setShopModel(shopModel);
-                response.setData(configurationModel);
-            }
-        }
         return response;
     }
 

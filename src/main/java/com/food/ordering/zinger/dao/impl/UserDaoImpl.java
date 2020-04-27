@@ -341,42 +341,12 @@ public class UserDaoImpl implements UserDao {
     }
 
     /**
-     * Gets user by id.
-     *
-     * @param id Integer
-     * @return the details of the user.
-     */
-    public Response<UserModel> getUserById(Integer id) {
-        //TODO: May not be needed
-        Response<UserModel> response = new Response<>();
-        UserModel userModel = null;
-
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue(UserColumn.id, id);
-
-        try {
-            userModel = namedParameterJdbcTemplate.queryForObject(UserQuery.getUserById, parameters, UserRowMapperLambda.userRowMapperLambda);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (userModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(userModel);
-            }
-        }
-
-        return response;
-    }
-
-    /**
      * Gets user by mobile.
      *
      * @param mobile String
      * @return the details of the user.
      */
     public Response<UserModel> getUserIdByMobile(String mobile) {
-        //TODO: THINK TWICE TO MODIFY
         Response<UserModel> response = new Response<>();
         UserModel userModel = null;
 

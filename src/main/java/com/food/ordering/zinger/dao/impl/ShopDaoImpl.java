@@ -4,6 +4,7 @@ import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
+import com.food.ordering.zinger.dao.interfaces.ConfigurationDao;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
@@ -41,10 +42,7 @@ public class ShopDaoImpl implements ShopDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
-    ConfigurationDaoImpl configurationDaoImpl;
-
-    @Autowired
-    PlaceDaoImpl placeDaoImpl;
+    ConfigurationDao configurationDao;
 
     /**
      * Inserts the shop details.
@@ -77,7 +75,7 @@ public class ShopDaoImpl implements ShopDao {
 
         if (responseValue.intValue() > 0) {
             configurationModel.getShopModel().setId(responseValue.intValue());
-            Response<String> configurationModelResponse = configurationDaoImpl.insertConfiguration(configurationModel);
+            Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
 
             if(configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)){
                 response.setCode(ErrorLog.CodeSuccess);
@@ -109,7 +107,6 @@ public class ShopDaoImpl implements ShopDao {
      * @return the details along with the configuration
      * of the list of shops for the given place id.
      */
-
     @Override
     public Response<List<ShopConfigurationModel>> getShopsByPlaceId(Integer placeId) {
         Response<List<ShopConfigurationModel>> response = new Response<>();
@@ -118,7 +115,7 @@ public class ShopDaoImpl implements ShopDao {
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.placeId, placeId);
-            shopConfigurationModelList = namedParameterJdbcTemplate.query(ShopQuery.getShopConfigurationRatingByPlaceId, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
+            shopConfigurationModelList = namedParameterJdbcTemplate.query(ShopQuery.getShopByPlaceId, parameters, ShopRowMapperLambda.shopRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.SDNA1256);
             response.setMessage(ErrorLog.ShopDetailNotAvailable);
@@ -140,15 +137,14 @@ public class ShopDaoImpl implements ShopDao {
      * @param shopId Integer
      * @return the details of the shop.
      */
-    public Response<ShopConfigurationModel> getShopConfigurationById(Integer shopId) {
-        //TODO: change method name
+    public Response<ShopConfigurationModel> getShopById(Integer shopId) {
         Response<ShopConfigurationModel> response = new Response<>();
         ShopConfigurationModel shopConfigurationModel = null;
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.id, shopId);
-            shopConfigurationModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopConfigurationRatingById, parameters, ShopRowMapperLambda.shopConfigurationRowMapperLambda);
+            shopConfigurationModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
 
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
@@ -161,33 +157,6 @@ public class ShopDaoImpl implements ShopDao {
             }
         }
 
-        return response;
-    }
-
-    @Override
-    public Response<ShopModel> getShopById(Integer shopId) {
-        //TODO: May not be needed
-        Response<ShopModel> response = new Response<>();
-        ShopModel shopModel = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ShopColumn.id, shopId);
-
-            shopModel = namedParameterJdbcTemplate.queryForObject(ShopQuery.getShopById, parameters, ShopRowMapperLambda.shopRowMapperLambda);
-        } catch (Exception e) {
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (shopModel != null) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                if (shopModel.getPlaceModel().getName() == null || shopModel.getPlaceModel().getName().isEmpty()) {
-                    Response<PlaceModel> placeModelResponse = placeDaoImpl.getPlaceById(shopModel.getPlaceModel().getId());
-                    shopModel.setPlaceModel(placeModelResponse.getData());
-                }
-                response.setData(shopModel);
-            }
-        }
         return response;
     }
 
@@ -204,7 +173,7 @@ public class ShopDaoImpl implements ShopDao {
         MapSqlParameterSource parameters;
 
         try {
-            Response<String> configResponse = configurationDaoImpl.updateConfigurationModel(configurationModel);
+            Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
 
             parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
