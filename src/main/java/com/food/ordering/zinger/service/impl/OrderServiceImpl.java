@@ -2,6 +2,7 @@ package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
+import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.service.interfaces.OrderService;
@@ -21,8 +22,15 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
-        Response<TransactionTokenModel> response = orderDao.insertOrder(orderItemListModel);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(),response.priorityGet()));
+        Response<TransactionTokenModel> response = new Response<>();
+        try {
+            response = orderDao.insertOrder(orderItemListModel);
+        } catch (GenericException e) {
+            response = e.getResponse();
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), response.priorityGet()));
         return response;
     }
 
@@ -37,8 +45,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
-        return orderDao.getOrderByUserNameOrOrderId(searchItem, pageNum, pageCount);
+    public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
+        return orderDao.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
     }
 
     @Override

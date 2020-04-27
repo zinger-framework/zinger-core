@@ -11,6 +11,7 @@ import com.food.ordering.zinger.constant.Query.OrderItemQuery;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
 import com.food.ordering.zinger.constant.Query.TransactionQuery;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
+import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.rowMapperLambda.OrderItemListRowMapperLambda;
@@ -19,13 +20,13 @@ import com.food.ordering.zinger.rowMapperLambda.TransactionRowMapperLambda;
 import com.food.ordering.zinger.utils.Helper;
 import com.food.ordering.zinger.utils.PaymentResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -41,8 +42,8 @@ import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
  * * using "AuditLogDao".
  */
 @Repository
+@Transactional
 public class OrderDaoImpl implements OrderDao {
-
 
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -69,12 +70,6 @@ public class OrderDaoImpl implements OrderDao {
     AuditLogDaoImpl auditLogDaoImpl;
 
     @Autowired
-    ConfigurationDaoImpl configurationDaoImpl;
-
-    @Autowired
-    Environment env;
-
-    @Autowired
     PaymentResponse paymentResponse;
 
     /**
@@ -88,7 +83,7 @@ public class OrderDaoImpl implements OrderDao {
      * @return Transaction token and orderId returned to the user
      */
     @Override
-    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
+    public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) throws GenericException {
         /*
          *   1. Verify the amount and availability of the items using verify order
          *   2. Generate the transaction token from payment gateway
@@ -97,93 +92,59 @@ public class OrderDaoImpl implements OrderDao {
 
         Response<TransactionTokenModel> response = new Response<>();
         TransactionTokenModel transactionTokenModel = new TransactionTokenModel();
+        OrderModel orderModel = orderItemListModel.getTransactionModel().getOrderModel();
 
-        try {
+        Response<String> verifyPricingResponse = verifyPricing(orderItemListModel);
+        if (verifyPricingResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-            String orderTypeFlag = (orderItemListModel.getTransactionModel().getOrderModel().getDeliveryLocation() == null) ? Constant.pickUpOrderFlag : Constant.deliveryOrderFlag;
-            String inputJson = Helper.toOrderItemJsonString(orderItemListModel.getOrderItemsList());
+            String merchantId = verifyPricingResponse.getData();
+            Response<String> initiateTransactionResponse = initiateTransaction(orderModel, merchantId);
+            if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
 
-            SimpleJdbcCall jdbcCall = new SimpleJdbcCall(namedParameterJdbcTemplate.getJdbcTemplate())
-                    .withProcedureName(Constant.VerifyPricingProcedure.procedureName);
+                MapSqlParameterSource parameter = new MapSqlParameterSource()
+                        .addValue(userId, orderModel.getUserModel().getId())
+                        .addValue(shopId, orderModel.getShopModel().getId())
+                        .addValue(price, orderModel.getPrice())
+                        .addValue(deliveryPrice, orderModel.getDeliveryPrice())
+                        .addValue(deliveryLocation, orderModel.getDeliveryLocation())
+                        .addValue(cookingInfo, orderModel.getCookingInfo());
 
-            SqlParameterSource in = new MapSqlParameterSource()
-                    .addValue(Constant.VerifyPricingProcedure.itemList, inputJson)
-                    .addValue(Constant.VerifyPricingProcedure.shopId, orderItemListModel.getTransactionModel().getOrderModel().getShopModel().getId())
-                    .addValue(Constant.VerifyPricingProcedure.orderType, orderTypeFlag);
+                SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
+                simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
+                Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
 
-            Map<String, Object> out = jdbcCall.execute(in);
-            Integer totalPrice = (Integer) out.get(Constant.VerifyPricingProcedure.totalPrice);
-            String merchantId = (String) out.get(Constant.VerifyPricingProcedure.merchantId);
-            System.out.print(totalPrice+" "+merchantId);
-
-
-            if (totalPrice != null) {
-                if (totalPrice < 0) {
-                    switch (totalPrice) {
-                        case -1: {
-                            response.setMessage(ErrorLog.RESTAURANT_NOT_ACCEPTING_ORDERS_CURRENTLY);
-                            response.setCode(ErrorLog.RNAOC1266);
-                        }
-                        break;
-                        case -2: {
-                            response.setMessage(ErrorLog.DELIVERY_OPTION_NOT_AVAILABLE);
-                            response.setCode(ErrorLog.DONA1263);
-                        }
-                        break;
-                        case -3: {
-                            response.setMessage(ErrorLog.ItemsNotAvailable);
-                            response.setCode(ErrorLog.INA1296);
-                        }
-                    }
-                } else if (totalPrice != orderItemListModel.getTransactionModel().getOrderModel().getPrice().intValue()) {
-                    response.setMessage(ErrorLog.OrderPriceMismatch);
-                    response.setCode(ErrorLog.OPM1300);
+                if (responseValue.intValue() <= 0) {
+                    response.setCode(ErrorLog.ODNU1275);
+                    response.setMessage(ErrorLog.OrderDetailNotUpdated);
+                    response.prioritySet(Priority.HIGH);
                 } else {
-                    Response<String> initiateTransactionResponse = initiateTransaction(orderItemListModel.getTransactionModel().getOrderModel(), merchantId);
+                    orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
+                    Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
+                    if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                        transactionTokenModel.setOrderId(responseValue.intValue());
+                        transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
 
-                    if (initiateTransactionResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-
-                        OrderModel order = orderItemListModel.getTransactionModel().getOrderModel();
-                        MapSqlParameterSource parameter = new MapSqlParameterSource()
-                                .addValue(userId, order.getUserModel().getId())
-                                .addValue(shopId, order.getShopModel().getId())
-                                .addValue(price, order.getPrice())
-                                .addValue(deliveryPrice, order.getDeliveryPrice())
-                                .addValue(deliveryLocation, order.getDeliveryLocation())
-                                .addValue(cookingInfo, order.getCookingInfo());
-
-                        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(namedParameterJdbcTemplate.getJdbcTemplate());
-                        simpleJdbcInsert.withTableName(tableName).usingGeneratedKeyColumns(Column.OrderColumn.id);
-                        Number responseValue = simpleJdbcInsert.executeAndReturnKey(parameter);
-
-                        if (responseValue.intValue() <= 0) {
-                            response.setCode(ErrorLog.ODNU1275);
-                            response.setMessage(ErrorLog.OrderDetailNotUpdated);
-                        } else {
-                            orderItemListModel.getTransactionModel().getOrderModel().setId(responseValue.intValue());
-                            Response<String> orderInsertResponse = insertOrderItem(orderItemListModel);
-                            if (orderInsertResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                response.setCode(orderInsertResponse.getCode());
-                                response.setMessage(orderInsertResponse.getMessage());
-
-                                transactionTokenModel.setOrderId(responseValue.intValue());
-                                transactionTokenModel.setTransactionToken(initiateTransactionResponse.getData());
-                                response.setData(transactionTokenModel);
-                            } else {
-                                response.setCode(ErrorLog.OIDNU301);
-                                response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
-                            }
-                        }
+                        response.setCode(orderInsertResponse.getCode());
+                        response.setMessage(orderInsertResponse.getMessage());
+                        response.setData(transactionTokenModel);
+                        response.prioritySet(Priority.LOW);
+                    } else {
+                        response.setCode(ErrorLog.OIDNU301);
+                        response.setMessage(ErrorLog.OrderItemDetailNotUpdated);
+                        response.prioritySet(Priority.HIGH);
                     }
-
                 }
+            } else {
+                response.setCode(ErrorLog.TTNA1271);
+                response.setMessage(ErrorLog.TransactionTokenNotAvailable);
             }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1261);
-            response.setMessage(ErrorLog.TransactionTokenNotAvailable);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        } else {
+            response.setCode(verifyPricingResponse.getCode());
+            response.setMessage(verifyPricingResponse.getMessage());
         }
 
+        if (!response.getCode().equals(ErrorLog.CodeSuccess))
+            throw new GenericException(response);
 
         return response;
     }
@@ -290,135 +251,54 @@ public class OrderDaoImpl implements OrderDao {
      */
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
-
-        Response<List<OrderItemListModel>> response =new Response<>();
+        Response<List<OrderItemListModel>> response = new Response<>();
         List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
 
-        try{
-
+        try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(Column.UserColumn.id, userId)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
             orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderByUserIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setCode(ErrorLog.CE1270);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        finally {
-            if(orderItemListModelList!=null){
+        } finally {
+            if (orderItemListModelList != null) {
                 response.setMessage(ErrorLog.Success);
-                response.setCode(orderItemListModelList.isEmpty()?ErrorLog.CodeEmpty:ErrorLog.CodeSuccess);
+                response.setCode(orderItemListModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setData(orderItemListModelList);
             }
         }
         return response;
     }
 
-
     @Override
-    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(String searchItem, Integer pageNum, Integer pageCount) {
-
-        Response<List<OrderItemListModel>> response =new Response<>();
+    public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
+        Response<List<OrderItemListModel>> response = new Response<>();
         List<OrderItemListModel> orderItemListModelList = new ArrayList<>();
 
-        try{
-
+        try {
             MapSqlParameterSource parameter = new MapSqlParameterSource()
                     .addValue(Column.searchQuery, searchItem)
+                    .addValue(Column.ShopColumn.id, shopId)
                     .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
                     .addValue(OrderQuery.pageCount, pageCount);
 
             orderItemListModelList = namedParameterJdbcTemplate.query(OrderQuery.getOrderFilterByShopPaginationIds, parameter, OrderItemListRowMapperLambda.OrderItemListByUserIdRowMapperLambda);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             response.setCode(ErrorLog.CE1269);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-        finally {
-            if(orderItemListModelList!=null){
+        } finally {
+            if (orderItemListModelList != null) {
                 response.setMessage(ErrorLog.Success);
-                response.setCode(orderItemListModelList.isEmpty()?ErrorLog.CodeEmpty:ErrorLog.CodeSuccess);
+                response.setCode(orderItemListModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
                 response.setData(orderItemListModelList);
             }
         }
 
-        return response;
-    }
-
-
-
-    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId1(String searchItem, Integer pageNum, Integer pageCount) {
-        Response<List<OrderItemListModel>> response = new Response<>();
-        Priority priority = Priority.MEDIUM;
-        List<TransactionModel> transactionModelList = null;
-        List<OrderItemListModel> orderItemListByMobile;
-
-        try {
-            MapSqlParameterSource parameter = new MapSqlParameterSource()
-                    .addValue(OrderColumn.userId, userId)
-                    .addValue(OrderQuery.pageNum, (pageNum - 1) * pageCount)
-                    .addValue(OrderQuery.pageCount, pageCount);
-
-            try {
-                transactionModelList = namedParameterJdbcTemplate.query(TransactionQuery.getTransactionByUserId, parameter, TransactionRowMapperLambda.transactionRowMapperLambda);
-            } catch (Exception e) {
-                response.setCode(ErrorLog.CE1269);
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1270);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        } finally {
-            if (transactionModelList != null && !transactionModelList.isEmpty()) {
-                priority = Priority.LOW;
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-
-                orderItemListByMobile = new ArrayList<>();
-
-                for (TransactionModel transactionModel : transactionModelList) {
-                    Response<OrderModel> orderModelResponse = getOrderDetailById(transactionModel.getOrderModel().getId());
-
-                    if (!orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                        priority = Priority.MEDIUM;
-                        response.setCode(ErrorLog.ODNA1271);
-                        response.setMessage(ErrorLog.OrderDetailNotAvailable);
-                        break;
-                    } else {
-                        transactionModel.setOrderModel(orderModelResponse.getData());
-                        Response<ShopModel> shopModelResponse = shopDaoImpl.getShopById(transactionModel.getOrderModel().getShopModel().getId());
-                        if (!shopModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                            priority = Priority.MEDIUM;
-                            response.setCode(ErrorLog.SDNA1272);
-                            response.setMessage(ErrorLog.ShopDetailNotAvailable);
-                            break;
-                        } else {
-                            shopModelResponse.getData().setPlaceModel(null);
-                            transactionModel.getOrderModel().setShopModel(shopModelResponse.getData());
-                            Response<List<OrderItemModel>> orderItemsListResponse = itemDaoImpl.getItemsByOrderId(transactionModel.getOrderModel());
-                            if (!orderItemsListResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-                                priority = Priority.MEDIUM;
-                                response.setCode(ErrorLog.OIDNA1273);
-                                response.setMessage(ErrorLog.OrderItemDetailNotAvailable);
-                                break;
-                            } else {
-                                OrderItemListModel orderItemListModel = new OrderItemListModel();
-                                transactionModel.getOrderModel().setUserModel(null);
-                                orderItemListModel.setTransactionModel(transactionModel);
-                                orderItemListModel.setOrderItemsList(orderItemsListResponse.getData());
-                                orderItemListByMobile.add(orderItemListModel);
-                            }
-                        }
-                    }
-                }
-                response.setData(orderItemListByMobile);
-            }
-        }
-
-        auditLogDaoImpl.insertOrderLog(new OrderLogModel(response, null, userId + "-" + pageNum, priority));
         return response;
     }
 
@@ -790,7 +670,7 @@ public class OrderDaoImpl implements OrderDao {
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 OrderModel currentOrderModel = transactionModelResponse.getData().getOrderModel();
 
-                if (checkOrderStatusValidity(currentOrderModel.getOrderStatus(), orderModel.getOrderStatus())) {
+                if (checkOrderStatusValidity(currentOrderModel.getOrderStatus(), orderModel.getOrderStatus(), orderModel.getDeliveryLocation())) {
                     if (orderModel.getOrderStatus().equals(OrderStatus.READY) || orderModel.getOrderStatus().equals(OrderStatus.OUT_FOR_DELIVERY)) {
                         String secretKey = Integer.toString(100000 + new Random().nextInt(900000));
                         currentOrderModel.setSecretKey(secretKey);
@@ -854,6 +734,7 @@ public class OrderDaoImpl implements OrderDao {
     /**
      * This method is a helper function to update the order status
      */
+    @Override
     public void updatePendingOrder() {
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.PENDING);
@@ -889,6 +770,7 @@ public class OrderDaoImpl implements OrderDao {
     /**
      * This is a helper method to update the refund order
      */
+    @Override
     public void updatedRefundOrder() {
         List<OrderStatus> orderStatuses = new ArrayList<>();
         orderStatuses.add(OrderStatus.REFUND_INITIATED);
@@ -912,7 +794,6 @@ public class OrderDaoImpl implements OrderDao {
         }
     }
 
-
     /**
      * This method contacts the payment gateway to check the status of transaction or status of refund.
      * If Flag is 1 then refund Status is checked else transaction status is checked.
@@ -921,7 +802,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param flag    Integer
      * @return returns the status of the order after contacting the payment gateway
      */
-    public Response<TransactionModel> verifyOrder(Integer orderId, Integer flag) {
+    private Response<TransactionModel> verifyOrder(Integer orderId, Integer flag) {
         Response<TransactionModel> response = new Response<>();
         TransactionModel transactionModel = null;
 
@@ -955,6 +836,54 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    private Response<String> verifyPricing(OrderItemListModel orderItemListModel) {
+        Response<String> response = new Response<>();
+
+        String orderTypeFlag = (orderItemListModel.getTransactionModel().getOrderModel().getDeliveryLocation() == null) ? Constant.pickUpOrderFlag : Constant.deliveryOrderFlag;
+        String inputJson = Helper.toOrderItemJsonString(orderItemListModel.getOrderItemsList());
+
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(namedParameterJdbcTemplate.getJdbcTemplate())
+                .withProcedureName(Constant.VerifyPricingProcedure.procedureName);
+
+        SqlParameterSource in = new MapSqlParameterSource()
+                .addValue(Constant.VerifyPricingProcedure.itemList, inputJson)
+                .addValue(Constant.VerifyPricingProcedure.shopId, orderItemListModel.getTransactionModel().getOrderModel().getShopModel().getId())
+                .addValue(Constant.VerifyPricingProcedure.orderType, orderTypeFlag);
+
+        Map<String, Object> out = jdbcCall.execute(in);
+        Integer totalPrice = (Integer) out.get(Constant.VerifyPricingProcedure.totalPrice);
+        String merchantId = (String) out.get(Constant.VerifyPricingProcedure.merchantId);
+
+        if (totalPrice != null) {
+            if (totalPrice < 0) {
+                switch (totalPrice) {
+                    case -1:
+                        response.setCode(ErrorLog.RNAOC1266);
+                        response.setMessage(ErrorLog.RestaurantNotAcceptingOrders);
+                        break;
+                    case -2:
+                        response.setCode(ErrorLog.DONA1263);
+                        response.setMessage(ErrorLog.DeliveryOptionNotAvailable);
+                        break;
+                    case -3:
+                        response.setCode(ErrorLog.INA1296);
+                        response.setMessage(ErrorLog.ItemsNotAvailable);
+                        break;
+                }
+            } else if (totalPrice != orderItemListModel.getTransactionModel().getOrderModel().getPrice().intValue()) {
+                response.setCode(ErrorLog.OPM1300);
+                response.setMessage(ErrorLog.OrderPriceMismatch);
+                response.prioritySet(Priority.HIGH);
+            } else {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(merchantId);
+            }
+        }
+
+        return response;
+    }
+
     /**
      * This is a helper method to get the transaction token from the payment gateway. The orderId and merchantId
      * are passed to the payment gateway
@@ -963,7 +892,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param merchantId String
      * @return token fetched from payment gateway is returned
      */
-    public Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
+    private Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
         Response<String> response = new Response<>();
 
         Integer orderId = orderModel.getId();
@@ -997,9 +926,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param newStatus     the new status
      * @return True is returned if the state change is valid else false
      */
-    boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus) {
-
-
+    private boolean checkOrderStatusValidity(OrderStatus currentStatus, OrderStatus newStatus, String deliveryLocation) {
         if (currentStatus == null)
             return newStatus.equals(OrderStatus.TXN_FAILURE) || newStatus.equals(OrderStatus.PENDING) || newStatus.equals(OrderStatus.PLACED);
 
@@ -1009,10 +936,12 @@ public class OrderDaoImpl implements OrderDao {
         else if (currentStatus.equals(OrderStatus.PLACED))
             return newStatus.equals(OrderStatus.CANCELLED_BY_SELLER) || newStatus.equals(OrderStatus.CANCELLED_BY_USER) || newStatus.equals(OrderStatus.ACCEPTED);
 
-        else if (currentStatus.equals(OrderStatus.ACCEPTED))
-            return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
-
-        else if (currentStatus.equals(OrderStatus.READY))
+        else if (currentStatus.equals(OrderStatus.ACCEPTED)) {
+            if (deliveryLocation == null)
+                return newStatus.equals(OrderStatus.READY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
+            else
+                return newStatus.equals(OrderStatus.OUT_FOR_DELIVERY) || newStatus.equals(OrderStatus.CANCELLED_BY_SELLER);
+        } else if (currentStatus.equals(OrderStatus.READY))
             return newStatus.equals(OrderStatus.COMPLETED);
 
         else if (currentStatus.equals(OrderStatus.OUT_FOR_DELIVERY))
@@ -1030,7 +959,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param orderId the order id
      * @return the latest transaction data from payment gateway is returned
      */
-    public Response<TransactionModel> getTransactionStatus(Integer orderId) {
+    private Response<TransactionModel> getTransactionStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
         //TODO: GET Transaction Status from Payment Gateway
@@ -1061,7 +990,7 @@ public class OrderDaoImpl implements OrderDao {
      * @param orderId Integer
      * @return the latest transaction data from payment gateway is returned
      */
-    public Response<TransactionModel> getRefundStatus(Integer orderId) {
+    private Response<TransactionModel> getRefundStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
         //TODO: GET Transaction Status from Payment Gateway
@@ -1089,7 +1018,7 @@ public class OrderDaoImpl implements OrderDao {
     /**
      * This method is used to initiate refund of payment
      */
-    public void initiateRefund() {
+    private void initiateRefund() {
         //TODO: Initiate the refund using payment gateway
     }
 }

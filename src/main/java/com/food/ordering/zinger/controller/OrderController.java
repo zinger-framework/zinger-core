@@ -30,9 +30,9 @@ public class OrderController {
         return orderService.getOrderByUserId(userId, pageNum, pageCount);
     }
 
-    @GetMapping(value = getOrderByUserNameOrOrderId)
-    public Response<List<OrderItemListModel>> getOrderByUserNameOrOrderId(@PathVariable("searchItem") String searchItem, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount) {
-        return orderService.getOrderByUserNameOrOrderId(searchItem, pageNum, pageCount);
+    @GetMapping(value = getOrderBySearchQuery)
+    public Response<List<OrderItemListModel>> getOrderBySearchQuery(@PathVariable("shopId") Integer shopId, @PathVariable("searchItem") String searchItem, @PathVariable("pageNum") Integer pageNum, @PathVariable("pageCount") Integer pageCount) {
+        return orderService.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
     }
 
     @GetMapping(value = getOrderByShopIdPagination)

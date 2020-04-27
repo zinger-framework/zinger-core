@@ -20,7 +20,7 @@ public class ErrorLog {
     public static final String OrderItemDetailNotAvailable = "Order item detail not available";
     public static final String ItemsNotAvailable = "Some Items are not available";
     public static final String TransactionDetailNotAvailable = "Transaction detail not available";
-    public static final String DELIVERY_OPTION_NOT_AVAILABLE = "Delivery Option not available";
+    public static final String DeliveryOptionNotAvailable = "Delivery Option not available";
 
     public static final String UserDetailNotUpdated = "User detail not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
@@ -39,57 +39,10 @@ public class ErrorLog {
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String ItemPriceMismatch = "Item price mismatch";
     public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
-    public static final String RESTAURANT_NOT_ACCEPTING_ORDERS_CURRENTLY = "Restaurant not accepting orders currently";
+    public static final String RestaurantNotAcceptingOrders = "Restaurant not accepting orders";
     public static final String InviteExpired = "Invite Expired";
     public static final String TransactionInitiationFailed = "Transaction Initiation Failed";
     public static final String TransactionTokenNotAvailable = "Transaction Token Not Available";
-
-    /**********************************************************************/
-    // IH - Invalid Header
-
-    public static final Integer IH1000 = 1000;
-    public static final Integer IH1001 = 1001;
-    public static final Integer IH1002 = 1002;
-    public static final Integer IH1003 = 1003;
-    public static final Integer IH1004 = 1004;
-    public static final Integer IH1005 = 1005;
-    public static final Integer IH1006 = 1006;
-    public static final Integer IH1007 = 1007;
-    public static final Integer IH1008 = 1008;
-    public static final Integer IH1009 = 1009;
-    public static final Integer IH1010 = 1010;
-    public static final Integer IH1011 = 1011;
-    public static final Integer IH1012 = 1012;
-    public static final Integer IH1013 = 1013;
-    public static final Integer IH1014 = 1014;
-    public static final Integer IH1015 = 1015;
-    public static final Integer IH1016 = 1016;
-    public static final Integer IH1017 = 1017;
-    public static final Integer IH1018 = 1018;
-    public static final Integer IH1019 = 1019;
-    public static final Integer IH1020 = 1020;
-    public static final Integer IH1021 = 1021;
-    public static final Integer IH1022 = 1022;
-    public static final Integer IH1023 = 1023;
-    public static final Integer IH1024 = 1024;
-    public static final Integer IH1025 = 1025;
-    public static final Integer IH1026 = 1026;
-    public static final Integer IH1027 = 1027;
-
-    // Logesh 1050-1100
-
-    public static final Integer IH1050 = 1050;
-    public static final Integer IH1051 = 1051;
-    public static final Integer IH1052 = 1052;
-    public static final Integer IH1053 = 1053;
-    public static final Integer IH1054 = 1054;
-    public static final Integer IH1055 = 1055;
-    public static final Integer IH1056 = 1056;
-    public static final Integer IH1057 = 1057;
-    public static final Integer IH1058 = 1058;
-    public static final Integer IH1059 = 1059;
-    public static final Integer IH1060 = 1060;
-    public static final Integer IH1061 = 1061;
 
     /**********************************************************************/
     /* Place Controller Error Code 1100-1150
@@ -176,7 +129,7 @@ public class ErrorLog {
     public static final Integer CE1268 = 1268;
     public static final Integer CE1269 = 1269;
     public static final Integer CE1270 = 1270;
-    public static final Integer ODNA1271 = 1271;
+    public static final Integer TTNA1271 = 1271;
     public static final Integer SDNA1272 = 1272;
     public static final Integer OIDNA1273 = 1273;
     public static final Integer CE1274 = 1274;

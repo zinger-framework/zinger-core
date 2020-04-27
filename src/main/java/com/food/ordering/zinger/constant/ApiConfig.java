@@ -24,7 +24,7 @@ public class ApiConfig {
         public static final String insertOrder = EMPTY_QUOTES;
         public static final String placeOrder = "/place/{orderId}";
         public static final String getOrderByUserId = "/customer/{userId}/{pageNum}/{pageCount}";
-        public static final String getOrderByUserNameOrOrderId = "/{searchItem}/{pageNum}/{pageCount}";
+        public static final String getOrderBySearchQuery = "/{shopId}/{searchItem}/{pageNum}/{pageCount}";
         public static final String getOrderByShopIdPagination = "/seller/{shopId}/{pageNum}/{pageCount}";
         public static final String getOrderByShopId = "/seller/{shopId}";
         public static final String getOrderById = "/{id}";

@@ -6,14 +6,14 @@ public class OrderItemListModel {
 
     TransactionModel transactionModel;
     List<OrderItemModel> orderItemsList;
-    List<OrderStatusModel> orderStatusModels;
+    List<OrderStatusModel> orderStatusModel;
 
-    public List<OrderStatusModel> getOrderStatusModels() {
-        return orderStatusModels;
+    public List<OrderStatusModel> getOrderStatusModel() {
+        return orderStatusModel;
     }
 
-    public void setOrderStatusModels(List<OrderStatusModel> orderStatusModels) {
-        this.orderStatusModels = orderStatusModels;
+    public void setOrderStatusModel(List<OrderStatusModel> orderStatusModel) {
+        this.orderStatusModel = orderStatusModel;
     }
 
     public TransactionModel getTransactionModel() {
@@ -37,7 +37,7 @@ public class OrderItemListModel {
         return "OrderItemListModel{" +
                 "transactionModel=" + transactionModel +
                 ", orderItemsList=" + orderItemsList +
-                ", orderStatusModels=" + orderStatusModels +
+                ", orderStatusModel=" + orderStatusModel +
                 '}';
     }
 }

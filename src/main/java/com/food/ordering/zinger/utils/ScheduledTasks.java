@@ -1,6 +1,6 @@
 package com.food.ordering.zinger.utils;
 
-import com.food.ordering.zinger.dao.impl.OrderDaoImpl;
+import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 public class ScheduledTasks {
 
     @Autowired
-    OrderDaoImpl orderDaoImpl;
+    OrderDao orderDao;
 
     /**
      * This is a scheduled method used to handle the pending transaction. This method will update the latest
@@ -17,7 +17,7 @@ public class ScheduledTasks {
      */
     @Scheduled(fixedDelay = 120000)
     public void updatePendingOrder() {
-        orderDaoImpl.updatePendingOrder();
+        orderDao.updatePendingOrder();
     }
 
 
@@ -27,6 +27,6 @@ public class ScheduledTasks {
      */
     @Scheduled(fixedDelay = 86400000)
     public void updateRefundedOrder() {
-        orderDaoImpl.updatedRefundOrder();
+        orderDao.updatedRefundOrder();
     }
 }

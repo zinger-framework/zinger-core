@@ -15,14 +15,12 @@ import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
 
 public class OrderItemListRowMapperLambda {
 
-
     public static final RowMapper<OrderItemListModel> OrderItemListByUserIdRowMapperLambda = (rs, rownum) -> {
-
         OrderItemListModel orderItemListModel = new OrderItemListModel();
 
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setTransactionId(rs.getString(Column.TransactionColumn.transactionId));
-        transactionModel.setPaymentMode(Column.TransactionColumn.paymentMode);
+        transactionModel.setPaymentMode(rs.getString(Column.TransactionColumn.paymentMode));
 
         OrderModel orderModel = new OrderModel();
         orderModel.setId(rs.getInt(id));
@@ -86,17 +84,16 @@ public class OrderItemListRowMapperLambda {
         }
         orderItemListModel.setTransactionModel(transactionModel);
         orderItemListModel.setOrderItemsList(orderItemListModelList);
-        orderItemListModel.setOrderStatusModels(orderStatusModelList);
+        orderItemListModel.setOrderStatusModel(orderStatusModelList);
         return orderItemListModel;
     };
 
     public static final RowMapper<OrderItemListModel> OrderItemListByUserNameOrUserIdRowMapperLambda = (rs, rownum) -> {
-
         OrderItemListModel orderItemListModel = new OrderItemListModel();
 
         TransactionModel transactionModel = new TransactionModel();
         transactionModel.setTransactionId(rs.getString(Column.TransactionColumn.transactionId));
-        transactionModel.setPaymentMode(Column.TransactionColumn.paymentMode);
+        transactionModel.setPaymentMode(rs.getString(Column.TransactionColumn.paymentMode));
 
         OrderModel orderModel = new OrderModel();
         orderModel.setId(rs.getInt(id));
@@ -128,7 +125,6 @@ public class OrderItemListRowMapperLambda {
         String[] updatedTimeList = rs.getString(Column.OrderStatusColumn.updatedTime).split(",");
 
         for (int i = 0; i < itemNameList.length; i++) {
-
             OrderItemModel orderItemModel = new OrderItemModel();
             orderItemModel.setOrderModel(null);
 
@@ -158,7 +154,7 @@ public class OrderItemListRowMapperLambda {
         }
         orderItemListModel.setTransactionModel(transactionModel);
         orderItemListModel.setOrderItemsList(orderItemListModelList);
-        orderItemListModel.setOrderStatusModels(orderStatusModelList);
+        orderItemListModel.setOrderStatusModel(orderStatusModelList);
         return orderItemListModel;
     };
 }

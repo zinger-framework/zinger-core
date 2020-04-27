@@ -228,7 +228,7 @@ CREATE TRIGGER order_status_update
     AFTER UPDATE
     ON orders
     FOR EACH ROW
-    IF (OLD.status != NEW.status) THEN
+    IF (OLD.status is NULL OR OLD.status != NEW.status) THEN
 		INSERT INTO orders_status(order_id, status)
 		VALUES (NEW.id, NEW.status);
 	END IF;
@@ -377,8 +377,8 @@ DELIMITER ;
 
 ####################################################
 
-CALL verify_pricing('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2}]', 1, 'P', @total_price,@m_id);
-select @total_price,@m_id;
+# CALL verify_pricing('[{"itemId":1,"quantity":1},{"itemId":2,"quantity":2}]', 1, 'P', @total_price,@m_id);
+# select @total_price,@m_id;
 
 ####################################################
 
