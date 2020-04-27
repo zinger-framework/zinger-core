@@ -15,34 +15,31 @@ public class ErrorLog {
     public static final String UserDetailNotAvailable = "User detail not available";
     public static final String UserHasBeenBlocked = "User has been blocked";
     public static final String PlaceDetailNotAvailable = "Place detail not available";
-    public static final String ShopDetailNotAvailable = "Shop detail not available";
-    public static final String ConfigurationDetailNotAvailable = "Configuration detail not available";
+    public static final String ShopDetailNotAvailable = "No shops found in this place";
     public static final String OrderDetailNotAvailable = "Order detail not available";
-    public static final String OrderItemDetailNotAvailable = "Order item detail not available";
     public static final String ItemsNotAvailable = "Some Items are not available";
-    public static final String TransactionDetailNotAvailable = "Transaction detail not available";
     public static final String DeliveryOptionNotAvailable = "Delivery Option not available";
 
-    public static final String UserDetailNotUpdated = "User detail not updated";
+    public static final String UserDetailNotUpdated = "Profile not updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
     public static final String ShopDetailNotUpdated = "Shop detail not updated";
     public static final String PlaceDetailNotUpdated = "Place detail not updated";
     public static final String TransactionDetailNotUpdated = "Transaction detail not updated";
-    public static final String OrderDetailNotUpdated = "Order detail not updated";
-    public static final String OrderItemDetailNotUpdated = "Order item detail not updated";
-    public static final String ItemDetailNotUpdated = "Item detail not updated";
+    public static final String OrderDetailNotUpdated = "Unable to place order";
+    public static final String OrderRatingNotUpdated = "Order rating not updated";
+    public static final String OrderItemDetailNotUpdated = "Unable to place order";
+    public static final String ItemDetailNotUpdated = "Unable to add or update current item";
 
-    public static final String UserDetailNotDeleted = "User detail not deleted";
-    public static final String ShopDetailNotDeleted = "Shop detail not deleted";
+
+    public static final String UnableToDeleteSeller = "Unable to delete seller";
+    public static final String UnableToDeleteInvite = "Unable to delete invite";
+    public static final String ShopDetailNotDeleted = "Unable to delete shop";
 
     public static final String InvalidOrderStatus = "Invalid Order status";
-    public static final String SecretKeyMismatch = "Secret key mismatch";
+    public static final String SecretKeyMismatch = "Invalid secret key";
     public static final String OrderPriceMismatch = "Order price mismatch";
-    public static final String ItemPriceMismatch = "Item price mismatch";
-    public static final String OrderDeliveryPriceMismatch = "Order Delivery price mismatch";
     public static final String RestaurantNotAcceptingOrders = "Restaurant not accepting orders";
     public static final String InviteExpired = "Invite Expired";
-    public static final String TransactionInitiationFailed = "Transaction Initiation Failed";
     public static final String TransactionTokenNotAvailable = "Transaction Token Not Available";
 
     /**********************************************************************/

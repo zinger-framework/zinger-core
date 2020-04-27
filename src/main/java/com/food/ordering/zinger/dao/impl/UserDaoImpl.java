@@ -552,7 +552,7 @@ public class UserDaoImpl implements UserDao {
                 response.setData(ErrorLog.Success);
             } else {
                 response.setCode(ErrorLog.UDND1164);
-                response.setMessage(ErrorLog.UserDetailNotDeleted);
+                response.setMessage(UnableToDeleteSeller);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1106);
@@ -588,7 +588,7 @@ public class UserDaoImpl implements UserDao {
                 response.prioritySet(Priority.LOW);
             } else {
                 response.setCode(ErrorLog.UDND1162);
-                response.setMessage(UserDetailNotDeleted);
+                response.setMessage(UnableToDeleteInvite);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1161);
