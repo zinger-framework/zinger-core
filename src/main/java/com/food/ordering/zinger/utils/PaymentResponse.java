@@ -3,6 +3,9 @@ package com.food.ordering.zinger.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.Enums;
+import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.model.OrderModel;
+import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.TransactionModel;
 import org.springframework.boot.json.JsonParser;
 import org.springframework.boot.json.JsonParserFactory;
@@ -73,8 +76,100 @@ public class PaymentResponse {
                 }
             }
         }
-
         return null;
+    }
+
+    /**
+     * This is a helper method to get the transaction token from the payment gateway. The orderId and merchantId
+     * are passed to the payment gateway
+     *
+     * @param orderModel OrderModel
+     * @param merchantId String
+     * @return token fetched from payment gateway is returned
+     */
+    public Response<String> initiateTransaction(OrderModel orderModel, String merchantId) {
+        Response<String> response = new Response<>();
+
+        Integer orderId = orderModel.getId();
+
+        //TODO: Implement API to get Transaction Token From Payment Gateway using OrderId & merchantId
+        //String transactionToken = getTransactionToken(orderId, merchantId);
+
+        String transactionToken = "12Abdsfds";
+
+        response.setCode(ErrorLog.CodeSuccess);
+        response.setMessage(ErrorLog.Success);
+        response.setData(transactionToken);
+        return response;
+    }
+
+    /**
+     * Helper method to get transaction Status from payment gateway
+     *
+     * @param orderId the order id
+     * @return the latest transaction data from payment gateway is returned
+     */
+    public Response<TransactionModel> getTransactionStatus(Integer orderId) {
+        Response<TransactionModel> transactionModelResponse = new Response<>();
+
+        //TODO: GET Transaction Status from Payment Gateway
+        TransactionModel transactionModel = new TransactionModel();
+
+        //Populating Dummy Values Here
+        transactionModel.setTransactionId("T" + orderId);
+        transactionModel.setBankTransactionId("BT0001");
+        transactionModel.transactionAmountSet(90.0);
+        transactionModel.setCurrency("INR");
+        transactionModel.setResponseCode("01");
+        transactionModel.setResponseMessage("Success");
+        transactionModel.setGatewayName("PAYTM");
+        transactionModel.setBankName("HDFC");
+        transactionModel.setPaymentMode("UPI");
+        transactionModel.setChecksumHash("XXXXX");
+        transactionModel.getOrderModel().setId(orderId);
+
+        transactionModelResponse.setCode(ErrorLog.CodeSuccess);
+        transactionModelResponse.setMessage(ErrorLog.Success);
+        transactionModelResponse.setData(transactionModel);
+        return transactionModelResponse;
+    }
+
+    /**
+     * This method is used for fetching the refund status from the Payment gateway.
+     *
+     * @param orderId Integer
+     * @return the latest transaction data from payment gateway is returned
+     */
+    public Response<TransactionModel> getRefundStatus(Integer orderId) {
+        Response<TransactionModel> transactionModelResponse = new Response<>();
+
+        //TODO: GET Transaction Status from Payment Gateway
+        TransactionModel transactionModel = new TransactionModel();
+
+        //Populating Dummy Values Here
+        transactionModel.setTransactionId("T" + orderId);
+        transactionModel.setBankTransactionId("BT0001");
+        transactionModel.transactionAmountSet(90.0);
+        transactionModel.setCurrency("INR");
+        transactionModel.setResponseCode("03");
+        transactionModel.setResponseMessage("Refund Completed");
+        transactionModel.setGatewayName("PAYTM");
+        transactionModel.setBankName("HDFC");
+        transactionModel.setPaymentMode("UPI");
+        transactionModel.setChecksumHash("XXXXX");
+        transactionModel.getOrderModel().setId(orderId);
+
+        transactionModelResponse.setCode(ErrorLog.CodeSuccess);
+        transactionModelResponse.setMessage(ErrorLog.Success);
+        transactionModelResponse.setData(transactionModel);
+        return transactionModelResponse;
+    }
+
+    /**
+     * This method is used to initiate refund of payment
+     */
+    public void initiateRefund() {
+        //TODO: Initiate the refund using payment gateway
     }
 
     public String getCode() {

@@ -36,7 +36,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<String> placeOrder(Integer orderId) {
-        return orderDao.placeOrder(orderId);
+        Response<String> response = orderDao.placeOrder(orderId);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, orderId.toString()));
+        return response;
     }
 
     @Override
@@ -62,7 +64,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId) {
-        return orderDao.getOrderByShopId(shopId);
+        Response<List<OrderItemListModel>> response = orderDao.getOrderByShopId(shopId);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, shopId, shopId.toString()));
+        return response;
     }
 
     @Override
@@ -79,6 +83,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<String> updateOrderStatus(OrderModel orderModel) {
-        return orderDao.updateOrderStatus(orderModel);
+        Response<String> response = orderDao.updateOrderStatus(orderModel);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
+        return response;
     }
 }
