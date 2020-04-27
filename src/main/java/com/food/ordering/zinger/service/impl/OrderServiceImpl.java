@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString(), response.priorityGet()));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString()));
         return response;
     }
 
@@ -42,14 +42,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderByUserId(userId, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, userId + " - " + pageNum, response.priorityGet()));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, userId + " - " + pageNum));
         return response;
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + searchItem + " - " + pageNum, response.priorityGet()));
+        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + searchItem + " - " + pageNum));
         return response;
     }
 
@@ -72,7 +72,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Response<String> updateOrderRating(OrderModel orderModel) {
-        return orderDao.updateOrderRating(orderModel);
+        Response<String> response = orderDao.updateOrderRating(orderModel);
+        auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
+        return response;
     }
 
     @Override
