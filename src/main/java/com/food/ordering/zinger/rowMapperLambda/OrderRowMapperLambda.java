@@ -181,6 +181,7 @@ public class OrderRowMapperLambda {
 
         ShopModel shopModel = new ShopModel();
         shopModel.setName(rs.getString(Column.shopName));
+        shopModel.setId(rs.getInt(Column.shopId));
         shopModel.setPhotoUrl(rs.getString(Column.ShopColumn.photoUrl));
         shopModel.setMobile(rs.getString(Column.shopMobile));
         shopModel.setPlaceModel(null);

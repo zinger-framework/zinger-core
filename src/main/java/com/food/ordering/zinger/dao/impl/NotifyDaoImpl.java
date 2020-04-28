@@ -9,6 +9,7 @@ import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.notification.NewOrderPayLoad;
 import com.food.ordering.zinger.model.notification.OrderStatusPayLoad;
 import com.food.ordering.zinger.service.interfaces.OrderService;
+import com.google.api.client.json.Json;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -59,8 +60,6 @@ public class NotifyDaoImpl implements NotifyDao {
 
         try {
 
-            //List<String> registrationTokens = Collections.singletonList("foJdPp1yTzmNbNCaDgBC6e:APA91bEOWbXEORRbH8_RA4C5vbB7TDgmhdYP8dsX3pIMAJsFKiGlzA2irx4TaoEV3oaoWskRVHQvc4hsVZ6IrVQVz4DaCgZ8fBP8qtK9zkUBFaKDl0V-ZXcuQ0XOGGs8X6KIibdkyeBI");
-
             MulticastMessage message = MulticastMessage.builder()
                     .putData(Constant.notificationTitle,notificationModel.getTitle())
                     .putData(Constant.notificationMessage,notificationModel.getMessage())
@@ -97,6 +96,8 @@ public class NotifyDaoImpl implements NotifyDao {
                     .build();
 
             String fbResponse = FirebaseMessaging.getInstance().send(message);
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
             System.out.println(fbResponse);
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
@@ -154,8 +155,8 @@ public class NotifyDaoImpl implements NotifyDao {
             String jsonPayload = gson.toJson(newOrderPayLoad);
             notificationModel.setPayload(jsonPayload);
 
-            //sendMulticast(notificationModel,orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
-            sendTopicMessage(notificationModel,"shop");
+            ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
+            sendTopicMessage(notificationModel,shopModel.getName()+shopModel.getId());
 
         }
     }
@@ -199,7 +200,7 @@ public class NotifyDaoImpl implements NotifyDao {
             NotificationModel notificationModel=new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
-            notificationModel.setType(Enums.NotificationType.NEW_ORDER);
+            notificationModel.setType(Enums.NotificationType.ORDER_CANCELLED);
 
             NewOrderPayLoad newOrderPayLoad = new NewOrderPayLoad();
             newOrderPayLoad.setOrderId(orderItemListModel.getTransactionModel().getOrderModel().getId());
@@ -215,10 +216,19 @@ public class NotifyDaoImpl implements NotifyDao {
             String jsonPayload = gson.toJson(newOrderPayLoad);
             notificationModel.setPayload(jsonPayload);
 
-            //sendMulticast(notificationModel,orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
-            sendTopicMessage(notificationModel,"shop");
+            ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
+            sendTopicMessage(notificationModel,shopModel.getName()+shopModel.getId());
 
         }
+    }
 
+    @Override
+    public Response<String> notifyWebView(NotificationModel notificationModel) {
+        return sendTopicMessage(notificationModel,Constant.globalNotificationTopic);
+    }
+
+    @Override
+    public Response<String> notifyNewArrival(NotificationModel notificationModel) {
+        return sendTopicMessage(notificationModel,Constant.globalNotificationTopic);
     }
 }

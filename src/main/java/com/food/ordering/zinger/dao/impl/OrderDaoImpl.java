@@ -515,6 +515,7 @@ public class OrderDaoImpl implements OrderDao {
                         notifyDao.notifyNewOrder(getOrderById(orderModel.getId()));
                         break;
                     case CANCELLED_BY_USER:
+                        notifyDao.notifyCancelOrderByUser(getOrderById(orderModel.getId()));
                         break;
                     default:
                         notifyDao.notifyUpdateOrder(getOrderById(orderModel.getId()));
