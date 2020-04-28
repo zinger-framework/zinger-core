@@ -156,7 +156,8 @@ public class NotifyDaoImpl implements NotifyDao {
             notificationModel.setPayload(jsonPayload);
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
-            sendTopicMessage(notificationModel,shopModel.getName()+shopModel.getId());
+            String[] names = shopModel.getName().split(" ");
+            sendTopicMessage(notificationModel,names[0]+shopModel.getId());
 
         }
     }
