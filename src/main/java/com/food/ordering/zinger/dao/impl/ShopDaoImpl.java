@@ -172,6 +172,7 @@ public class ShopDaoImpl implements ShopDao {
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
+        // todo replace with merged update
 
         try {
             Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
@@ -185,16 +186,13 @@ public class ShopDaoImpl implements ShopDao {
                     .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
                     .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
 
-            if(configResponse.getCode().equals(ErrorLog.CodeSuccess)){
-                int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
-                if (responseResult > 0) {
-                    response.setCode(ErrorLog.CodeSuccess);
-                    response.setMessage(ErrorLog.Success);
-                    response.setData(ErrorLog.Success);
-                    response.prioritySet(Priority.LOW);
-                }
-            }
-            else {
+            int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
+            if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
+            } else {
                 response.setCode(ErrorLog.CDNU1260);
                 response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
             }
@@ -202,6 +200,7 @@ public class ShopDaoImpl implements ShopDao {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
             response.setCode(ErrorLog.CE1259);
         }
+
         return response;
     }
 
