@@ -188,6 +188,10 @@ public class NotifyDaoImpl implements NotifyDao {
             notificationModel.setPayload(jsonPayload);
 
             sendMulticast(notificationModel,orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
+
+            ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
+            String[] names = shopModel.getName().split(" ");
+            sendTopicMessage(notificationModel,names[0]+shopModel.getId());
         }
     }
 
