@@ -6,6 +6,7 @@ public class Column {
 
     public static final String shopName = "shop_name";
     public static final String shopMobile = "shop_mobile";
+    public static final String shopId = "shop_id";
 
     public static final String userName = "user_name";
     public static final String userMobile = "user_mobile";

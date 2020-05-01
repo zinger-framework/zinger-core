@@ -8,6 +8,7 @@ import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
+import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.dao.interfaces.TransactionDao;
 import com.food.ordering.zinger.exception.GenericException;
@@ -53,6 +54,9 @@ public class OrderDaoImpl implements OrderDao {
 
     @Autowired
     PaymentResponse paymentResponse;
+
+    @Autowired
+    NotifyDao notifyDao;
 
     /**
      * Insert order method
@@ -455,6 +459,7 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(feedback, orderModel.getFeedback())
                     .addValue(id, orderModel.getId());
 
+
             int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
             if (updateStatus > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -503,6 +508,18 @@ public class OrderDaoImpl implements OrderDao {
                         orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) ||
                         orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
                     paymentResponse.initiateRefund();
+
+
+                switch (orderModel.getOrderStatus()){
+                    case PLACED:
+                        notifyDao.notifyNewOrder(getOrderById(orderModel.getId()));
+                        break;
+                    case CANCELLED_BY_USER:
+                        notifyDao.notifyCancelOrderByUser(getOrderById(orderModel.getId()));
+                        break;
+                    default:
+                        notifyDao.notifyUpdateOrder(getOrderById(orderModel.getId()));
+                }
 
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);

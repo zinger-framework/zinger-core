@@ -505,10 +505,12 @@ public class Query {
                 LHS + DOT + TransactionColumn.transactionId + COMMA +
                 LHS + DOT + TransactionColumn.paymentMode + COMMA +
                 LHS + DOT + userName + COMMA +
+                LHS + DOT + UserColumn.notifToken + COMMA +
                 LHS + DOT + userMobile + COMMA +
                 LHS + DOT + shopName + COMMA +
                 LHS + DOT + ShopColumn.photoUrl + COMMA +
                 LHS + DOT + shopMobile + COMMA +
+                LHS + DOT + shopId + COMMA +
                 LHS + DOT + itemName + COMMA +
                 LHS + DOT + itemPrice + COMMA +
                 LHS + DOT + ItemColumn.isVeg + COMMA +
@@ -528,7 +530,9 @@ public class Query {
                 TransactionColumn.tableName + DOT + TransactionColumn.transactionId + COMMA +
                 TransactionColumn.tableName + DOT + TransactionColumn.paymentMode + COMMA +
                 UserColumn.tableName + DOT + UserColumn.name + AS + userName + COMMA +
+                UserColumn.tableName + DOT + UserColumn.notifToken + COMMA +
                 UserColumn.tableName + DOT + UserColumn.mobile + AS + userMobile + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.id + AS + shopId + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.name + AS + shopName + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.photoUrl + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.mobile + AS + shopMobile + COMMA +

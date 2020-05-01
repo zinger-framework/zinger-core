@@ -172,6 +172,7 @@ public class ShopDaoImpl implements ShopDao {
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
         MapSqlParameterSource parameters;
+        // todo replace with merged update
 
         try {
             Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);

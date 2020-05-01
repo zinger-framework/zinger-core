@@ -16,4 +16,8 @@ public class Enums {
     public enum UserRole {
         CUSTOMER, SELLER, SHOP_OWNER, DELIVERY, SUPER_ADMIN
     }
+
+    public enum NotificationType{
+        URL,ORDER_STATUS,NEW_ARRIVAL,NEW_ORDER,ORDER_CANCELLED
+    }
 }

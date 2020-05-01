@@ -7,6 +7,20 @@ public class Constant {
     public static final String transactionFlag = "T";
     public static final String refundFlag = "R";
 
+    public static final String notificationTitle = "title";
+    public static final String notificationMessage = "message";
+    public static final String notificationType = "type";
+    public static final String notificationPayload = "payload";
+    public static final String urlPayload = "url";
+    public static final String globalNotificationTopic= "global";
+    public static final String shopIdNotificationProperty= "shopId";
+    public static final String shopNameNotificationProperty= "shopName";
+
+
+
+
+
+
     public static final class VerifyPricingProcedure {
         public static final String procedureName = "verify_pricing";
 

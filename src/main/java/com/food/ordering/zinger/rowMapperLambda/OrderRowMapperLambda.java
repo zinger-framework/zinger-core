@@ -1,5 +1,7 @@
 package com.food.ordering.zinger.rowMapperLambda;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.model.*;
@@ -10,8 +12,10 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
+import static com.food.ordering.zinger.constant.Column.ShopColumn.coverUrls;
 
 public class OrderRowMapperLambda {
     public static final RowMapper<OrderItemListModel> OrderByUserIdRowMapperLambda = (rs, rownum) -> {
@@ -177,6 +181,7 @@ public class OrderRowMapperLambda {
 
         ShopModel shopModel = new ShopModel();
         shopModel.setName(rs.getString(Column.shopName));
+        shopModel.setId(rs.getInt(Column.shopId));
         shopModel.setPhotoUrl(rs.getString(Column.ShopColumn.photoUrl));
         shopModel.setMobile(rs.getString(Column.shopMobile));
         shopModel.setPlaceModel(null);
@@ -185,6 +190,12 @@ public class OrderRowMapperLambda {
         UserModel userModel = new UserModel();
         userModel.setName(rs.getString(Column.userName));
         userModel.setMobile(rs.getString(Column.userMobile));
+        try {
+            userModel.setNotificationToken(new ObjectMapper().readValue(rs.getString(Column.UserColumn.notifToken), List.class));
+        } catch (JsonProcessingException e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            userModel.setNotificationToken(new ArrayList<String>());
+        }
 
         orderModel.setUserModel(userModel);
         transactionModel.setOrderModel(orderModel);
