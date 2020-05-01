@@ -249,15 +249,6 @@ CREATE TRIGGER order_time_rating_update
 			IF (NEW.status = 'PLACED') OR (NEW.status = 'PENDING') OR (NEW.status = 'TXN_FAILURE') THEN
 				SET NEW.date = CURRENT_TIMESTAMP;
 			END IF;
-            IF (OLD.status is NULL OR OLD.status != NEW.status) THEN
-                INSERT INTO orders_status(order_id, status)
-                VALUES (NEW.id, NEW.status);
-
-                IF (NEW.status = 'CANCELLED_BY_USER' OR NEW.status = 'CANCELLED_BY_SELLER') THEN
-                    INSERT INTO orders_status(order_id, status)
-                    VALUES (NEW.id, 'REFUND_INITIATED');
-                END IF;
-            END IF;
             IF NEW.rating IS NOT NULL THEN
 				BEGIN
 					DECLARE actual_status ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
@@ -290,6 +281,15 @@ CREATE TRIGGER order_status_rating_update
     ON orders
     FOR EACH ROW
     BEGIN
+        IF (OLD.status is NULL OR OLD.status != NEW.status) THEN
+            INSERT INTO orders_status(order_id, status)
+            VALUES (NEW.id, NEW.status);
+
+            IF (NEW.status = 'CANCELLED_BY_USER' OR NEW.status = 'CANCELLED_BY_SELLER') THEN
+                INSERT INTO orders_status(order_id, status)
+                VALUES (NEW.id, 'REFUND_INITIATED');
+            END IF;
+        END IF;
 		IF (OLD.rating IS NULL AND NEW.rating IS NOT NULL) THEN
 			CALL shop_rating_update(OLD.shop_id);
 		END IF;

@@ -99,7 +99,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<String> updateOrderStatus(OrderModel orderModel) {
         Response<String> response = orderDao.updateOrderStatus(orderModel);
-        if(response.getCode().equals(ErrorLog.CodeSuccess)){
+        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
             switch (orderModel.getOrderStatus()) {
                 case PLACED:
                 case CANCELLED_BY_USER:
