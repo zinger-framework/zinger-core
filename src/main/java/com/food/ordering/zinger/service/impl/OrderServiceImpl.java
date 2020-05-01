@@ -103,10 +103,10 @@ public class OrderServiceImpl implements OrderService {
             switch (orderModel.getOrderStatus()) {
                 case PLACED:
                 case CANCELLED_BY_USER:
-                    notifyDao.notifyOrderStatusToSeller(getOrderById(orderModel.getId()));
+                    notifyDao.notifyOrderStatusToSeller(orderDao.getOrderById(orderModel.getId()));
                     break;
                 default:
-                    notifyDao.notifyOrderStatus(getOrderById(orderModel.getId()));
+                    notifyDao.notifyOrderStatus(orderDao.getOrderById(orderModel.getId()));
             }
         }
         auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
