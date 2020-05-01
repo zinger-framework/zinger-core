@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.Column.OrderColumn.*;
-import static com.food.ordering.zinger.constant.Column.ShopColumn.coverUrls;
 
 public class OrderRowMapperLambda {
     public static final RowMapper<OrderItemListModel> OrderByUserIdRowMapperLambda = (rs, rownum) -> {

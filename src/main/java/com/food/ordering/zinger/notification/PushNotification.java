@@ -117,13 +117,13 @@ public class PushNotification {
         return response;
     }
 
-    public Response<String> sendMulticast(NotificationModel notificationModel,List<String> fcmTokenList) {
+    public Response<String> sendMulticast(NotificationModel notificationModel, List<String> fcmTokenList) {
         Response<String> response = new Response<>();
 
         try {
             List<String> registrationTokens = Collections.singletonList("foJdPp1yTzmNbNCaDgBC6e:APA91bEOWbXEORRbH8_RA4C5vbB7TDgmhdYP8dsX3pIMAJsFKiGlzA2irx4TaoEV3oaoWskRVHQvc4hsVZ6IrVQVz4DaCgZ8fBP8qtK9zkUBFaKDl0V-ZXcuQ0XOGGs8X6KIibdkyeBI");
             MulticastMessage message = MulticastMessage.builder()
-                    .putData("notification_data",new GsonBuilder().create().toJson(notificationModel))
+                    .putData("notification_data", new GsonBuilder().create().toJson(notificationModel))
                     .addAllTokens(fcmTokenList)
                     .build();
             BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);

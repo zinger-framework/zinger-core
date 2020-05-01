@@ -14,7 +14,6 @@ import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
-import com.food.ordering.zinger.utils.Helper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -28,7 +27,6 @@ import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
 import static com.food.ordering.zinger.constant.Sql.DOUBLE_QUOTE;
-import static com.food.ordering.zinger.constant.Sql.SINGLE_QUOTE;
 
 /**
  * UserDao is responsible for CRUD operations in
@@ -508,7 +506,7 @@ public class UserDaoImpl implements UserDao {
                     .addValue(UserPlaceColumn.userId, userPlaceModel.getUserModel().getId())
                     .addValue(UserPlaceColumn.placeId, userPlaceModel.getPlaceModel().getId());
 
-            int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceByMobile, parameters);
+            int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceById, parameters);
             if (result <= 0)
                 namedParameterJdbcTemplate.update(UserPlaceQuery.insertUserPlace, parameters);
         } catch (Exception e) {

@@ -1,6 +1,9 @@
 package com.food.ordering.zinger.dao.interfaces;
 
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.NotificationModel;
+import com.food.ordering.zinger.model.OrderItemListModel;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.UserShopModel;
 
 public interface NotifyDao {
 

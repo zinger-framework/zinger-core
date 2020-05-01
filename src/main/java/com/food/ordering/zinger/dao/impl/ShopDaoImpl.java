@@ -1,10 +1,10 @@
 package com.food.ordering.zinger.dao.impl;
 
+import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.ShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.ShopQuery;
-import com.food.ordering.zinger.dao.interfaces.ConfigurationDao;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.ConfigurationModel;
@@ -44,9 +44,6 @@ public class ShopDaoImpl implements ShopDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Autowired
-    ConfigurationDao configurationDao;
-
     /**
      * Inserts the shop details.
      * Authorized by SUPER_ADMIN only.
@@ -78,7 +75,7 @@ public class ShopDaoImpl implements ShopDao {
 
         if (responseValue.intValue() > 0) {
             configurationModel.getShopModel().setId(responseValue.intValue());
-            Response<String> configurationModelResponse = configurationDao.insertConfiguration(configurationModel);
+            Response<String> configurationModelResponse = insertConfiguration(configurationModel);
 
             if (configurationModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -96,6 +93,35 @@ public class ShopDaoImpl implements ShopDao {
             response.setCode(ErrorLog.SDNU1251);
             response.setMessage(ErrorLog.ShopDetailNotUpdated);
             throw new GenericException(response);
+        }
+
+        return response;
+    }
+
+    /**
+     * Insert the configuration details for the given shop
+     *
+     * @param configurationModel ConfigurationModel
+     * @return success response if the insertion is successful.
+     */
+    public Response<String> insertConfiguration(ConfigurationModel configurationModel) {
+        Response<String> response = new Response<>();
+
+        try {
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(Column.ConfigurationColumn.shopId, configurationModel.getShopModel().getId())
+                    .addValue(Column.ConfigurationColumn.merchantId, configurationModel.getMerchantId())
+                    .addValue(Column.ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice());
+
+            int responseResult = namedParameterJdbcTemplate.update(ShopQuery.insertConfiguration, parameters);
+            if (responseResult > 0) {
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            }
+        } catch (Exception e) {
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            e.printStackTrace();
         }
 
         return response;
@@ -171,30 +197,27 @@ public class ShopDaoImpl implements ShopDao {
     @Override
     public Response<String> updateShopConfigurationModel(ConfigurationModel configurationModel) {
         Response<String> response = new Response<>();
-        MapSqlParameterSource parameters;
-        // todo replace with merged update
 
         try {
-            Response<String> configResponse = configurationDao.updateConfigurationModel(configurationModel);
-
-            parameters = new MapSqlParameterSource()
+            MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(ShopColumn.name, configurationModel.getShopModel().getName())
                     .addValue(ShopColumn.photoUrl, configurationModel.getShopModel().getPhotoUrl())
                     .addValue(ShopColumn.coverUrls, Helper.toJsonFormattedString(configurationModel.getShopModel().getCoverUrls()))
                     .addValue(ShopColumn.mobile, configurationModel.getShopModel().getMobile())
                     .addValue(ShopColumn.openingTime, configurationModel.getShopModel().getOpeningTime())
                     .addValue(ShopColumn.closingTime, configurationModel.getShopModel().getClosingTime())
+                    .addValue(Column.ConfigurationColumn.merchantId, configurationModel.getMerchantId())
+                    .addValue(Column.ConfigurationColumn.deliveryPrice, configurationModel.getDeliveryPrice())
+                    .addValue(Column.ConfigurationColumn.isDeliveryAvailable, configurationModel.getIsDeliveryAvailable())
+                    .addValue(Column.ConfigurationColumn.isOrderTaken, configurationModel.getIsOrderTaken())
                     .addValue(ShopColumn.id, configurationModel.getShopModel().getId());
 
             int responseResult = namedParameterJdbcTemplate.update(ShopQuery.updateShop, parameters);
-            if (responseResult > 0 || configResponse.getCode().equals(ErrorLog.CodeSuccess)) {
+            if (responseResult > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
-            } else {
-                response.setCode(ErrorLog.CDNU1260);
-                response.setMessage(ErrorLog.ConfigurationDetailNotUpdated);
             }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());

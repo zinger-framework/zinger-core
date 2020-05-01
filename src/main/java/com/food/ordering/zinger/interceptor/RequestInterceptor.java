@@ -53,8 +53,8 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         superAdminUrls.add(Collections.singletonMap(ShopApi.BASE_URL, POST));
         superAdminUrls.add(Collections.singletonMap(ShopApi.BASE_URL, DELETE));
         superAdminUrls.add(Collections.singletonMap(PlaceApi.BASE_URL, POST));
-        superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL+NotifyApi.notifyUrl, POST));
-        superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL+NotifyApi.notifyNewArrival, POST));
+        superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL + NotifyApi.notifyUrl, POST));
+        superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL + NotifyApi.notifyNewArrival, POST));
 
 
         shopOwnerUrls.add(Collections.singletonMap(ShopApi.BASE_URL + updateShopConfiguration, PATCH));
