@@ -1,7 +1,6 @@
 package com.food.ordering.zinger.model;
 
 import com.food.ordering.zinger.constant.Enums;
-import com.google.gson.JsonObject;
 
 public class NotificationModel {
     Enums.NotificationType type;

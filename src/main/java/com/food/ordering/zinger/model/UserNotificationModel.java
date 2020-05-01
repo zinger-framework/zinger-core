@@ -1,7 +1,5 @@
 package com.food.ordering.zinger.model;
 
-import com.food.ordering.zinger.constant.Enums;
-
 public class UserNotificationModel {
     private Integer id;
     private String notificationToken;

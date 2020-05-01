@@ -105,23 +105,6 @@ public class Query {
                 PlaceColumn.id + EQUAL_COLON + PlaceColumn.id;
     }
 
-    public static final class ConfigurationQuery {
-        public static final String insertConfiguration = INSERT_INTO + ConfigurationColumn.tableName + LEFT_PARANTHESIS +
-                ConfigurationColumn.shopId + COMMA +
-                ConfigurationColumn.merchantId + COMMA +
-                ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + ConfigurationColumn.shopId +
-                COMMA_COLON + ConfigurationColumn.merchantId +
-                COMMA_COLON + ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS;
-
-        public static final String updateConfiguration = UPDATE + ConfigurationColumn.tableName + SET +
-                ConfigurationColumn.merchantId + EQUAL_COLON + ConfigurationColumn.merchantId + COMMA +
-                ConfigurationColumn.deliveryPrice + EQUAL_COLON + ConfigurationColumn.deliveryPrice + COMMA +
-                ConfigurationColumn.isDeliveryAvailable + EQUAL_COLON + ConfigurationColumn.isDeliveryAvailable + COMMA +
-                ConfigurationColumn.isOrderTaken + EQUAL_COLON + ConfigurationColumn.isOrderTaken + WHERE +
-                ConfigurationColumn.shopId + EQUAL_COLON + ConfigurationColumn.shopId;
-    }
-
     public static final class ItemQuery {
         public static final String notDeleted = ItemColumn.isDelete + " = 0";
 
@@ -191,7 +174,6 @@ public class Query {
     }
 
     public static final class OrderQuery {
-        public static final String orderByDesc = ORDER_BY + OrderColumn.date + DESC;
         public static final String pageNum = "pageNum";
         public static final String pageCount = "pageCount";
         public static final String getOrderByUserId = SELECT +
@@ -567,17 +549,7 @@ public class Query {
                 OrderColumn.id + COMMA +
                 OrderColumn.price + FROM + OrderColumn.tableName + WHERE +
                 OrderColumn.id + EQUAL_COLON + OrderColumn.id;
-        public static final String getOrderByShopIdPagination = SELECT +
-                OrderColumn.id +
-                FROM + OrderColumn.tableName + WHERE +
-                OrderColumn.shopId + EQUAL_COLON + OrderColumn.shopId + AND + LEFT_PARANTHESIS +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_SELLER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.CANCELLED_BY_USER.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.REFUND_INITIATED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.REFUND_COMPLETED.name() + SINGLE_QUOTE + CONCATENATION_OPERATOR +
-                OrderColumn.status + EQUALS + SINGLE_QUOTE + OrderStatus.DELIVERED.name() + SINGLE_QUOTE + RIGHT_PARANTHESIS +
-                orderByDesc;
+
         public static final String updateOrderRating = UPDATE + OrderColumn.tableName + SET +
                 OrderColumn.rating + EQUAL_COLON + OrderColumn.rating + COMMA +
                 OrderColumn.feedback + EQUAL_COLON + OrderColumn.feedback + WHERE +
@@ -651,6 +623,14 @@ public class Query {
     public static final class ShopQuery {
         public static final String notDeleted = ShopColumn.isDelete + " = 0";
 
+        public static final String insertConfiguration = INSERT_INTO + ConfigurationColumn.tableName + LEFT_PARANTHESIS +
+                ConfigurationColumn.shopId + COMMA +
+                ConfigurationColumn.merchantId + COMMA +
+                ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
+                COLON + ConfigurationColumn.shopId +
+                COMMA_COLON + ConfigurationColumn.merchantId +
+                COMMA_COLON + ConfigurationColumn.deliveryPrice + RIGHT_PARANTHESIS;
+
         public static final String getShopByPlaceId = SELECT +
                 ShopColumn.tableName + DOT + ShopColumn.id + COMMA +
                 ShopColumn.tableName + DOT + ShopColumn.name + COMMA +
@@ -693,14 +673,19 @@ public class Query {
                 INNER_JOIN + RatingColumn.tableName + ON +
                 ShopColumn.tableName + DOT + ShopColumn.id + EQUALS + RatingColumn.tableName + DOT + RatingColumn.shopId;
 
-        public static final String updateShop = UPDATE + ShopColumn.tableName + SET +
-                ShopColumn.name + EQUAL_COLON + ShopColumn.name + COMMA +
-                ShopColumn.photoUrl + EQUAL_COLON + ShopColumn.photoUrl + COMMA +
-                ShopColumn.coverUrls + EQUAL_COLON + ShopColumn.coverUrls + COMMA +
-                ShopColumn.mobile + EQUAL_COLON + ShopColumn.mobile + COMMA +
-                ShopColumn.openingTime + EQUAL_COLON + ShopColumn.openingTime + COMMA +
-                ShopColumn.closingTime + EQUAL_COLON + ShopColumn.closingTime + WHERE +
-                ShopColumn.id + EQUAL_COLON + ShopColumn.id;
+        public static final String updateShop = UPDATE + ShopColumn.tableName + COMMA + ConfigurationColumn.tableName + SET +
+                ShopColumn.tableName + DOT + ShopColumn.name + EQUAL_COLON + ShopColumn.name + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.photoUrl + EQUAL_COLON + ShopColumn.photoUrl + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.coverUrls + EQUAL_COLON + ShopColumn.coverUrls + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.mobile + EQUAL_COLON + ShopColumn.mobile + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.openingTime + EQUAL_COLON + ShopColumn.openingTime + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.closingTime + EQUAL_COLON + ShopColumn.closingTime + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.merchantId + EQUAL_COLON + ConfigurationColumn.merchantId + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.deliveryPrice + EQUAL_COLON + ConfigurationColumn.deliveryPrice + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.isDeliveryAvailable + EQUAL_COLON + ConfigurationColumn.isDeliveryAvailable + COMMA +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.isOrderTaken + EQUAL_COLON + ConfigurationColumn.isOrderTaken + WHERE +
+                ConfigurationColumn.tableName + DOT + ConfigurationColumn.shopId + EQUALS + ShopColumn.tableName + DOT + ShopColumn.id + AND +
+                ShopColumn.tableName + DOT + ShopColumn.id + EQUAL_COLON + ShopColumn.id;
 
         public static final String deleteShop = UPDATE + ShopColumn.tableName + SET +
                 ShopColumn.isDelete + " = 1" + WHERE +
@@ -708,11 +693,6 @@ public class Query {
     }
 
     public static final class TransactionQuery {
-
-        public static final String pageNum = "pageNum";
-        public static final String pageCount = "pageCount";
-        public static final String orderByIdDesc = ORDER_BY + TransactionColumn.orderId + DESC;
-
         public static final String insertTransaction = INSERT_INTO + TransactionColumn.tableName + LEFT_PARANTHESIS +
                 TransactionColumn.transactionId + COMMA +
                 TransactionColumn.orderId + COMMA +
@@ -749,7 +729,7 @@ public class Query {
                 COLON + UserPlaceColumn.userId +
                 COMMA_COLON + UserPlaceColumn.placeId + RIGHT_PARANTHESIS;
 
-        public static final String updatePlaceByMobile = UPDATE + UserPlaceColumn.tableName + SET +
+        public static final String updatePlaceById = UPDATE + UserPlaceColumn.tableName + SET +
                 UserPlaceColumn.placeId + EQUAL_COLON + UserPlaceColumn.placeId + WHERE +
                 UserPlaceColumn.userId + EQUAL_COLON + UserPlaceColumn.userId;
     }

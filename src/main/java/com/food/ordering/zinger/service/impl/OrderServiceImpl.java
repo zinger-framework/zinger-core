@@ -79,8 +79,8 @@ public class OrderServiceImpl implements OrderService {
         try {
             if (response.getCode().equals(ErrorLog.CodeSuccess))
                 response.getData().getTransactionModel().getOrderModel().getUserModel().setNotificationToken(null);
+        } catch (Exception e) {
         }
-        catch (Exception e){}
         auditLogDao.insertOrderLog(new OrderLogModel(response, id, null));
         return response;
     }

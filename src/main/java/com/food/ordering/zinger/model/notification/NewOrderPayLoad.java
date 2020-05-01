@@ -2,14 +2,13 @@ package com.food.ordering.zinger.model.notification;
 
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class NewOrderPayLoad {
-     String userName;
-     Integer orderId;
-     Double amount;
-     ArrayList<String> itemList;
-     String orderType;
+    String userName;
+    Integer orderId;
+    Double amount;
+    ArrayList<String> itemList;
+    String orderType;
 
     public String getUserName() {
         return userName;

@@ -509,7 +509,7 @@ public class OrderDaoImpl implements OrderDao {
                         orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
                     paymentResponse.initiateRefund();
 
-                switch (orderModel.getOrderStatus()){
+                switch (orderModel.getOrderStatus()) {
                     case PLACED:
                         notifyDao.notifyNewOrder(getOrderById(orderModel.getId()));
                         break;

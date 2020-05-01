@@ -52,7 +52,6 @@ public class ApiConfig {
         public static final String inviteSeller = "/seller/invite";
         public static final String notifyUrl = "/url";
         public static final String notifyNewArrival = "/newarrivals";
-
     }
 
     public static class ShopApi {

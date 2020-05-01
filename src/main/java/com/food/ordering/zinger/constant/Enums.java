@@ -17,7 +17,7 @@ public class Enums {
         CUSTOMER, SELLER, SHOP_OWNER, DELIVERY, SUPER_ADMIN
     }
 
-    public enum NotificationType{
-        URL,ORDER_STATUS,NEW_ARRIVAL,NEW_ORDER,ORDER_CANCELLED
+    public enum NotificationType {
+        URL, ORDER_STATUS, NEW_ARRIVAL, NEW_ORDER, ORDER_CANCELLED
     }
 }

@@ -91,8 +91,7 @@ public class UserServiceImpl implements UserService {
         Response<String> response = new Response<>();
         try {
             response = userDao.updateUserPlaceData(userPlaceModel);
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             response.setCode(ErrorLog.UDNU1157);
             response.setMessage(ErrorLog.UserDetailNotUpdated);
         }
