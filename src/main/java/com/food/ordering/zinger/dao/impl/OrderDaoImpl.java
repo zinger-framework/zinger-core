@@ -459,7 +459,6 @@ public class OrderDaoImpl implements OrderDao {
                     .addValue(feedback, orderModel.getFeedback())
                     .addValue(id, orderModel.getId());
 
-
             int updateStatus = namedParameterJdbcTemplate.update(OrderQuery.updateOrderRating, parameter);
             if (updateStatus > 0) {
                 response.setCode(ErrorLog.CodeSuccess);

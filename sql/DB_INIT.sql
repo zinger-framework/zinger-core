@@ -220,17 +220,17 @@ CREATE TRIGGER notif_update
     BEGIN
 		DECLARE actual_notif_token JSON DEFAULT NULL;
 		DECLARE actual_notif_token_length BIGINT UNSIGNED DEFAULT NULL;
-        
+
         SELECT notif_token
 		INTO actual_notif_token
 		FROM users
 		where id = NEW.id;
-        
+
         IF actual_notif_token IS NULL AND NEW.notif_token IS NOT NULL THEN
 			SELECT JSON_ARRAY(NEW.notif_token) INTO actual_notif_token;
 		ELSEIF JSON_CONTAINS(actual_notif_token, NEW.notif_token) = 0 THEN
 			SET actual_notif_token_length = JSON_LENGTH(actual_notif_token);
-			
+
 			IF actual_notif_token_length >= 5 THEN
 				SELECT JSON_REMOVE(actual_notif_token, '$[0]') INTO actual_notif_token;
 			END IF;
@@ -240,6 +240,7 @@ CREATE TRIGGER notif_update
     END;
 $$
 
+DROP TRIGGER order_time_rating_update;
 DELIMITER $$
 CREATE TRIGGER order_time_rating_update
     BEFORE UPDATE
@@ -248,7 +249,8 @@ CREATE TRIGGER order_time_rating_update
 		BEGIN
 			IF (NEW.status = 'PLACED') OR (NEW.status = 'PENDING') OR (NEW.status = 'TXN_FAILURE') THEN
 				SET NEW.date = CURRENT_TIMESTAMP;
-            ELSEIF NEW.rating IS NOT NULL THEN
+			END IF;
+            IF NEW.rating IS NOT NULL THEN
 				BEGIN
 					DECLARE actual_status ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
 						'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
@@ -262,7 +264,11 @@ CREATE TRIGGER order_time_rating_update
 
 					IF (OLD.rating IS NOT NULL) THEN
 						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated if already done!';
-					ELSEIF ((actual_status IS NULL) OR ((actual_status != 'COMPLETED') AND (actual_status != 'DELIVERED'))) THEN
+					ELSEIF ((actual_status IS NULL) OR ((actual_status != 'COMPLETED') AND
+														(actual_status != 'DELIVERED') AND
+                                                        (actual_status != 'CANCELLED_BY_USER') AND
+                                                        (actual_status != 'CANCELLED_BY_SELLER') AND
+                                                        (actual_status != 'REFUND_COMPLETED'))) THEN
 						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated before the order completes!';
 					END IF;
                 END;
@@ -281,7 +287,7 @@ CREATE TRIGGER order_status_rating_update
 			VALUES (NEW.id, NEW.status);
 		END IF;
 		IF (OLD.rating IS NULL AND NEW.rating IS NOT NULL) THEN
-			CALL shop_rating_update(OLD.shop_id, NEW.rating);
+			CALL shop_rating_update(OLD.shop_id);
 		END IF;
     END;
 $$

@@ -211,27 +211,23 @@ END$$
 DELIMITER ;
 
 ####################################################
-                
+
 DELIMITER $$
 CREATE PROCEDURE shop_rating_update(
-    IN s_id INT,
-	IN user_rating DOUBLE(2, 1)
+    IN s_id INT
 )
 BEGIN
 	DECLARE actual_rating DOUBLE(2, 1) DEFAULT NULL;
-	DECLARE updated_rating DOUBLE(2, 1) DEFAULT NULL;
 	DECLARE actual_user_count INT DEFAULT NULL;
     
-    SELECT rating, user_count
-    INTO actual_rating, actual_user_count
-    FROM rating
-    WHERE shop_id = s_id;
-    
-    SET updated_rating = ((actual_rating * actual_user_count) + user_rating) / (actual_user_count + 1);
-    SET actual_user_count = actual_user_count + 1;
-    
+    SELECT COUNT(rating), AVG(rating)
+    INTO actual_user_count, actual_rating
+    FROM orders
+    WHERE shop_id = s_id AND
+    rating IS NOT NULL;
+
     UPDATE rating
-    SET rating = updated_rating,
+    SET rating = actual_rating,
     user_count = actual_user_count
     WHERE shop_id = s_id;
 END$$
@@ -245,6 +241,6 @@ DELIMITER ;
 # CALL order_status_update(1, 'DELIVERED', '966318', @result);
 # SELECT @result;
 
-# CALL shop_rating_update(1, 5.0);
+# CALL shop_rating_update(1);
 
 ####################################################
