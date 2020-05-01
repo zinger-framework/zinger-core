@@ -290,7 +290,6 @@ CREATE TRIGGER order_status_rating_update
     ON orders
     FOR EACH ROW
     BEGIN
-
 		IF (OLD.rating IS NULL AND NEW.rating IS NOT NULL) THEN
 			CALL shop_rating_update(OLD.shop_id);
 		END IF;
