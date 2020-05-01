@@ -419,26 +419,18 @@ public class UserDaoImpl implements UserDao {
     public Response<String> updateUser(UserModel user) {
         Response<String> response = new Response<>();
 
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserColumn.name, user.getName())
-                    .addValue(UserColumn.mobile, user.getMobile())
-                    .addValue(UserColumn.email, user.getEmail())
-                    .addValue(UserColumn.id, user.getId());
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue(UserColumn.name, user.getName())
+                .addValue(UserColumn.mobile, user.getMobile())
+                .addValue(UserColumn.email, user.getEmail())
+                .addValue(UserColumn.id, user.getId());
 
-            int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
-            if (result > 0) {
-                response.prioritySet(Priority.LOW);
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-            } else {
-                response.setCode(ErrorLog.UDNU1157);
-                response.setMessage(ErrorLog.UserDetailNotUpdated);
-            }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1158);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
+        if (result > 0) {
+            response.prioritySet(Priority.LOW);
+            response.setCode(ErrorLog.CodeSuccess);
+            response.setMessage(ErrorLog.Success);
+            response.setData(ErrorLog.Success);
         }
 
         return response;
@@ -553,7 +545,6 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
-
         Response<String> response = updateUser(userPlaceModel.getUserModel());
         updatePlace(userPlaceModel);
         return response;

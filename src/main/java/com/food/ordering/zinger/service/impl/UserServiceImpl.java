@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.service.impl;
 
+import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
@@ -67,7 +68,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<String> updateUser(UserModel userModel) {
-        Response<String> response = userDao.updateUser(userModel);
+        Response<String> response = new Response<>();
+        try {
+            response = userDao.updateUser(userModel);
+        } catch (Exception e) {
+            response.setCode(ErrorLog.UDNU1157);
+            response.setMessage(ErrorLog.UserDetailNotUpdated);
+        }
         auditLogDao.insertUserLog(new UserLogModel(response, userModel.getId(), userModel.toString()));
         return response;
     }
@@ -81,7 +88,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
-        Response<String> response = userDao.updateUserPlaceData(userPlaceModel);
+        Response<String> response = new Response<>();
+        try {
+            response = userDao.updateUserPlaceData(userPlaceModel);
+        }
+        catch (Exception e){
+            response.setCode(ErrorLog.UDNU1157);
+            response.setMessage(ErrorLog.UserDetailNotUpdated);
+        }
         auditLogDao.insertUserLog(new UserLogModel(response, userPlaceModel.getUserModel().getId(), userPlaceModel.toString()));
         return response;
     }

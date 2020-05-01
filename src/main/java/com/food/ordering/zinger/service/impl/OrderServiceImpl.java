@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.service.impl;
 
+import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.exception.GenericException;
@@ -75,6 +76,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<OrderItemListModel> getOrderById(Integer id) {
         Response<OrderItemListModel> response = orderDao.getOrderById(id);
+        try {
+            if (response.getCode().equals(ErrorLog.CodeSuccess))
+                response.getData().getTransactionModel().getOrderModel().getUserModel().setNotificationToken(null);
+        }
+        catch (Exception e){}
         auditLogDao.insertOrderLog(new OrderLogModel(response, id, null));
         return response;
     }

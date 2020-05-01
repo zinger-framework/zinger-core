@@ -4,28 +4,20 @@ import com.food.ordering.zinger.constant.Constant;
 import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
-import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.notification.NewOrderPayLoad;
 import com.food.ordering.zinger.model.notification.OrderStatusPayLoad;
-import com.food.ordering.zinger.service.interfaces.OrderService;
-import com.google.api.client.json.Json;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.mysql.cj.exceptions.ClosedOnExpiredPasswordException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -37,10 +29,8 @@ import java.util.List;
 @Repository
 public class NotifyDaoImpl implements NotifyDao {
 
-
-
     @Bean
-    void initFireBaseNotifications(){
+    void initFireBaseNotifications() {
         FileInputStream serviceAccount = null;
         FirebaseOptions options = null;
         try {
@@ -59,46 +49,40 @@ public class NotifyDaoImpl implements NotifyDao {
         Response<String> response = new Response<>();
 
         try {
-
             MulticastMessage message = MulticastMessage.builder()
-                    .putData(Constant.notificationTitle,notificationModel.getTitle())
-                    .putData(Constant.notificationMessage,notificationModel.getMessage())
-                    .putData(Constant.notificationType,notificationModel.getType().name())
-                    .putData(Constant.notificationPayload,notificationModel.getPayload())
+                    .putData(Constant.notificationTitle, notificationModel.getTitle())
+                    .putData(Constant.notificationMessage, notificationModel.getMessage())
+                    .putData(Constant.notificationType, notificationModel.getType().name())
+                    .putData(Constant.notificationPayload, notificationModel.getPayload())
                     .addAllTokens(fcmTokenList)
                     .build();
 
             BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
 
-            if(fbResponse.getSuccessCount()>0){
+            if (fbResponse.getSuccessCount() > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
             }
-
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
         return response;
     }
 
-
-    Response<String> sendTopicMessage(NotificationModel notificationModel,String topic){
-
+    Response<String> sendTopicMessage(NotificationModel notificationModel, String topic) {
         Response<String> response = new Response<>();
-
         try {
             Message message = Message.builder()
-                    .putData(Constant.notificationTitle,notificationModel.getTitle())
-                    .putData(Constant.notificationMessage,notificationModel.getMessage())
-                    .putData(Constant.notificationType,notificationModel.getType().name())
-                    .putData(Constant.notificationPayload,notificationModel.getPayload())
+                    .putData(Constant.notificationTitle, notificationModel.getTitle())
+                    .putData(Constant.notificationMessage, notificationModel.getMessage())
+                    .putData(Constant.notificationType, notificationModel.getType().name())
+                    .putData(Constant.notificationPayload, notificationModel.getPayload())
                     .setTopic(topic)
                     .build();
 
-            String fbResponse = FirebaseMessaging.getInstance().send(message);
+            FirebaseMessaging.getInstance().send(message);
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
-            System.out.println(fbResponse);
         } catch (FirebaseMessagingException e) {
             e.printStackTrace();
         }
@@ -126,17 +110,12 @@ public class NotifyDaoImpl implements NotifyDao {
         return response;
     }
 
-
-
     @Override
-    public void notifyNewOrder(Response<OrderItemListModel> response){
+    public void notifyNewOrder(Response<OrderItemListModel> response) {
+        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
+            OrderItemListModel orderItemListModel = response.getData();
 
-
-        if(response.getCode().equals(ErrorLog.CodeSuccess)){
-
-            OrderItemListModel orderItemListModel =  response.getData();
-
-            NotificationModel notificationModel=new NotificationModel();
+            NotificationModel notificationModel = new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
             notificationModel.setType(Enums.NotificationType.NEW_ORDER);
@@ -148,7 +127,7 @@ public class NotifyDaoImpl implements NotifyDao {
 
             ArrayList<String> itemList = new ArrayList<>();
             orderItemListModel.getOrderItemsList().stream().forEach(orderItemModel ->
-                    itemList.add(orderItemModel.getItemModel().getName()+" * "+orderItemModel.getQuantity()));
+                    itemList.add(orderItemModel.getItemModel().getName() + " * " + orderItemModel.getQuantity()));
             newOrderPayLoad.setItemList(itemList);
 
             Gson gson = new GsonBuilder().create();
@@ -157,19 +136,16 @@ public class NotifyDaoImpl implements NotifyDao {
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
             String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel,names[0]+shopModel.getId());
-
+            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
         }
     }
 
     @Override
     public void notifyUpdateOrder(Response<OrderItemListModel> response) {
+        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
+            OrderItemListModel orderItemListModel = response.getData();
 
-        if(response.getCode().equals(ErrorLog.CodeSuccess)){
-
-            OrderItemListModel orderItemListModel =  response.getData();
-
-            NotificationModel notificationModel=new NotificationModel();
+            NotificationModel notificationModel = new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
             notificationModel.setType(Enums.NotificationType.ORDER_STATUS);
@@ -178,31 +154,28 @@ public class NotifyDaoImpl implements NotifyDao {
             OrderModel orderModel = orderItemListModel.getTransactionModel().getOrderModel();
             List<OrderStatusModel> orderStatusModel = orderItemListModel.getOrderStatusModel();
             orderStatusPayLoad.setOrderId(orderModel.getId());
-            orderStatusPayLoad.setOrderStatus(orderStatusModel.get(orderStatusModel.size()-1).getOrderStatus());
+            orderStatusPayLoad.setOrderStatus(orderStatusModel.get(orderStatusModel.size() - 1).getOrderStatus());
             orderStatusPayLoad.setShopName(orderModel.getShopModel().getName());
             orderStatusPayLoad.setSecretKey(orderModel.getSecretKey());
-
 
             Gson gson = new GsonBuilder().create();
             String jsonPayload = gson.toJson(orderStatusPayLoad);
             notificationModel.setPayload(jsonPayload);
 
-            sendMulticast(notificationModel,orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
+            sendMulticast(notificationModel, orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
             String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel,names[0]+shopModel.getId());
+            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
         }
     }
 
     @Override
     public void notifyCancelOrderByUser(Response<OrderItemListModel> response) {
+        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
+            OrderItemListModel orderItemListModel = response.getData();
 
-        if(response.getCode().equals(ErrorLog.CodeSuccess)){
-
-            OrderItemListModel orderItemListModel =  response.getData();
-
-            NotificationModel notificationModel=new NotificationModel();
+            NotificationModel notificationModel = new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
             notificationModel.setType(Enums.NotificationType.ORDER_CANCELLED);
@@ -214,7 +187,7 @@ public class NotifyDaoImpl implements NotifyDao {
 
             ArrayList<String> itemList = new ArrayList<>();
             orderItemListModel.getOrderItemsList().stream().forEach(orderItemModel ->
-                    itemList.add(orderItemModel.getItemModel().getName()+" * "+orderItemModel.getQuantity()));
+                    itemList.add(orderItemModel.getItemModel().getName() + " * " + orderItemModel.getQuantity()));
             newOrderPayLoad.setItemList(itemList);
 
             Gson gson = new GsonBuilder().create();
@@ -223,18 +196,17 @@ public class NotifyDaoImpl implements NotifyDao {
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
             String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel,names[0]+shopModel.getId());
-
+            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
         }
     }
 
     @Override
     public Response<String> notifyWebView(NotificationModel notificationModel) {
-        return sendTopicMessage(notificationModel,Constant.globalNotificationTopic);
+        return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 
     @Override
     public Response<String> notifyNewArrival(NotificationModel notificationModel) {
-        return sendTopicMessage(notificationModel,Constant.globalNotificationTopic);
+        return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 }
