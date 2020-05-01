@@ -18,5 +18,4 @@ public interface NotifyDao {
     Response<String> notifyWebView(NotificationModel notificationModel);
 
     Response<String> notifyNewArrival(NotificationModel notificationModel);
-
 }

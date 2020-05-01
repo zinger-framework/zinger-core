@@ -419,6 +419,7 @@ public class UserDaoImpl implements UserDao {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(UserColumn.name, user.getName())
+                .addValue(UserColumn.oauthId, user.getOauthId())
                 .addValue(UserColumn.mobile, user.getMobile())
                 .addValue(UserColumn.email, user.getEmail())
                 .addValue(UserColumn.id, user.getId());
