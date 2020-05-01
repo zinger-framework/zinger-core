@@ -50,7 +50,7 @@ CREATE TABLE users
     name        VARCHAR(32) DEFAULT NULL,
     email       VARCHAR(64) DEFAULT NULL,
     oauth_id    VARCHAR(64) UNIQUE                                               NOT NULL,
-    notif_token JSON                                                             NOT NULL,
+    notif_token JSON                                                             DEFAULT NULL,
     role        ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
     is_delete   INT         DEFAULT 0,
     CONSTRAINT users_id_pk PRIMARY KEY (id)
@@ -211,6 +211,34 @@ CREATE TRIGGER seller_archive
     FOR EACH ROW
     INSERT INTO seller_archive(user_id, shop_id)
     VALUES (OLD.user_id, OLD.shop_id);
+
+DELIMITER $$
+CREATE TRIGGER notif_update
+    BEFORE UPDATE
+    ON users
+    FOR EACH ROW
+    BEGIN
+		DECLARE actual_notif_token JSON DEFAULT NULL;
+		DECLARE actual_notif_token_length BIGINT UNSIGNED DEFAULT NULL;
+        
+        SELECT notif_token
+		INTO actual_notif_token
+		FROM users
+		where id = NEW.id;
+        
+        IF actual_notif_token IS NULL AND NEW.notif_token IS NOT NULL THEN
+			SELECT JSON_ARRAY(NEW.notif_token) INTO actual_notif_token;
+		ELSEIF JSON_CONTAINS(actual_notif_token, NEW.notif_token) = 0 THEN
+			SET actual_notif_token_length = JSON_LENGTH(actual_notif_token);
+			
+			IF actual_notif_token_length >= 5 THEN
+				SELECT JSON_REMOVE(actual_notif_token, '$[0]') INTO actual_notif_token;
+			END IF;
+			SELECT JSON_ARRAY_APPEND(actual_notif_token, '$', NEW.notif_token) INTO actual_notif_token;
+        END IF;
+        SET NEW.notif_token = actual_notif_token;
+    END;
+$$
 
 DELIMITER $$
 CREATE TRIGGER order_time_rating_update

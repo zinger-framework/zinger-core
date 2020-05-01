@@ -27,6 +27,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.food.ordering.zinger.constant.ErrorLog.*;
+import static com.food.ordering.zinger.constant.Sql.DOUBLE_QUOTE;
+import static com.food.ordering.zinger.constant.Sql.SINGLE_QUOTE;
 
 /**
  * UserDao is responsible for CRUD operations in
@@ -138,7 +140,6 @@ public class UserDaoImpl implements UserDao {
             MapSqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserColumn.mobile, userModel.getMobile())
                     .addValue(UserColumn.oauthId, userModel.getOauthId())
-                    .addValue(UserColumn.notifToken, Helper.toJsonFormattedString(userModel.getNotificationToken()))
                     .addValue(UserColumn.role, userModel.getRole().name())
                     .addValue(UserColumn.isDelete, 0);
 
@@ -423,7 +424,6 @@ public class UserDaoImpl implements UserDao {
                     .addValue(UserColumn.name, user.getName())
                     .addValue(UserColumn.mobile, user.getMobile())
                     .addValue(UserColumn.email, user.getEmail())
-                    .addValue(UserColumn.notifToken, Helper.toJsonFormattedString(user.getNotificationToken()))
                     .addValue(UserColumn.id, user.getId());
 
             int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
@@ -438,6 +438,39 @@ public class UserDaoImpl implements UserDao {
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1158);
+            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    /**
+     * Updates the user notification token
+     *
+     * @param userNotificationModel UserNotificationModel
+     * @return success response if the update is successful.
+     */
+    @Override
+    public Response<String> updateUserNotificationToken(UserNotificationModel userNotificationModel) {
+        Response<String> response = new Response<>();
+
+        try {
+            SqlParameterSource parameters = new MapSqlParameterSource()
+                    .addValue(UserColumn.notifToken, DOUBLE_QUOTE + userNotificationModel.getNotificationToken() + DOUBLE_QUOTE)
+                    .addValue(UserColumn.id, userNotificationModel.getId());
+
+            int result = namedParameterJdbcTemplate.update(UserQuery.updateUserNotificationToken, parameters);
+            if (result > 0) {
+                response.prioritySet(Priority.LOW);
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+            } else {
+                response.setCode(ErrorLog.UDNU1159);
+                response.setMessage(ErrorLog.UserDetailNotUpdated);
+            }
+        } catch (Exception e) {
+            response.setCode(ErrorLog.CE1206);
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
@@ -520,9 +553,9 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
+
         Response<String> response = updateUser(userPlaceModel.getUserModel());
-        if (response.getCode().equals(CodeSuccess))
-            updatePlace(userPlaceModel);
+        updatePlace(userPlaceModel);
         return response;
     }
 

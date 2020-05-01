@@ -23,6 +23,8 @@ public interface UserService {
 
     Response<String> updateUser(UserModel userModel);
 
+    Response<String> updateUserNotificationToken(UserNotificationModel userNotificationModel);
+
     Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel);
 
     Response<String> deleteSeller(Integer shopId, Integer userId);

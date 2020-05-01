@@ -73,6 +73,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response<String> updateUserNotificationToken(UserNotificationModel userNotificationModel) {
+        Response<String> response = userDao.updateUserNotificationToken(userNotificationModel);
+        auditLogDao.insertUserLog(new UserLogModel(response, userNotificationModel.getId(), userNotificationModel.toString()));
+        return response;
+    }
+
+    @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = userDao.updateUserPlaceData(userPlaceModel);
         auditLogDao.insertUserLog(new UserLogModel(response, userPlaceModel.getUserModel().getId(), userPlaceModel.toString()));

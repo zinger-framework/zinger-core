@@ -42,6 +42,7 @@ public class ApiConfig {
         public static final String deleteInvite = "/seller/invite";
         public static final String getSellerByShopId = "/seller/{shopId}";
         public static final String updateUser = EMPTY_QUOTES;
+        public static final String updateUserNotificationToken = "/notif";
         public static final String updateUserPlaceData = "/place";
         public static final String deleteSeller = "/seller/{shopId}/{userId}";
     }

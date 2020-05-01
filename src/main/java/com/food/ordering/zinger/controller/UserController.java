@@ -57,6 +57,11 @@ public class UserController {
         return userService.updateUser(userModel);
     }
 
+    @PatchMapping(value = updateUserNotificationToken)
+    public Response<String> updateUserNotificationToken(@RequestBody UserNotificationModel userNotificationModel) {
+        return userService.updateUserNotificationToken(userNotificationModel);
+    }
+
     @PatchMapping(value = updateUserPlaceData)
     public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel) {
         return userService.updateUserPlaceData(userPlaceModel);

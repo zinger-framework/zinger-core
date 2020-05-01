@@ -785,7 +785,10 @@ public class Query {
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
                 UserColumn.email + EQUAL_COLON + UserColumn.email + COMMA +
-                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + COMMA +
+                UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + WHERE +
+                UserColumn.id + EQUAL_COLON + UserColumn.id;
+
+        public static final String updateUserNotificationToken = UPDATE + UserColumn.tableName + SET +
                 UserColumn.notifToken + EQUAL_COLON + UserColumn.notifToken + WHERE +
                 UserColumn.id + EQUAL_COLON + UserColumn.id;
 
