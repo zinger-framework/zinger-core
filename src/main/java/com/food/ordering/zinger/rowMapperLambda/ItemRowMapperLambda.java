@@ -1,5 +1,6 @@
 package com.food.ordering.zinger.rowMapperLambda;
 
+import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.model.ItemModel;
 import com.food.ordering.zinger.model.ShopModel;
 import org.springframework.jdbc.core.RowMapper;
@@ -30,6 +31,7 @@ public class ItemRowMapperLambda {
 
         ShopModel shopModel = new ShopModel();
         shopModel.setId(rs.getInt(shopId));
+        shopModel.setName(rs.getString(Column.shopName));
         item.setShopModel(shopModel);
 
         item.setIsVeg(rs.getInt(isVeg));

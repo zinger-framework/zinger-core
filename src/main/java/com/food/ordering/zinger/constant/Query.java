@@ -128,7 +128,8 @@ public class Query {
                 ItemColumn.tableName + DOT + ItemColumn.category + COMMA +
                 ItemColumn.tableName + DOT + ItemColumn.shopId + COMMA +
                 ItemColumn.tableName + DOT + ItemColumn.isVeg + COMMA +
-                ItemColumn.tableName + DOT + ItemColumn.isAvailable + FROM + ItemColumn.tableName +
+                ItemColumn.tableName + DOT + ItemColumn.isAvailable + COMMA +
+                ShopColumn.tableName + DOT + ShopColumn.name + AS + shopName + FROM + ItemColumn.tableName +
                 INNER_JOIN + ShopColumn.tableName + ON +
                 ItemColumn.tableName + DOT + ItemColumn.shopId + EQUALS + ShopColumn.tableName + DOT + ShopColumn.id + AND +
                 ShopColumn.tableName + DOT + ShopColumn.placeId + EQUAL_COLON + ShopColumn.placeId + WHERE +
