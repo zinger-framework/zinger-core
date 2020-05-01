@@ -2,6 +2,7 @@ package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
+import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.OrderItemListModel;
@@ -20,6 +21,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     OrderDao orderDao;
+
+    @Autowired
+    NotifyDao notifyDao;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -95,6 +99,16 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<String> updateOrderStatus(OrderModel orderModel) {
         Response<String> response = orderDao.updateOrderStatus(orderModel);
+        if(response.getCode().equals(ErrorLog.CodeSuccess)){
+            switch (orderModel.getOrderStatus()) {
+                case PLACED:
+                case CANCELLED_BY_USER:
+                    notifyDao.notifyOrderStatusToSeller(getOrderById(orderModel.getId()));
+                    break;
+                default:
+                    notifyDao.notifyOrderStatus(getOrderById(orderModel.getId()));
+            }
+        }
         auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
         return response;
     }

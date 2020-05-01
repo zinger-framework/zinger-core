@@ -55,9 +55,6 @@ public class OrderDaoImpl implements OrderDao {
     @Autowired
     PaymentResponse paymentResponse;
 
-    @Autowired
-    NotifyDao notifyDao;
-
     /**
      * Insert order method
      * -> checks for availability of each item and calculates the total order amount.
@@ -507,15 +504,6 @@ public class OrderDaoImpl implements OrderDao {
                         orderModel.getOrderStatus().equals(OrderStatus.CANCELLED_BY_SELLER) ||
                         orderModel.getOrderStatus().equals(OrderStatus.REFUND_INITIATED))
                     paymentResponse.initiateRefund();
-
-                switch (orderModel.getOrderStatus()) {
-                    case PLACED:
-                    case CANCELLED_BY_USER:
-                        notifyDao.notifyOrderStatusToSeller(getOrderById(orderModel.getId()));
-                        break;
-                    default:
-                        notifyDao.notifyOrderStatus(getOrderById(orderModel.getId()));
-                }
 
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
