@@ -1,6 +1,5 @@
 package com.food.ordering.zinger.model.notification;
 
-
 import java.util.ArrayList;
 
 public class NewOrderPayLoad {
@@ -48,5 +47,16 @@ public class NewOrderPayLoad {
 
     public void setOrderType(String orderType) {
         this.orderType = orderType;
+    }
+
+    @Override
+    public String toString() {
+        return "NewOrderPayLoad{" +
+                "userName='" + userName + '\'' +
+                ", orderId=" + orderId +
+                ", amount=" + amount +
+                ", itemList=" + itemList +
+                ", orderType='" + orderType + '\'' +
+                '}';
     }
 }

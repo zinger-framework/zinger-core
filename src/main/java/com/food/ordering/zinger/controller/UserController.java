@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.controller;
 
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.notification.UserNotificationModel;
 import com.food.ordering.zinger.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

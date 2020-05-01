@@ -768,6 +768,7 @@ public class Query {
 
         public static final String updateUser = UPDATE + UserColumn.tableName + SET +
                 UserColumn.name + EQUAL_COLON + UserColumn.name + COMMA +
+                UserColumn.oauthId + EQUAL_COLON + UserColumn.oauthId + COMMA +
                 UserColumn.email + EQUAL_COLON + UserColumn.email + COMMA +
                 UserColumn.mobile + EQUAL_COLON + UserColumn.mobile + WHERE +
                 UserColumn.id + EQUAL_COLON + UserColumn.id;

@@ -1,4 +1,4 @@
-package com.food.ordering.zinger.model;
+package com.food.ordering.zinger.model.notification;
 
 import com.food.ordering.zinger.constant.Enums;
 
@@ -7,7 +7,6 @@ public class NotificationModel {
     String title;
     String message;
     String payload;
-
 
     public Enums.NotificationType getType() {
         return type;
@@ -39,5 +38,15 @@ public class NotificationModel {
 
     public void setPayload(String payload) {
         this.payload = payload;
+    }
+
+    @Override
+    public String toString() {
+        return "NotificationModel{" +
+                "type=" + type +
+                ", title='" + title + '\'' +
+                ", message='" + message + '\'' +
+                ", payload='" + payload + '\'' +
+                '}';
     }
 }

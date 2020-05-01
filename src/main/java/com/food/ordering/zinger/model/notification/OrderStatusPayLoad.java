@@ -3,7 +3,6 @@ package com.food.ordering.zinger.model.notification;
 import com.food.ordering.zinger.constant.Enums;
 
 public class OrderStatusPayLoad {
-
     Integer orderId;
     Enums.OrderStatus orderStatus;
     String shopName;
@@ -39,5 +38,15 @@ public class OrderStatusPayLoad {
 
     public void setShopName(String shopName) {
         this.shopName = shopName;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderStatusPayLoad{" +
+                "orderId=" + orderId +
+                ", orderStatus=" + orderStatus +
+                ", shopName='" + shopName + '\'' +
+                ", secretKey='" + secretKey + '\'' +
+                '}';
     }
 }

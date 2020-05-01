@@ -5,6 +5,7 @@ import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.logger.UserLogModel;
+import com.food.ordering.zinger.model.notification.UserNotificationModel;
 import com.food.ordering.zinger.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -13,6 +13,7 @@ import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.notification.UserNotificationModel;
 import com.food.ordering.zinger.rowMapperLambda.UserRowMapperLambda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -419,6 +420,7 @@ public class UserDaoImpl implements UserDao {
 
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue(UserColumn.name, user.getName())
+                .addValue(UserColumn.oauthId, user.getOauthId())
                 .addValue(UserColumn.mobile, user.getMobile())
                 .addValue(UserColumn.email, user.getEmail())
                 .addValue(UserColumn.id, user.getId());

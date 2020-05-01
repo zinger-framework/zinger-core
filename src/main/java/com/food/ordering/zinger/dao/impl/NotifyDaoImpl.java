@@ -6,6 +6,7 @@ import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.model.*;
 import com.food.ordering.zinger.model.notification.NewOrderPayLoad;
+import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.model.notification.OrderStatusPayLoad;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
@@ -29,6 +30,8 @@ import java.util.List;
 @Repository
 public class NotifyDaoImpl implements NotifyDao {
 
+    private FirebaseMessaging firebaseMessaging;
+
     @Bean
     void initFireBaseNotifications() {
         FileInputStream serviceAccount = null;
@@ -43,6 +46,7 @@ public class NotifyDaoImpl implements NotifyDao {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
+        firebaseMessaging = FirebaseMessaging.getInstance();
     }
 
     Response<String> sendMulticast(NotificationModel notificationModel, List<String> fcmTokenList) {
@@ -57,7 +61,9 @@ public class NotifyDaoImpl implements NotifyDao {
                     .addAllTokens(fcmTokenList)
                     .build();
 
-            BatchResponse fbResponse = FirebaseMessaging.getInstance().sendMulticast(message);
+            if(firebaseMessaging == null)
+                firebaseMessaging = FirebaseMessaging.getInstance();
+            BatchResponse fbResponse = firebaseMessaging.sendMulticast(message);
 
             if (fbResponse.getSuccessCount() > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -80,7 +86,10 @@ public class NotifyDaoImpl implements NotifyDao {
                     .setTopic(topic)
                     .build();
 
-            FirebaseMessaging.getInstance().send(message);
+            if(firebaseMessaging == null)
+                firebaseMessaging = FirebaseMessaging.getInstance();
+            firebaseMessaging.send(message);
+
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
         } catch (FirebaseMessagingException e) {
@@ -126,7 +135,7 @@ public class NotifyDaoImpl implements NotifyDao {
             newOrderPayLoad.setUserName(orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getName());
 
             ArrayList<String> itemList = new ArrayList<>();
-            orderItemListModel.getOrderItemsList().stream().forEach(orderItemModel ->
+            orderItemListModel.getOrderItemsList().forEach(orderItemModel ->
                     itemList.add(orderItemModel.getItemModel().getName() + " * " + orderItemModel.getQuantity()));
             newOrderPayLoad.setItemList(itemList);
 

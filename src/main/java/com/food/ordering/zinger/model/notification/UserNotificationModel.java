@@ -1,11 +1,10 @@
-package com.food.ordering.zinger.model;
+package com.food.ordering.zinger.model.notification;
 
 public class UserNotificationModel {
     private Integer id;
     private String notificationToken;
 
-    public UserNotificationModel() {
-    }
+    public UserNotificationModel() { }
 
     public Integer getId() {
         return id;

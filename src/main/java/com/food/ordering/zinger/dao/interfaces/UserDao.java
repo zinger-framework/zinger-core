@@ -1,6 +1,7 @@
 package com.food.ordering.zinger.dao.interfaces;
 
 import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.notification.UserNotificationModel;
 
 import java.util.List;
 
