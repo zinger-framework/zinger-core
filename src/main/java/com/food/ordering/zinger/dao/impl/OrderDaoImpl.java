@@ -510,13 +510,11 @@ public class OrderDaoImpl implements OrderDao {
 
                 switch (orderModel.getOrderStatus()) {
                     case PLACED:
-                        notifyDao.notifyNewOrder(getOrderById(orderModel.getId()));
-                        break;
                     case CANCELLED_BY_USER:
-                        notifyDao.notifyCancelOrderByUser(getOrderById(orderModel.getId()));
+                        notifyDao.notifyOrderStatusToSeller(getOrderById(orderModel.getId()));
                         break;
                     default:
-                        notifyDao.notifyUpdateOrder(getOrderById(orderModel.getId()));
+                        notifyDao.notifyOrderStatus(getOrderById(orderModel.getId()));
                 }
 
                 response.setCode(ErrorLog.CodeSuccess);

@@ -1,21 +1,17 @@
 package com.food.ordering.zinger.dao.interfaces;
 
-import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.model.OrderItemListModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserShopModel;
+import com.food.ordering.zinger.model.notification.NotificationModel;
 
 public interface NotifyDao {
 
     Response<String> notifyInvitation(UserShopModel userShopModel);
 
-    void notifyNewOrder(Response<OrderItemListModel> response);
+    Response<String> sendGlobalNotification(NotificationModel notificationModel);
 
-    void notifyUpdateOrder(Response<OrderItemListModel> response);
+    void notifyOrderStatusToSeller(Response<OrderItemListModel> response);
 
-    void notifyCancelOrderByUser(Response<OrderItemListModel> response);
-
-    Response<String> notifyWebView(NotificationModel notificationModel);
-
-    Response<String> notifyNewArrival(NotificationModel notificationModel);
+    void notifyOrderStatus(Response<OrderItemListModel> response);
 }

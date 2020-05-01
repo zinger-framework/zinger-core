@@ -5,9 +5,9 @@ import com.food.ordering.zinger.constant.Enums;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.notification.NewOrderPayLoad;
+import com.food.ordering.zinger.model.notification.CustomerPayLoad;
 import com.food.ordering.zinger.model.notification.NotificationModel;
-import com.food.ordering.zinger.model.notification.OrderStatusPayLoad;
+import com.food.ordering.zinger.model.notification.SellerPayLoad;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -61,7 +61,7 @@ public class NotifyDaoImpl implements NotifyDao {
                     .addAllTokens(fcmTokenList)
                     .build();
 
-            if(firebaseMessaging == null)
+            if (firebaseMessaging == null)
                 firebaseMessaging = FirebaseMessaging.getInstance();
             BatchResponse fbResponse = firebaseMessaging.sendMulticast(message);
 
@@ -86,7 +86,7 @@ public class NotifyDaoImpl implements NotifyDao {
                     .setTopic(topic)
                     .build();
 
-            if(firebaseMessaging == null)
+            if (firebaseMessaging == null)
                 firebaseMessaging = FirebaseMessaging.getInstance();
             firebaseMessaging.send(message);
 
@@ -97,6 +97,11 @@ public class NotifyDaoImpl implements NotifyDao {
         }
 
         return response;
+    }
+
+    @Override
+    public Response<String> sendGlobalNotification(NotificationModel notificationModel) {
+        return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 
     /**
@@ -120,59 +125,32 @@ public class NotifyDaoImpl implements NotifyDao {
     }
 
     @Override
-    public void notifyNewOrder(Response<OrderItemListModel> response) {
+    public void notifyOrderStatus(Response<OrderItemListModel> response) {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {
             OrderItemListModel orderItemListModel = response.getData();
 
             NotificationModel notificationModel = new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
-            notificationModel.setType(Enums.NotificationType.NEW_ORDER);
+            notificationModel.setType(Enums.NotificationType.SELLER_ORDER_STATUS);
 
-            NewOrderPayLoad newOrderPayLoad = new NewOrderPayLoad();
-            newOrderPayLoad.setOrderId(orderItemListModel.getTransactionModel().getOrderModel().getId());
-            newOrderPayLoad.setAmount(orderItemListModel.getTransactionModel().getOrderModel().getPrice());
-            newOrderPayLoad.setUserName(orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getName());
-
-            ArrayList<String> itemList = new ArrayList<>();
-            orderItemListModel.getOrderItemsList().forEach(orderItemModel ->
-                    itemList.add(orderItemModel.getItemModel().getName() + " * " + orderItemModel.getQuantity()));
-            newOrderPayLoad.setItemList(itemList);
-
-            Gson gson = new GsonBuilder().create();
-            String jsonPayload = gson.toJson(newOrderPayLoad);
-            notificationModel.setPayload(jsonPayload);
-
-            ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
-            String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
-        }
-    }
-
-    @Override
-    public void notifyUpdateOrder(Response<OrderItemListModel> response) {
-        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
-            OrderItemListModel orderItemListModel = response.getData();
-
-            NotificationModel notificationModel = new NotificationModel();
-            notificationModel.setTitle("");
-            notificationModel.setMessage("");
-            notificationModel.setType(Enums.NotificationType.ORDER_STATUS);
-
-            OrderStatusPayLoad orderStatusPayLoad = new OrderStatusPayLoad();
+            CustomerPayLoad customerPayLoad = new CustomerPayLoad();
             OrderModel orderModel = orderItemListModel.getTransactionModel().getOrderModel();
             List<OrderStatusModel> orderStatusModel = orderItemListModel.getOrderStatusModel();
-            orderStatusPayLoad.setOrderId(orderModel.getId());
-            orderStatusPayLoad.setOrderStatus(orderStatusModel.get(orderStatusModel.size() - 1).getOrderStatus());
-            orderStatusPayLoad.setShopName(orderModel.getShopModel().getName());
-            orderStatusPayLoad.setSecretKey(orderModel.getSecretKey());
+            customerPayLoad.setOrderId(orderModel.getId());
+            customerPayLoad.setOrderStatus(orderStatusModel.get(orderStatusModel.size() - 1).getOrderStatus());
+            customerPayLoad.setShopName(orderModel.getShopModel().getName());
+            customerPayLoad.setSecretKey(orderModel.getSecretKey());
 
             Gson gson = new GsonBuilder().create();
-            String jsonPayload = gson.toJson(orderStatusPayLoad);
+            String jsonPayload = gson.toJson(customerPayLoad);
             notificationModel.setPayload(jsonPayload);
 
             sendMulticast(notificationModel, orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getNotificationToken());
 
+            customerPayLoad.setSecretKey(null);
+            jsonPayload = gson.toJson(customerPayLoad);
+            notificationModel.setPayload(jsonPayload);
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
             String[] names = shopModel.getName().split(" ");
             sendTopicMessage(notificationModel, names[0] + shopModel.getId());
@@ -180,42 +158,38 @@ public class NotifyDaoImpl implements NotifyDao {
     }
 
     @Override
-    public void notifyCancelOrderByUser(Response<OrderItemListModel> response) {
+    public void notifyOrderStatusToSeller(Response<OrderItemListModel> response) {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {
             OrderItemListModel orderItemListModel = response.getData();
+            List<OrderStatusModel> orderStatusModelList = response.getData().getOrderStatusModel();
 
             NotificationModel notificationModel = new NotificationModel();
             notificationModel.setTitle("");
             notificationModel.setMessage("");
-            notificationModel.setType(Enums.NotificationType.ORDER_CANCELLED);
+            notificationModel.setType(Enums.NotificationType.USER_ORDER_STATUS);
 
-            NewOrderPayLoad newOrderPayLoad = new NewOrderPayLoad();
-            newOrderPayLoad.setOrderId(orderItemListModel.getTransactionModel().getOrderModel().getId());
-            newOrderPayLoad.setAmount(orderItemListModel.getTransactionModel().getOrderModel().getPrice());
-            newOrderPayLoad.setUserName(orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getName());
+            SellerPayLoad sellerPayLoad = new SellerPayLoad();
+            sellerPayLoad.setOrderId(orderItemListModel.getTransactionModel().getOrderModel().getId());
+            sellerPayLoad.setAmount(orderItemListModel.getTransactionModel().getOrderModel().getPrice());
+            sellerPayLoad.setUserName(orderItemListModel.getTransactionModel().getOrderModel().getUserModel().getName());
+            sellerPayLoad.setOrderStatus(orderStatusModelList.get(orderStatusModelList.size() - 1).getOrderStatus());
+            if (orderItemListModel.getTransactionModel().getOrderModel().getDeliveryLocation() != null)
+                sellerPayLoad.setOrderType(Constant.deliveryOrderFlag);
+            else
+                sellerPayLoad.setOrderType(Constant.pickUpOrderFlag);
 
             ArrayList<String> itemList = new ArrayList<>();
-            orderItemListModel.getOrderItemsList().stream().forEach(orderItemModel ->
+            orderItemListModel.getOrderItemsList().forEach(orderItemModel ->
                     itemList.add(orderItemModel.getItemModel().getName() + " * " + orderItemModel.getQuantity()));
-            newOrderPayLoad.setItemList(itemList);
+            sellerPayLoad.setItemList(itemList);
 
             Gson gson = new GsonBuilder().create();
-            String jsonPayload = gson.toJson(newOrderPayLoad);
+            String jsonPayload = gson.toJson(sellerPayLoad);
             notificationModel.setPayload(jsonPayload);
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
             String[] names = shopModel.getName().split(" ");
             sendTopicMessage(notificationModel, names[0] + shopModel.getId());
         }
-    }
-
-    @Override
-    public Response<String> notifyWebView(NotificationModel notificationModel) {
-        return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
-    }
-
-    @Override
-    public Response<String> notifyNewArrival(NotificationModel notificationModel) {
-        return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 }

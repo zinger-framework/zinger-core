@@ -18,6 +18,6 @@ public class Enums {
     }
 
     public enum NotificationType {
-        URL, ORDER_STATUS, NEW_ARRIVAL, NEW_ORDER, ORDER_CANCELLED
+        URL, NEW_ARRIVAL, USER_ORDER_STATUS, SELLER_ORDER_STATUS
     }
 }

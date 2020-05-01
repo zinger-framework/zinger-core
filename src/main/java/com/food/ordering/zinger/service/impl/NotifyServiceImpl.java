@@ -3,10 +3,10 @@ package com.food.ordering.zinger.service.impl;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
-import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.UserModel;
 import com.food.ordering.zinger.model.UserShopModel;
+import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.service.interfaces.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,12 +35,7 @@ public class NotifyServiceImpl implements NotifyService {
     }
 
     @Override
-    public Response<String> sendUrlNotification(NotificationModel notificationModel) {
-        return notifyDao.notifyWebView(notificationModel);
-    }
-
-    @Override
-    public Response<String> sendNewArrivalNotification(NotificationModel notificationModel) {
-        return notifyDao.notifyNewArrival(notificationModel);
+    public Response<String> sendGlobalNotification(NotificationModel notificationModel) {
+        return notifyDao.sendGlobalNotification(notificationModel);
     }
 }

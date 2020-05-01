@@ -1,13 +1,16 @@
 package com.food.ordering.zinger.model.notification;
 
+import com.food.ordering.zinger.constant.Enums;
+
 import java.util.ArrayList;
 
-public class NewOrderPayLoad {
+public class SellerPayLoad {
     String userName;
     Integer orderId;
     Double amount;
     ArrayList<String> itemList;
     String orderType;
+    Enums.OrderStatus orderStatus;
 
     public String getUserName() {
         return userName;
@@ -49,14 +52,23 @@ public class NewOrderPayLoad {
         this.orderType = orderType;
     }
 
+    public Enums.OrderStatus getOrderStatus() {
+        return orderStatus;
+    }
+
+    public void setOrderStatus(Enums.OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
+
     @Override
     public String toString() {
-        return "NewOrderPayLoad{" +
+        return "SellerPayLoad{" +
                 "userName='" + userName + '\'' +
                 ", orderId=" + orderId +
                 ", amount=" + amount +
                 ", itemList=" + itemList +
                 ", orderType='" + orderType + '\'' +
+                ", orderStatus=" + orderStatus +
                 '}';
     }
 }

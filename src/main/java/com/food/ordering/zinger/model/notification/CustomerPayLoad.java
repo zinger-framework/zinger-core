@@ -2,7 +2,7 @@ package com.food.ordering.zinger.model.notification;
 
 import com.food.ordering.zinger.constant.Enums;
 
-public class OrderStatusPayLoad {
+public class CustomerPayLoad {
     Integer orderId;
     Enums.OrderStatus orderStatus;
     String shopName;

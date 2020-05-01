@@ -4,7 +4,8 @@ public class UserNotificationModel {
     private Integer id;
     private String notificationToken;
 
-    public UserNotificationModel() { }
+    public UserNotificationModel() {
+    }
 
     public Integer getId() {
         return id;
