@@ -152,8 +152,7 @@ public class NotifyDaoImpl implements NotifyDao {
             jsonPayload = gson.toJson(customerPayLoad);
             notificationModel.setPayload(jsonPayload);
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
-            String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
+            sendTopicMessage(notificationModel, "zinger" + shopModel.getId());
         }
     }
 
@@ -188,8 +187,7 @@ public class NotifyDaoImpl implements NotifyDao {
             notificationModel.setPayload(jsonPayload);
 
             ShopModel shopModel = orderItemListModel.getTransactionModel().getOrderModel().getShopModel();
-            String[] names = shopModel.getName().split(" ");
-            sendTopicMessage(notificationModel, names[0] + shopModel.getId());
+            sendTopicMessage(notificationModel, "zinger" + shopModel.getId());
         }
     }
 }

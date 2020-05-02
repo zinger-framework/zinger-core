@@ -45,6 +45,9 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Response<String> placeOrder(Integer orderId) {
         Response<String> response = orderDao.placeOrder(orderId);
+        if (response.getCode().equals(ErrorLog.CodeSuccess)) {
+            notifyDao.notifyOrderStatusToSeller(orderDao.getOrderById(orderId));
+        }
         auditLogDao.insertOrderLog(new OrderLogModel(response, null, orderId.toString()));
         return response;
     }
@@ -101,7 +104,6 @@ public class OrderServiceImpl implements OrderService {
         Response<String> response = orderDao.updateOrderStatus(orderModel);
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {
             switch (orderModel.getOrderStatus()) {
-                case PLACED:
                 case CANCELLED_BY_USER:
                     notifyDao.notifyOrderStatusToSeller(orderDao.getOrderById(orderModel.getId()));
                     break;
