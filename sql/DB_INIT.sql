@@ -78,8 +78,7 @@ CREATE TABLE item
     is_veg       INT          DEFAULT 1,
     is_available INT          DEFAULT 1,
     is_delete    INT          DEFAULT 0,
-    CONSTRAINT item_name_shop_id_pk PRIMARY KEY (name,shop_id),
-    CONSTRAINT item_id_uq UNIQUE (id),
+    CONSTRAINT item_name_shop_id_pk PRIMARY KEY (id),
     CONSTRAINT item_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
