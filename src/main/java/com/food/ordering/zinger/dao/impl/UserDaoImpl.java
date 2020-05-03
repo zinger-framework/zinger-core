@@ -296,6 +296,7 @@ public class UserDaoImpl implements UserDao {
      */
     @Override
     public Response<UserShopListModel> acceptInvite(UserShopModel userShopModel) {
+        //TODO: Check flow
         Response<UserShopListModel> response = new Response<>();
         Response<UserModel> inviteModelResponse = verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
 
@@ -303,28 +304,21 @@ public class UserDaoImpl implements UserDao {
             if (inviteModelResponse.getCode().equals(CodeSuccess)) {
                 userShopModel.getUserModel().setRole(inviteModelResponse.getData().getRole());
                 Number responseValue = insertUser(userShopModel.getUserModel());
-                if (responseValue != null && responseValue.intValue() > 0) {
+                if (responseValue != null && responseValue.intValue() > 0)
                     userShopModel.getUserModel().setId(responseValue.intValue());
-                    updateShop(userShopModel);
-                    deleteInvite(userShopModel);
-                    response = verifySeller(userShopModel.getUserModel());
-                } else {
+                else {
                     Response<UserModel> userModelResponse = getUserIdByMobile(userShopModel.getUserModel().getMobile());
-                    if (userModelResponse != null) {
+                    if (userModelResponse != null)
                         userShopModel.getUserModel().setId(userModelResponse.getData().getId());
-                        Response<String> updateRoleResponse = updateRole(userShopModel.getUserModel().getId(), inviteModelResponse.getData().getRole());
-                        if (updateRoleResponse.getCode().equals(CodeSuccess)) {
-                            updateShop(userShopModel);
-                            deleteInvite(userShopModel);
-                            response = verifySeller(userShopModel.getUserModel());
-                        } else {
-                            response.setCode(ErrorLog.UDNU1153);
-                            response.setMessage(UserDetailNotUpdated);
-                        }
-                    } else {
-                        response.setCode(ErrorLog.UDNA1262);
-                        response.setMessage(UserDetailNotAvailable);
-                    }
+                }
+
+                deleteInvite(userShopModel);
+                Response<String> insertUserShopResponse = insertUserShop(userShopModel);
+                if (insertUserShopResponse.getCode().equals(CodeSuccess))
+                    response = verifySeller(userShopModel.getUserModel());
+                else {
+                    response.setCode(ErrorLog.UDNU1158);
+                    response.setMessage(UserDetailNotUpdated);
                 }
             }
         } catch (Exception e) {
@@ -427,10 +421,10 @@ public class UserDaoImpl implements UserDao {
 
         int result = namedParameterJdbcTemplate.update(UserQuery.updateUser, parameters);
         if (result > 0) {
-            response.prioritySet(Priority.LOW);
             response.setCode(ErrorLog.CodeSuccess);
             response.setMessage(ErrorLog.Success);
             response.setData(ErrorLog.Success);
+            response.prioritySet(Priority.LOW);
         }
 
         return response;
@@ -453,43 +447,16 @@ public class UserDaoImpl implements UserDao {
 
             int result = namedParameterJdbcTemplate.update(UserQuery.updateUserNotificationToken, parameters);
             if (result > 0) {
-                response.prioritySet(Priority.LOW);
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
             } else {
                 response.setCode(ErrorLog.UDNU1159);
                 response.setMessage(ErrorLog.UserDetailNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1206);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
-
-    /**
-     * Updates the user role.
-     *
-     * @param id   Integer
-     * @param role UserRole
-     * @return success response if the update is successful.
-     */
-    public Response<String> updateRole(Integer id, UserRole role) {
-        Response<String> response = new Response<>();
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserColumn.id, id)
-                    .addValue(UserColumn.role, role.name());
-
-            int result = namedParameterJdbcTemplate.update(UserQuery.updateRole, parameters);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-            }
-        } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
 
@@ -522,18 +489,24 @@ public class UserDaoImpl implements UserDao {
      * @param userShopModel userShopModel
      * @return success response if the update is successful.
      */
-    public void updateShop(UserShopModel userShopModel) {
+    public Response<String> insertUserShop(UserShopModel userShopModel) {
+        Response<String> response = new Response<>();
+
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserShopColumn.userId, userShopModel.getUserModel().getId())
                     .addValue(UserShopColumn.shopId, userShopModel.getShopModel().getId());
 
-            int result = namedParameterJdbcTemplate.update(UserShopQuery.updateShopById, parameters);
-            if (result <= 0)
-                namedParameterJdbcTemplate.update(UserShopQuery.insertUserShop, parameters);
+            int result = namedParameterJdbcTemplate.update(UserShopQuery.insertUserShop, parameters);
+            if (result > 0) {
+                response.setCode(CodeSuccess);
+                response.setMessage(Success);
+                response.setData(Success);
+            }
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
+        return response;
     }
 
     /**
@@ -570,10 +543,10 @@ public class UserDaoImpl implements UserDao {
 
             int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
             if (result > 0) {
-                response.prioritySet(Priority.LOW);
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
             } else {
                 response.setCode(ErrorLog.UDND1164);
                 response.setMessage(UnableToDeleteSeller);
