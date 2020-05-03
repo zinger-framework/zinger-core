@@ -29,26 +29,9 @@ public class UserController {
 
     /**************************************************/
 
-    @PostMapping(value = inviteSeller)
-    public Response<String> inviteSeller(@RequestBody UserShopModel userShopModel) {
-        return userService.inviteSeller(userShopModel);
-    }
-
-    @PostMapping(value = acceptInvite)
-    public Response<UserShopListModel> acceptInvite(@RequestBody UserShopModel userShopModel) {
-        return userService.acceptInvite(userShopModel);
-    }
-
-    /**************************************************/
-
     @GetMapping(value = getSellerByShopId)
     public Response<List<UserModel>> getSellerByShopId(@PathVariable("shopId") Integer shopId) {
         return userService.getSellerByShopId(shopId);
-    }
-
-    @GetMapping(value = verifyInvite)
-    public Response<UserModel> verifyInvite(@PathVariable("shopId") Integer shopId, @PathVariable("mobile") String mobile) {
-        return userService.verifyInvite(shopId, mobile);
     }
 
     /**************************************************/
@@ -67,12 +50,6 @@ public class UserController {
     public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel) {
         return userService.updateUserPlaceData(userPlaceModel);
     }
-
-    @PatchMapping(value = deleteInvite)
-    public Response<String> deleteInvite(@RequestBody UserShopModel userShopModel) {
-        return userService.deleteInvite(userShopModel);
-    }
-
     /**************************************************/
 
     @DeleteMapping(value = deleteSeller)

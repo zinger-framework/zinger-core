@@ -56,17 +56,6 @@ CREATE TABLE users
     CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE users_invite
-(
-    mobile     VARCHAR(10)                             NOT NULL,
-    shop_id    INT                                     NOT NULL,
-    invited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    role       ENUM ('SELLER','DELIVERY','SHOP_OWNER') NOT NULL,
-    is_delete  INT       DEFAULT 0,
-    CONSTRAINT users_invite_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
-);
-
-
 CREATE TABLE item
 (
     id           INT AUTO_INCREMENT,
@@ -198,7 +187,7 @@ CREATE TABLE seller_archive
 );
 
 
-create table activity_log (
+create table application_log (
     request_type ENUM ('GET', 'POST', 'PUT',
         'PATCH', 'DELETE', 'COPY',
         'HEAD', 'OPTIONS', 'LINK',

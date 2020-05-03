@@ -31,17 +31,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    @Override
-    public Response<String> inviteSeller(UserShopModel userShopModel) {
-        Response<String> response = userDao.inviteSeller(userShopModel);
-        return response;
-    }
-
-    @Override
-    public Response<UserShopListModel> acceptInvite(UserShopModel userShopModel) {
-        Response<UserShopListModel> response = userDao.acceptInvite(userShopModel);
-        return response;
-    }
 
     /**************************************************/
 
@@ -51,11 +40,6 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    @Override
-    public Response<UserModel> verifyInvite(Integer shopId, String mobile) {
-        Response<UserModel> response = userDao.verifyInvite(shopId, mobile);
-        return response;
-    }
 
     /**************************************************/
 
@@ -95,9 +79,4 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    @Override
-    public Response<String> deleteInvite(UserShopModel userShopModel) {
-        Response<String> response = userDao.deleteInvite(userShopModel);
-        return response;
-    }
 }

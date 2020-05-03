@@ -10,12 +10,6 @@ public interface UserDao {
 
     Response<UserShopListModel> verifySeller(UserModel user);
 
-    Response<UserModel> verifyInvite(Integer shopId, String mobile);
-
-    Response<String> inviteSeller(UserShopModel userShopModel);
-
-    Response<UserShopListModel> acceptInvite(UserShopModel userShopModel);
-
     /**************************************************/
 
     Response<List<UserModel>> getSellerByShopId(Integer shopId);
@@ -30,5 +24,4 @@ public interface UserDao {
 
     Response<String> deleteSeller(Integer shopId, Integer userId);
 
-    Response<String> deleteInvite(UserShopModel userShopModel);
 }

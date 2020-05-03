@@ -10,15 +10,9 @@ public interface UserService {
 
     Response<UserShopListModel> verifySeller(UserModel user);
 
-    Response<String> inviteSeller(UserShopModel userShopModel);
-
-    Response<UserShopListModel> acceptInvite(UserShopModel userShopModel);
-
     /**************************************************/
 
     Response<List<UserModel>> getSellerByShopId(Integer shopId);
-
-    Response<UserModel> verifyInvite(Integer shopId, String mobile);
 
     /**************************************************/
 
@@ -30,5 +24,4 @@ public interface UserService {
 
     Response<String> deleteSeller(Integer shopId, Integer userId);
 
-    Response<String> deleteInvite(UserShopModel userShopModel);
 }
