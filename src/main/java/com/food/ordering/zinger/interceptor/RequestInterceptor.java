@@ -1,11 +1,14 @@
 package com.food.ordering.zinger.interceptor;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.ErrorLog;
+import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.InterceptorDao;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -31,8 +34,16 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
     private static final int superAdminFlag = 1;
     private static final int shopOwnerFlag = 2;
     private static final int sellerFlag = 3;
+
     @Autowired
     InterceptorDao interceptorDao;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    AuditLogDao auditLogDao;
+
     private ArrayList<Map<String, HttpMethod>> whiteListUrls;
     private ArrayList<Map<String, HttpMethod>> superAdminUrls;
     private ArrayList<Map<String, HttpMethod>> shopOwnerUrls;
@@ -100,6 +111,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         }
         return super.preHandle(request, response, handler);
     }
+
 
     private Boolean isPresent(HttpServletRequest request, int flag) {
         String url = request.getRequestURI();

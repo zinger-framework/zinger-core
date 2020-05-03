@@ -50,8 +50,8 @@ CREATE TABLE users
     name        VARCHAR(32) DEFAULT NULL,
     email       VARCHAR(64) DEFAULT NULL,
     oauth_id    VARCHAR(64) UNIQUE                                               NOT NULL,
-    notif_token JSON        DEFAULT NULL,
-    role        ENUM ('CUSTOMER','SUPER_ADMIN') NOT NULL,
+    notif_token JSON                                                             DEFAULT NULL,
+    role        ENUM ('CUSTOMER','SELLER','SHOP_OWNER','DELIVERY','SUPER_ADMIN') NOT NULL,
     is_delete   INT         DEFAULT 0,
     CONSTRAINT users_id_pk PRIMARY KEY (id)
 );
@@ -78,27 +78,28 @@ CREATE TABLE item
     is_veg       INT          DEFAULT 1,
     is_available INT          DEFAULT 1,
     is_delete    INT          DEFAULT 0,
-    CONSTRAINT item_name_shop_id_pk PRIMARY KEY (id),
+    CONSTRAINT item_name_shop_id_pk PRIMARY KEY (name,shop_id),
+    CONSTRAINT item_id_uq UNIQUE (id),
     CONSTRAINT item_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
 CREATE TABLE orders
 (
-    id                INT AUTO_INCREMENT,
-    user_id           INT    NOT NULL,
-    shop_id           INT    NOT NULL,
-    date              TIMESTAMP                              DEFAULT CURRENT_TIMESTAMP,
-    status            ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+    id                       INT AUTO_INCREMENT,
+    user_id                  INT    NOT NULL,
+    shop_id                  INT    NOT NULL,
+    date                     TIMESTAMP                       DEFAULT CURRENT_TIMESTAMP,
+    status                   ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
         'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
         'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
         'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL,
-    price             DOUBLE NOT NULL,
-    delivery_price    DOUBLE                                 DEFAULT NULL,
-    delivery_location VARCHAR(128)                           DEFAULT NULL,
-    cooking_info      VARCHAR(128)                           DEFAULT NULL,
-    rating            DOUBLE(2, 1)                           DEFAULT NULL,
-    feedback          VARCHAR(1024)                          DEFAULT NULL,
-    secret_key        VARCHAR(10)                            DEFAULT NULL,
+    price                    DOUBLE NOT NULL,
+    delivery_price           DOUBLE                          DEFAULT NULL,
+    delivery_location        VARCHAR(128)                    DEFAULT NULL,
+    cooking_info             VARCHAR(128)                    DEFAULT NULL,
+    rating                   DOUBLE(2, 1)                    DEFAULT NULL,
+    feedback                 VARCHAR(1024)                   DEFAULT NULL,
+    secret_key               VARCHAR(10)                     DEFAULT NULL,
     CONSTRAINT orders_id_pk PRIMARY KEY (id),
     CONSTRAINT orders_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT orders_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
@@ -125,9 +126,8 @@ CREATE TABLE transactions
 
 CREATE TABLE users_shop
 (
-    user_id INT                                     NOT NULL,
-    shop_id INT                                     NOT NULL,
-    role    ENUM ('SELLER','DELIVERY','SHOP_OWNER') NOT NULL,
+    user_id INT NOT NULL,
+    shop_id INT NOT NULL,
     CONSTRAINT users_shop_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
     CONSTRAINT users_shop_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
     CONSTRAINT users_shop_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
@@ -155,12 +155,12 @@ CREATE TABLE orders_item
 
 create table orders_status
 (
-    order_id     INT                                         NOT NULL,
+    order_id     INT NOT NULL,
     status       ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
         'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
         'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
         'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') NOT NULL,
-    updated_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_time DATETIME                                    DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT orders_status_order_id_status_pk PRIMARY KEY (order_id, status),
     CONSTRAINT orders_status_order_id_fk FOREIGN KEY (order_id) REFERENCES orders (id)
 );
@@ -197,6 +197,20 @@ CREATE TABLE seller_archive
     CONSTRAINT seller_archive_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
+
+create table activity_log (
+    request_type ENUM ('GET', 'POST', 'PUT',
+        'PATCH', 'DELETE', 'COPY',
+        'HEAD', 'OPTIONS', 'LINK',
+        'UNLINK', 'PURGE', 'LOCK','UNLOCK','PROPFIND','VIEW') NOT NULL,
+	endpoint_url VARCHAR(1024) DEFAULT NULL,
+    request_header  LONGTEXT NOT NULL,
+	request_object  LONGTEXT NOT NULL,
+	response_object LONGTEXT NOT NULL,
+	 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	priority ENUM('LOW','MEDIUM','HIGH')
+);
+
 ####################################################
 
 CREATE TRIGGER new_rating
@@ -218,27 +232,27 @@ CREATE TRIGGER notif_update
     BEFORE UPDATE
     ON users
     FOR EACH ROW
-BEGIN
-    DECLARE actual_notif_token JSON DEFAULT NULL;
-    DECLARE actual_notif_token_length BIGINT UNSIGNED DEFAULT NULL;
+    BEGIN
+		DECLARE actual_notif_token JSON DEFAULT NULL;
+		DECLARE actual_notif_token_length BIGINT UNSIGNED DEFAULT NULL;
 
-    SELECT notif_token
-    INTO actual_notif_token
-    FROM users
-    where id = NEW.id;
+        SELECT notif_token
+		INTO actual_notif_token
+		FROM users
+		where id = NEW.id;
 
-    IF actual_notif_token IS NULL AND NEW.notif_token IS NOT NULL THEN
-        SELECT JSON_ARRAY(NEW.notif_token) INTO actual_notif_token;
-    ELSEIF JSON_CONTAINS(actual_notif_token, NEW.notif_token) = 0 THEN
-        SET actual_notif_token_length = JSON_LENGTH(actual_notif_token);
+        IF actual_notif_token IS NULL AND NEW.notif_token IS NOT NULL THEN
+			SELECT JSON_ARRAY(NEW.notif_token) INTO actual_notif_token;
+		ELSEIF JSON_CONTAINS(actual_notif_token, NEW.notif_token) = 0 THEN
+			SET actual_notif_token_length = JSON_LENGTH(actual_notif_token);
 
-        IF actual_notif_token_length >= 5 THEN
-            SELECT JSON_REMOVE(actual_notif_token, '$[0]') INTO actual_notif_token;
+			IF actual_notif_token_length >= 5 THEN
+				SELECT JSON_REMOVE(actual_notif_token, '$[0]') INTO actual_notif_token;
+			END IF;
+			SELECT JSON_ARRAY_APPEND(actual_notif_token, '$', NEW.notif_token) INTO actual_notif_token;
         END IF;
-        SELECT JSON_ARRAY_APPEND(actual_notif_token, '$', NEW.notif_token) INTO actual_notif_token;
-    END IF;
-    SET NEW.notif_token = actual_notif_token;
-END;
+        SET NEW.notif_token = actual_notif_token;
+    END;
 $$
 
 DELIMITER $$
@@ -246,35 +260,34 @@ CREATE TRIGGER order_time_rating_update
     BEFORE UPDATE
     ON orders
     FOR EACH ROW
-BEGIN
-    IF (NEW.status = 'PLACED') OR (NEW.status = 'PENDING') OR (NEW.status = 'TXN_FAILURE') THEN
-        SET NEW.date = CURRENT_TIMESTAMP;
-    END IF;
-    IF NEW.rating IS NOT NULL THEN
-        BEGIN
-            DECLARE actual_status ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
-                'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
-                'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
-                'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL;
+		BEGIN
+			IF (NEW.status = 'PLACED') OR (NEW.status = 'PENDING') OR (NEW.status = 'TXN_FAILURE') THEN
+				SET NEW.date = CURRENT_TIMESTAMP;
+			END IF;
+            IF NEW.rating IS NOT NULL THEN
+				BEGIN
+					DECLARE actual_status ENUM ('PENDING', 'TXN_FAILURE', 'PLACED',
+						'CANCELLED_BY_USER', 'ACCEPTED', 'CANCELLED_BY_SELLER',
+						'READY', 'OUT_FOR_DELIVERY', 'COMPLETED',
+						'DELIVERED', 'REFUND_INITIATED', 'REFUND_COMPLETED') DEFAULT NULL;
 
-            SELECT status
-            INTO actual_status
-            FROM orders
-            where id = NEW.id;
+					SELECT status
+					INTO actual_status
+					FROM orders
+					where id = NEW.id;
 
-            IF (OLD.rating IS NOT NULL) THEN
-                SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated if already done!';
-            ELSEIF ((actual_status IS NULL) OR ((actual_status != 'COMPLETED') AND
-                                                (actual_status != 'DELIVERED') AND
-                                                (actual_status != 'CANCELLED_BY_USER') AND
-                                                (actual_status != 'CANCELLED_BY_SELLER') AND
-                                                (actual_status != 'REFUND_COMPLETED'))) THEN
-                SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT =
-                        'Error: Rating cannot be updated before the order completes!';
+					IF (OLD.rating IS NOT NULL) THEN
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated if already done!';
+					ELSEIF ((actual_status IS NULL) OR ((actual_status != 'COMPLETED') AND
+														(actual_status != 'DELIVERED') AND
+                                                        (actual_status != 'CANCELLED_BY_USER') AND
+                                                        (actual_status != 'CANCELLED_BY_SELLER') AND
+                                                        (actual_status != 'REFUND_COMPLETED'))) THEN
+						SIGNAL SQLSTATE '02000' SET MESSAGE_TEXT = 'Error: Rating cannot be updated before the order completes!';
+					END IF;
+                END;
             END IF;
         END;
-    END IF;
-END;
 $$
 
 DELIMITER $$
@@ -282,20 +295,20 @@ CREATE TRIGGER order_status_rating_update
     AFTER UPDATE
     ON orders
     FOR EACH ROW
-BEGIN
-    IF (OLD.status is NULL OR OLD.status != NEW.status) THEN
-        INSERT INTO orders_status(order_id, status)
-        VALUES (NEW.id, NEW.status);
-
-        IF (NEW.status = 'CANCELLED_BY_USER' OR NEW.status = 'CANCELLED_BY_SELLER') THEN
+    BEGIN
+        IF (OLD.status is NULL OR OLD.status != NEW.status) THEN
             INSERT INTO orders_status(order_id, status)
-            VALUES (NEW.id, 'REFUND_INITIATED');
+            VALUES (NEW.id, NEW.status);
+
+            IF (NEW.status = 'CANCELLED_BY_USER' OR NEW.status = 'CANCELLED_BY_SELLER') THEN
+                INSERT INTO orders_status(order_id, status)
+                VALUES (NEW.id, 'REFUND_INITIATED');
+            END IF;
         END IF;
-    END IF;
-    IF (OLD.rating IS NULL AND NEW.rating IS NOT NULL) THEN
-        CALL shop_rating_update(OLD.shop_id);
-    END IF;
-END;
+		IF (OLD.rating IS NULL AND NEW.rating IS NOT NULL) THEN
+			CALL shop_rating_update(OLD.shop_id);
+		END IF;
+    END;
 $$
 
 ####################################################

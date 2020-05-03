@@ -25,8 +25,6 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     NotifyDao notifyDao;
 
-    @Autowired
-    AuditLogDao auditLogDao;
 
     @Override
     public Response<TransactionTokenModel> insertOrder(OrderItemListModel orderItemListModel) {
@@ -38,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        auditLogDao.insertOrderLog(new OrderLogModel(response, orderItemListModel.getTransactionModel().getOrderModel().getId(), orderItemListModel.toString()));
+
         return response;
     }
 
@@ -48,35 +46,30 @@ public class OrderServiceImpl implements OrderService {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {
             notifyDao.notifyOrderStatusToSeller(orderDao.getOrderById(orderId));
         }
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, orderId.toString()));
         return response;
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderByUserId(Integer userId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderByUserId(userId, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, userId + " - " + pageNum));
         return response;
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderBySearchQuery(shopId, searchItem, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + searchItem + " - " + pageNum));
         return response;
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopIdPagination(Integer shopId, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, null, shopId + " - " + pageNum));
         return orderDao.getOrderByShopIdPagination(shopId, pageNum, pageCount);
     }
 
     @Override
     public Response<List<OrderItemListModel>> getOrderByShopId(Integer shopId) {
         Response<List<OrderItemListModel>> response = orderDao.getOrderByShopId(shopId);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, shopId, shopId.toString()));
         return orderDao.getOrderByShopId(shopId);
     }
 
@@ -88,14 +81,12 @@ public class OrderServiceImpl implements OrderService {
                 response.getData().getTransactionModel().getOrderModel().getUserModel().setNotificationToken(null);
         } catch (Exception e) {
         }
-        auditLogDao.insertOrderLog(new OrderLogModel(response, id, null));
         return response;
     }
 
     @Override
     public Response<String> updateOrderRating(OrderModel orderModel) {
         Response<String> response = orderDao.updateOrderRating(orderModel);
-        auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
         return response;
     }
 
@@ -111,7 +102,6 @@ public class OrderServiceImpl implements OrderService {
                     notifyDao.notifyOrderStatus(orderDao.getOrderById(orderModel.getId()));
             }
         }
-        auditLogDao.insertOrderLog(new OrderLogModel(response, orderModel.getId(), orderModel.toString()));
         return response;
     }
 }

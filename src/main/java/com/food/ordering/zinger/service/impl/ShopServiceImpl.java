@@ -19,8 +19,6 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     ShopDao shopDao;
 
-    @Autowired
-    AuditLogDao auditLogDao;
 
     @Override
     public Response<String> insertShop(ConfigurationModel configurationModel) {
@@ -32,35 +30,30 @@ public class ShopServiceImpl implements ShopService {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-        auditLogDao.insertShopLog(new ShopLogModel(response, null, configurationModel.toString()));
         return response;
     }
 
     @Override
     public Response<ShopConfigurationModel> getShopById(Integer shopId) {
         Response<ShopConfigurationModel> response = shopDao.getShopById(shopId);
-        auditLogDao.insertShopLog(new ShopLogModel(response, null, shopId.toString()));
         return response;
     }
 
     @Override
     public Response<List<ShopConfigurationModel>> getShopByPlaceId(Integer placeId) {
         Response<List<ShopConfigurationModel>> response = shopDao.getShopsByPlaceId(placeId);
-        auditLogDao.insertShopLog(new ShopLogModel(response, null, placeId.toString()));
         return response;
     }
 
     @Override
     public Response<String> updateShopConfiguration(ConfigurationModel configurationModel) {
         Response<String> response = shopDao.updateShopConfigurationModel(configurationModel);
-        auditLogDao.insertShopLog(new ShopLogModel(response, configurationModel.getShopModel().getId(), configurationModel.toString()));
         return response;
     }
 
     @Override
     public Response<String> deleteShopById(Integer shopId) {
         Response<String> response = shopDao.deleteShopById(shopId);
-        auditLogDao.insertShopLog(new ShopLogModel(response, shopId, shopId.toString()));
         return response;
     }
 }

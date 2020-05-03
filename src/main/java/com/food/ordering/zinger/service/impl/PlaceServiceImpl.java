@@ -17,20 +17,16 @@ public class PlaceServiceImpl implements PlaceService {
     @Autowired
     PlaceDao placeDao;
 
-    @Autowired
-    AuditLogDao auditLogDao;
 
     @Override
     public Response<String> insertPlace(PlaceModel placeModel) {
         Response<String> response = placeDao.insertPlace(placeModel);
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, null, placeModel.toString()));
         return response;
     }
 
     @Override
     public Response<List<PlaceModel>> getAllPlaces() {
         Response<List<PlaceModel>> response = placeDao.getAllPlaces();
-        auditLogDao.insertPlaceLog(new PlaceLogModel(response, null, null));
         return response;
     }
 }

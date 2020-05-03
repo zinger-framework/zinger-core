@@ -162,58 +162,16 @@ public class Column {
 
     /**************************************************************/
 
-    public static final class PlaceLogColumn {
-        public static final String tableName = "place_log";
 
-        public static final String id = "id";
-        public static final String errorCode = "error_code";
-        public static final String message = "message";
-        public static final String updatedValue = "updated_value";
+    public static final class ApplicationLogColumn {
+        public static final String tableName = "application_log";
+
+        public static final String request_type = "request_type";
+        public static final String endpoint_url = "endpoint_url";
+        public static final String request_header = "request_header";
+        public static final String request_object = "request_object";
+        public static final String response_object = "response_object";
         public static final String date = "date";
-        public static final String priority = "priority";
     }
 
-    public static final class ItemLogColumn {
-        public static final String tableName = "item_log";
-
-        public static final String id = "id";
-        public static final String errorCode = "error_code";
-        public static final String message = "message";
-        public static final String updatedValue = "updated_value";
-        public static final String date = "date";
-        public static final String priority = "priority";
-    }
-
-    public static final class OrderLogColumn {
-        public static final String tableName = "orders_log";
-
-        public static final String id = "id";
-        public static final String errorCode = "error_code";
-        public static final String message = "message";
-        public static final String updatedValue = "updated_value";
-        public static final String date = "date";
-        public static final String priority = "priority";
-    }
-
-    public static final class ShopLogColumn {
-        public static final String tableName = "shop_log";
-
-        public static final String id = "id";
-        public static final String errorCode = "error_code";
-        public static final String message = "message";
-        public static final String updatedValue = "updated_value";
-        public static final String date = "date";
-        public static final String priority = "priority";
-    }
-
-    public static final class UserLogColumn {
-        public static final String tableName = "users_log";
-
-        public static final String id = "id";
-        public static final String errorCode = "error_code";
-        public static final String message = "message";
-        public static final String updatedValue = "updated_value";
-        public static final String date = "date";
-        public static final String priority = "priority";
-    }
 }
