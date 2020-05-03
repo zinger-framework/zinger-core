@@ -299,12 +299,6 @@ $$
 
 ####################################################
 
-CREATE INDEX place_is_delete_index
-    ON place (is_delete);
-
-CREATE INDEX place_name_index
-    ON place (name);
-
 CREATE INDEX shop_place_id_index
     ON shop (place_id);
 
