@@ -227,6 +227,13 @@ public class ShopDaoImpl implements ShopDao {
         return response;
     }
 
+    /**
+     * Deletes a shop based on shopId
+     * Authorized by SUPER_ADMNIN only.
+     *
+     * @param shopId Integer
+     * @return success response if the update is successful.
+     */
     @Override
     public Response<String> deleteShopById(Integer shopId) {
         Response<String> response = new Response<>();

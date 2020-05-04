@@ -15,7 +15,7 @@ import static com.food.ordering.zinger.constant.Query.AuditLogQuery;
 
 /**
  * AuditLogDao is responsible for CRUD operations in
- * ShopLog, PlaceLog, UserLog, OrderLog and ItemLog tables in MySQL.
+ * Application_log table in MySQL.
  *
  * @implNote Please check corresponding actual table for better understanding.
  * @implNote All endpoint services are audited for both success and error responses
@@ -28,6 +28,13 @@ public class AuditLogDaoImpl implements AuditLogDao {
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
 
+
+    /**
+     * Inserts the HTTP request and response log
+     *
+     * @param applicationLogModel ApplicationLogModel
+     * @return success response if the log insertion
+     */
     @Override
     public Response<String> insertLog(ApplicationLogModel applicationLogModel) {
         Response<String> response = new Response<>();

@@ -32,6 +32,9 @@ public class NotifyDaoImpl implements NotifyDao {
 
     private FirebaseMessaging firebaseMessaging;
 
+    /**
+     * Init fire base notifications.
+     */
     @Bean
     void initFireBaseNotifications() {
         FileInputStream serviceAccount = null;
@@ -49,6 +52,14 @@ public class NotifyDaoImpl implements NotifyDao {
         firebaseMessaging = FirebaseMessaging.getInstance();
     }
 
+    /**
+     * Send notification message to all the multiple clients using FCM token list. Success response if
+     * all messages is received successfully
+     *
+     * @param notificationModel the notification model
+     * @param fcmTokenList      the fcm token list
+     * @return the response
+     */
     Response<String> sendMulticast(NotificationModel notificationModel, List<String> fcmTokenList) {
         Response<String> response = new Response<>();
 
@@ -75,6 +86,13 @@ public class NotifyDaoImpl implements NotifyDao {
         return response;
     }
 
+    /**
+     * Send notification message to all clients subscribed to a topic. Success response if all subscribed clients
+     * receive the message
+     * @param notificationModel the notification model
+     * @param topic             the topic
+     * @return the response
+     */
     Response<String> sendTopicMessage(NotificationModel notificationModel, String topic) {
         Response<String> response = new Response<>();
         try {
@@ -99,11 +117,24 @@ public class NotifyDaoImpl implements NotifyDao {
         return response;
     }
 
+    /**
+     * Send notification message to all signed in users. Success response if all targeted users receive the message.
+     * Success response if all notifications are sent succesfully
+     * @param notificationModel the notification model
+     * @return the response
+     */
     @Override
     public Response<String> sendGlobalNotification(NotificationModel notificationModel) {
         return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 
+    /**
+     * Send notification message to the customer and all the sellers of a given shop when order status changes
+     * Success response if all notifications are sent succesfully
+     *
+     * @param response Response<OrderItemListModel>
+     * @return the response
+     */
     @Override
     public void notifyOrderStatus(Response<OrderItemListModel> response) {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {
@@ -136,6 +167,13 @@ public class NotifyDaoImpl implements NotifyDao {
         }
     }
 
+    /**
+     * Send notification message to the seller when customer places or cancels an order
+     * Success response if all notifications are sent succesfully
+     *
+     * @param response Response<OrderItemListModel>
+     * @return the response
+     */
     @Override
     public void notifyOrderStatusToSeller(Response<OrderItemListModel> response) {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {

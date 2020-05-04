@@ -256,6 +256,16 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+    /**
+     * This method is responsible for searching orders received by a given shop based on a customer name,mobile or order id in a paginated manner.
+     * The pageCount determines number of rows to be returned and pageNum determines the offset.
+     *
+     * @param shopId    Integer
+     * @param searchItem String
+     * @param pageNum   Integer
+     * @param pageCount Integer
+     * @return Returns all the orders along with transaction details and orderItem details
+     */
     @Override
     public Response<List<OrderItemListModel>> getOrderBySearchQuery(Integer shopId, String searchItem, Integer pageNum, Integer pageCount) {
         Response<List<OrderItemListModel>> response = new Response<>();
@@ -631,6 +641,17 @@ public class OrderDaoImpl implements OrderDao {
         return response;
     }
 
+
+    /**
+     * This is a helper method used to verify order details and check if the order can be accepted by the seller.
+     * -> Checks if the restaurant is accepting orders currently
+     * -> Checks if the delivery option is available if the order type is delivery
+     * -> Checks if all items are available in a given shop
+     * -> Checks the total price of the order
+     *
+     * @param orderItemListModel OrderItemListModel
+     * @return returns the status of the order after contacting the payment gateway
+     */
     private Response<String> verifyPricing(OrderItemListModel orderItemListModel) {
         Response<String> response = new Response<>();
 

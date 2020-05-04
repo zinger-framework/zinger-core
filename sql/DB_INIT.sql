@@ -185,8 +185,7 @@ create table application_log (
     request_header  LONGTEXT NOT NULL,
 	request_object  LONGTEXT NOT NULL,
 	response_object LONGTEXT NOT NULL,
-	 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	priority ENUM('LOW','MEDIUM','HIGH')
+	 date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 ####################################################
