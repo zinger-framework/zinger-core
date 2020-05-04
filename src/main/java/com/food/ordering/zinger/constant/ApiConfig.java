@@ -36,11 +36,6 @@ public class ApiConfig {
         public static final String BASE_URL = "/user";
         public static final String loginRegisterCustomer = "/customer";
         public static final String verifySeller = "/seller";
-        public static final String inviteSeller = "/seller/invite";
-        public static final String verifyInvite = "/verify/invite/{shopId}/{mobile}";
-        public static final String acceptInvite = "/accept/invite";
-        public static final String deleteInvite = "/seller/invite";
-        public static final String getSellerByShopId = "/seller/{shopId}";
         public static final String updateUser = EMPTY_QUOTES;
         public static final String updateUserNotificationToken = "/notif";
         public static final String updateUserPlaceData = "/place";
@@ -49,7 +44,6 @@ public class ApiConfig {
 
     public static class NotifyApi {
         public static final String BASE_URL = "/notify";
-        public static final String inviteSeller = "/seller/invite";
         public static final String notifyUrl = "/url";
         public static final String notifyNewArrival = "/newArrivals";
     }

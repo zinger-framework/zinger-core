@@ -58,8 +58,6 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 
         whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + loginRegisterCustomer, POST));
         whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + verifySeller, POST));
-        whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + acceptInvite, POST));
-        whiteListUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/verify/invite/", GET));
 
         superAdminUrls.add(Collections.singletonMap(ShopApi.BASE_URL, POST));
         superAdminUrls.add(Collections.singletonMap(ShopApi.BASE_URL, DELETE));
@@ -68,10 +66,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL + NotifyApi.notifyNewArrival, POST));
 
 
-        shopOwnerUrls.add(Collections.singletonMap(ShopApi.BASE_URL + updateShopConfiguration, PATCH));
-        shopOwnerUrls.add(Collections.singletonMap(NotifyApi.BASE_URL + inviteSeller, POST));
-        shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + inviteSeller, POST));
-        shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + deleteInvite, PATCH));
+        shopOwnerUrls.add(Collections.singletonMap(ShopApi.BASE_URL + updateShopConfiguration, PATCH));;
         shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/seller/", GET));
         shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/seller/", DELETE));
 

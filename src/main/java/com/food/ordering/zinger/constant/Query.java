@@ -816,9 +816,5 @@ public class Query {
         public static final String updateShopById = UPDATE + UserShopColumn.tableName + SET +
                 UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId + WHERE +
                 UserShopColumn.userId + EQUAL_COLON + UserShopColumn.userId;
-
-        public static final String deleteUser = DELETE_FROM + UserShopColumn.tableName + WHERE +
-                UserShopColumn.userId + EQUAL_COLON + UserShopColumn.userId + AND +
-                UserShopColumn.shopId + EQUAL_COLON + UserShopColumn.shopId;
     }
 }

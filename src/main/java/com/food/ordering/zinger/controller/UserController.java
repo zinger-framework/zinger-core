@@ -29,13 +29,6 @@ public class UserController {
 
     /**************************************************/
 
-    @GetMapping(value = getSellerByShopId)
-    public Response<List<UserModel>> getSellerByShopId(@PathVariable("shopId") Integer shopId) {
-        return userService.getSellerByShopId(shopId);
-    }
-
-    /**************************************************/
-
     @PatchMapping(value = updateUser)
     public Response<String> updateUser(@RequestBody UserModel userModel) {
         return userService.updateUser(userModel);
@@ -49,11 +42,5 @@ public class UserController {
     @PatchMapping(value = updateUserPlaceData)
     public Response<String> updateUserPlaceData(@RequestBody UserPlaceModel userPlaceModel) {
         return userService.updateUserPlaceData(userPlaceModel);
-    }
-    /**************************************************/
-
-    @DeleteMapping(value = deleteSeller)
-    public Response<String> deleteSeller(@PathVariable("shopId") Integer shopId, @PathVariable("userId") Integer userId) {
-        return userService.deleteSeller(shopId, userId);
     }
 }

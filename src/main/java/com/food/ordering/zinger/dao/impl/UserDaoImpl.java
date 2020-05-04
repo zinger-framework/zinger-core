@@ -236,43 +236,6 @@ public class UserDaoImpl implements UserDao {
         return response;
     }
 
-    /**
-     * Gets shop by user id.
-     * Authorized by SHOP_OWNER only.
-     *
-     * @param shopId Integer
-     * @return the details of the workers for the given shop.
-     */
-    @Override
-    public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
-        Response<List<UserModel>> userModelResponse = new Response<>();
-        List<UserModel> userModelList = null;
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.shopId, shopId);
-
-            try {
-                userModelList = namedParameterJdbcTemplate.query(UserQuery.getSellerByShopId, parameters, UserRowMapperLambda.userDetailRowMapperLambda);
-            } catch (Exception e) {
-                userModelResponse.setCode(ErrorLog.CE1104);
-                System.err.println(e.getClass().getName() + ": " + e.getMessage());
-            } finally {
-                if (userModelList != null) {
-                    userModelResponse.prioritySet(Priority.LOW);
-                    userModelResponse.setCode(userModelList.isEmpty() ? ErrorLog.CodeEmpty : ErrorLog.CodeSuccess);
-                    userModelResponse.setMessage(ErrorLog.Success);
-                    userModelResponse.setData(userModelList);
-                } else
-                    userModelResponse.setCode(ErrorLog.CE1104);
-            }
-        } catch (Exception e) {
-            userModelResponse.setCode(ErrorLog.CE1105);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return userModelResponse;
-    }
 
     /**************************************************/
 
@@ -396,42 +359,4 @@ public class UserDaoImpl implements UserDao {
         updatePlace(userPlaceModel);
         return response;
     }
-
-    /**
-     * Deletes the workers in the shop
-     * Authorized by SHOP_OWNER only.
-     *
-     * @param shopId Integer
-     * @param userId Integer
-     * @return success response if the delete is successful.
-     */
-    @Override
-    public Response<String> deleteSeller(Integer shopId, Integer userId) {
-        Response<String> response = new Response<>();
-        response.prioritySet(Priority.HIGH);
-
-        try {
-            SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(UserShopColumn.userId, userId)
-                    .addValue(UserShopColumn.shopId, shopId);
-
-            int result = namedParameterJdbcTemplate.update(UserShopQuery.deleteUser, parameters);
-            if (result > 0) {
-                response.setCode(ErrorLog.CodeSuccess);
-                response.setMessage(ErrorLog.Success);
-                response.setData(ErrorLog.Success);
-                response.prioritySet(Priority.LOW);
-            } else {
-                response.setCode(ErrorLog.UDND1164);
-                response.setMessage(UnableToDeleteSeller);
-            }
-        } catch (Exception e) {
-            response.setCode(ErrorLog.CE1106);
-            response.setData(Failure);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }
-
-        return response;
-    }
-
 }

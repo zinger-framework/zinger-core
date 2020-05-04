@@ -30,14 +30,12 @@ public class ErrorLog {
     public static final String ItemDetailNotUpdated = "Unable to add or update current item";
 
     public static final String UnableToDeleteSeller = "Unable to delete seller";
-    public static final String UnableToDeleteInvite = "Unable to delete invite";
     public static final String ShopDetailNotDeleted = "Unable to delete shop";
 
     public static final String InvalidOrderStatus = "Invalid Order status";
     public static final String SecretKeyMismatch = "Invalid secret key";
     public static final String OrderPriceMismatch = "Order price mismatch";
     public static final String RestaurantNotAcceptingOrders = "Restaurant not accepting orders";
-    public static final String InviteExpired = "Invite Expired";
     public static final String TransactionTokenNotAvailable = "Transaction Token Not Available";
 
     /**********************************************************************/

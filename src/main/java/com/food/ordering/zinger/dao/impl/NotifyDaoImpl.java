@@ -104,26 +104,6 @@ public class NotifyDaoImpl implements NotifyDao {
         return sendTopicMessage(notificationModel, Constant.globalNotificationTopic);
     }
 
-    /**
-     * Sends the SMS notification to the given user
-     *
-     * @param userShopModel UserShopModel
-     * @return success response if the notification is sent successfully
-     * @implNote SMS sending code is left empty for the
-     * developer convenience.
-     */
-    @Override
-    public Response<String> notifyInvitation(UserShopModel userShopModel) {
-        Response<String> response = new Response<>();
-
-        //TODO: Send SMS to notify User
-
-        response.setCode(ErrorLog.CodeSuccess);
-        response.setMessage(ErrorLog.Success);
-        response.setData(ErrorLog.Success);
-        return response;
-    }
-
     @Override
     public void notifyOrderStatus(Response<OrderItemListModel> response) {
         if (response.getCode().equals(ErrorLog.CodeSuccess)) {

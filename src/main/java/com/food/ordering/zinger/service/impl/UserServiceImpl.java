@@ -32,14 +32,6 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    /**************************************************/
-
-    @Override
-    public Response<List<UserModel>> getSellerByShopId(Integer shopId) {
-        Response<List<UserModel>> response = userDao.getSellerByShopId(shopId);
-        return response;
-    }
-
 
     /**************************************************/
 
@@ -70,12 +62,6 @@ public class UserServiceImpl implements UserService {
             response.setCode(ErrorLog.UDNU1157);
             response.setMessage(ErrorLog.UserDetailNotUpdated);
         }
-        return response;
-    }
-
-    @Override
-    public Response<String> deleteSeller(Integer shopId, Integer userId) {
-        Response<String> response = userDao.deleteSeller(shopId, userId);
         return response;
     }
 

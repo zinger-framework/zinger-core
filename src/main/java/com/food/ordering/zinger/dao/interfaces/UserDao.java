@@ -12,16 +12,9 @@ public interface UserDao {
 
     /**************************************************/
 
-    Response<List<UserModel>> getSellerByShopId(Integer shopId);
-
-    /**************************************************/
-
     Response<String> updateUser(UserModel user);
 
     Response<String> updateUserNotificationToken(UserNotificationModel userNotificationModel);
 
     Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel);
-
-    Response<String> deleteSeller(Integer shopId, Integer userId);
-
 }

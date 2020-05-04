@@ -21,20 +21,6 @@ public class NotifyServiceImpl implements NotifyService {
     UserDao userDao;
 
     @Override
-    public Response<String> notifyInvitation(UserShopModel userShopModel) {
-        Response<String> response = new Response<>();
-        Response<UserModel> inviteModelResponse = userDao.verifyInvite(userShopModel.getShopModel().getId(), userShopModel.getUserModel().getMobile());
-        if (inviteModelResponse.getCode().equals(ErrorLog.CodeSuccess)) {
-            userShopModel.getUserModel().setRole(inviteModelResponse.getData().getRole());
-            return notifyDao.notifyInvitation(userShopModel);
-        } else {
-            response.setCode(inviteModelResponse.getCode());
-            response.setMessage(inviteModelResponse.getMessage());
-        }
-        return response;
-    }
-
-    @Override
     public Response<String> sendGlobalNotification(NotificationModel notificationModel) {
         return notifyDao.sendGlobalNotification(notificationModel);
     }

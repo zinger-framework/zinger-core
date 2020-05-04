@@ -19,10 +19,6 @@ public class NotifyController {
     @Autowired
     NotifyService notifyService;
 
-    @PostMapping(value = inviteSeller)
-    public Response<String> notifyInvitation(@RequestBody UserShopModel userShopModel) {
-        return notifyService.notifyInvitation(userShopModel);
-    }
 
     @PostMapping(value = notifyUrl)
     public Response<String> notifyNewUrl(@RequestBody NotificationModel notificationModel) {

@@ -7,7 +7,7 @@ import com.food.ordering.zinger.model.notification.NotificationModel;
 
 public interface NotifyDao {
 
-    Response<String> notifyInvitation(UserShopModel userShopModel);
+
 
     Response<String> sendGlobalNotification(NotificationModel notificationModel);
 
