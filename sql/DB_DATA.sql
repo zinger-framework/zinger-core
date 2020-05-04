@@ -14,3 +14,4 @@ select * from orders_status;
 select * from rating;
 select * from configurations;
 select * from application_log;
+select * from seller_archive;

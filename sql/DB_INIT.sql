@@ -176,6 +176,18 @@ CREATE TABLE configurations
     CONSTRAINT configurations_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
 );
 
+
+CREATE TABLE seller_archive
+(
+    user_id    INT NOT NULL,
+    shop_id    INT NOT NULL,
+    deleted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT seller_archive_user_id_shop_id_pk PRIMARY KEY (user_id, shop_id),
+    CONSTRAINT seller_archive_user_id_fk FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT seller_archive_shop_id_fk FOREIGN KEY (shop_id) REFERENCES shop (id)
+);
+
+
 create table application_log (
     request_type ENUM ('GET', 'POST', 'PUT',
         'PATCH', 'DELETE', 'COPY',
@@ -189,6 +201,13 @@ create table application_log (
 );
 
 ####################################################
+
+CREATE TRIGGER seller_archive
+    AFTER DELETE
+    ON users_shop
+    FOR EACH ROW
+    INSERT INTO seller_archive(user_id, shop_id)
+    VALUES (OLD.user_id, OLD.shop_id);
 
 CREATE TRIGGER new_rating
     AFTER INSERT
