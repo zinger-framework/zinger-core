@@ -21,6 +21,7 @@ public class ErrorLog {
     public static final String DeliveryOptionNotAvailable = "Delivery Option not available";
 
     public static final String UserDetailNotUpdated = "Profile not updated";
+    public static final String NotificationTokenNotUpdated = "Notification Token Not Updated";
     public static final String ConfigurationDetailNotUpdated = "Configuration detail not updated";
     public static final String ShopDetailNotUpdated = "Shop detail not updated";
     public static final String PlaceDetailNotUpdated = "Place detail not updated";
@@ -66,7 +67,7 @@ public class ErrorLog {
     public static final Integer ODNU1156 = 1156;
     public static final Integer UDNU1157 = 1157;
     public static final Integer UDNU1158 = 1158;
-    public static final Integer UDNU1159 = 1159;
+    public static final Integer NTNU1159 = 1159;
     public static final Integer UDNU1160 = 1160;
     public static final Integer CE1161 = 1161;
     public static final Integer UDND1162 = 1162;

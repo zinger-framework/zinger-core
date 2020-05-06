@@ -1,13 +1,11 @@
 package com.food.ordering.zinger.dao.impl;
 
-import com.food.ordering.zinger.constant.Column;
 import com.food.ordering.zinger.constant.Column.UserColumn;
 import com.food.ordering.zinger.constant.Column.UserPlaceColumn;
 import com.food.ordering.zinger.constant.Column.UserShopColumn;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.Enums.UserRole;
 import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.constant.Query;
 import com.food.ordering.zinger.constant.Query.UserPlaceQuery;
 import com.food.ordering.zinger.constant.Query.UserQuery;
 import com.food.ordering.zinger.constant.Query.UserShopQuery;
@@ -289,8 +287,8 @@ public class UserDaoImpl implements UserDao {
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
             } else {
-                response.setCode(ErrorLog.UDNU1159);
-                response.setMessage(ErrorLog.UserDetailNotUpdated);
+                response.setCode(ErrorLog.NTNU1159);
+                response.setMessage(ErrorLog.NotificationTokenNotUpdated);
             }
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1206);
