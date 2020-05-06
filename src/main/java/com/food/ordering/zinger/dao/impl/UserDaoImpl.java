@@ -331,7 +331,7 @@ public class UserDaoImpl implements UserDao {
             }else{
                 response.setCode(PDNU1164);
                 response.setMessage(PlaceDetailNotUpdated);
-                response.setData(ErrorLog.Success);
+                response.setData(Failure);
                 response.prioritySet(Priority.MEDIUM);
             }
         }
