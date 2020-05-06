@@ -379,7 +379,7 @@ public class OrderDaoImpl implements OrderDao {
                     OrderRowMapperLambda.OrderByIdRowMapper);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(ErrorLog.OrderDetailNotAvailable);
         } finally {
             if (orderItemListModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);
@@ -436,7 +436,7 @@ public class OrderDaoImpl implements OrderDao {
             orderModel = namedParameterJdbcTemplate.queryForObject(OrderQuery.getOrderPriceById, parameter, OrderRowMapperLambda.orderPriceRowMapperLambda);
         } catch (Exception e) {
             response.setCode(ErrorLog.CE1279);
-            System.err.println(e.getClass().getName() + ": " + e.getMessage());
+            System.err.println(ErrorLog.OrderDetailNotAvailable);
         } finally {
             if (orderModel != null) {
                 response.setCode(ErrorLog.CodeSuccess);

@@ -306,18 +306,36 @@ public class UserDaoImpl implements UserDao {
      * @param userPlaceModel UserPlaceModel
      * @return success response if the update is successful.
      */
-    public void updatePlace(UserPlaceModel userPlaceModel) {
+    public Response<String> updatePlace(UserPlaceModel userPlaceModel) {
+
+        Response<String> response = new Response<>();
+        int result = 0;
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
                     .addValue(UserPlaceColumn.userId, userPlaceModel.getUserModel().getId())
                     .addValue(UserPlaceColumn.placeId, userPlaceModel.getPlaceModel().getId());
 
-            int result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceById, parameters);
-            if (result <= 0)
-                namedParameterJdbcTemplate.update(UserPlaceQuery.insertUserPlace, parameters);
+            result = namedParameterJdbcTemplate.update(UserPlaceQuery.updatePlaceById, parameters);
+            if (result <= 0) {
+                result = namedParameterJdbcTemplate.update(UserPlaceQuery.insertUserPlace, parameters);
+            }
+
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
+        }finally {
+            if(result>0){
+                response.setCode(ErrorLog.CodeSuccess);
+                response.setMessage(ErrorLog.Success);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.LOW);
+            }else{
+                response.setCode(PDNU1164);
+                response.setMessage(PlaceDetailNotUpdated);
+                response.setData(ErrorLog.Success);
+                response.prioritySet(Priority.MEDIUM);
+            }
         }
+        return response;
     }
 
     /**
@@ -356,7 +374,8 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = updateUser(userPlaceModel.getUserModel());
-        updatePlace(userPlaceModel);
+        if(response.getCode().equals(CodeSuccess))
+            response = updatePlace(userPlaceModel);
         return response;
     }
 }

@@ -6,7 +6,6 @@ public class ShopConfigurationModel {
     private ShopModel shopModel;
     private RatingModel ratingModel;
     private ConfigurationModel configurationModel;
-    private Enums.UserRole userRole;
 
     public ShopModel getShopModel() {
         return shopModel;
@@ -32,13 +31,6 @@ public class ShopConfigurationModel {
         this.configurationModel = configurationModel;
     }
 
-    public Enums.UserRole getUserRole() {
-        return userRole;
-    }
-
-    public void setUserRole(Enums.UserRole userRole) {
-        this.userRole = userRole;
-    }
 
     @Override
     public String toString() {
@@ -46,7 +38,6 @@ public class ShopConfigurationModel {
                 "shopModel=" + shopModel +
                 ", ratingModel=" + ratingModel +
                 ", configurationModel=" + configurationModel +
-                ", userRole=" + userRole +
                 '}';
     }
 }
