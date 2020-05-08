@@ -69,19 +69,23 @@ Check out the [database schema](https://drawsql.app/zinger-technologies/diagrams
 ## Build & Deploy
 
 #### Eclipse IDE
+
 * Choose `File -> Import -> Maven -> Existing Maven projects`
 * Right-click [MainApplication.java](https://github.com/ddlogesh/zinger-framework/blob/master/src/main/java/com/food/ordering/zinger/MainApplication.java) and choose `Run As -> Java Application`  
 
 #### IntelliJ IDEA
-* Choose `File -> Open` and choose the project location
+
+* Choose `File -> Open` and choose the project location
 * Right-click [MainApplication.java](https://github.com/ddlogesh/zinger-framework/blob/master/src/main/java/com/food/ordering/zinger/MainApplication.java) and choose `Run MainApplication.main()` 
 
 #### Test
-* Visit [localhost:8080](localhost:8080) in the browser to check if the setup is successful.
+
+* Visit [localhost:8080](http://localhost:8080) in the browser to check if the setup is successful.
 * Test the endpoints in Postman by importing the [API collection](https://github.com/ddlogesh/zinger-framework/blob/master/Zinger%20framework%20(Release).json)
 * For detailed API documentation, please refer [API Docs](https://documenter.getpostman.com/view/6369926/Szmb6KVo?version=latest)
 
 #### Deploy
+
 If you would like to integrate with any mobile or web application, use [Ngrok](https://ngrok.com/download) to get a public URL of 
 your localhost. Also, you can host in any of the online cloud service providers like [Heruko](https://www.heroku.com/), [Azure](https://azure.microsoft.com/), [AWS](https://aws.amazon.com/), etc.
 
