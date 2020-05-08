@@ -1,4 +1,25 @@
-# Zinger-Framework
+<h1 align="center">
+  Zinger - Hyperlocal Delivery Framework
+</h1>
+
+<p align="center">
+  <strong>
+    <a href="https://zinger.pw">Website</a>
+    |
+    <a href="https://zinger-workspace.slack.com/join/shared_invite/zt-e6xt0gc2-nBEy85RhEy7NZv3gWCt6Dg/">Slack</a>
+    |
+    <a href="https://discord.gg/TqADaXV">Discord</a>
+    |
+    <a href="https://stackoverflow.com/questions/tagged/zinger">StackOverflow</a>
+  </strong>
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/badge/license-MIT-green"></a>
+  <a href="https://zinger.pw/docs/api"><img alt="Documentation" src="https://img.shields.io/badge/code-documented-brightgreen.svg?style=flat-square"></a>
+  <a href="https://github.com/ddlogesh/zinger-framework/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square"></a>
+</p>
+
 An Open Source Framework for building Hyperlocal Delivery Mobile and Web applications.
 Zinger provides developers easy to handle backend for ordering & delivering foods, groceries, fruits, vegetables, medicines, etc.
 
@@ -63,3 +84,13 @@ Check out the [database schema](https://drawsql.app/zinger-technologies/diagrams
 #### Deploy
 If you would like to integrate with any mobile or web application, use [Ngrok](https://ngrok.com/download) to get a public URL of 
 your localhost. Also, you can host in any of the online cloud service providers like [Heruko](https://www.heroku.com/), [Azure](https://azure.microsoft.com/), [AWS](https://aws.amazon.com/), etc.
+
+## Community
+
+Zinger framework is completely free and made open-source. Our team is really happy to support contributors from all around the world. Fork our project and send us your pull request: maybe sample mobile apps using our framework, minor extensions or major improvements.
+
+**Every contribution is awesome and welcome!**
+
+## Contributors
+* <a href="https://github.com/ddlogesh" target="_blank"><b>Logesh Dinakaran</b></a>
+* <a href="https://github.com/harshavardhan98" target="_blank"><b>Harshavardhan P</b></a>
