@@ -1,5 +1,5 @@
-CREATE DATABASE sfdbgffed;
-USE sfdbgffed;
+CREATE DATABASE zinger;
+USE zinger;
 
 # DROP TABLE seller_archive;
 # DROP TABLE users_invite;

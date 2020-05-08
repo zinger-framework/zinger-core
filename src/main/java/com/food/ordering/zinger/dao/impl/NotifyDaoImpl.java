@@ -14,6 +14,7 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.messaging.*;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Repository;
 
@@ -30,6 +31,9 @@ import java.util.List;
 @Repository
 public class NotifyDaoImpl implements NotifyDao {
 
+    @Value("${firebase.credential.path}")
+    private String credentialFile;
+
     private FirebaseMessaging firebaseMessaging;
 
     /**
@@ -40,7 +44,7 @@ public class NotifyDaoImpl implements NotifyDao {
         FileInputStream serviceAccount = null;
         FirebaseOptions options = null;
         try {
-            serviceAccount = new FileInputStream("src/main/resources/zinger-fb-adminsdk.json");
+            serviceAccount = new FileInputStream(credentialFile);
             options = new FirebaseOptions.Builder()
                     .setCredentials(GoogleCredentials.fromStream(serviceAccount))
                     .setDatabaseUrl("https://zinger-58902.firebaseio.com")
