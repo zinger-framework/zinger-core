@@ -1,14 +1,12 @@
 package com.food.ordering.zinger.interceptor;
 
-
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.InterceptorDao;
 import com.food.ordering.zinger.model.RequestHeaderModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.*;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -22,7 +20,8 @@ import static com.food.ordering.zinger.constant.ApiConfig.*;
 import static com.food.ordering.zinger.constant.ApiConfig.ItemApi.insertItem;
 import static com.food.ordering.zinger.constant.ApiConfig.ItemApi.updateItem;
 import static com.food.ordering.zinger.constant.ApiConfig.ShopApi.updateShopConfiguration;
-import static com.food.ordering.zinger.constant.ApiConfig.UserApi.*;
+import static com.food.ordering.zinger.constant.ApiConfig.UserApi.loginRegisterCustomer;
+import static com.food.ordering.zinger.constant.ApiConfig.UserApi.verifySeller;
 import static com.food.ordering.zinger.constant.Column.UserColumn.*;
 import static com.food.ordering.zinger.constant.Enums.UserRole.*;
 import static org.springframework.http.HttpMethod.*;
@@ -37,9 +36,6 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
 
     @Autowired
     InterceptorDao interceptorDao;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
     AuditLogDao auditLogDao;
@@ -67,7 +63,7 @@ public class RequestInterceptor extends HandlerInterceptorAdapter {
         superAdminUrls.add(Collections.singletonMap(NotifyApi.BASE_URL + NotifyApi.notifyNewArrival, POST));
 
 
-        shopOwnerUrls.add(Collections.singletonMap(ShopApi.BASE_URL + updateShopConfiguration, PATCH));;
+        shopOwnerUrls.add(Collections.singletonMap(ShopApi.BASE_URL + updateShopConfiguration, PATCH));
         shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/seller/", GET));
         shopOwnerUrls.add(Collections.singletonMap(UserApi.BASE_URL + "/seller/", DELETE));
 

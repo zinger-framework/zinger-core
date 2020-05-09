@@ -1,12 +1,13 @@
 package com.food.ordering.zinger.controller;
 
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.UserModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
+import com.food.ordering.zinger.model.UserShopListModel;
 import com.food.ordering.zinger.model.notification.UserNotificationModel;
 import com.food.ordering.zinger.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 import static com.food.ordering.zinger.constant.ApiConfig.UserApi.*;
 

@@ -320,13 +320,13 @@ public class UserDaoImpl implements UserDao {
 
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
-        }finally {
-            if(result>0){
+        } finally {
+            if (result > 0) {
                 response.setCode(ErrorLog.CodeSuccess);
                 response.setMessage(ErrorLog.Success);
                 response.setData(ErrorLog.Success);
                 response.prioritySet(Priority.LOW);
-            }else{
+            } else {
                 response.setCode(PDNU1164);
                 response.setMessage(PlaceDetailNotUpdated);
                 response.setData(Failure);
@@ -372,7 +372,7 @@ public class UserDaoImpl implements UserDao {
     @Override
     public Response<String> updateUserPlaceData(UserPlaceModel userPlaceModel) {
         Response<String> response = updateUser(userPlaceModel.getUserModel());
-        if(response.getCode().equals(CodeSuccess))
+        if (response.getCode().equals(CodeSuccess))
             response = updatePlace(userPlaceModel);
         return response;
     }

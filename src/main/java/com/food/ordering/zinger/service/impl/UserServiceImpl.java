@@ -1,16 +1,15 @@
 package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
-import com.food.ordering.zinger.model.*;
-import com.food.ordering.zinger.model.logger.UserLogModel;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.UserModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
+import com.food.ordering.zinger.model.UserShopListModel;
 import com.food.ordering.zinger.model.notification.UserNotificationModel;
 import com.food.ordering.zinger.service.interfaces.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -30,7 +29,6 @@ public class UserServiceImpl implements UserService {
         Response<UserShopListModel> response = userDao.verifySeller(user);
         return response;
     }
-
 
 
     /**************************************************/

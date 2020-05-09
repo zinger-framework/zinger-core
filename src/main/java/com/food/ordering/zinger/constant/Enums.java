@@ -20,8 +20,4 @@ public class Enums {
     public enum NotificationType {
         URL, NEW_ARRIVAL, USER_ORDER_STATUS, SELLER_ORDER_STATUS
     }
-
-    public enum HttpRequestType {
-        GET, POST, PUT, PATCH, DELETE, COPY, HEAD, OPTIONS, LINK, UNLINK, PURGE, LOCK,UNLOCK,PROPFIND,VIEW
-    }
 }

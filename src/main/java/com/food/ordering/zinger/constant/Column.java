@@ -166,11 +166,11 @@ public class Column {
     public static final class ApplicationLogColumn {
         public static final String tableName = "application_log";
 
-        public static final String request_type = "request_type";
-        public static final String endpoint_url = "endpoint_url";
-        public static final String request_header = "request_header";
-        public static final String request_object = "request_object";
-        public static final String response_object = "response_object";
+        public static final String requestType = "request_type";
+        public static final String endpointUrl = "endpoint_url";
+        public static final String requestHeader = "request_header";
+        public static final String requestObject = "request_object";
+        public static final String responseObject = "response_object";
         public static final String date = "date";
     }
 

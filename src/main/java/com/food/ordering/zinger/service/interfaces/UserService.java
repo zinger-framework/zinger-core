@@ -1,9 +1,10 @@
 package com.food.ordering.zinger.service.interfaces;
 
-import com.food.ordering.zinger.model.*;
+import com.food.ordering.zinger.model.Response;
+import com.food.ordering.zinger.model.UserModel;
+import com.food.ordering.zinger.model.UserPlaceModel;
+import com.food.ordering.zinger.model.UserShopListModel;
 import com.food.ordering.zinger.model.notification.UserNotificationModel;
-
-import java.util.List;
 
 public interface UserService {
     Response<UserPlaceModel> loginRegisterCustomer(UserModel user);

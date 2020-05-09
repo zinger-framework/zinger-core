@@ -27,13 +27,11 @@ public class AuditLogDaoImpl implements AuditLogDao {
     @Autowired
     NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-
-
     /**
      * Inserts the HTTP request and response log
      *
      * @param applicationLogModel ApplicationLogModel
-     * @return success response if the log insertion
+     * @return success response if the insertion is successful.
      */
     @Override
     public Response<String> insertLog(ApplicationLogModel applicationLogModel) {
@@ -41,11 +39,11 @@ public class AuditLogDaoImpl implements AuditLogDao {
 
         try {
             SqlParameterSource parameters = new MapSqlParameterSource()
-                    .addValue(ApplicationLogColumn.request_type, applicationLogModel.getRequestType().name())
-                    .addValue(ApplicationLogColumn.endpoint_url, applicationLogModel.getEndpointUrl())
-                    .addValue(ApplicationLogColumn.request_header, applicationLogModel.getRequestHeader())
-                    .addValue(ApplicationLogColumn.request_object, applicationLogModel.getRequestObject())
-                    .addValue(ApplicationLogColumn.response_object, applicationLogModel.getResponseObject());
+                    .addValue(ApplicationLogColumn.requestType, applicationLogModel.getRequestType().name())
+                    .addValue(ApplicationLogColumn.endpointUrl, applicationLogModel.getEndpointUrl())
+                    .addValue(ApplicationLogColumn.requestHeader, applicationLogModel.getRequestHeader())
+                    .addValue(ApplicationLogColumn.requestObject, applicationLogModel.getRequestObject())
+                    .addValue(ApplicationLogColumn.responseObject, applicationLogModel.getResponseObject());
 
             int responseValue = namedParameterJdbcTemplate.update(AuditLogQuery.insertLog, parameters);
             if (responseValue > 0) {
@@ -56,9 +54,6 @@ public class AuditLogDaoImpl implements AuditLogDao {
         } catch (Exception e) {
             System.err.println(e.getClass().getName() + ": " + e.getMessage());
         }
-
-
         return response;
     }
-
 }

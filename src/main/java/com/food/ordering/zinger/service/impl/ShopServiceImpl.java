@@ -1,12 +1,10 @@
 package com.food.ordering.zinger.service.impl;
 
-import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.ShopDao;
 import com.food.ordering.zinger.exception.GenericException;
 import com.food.ordering.zinger.model.ConfigurationModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.ShopConfigurationModel;
-import com.food.ordering.zinger.model.logger.ShopLogModel;
 import com.food.ordering.zinger.service.interfaces.ShopService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

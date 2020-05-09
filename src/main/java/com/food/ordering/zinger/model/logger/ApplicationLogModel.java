@@ -1,13 +1,12 @@
 package com.food.ordering.zinger.model.logger;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.food.ordering.zinger.constant.Enums;
+import org.springframework.http.HttpMethod;
 
 import java.sql.Timestamp;
 
 public class ApplicationLogModel {
-
-    private Enums.HttpRequestType requestType;
+    private HttpMethod requestType;
     private String endpointUrl;
     private String requestHeader;
     private String requestObject;
@@ -16,9 +15,7 @@ public class ApplicationLogModel {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone = "Asia/Kolkata")
     private Timestamp date;
 
-
-
-    public ApplicationLogModel(Enums.HttpRequestType requestType, String endpointUrl, String requestHeader, String requestObject, String responseObject) {
+    public ApplicationLogModel(HttpMethod requestType, String endpointUrl, String requestHeader, String requestObject, String responseObject) {
         this.requestType = requestType;
         this.endpointUrl = endpointUrl;
         this.requestHeader = requestHeader;
@@ -26,11 +23,11 @@ public class ApplicationLogModel {
         this.responseObject = responseObject;
     }
 
-    public Enums.HttpRequestType getRequestType() {
+    public HttpMethod getRequestType() {
         return requestType;
     }
 
-    public void setRequestType(Enums.HttpRequestType requestType) {
+    public void setRequestType(HttpMethod requestType) {
         this.requestType = requestType;
     }
 
@@ -86,5 +83,3 @@ public class ApplicationLogModel {
                 '}';
     }
 }
-
-

@@ -1,11 +1,8 @@
 package com.food.ordering.zinger.service.impl;
 
-import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.UserDao;
 import com.food.ordering.zinger.model.Response;
-import com.food.ordering.zinger.model.UserModel;
-import com.food.ordering.zinger.model.UserShopModel;
 import com.food.ordering.zinger.model.notification.NotificationModel;
 import com.food.ordering.zinger.service.interfaces.NotifyService;
 import org.springframework.beans.factory.annotation.Autowired;

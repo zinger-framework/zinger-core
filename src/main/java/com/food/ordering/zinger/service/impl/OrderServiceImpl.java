@@ -1,7 +1,6 @@
 package com.food.ordering.zinger.service.impl;
 
 import com.food.ordering.zinger.constant.ErrorLog;
-import com.food.ordering.zinger.dao.interfaces.AuditLogDao;
 import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.exception.GenericException;
@@ -9,7 +8,6 @@ import com.food.ordering.zinger.model.OrderItemListModel;
 import com.food.ordering.zinger.model.OrderModel;
 import com.food.ordering.zinger.model.Response;
 import com.food.ordering.zinger.model.TransactionTokenModel;
-import com.food.ordering.zinger.model.logger.OrderLogModel;
 import com.food.ordering.zinger.service.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
