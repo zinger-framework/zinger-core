@@ -93,6 +93,7 @@ public class NotifyDaoImpl implements NotifyDao {
     /**
      * Send notification message to all clients subscribed to a topic. Success response if all subscribed clients
      * receive the message
+     *
      * @param notificationModel the notification model
      * @param topic             the topic
      * @return the response
@@ -124,6 +125,7 @@ public class NotifyDaoImpl implements NotifyDao {
     /**
      * Send notification message to all signed in users. Success response if all targeted users receive the message.
      * Success response if all notifications are sent succesfully
+     *
      * @param notificationModel the notification model
      * @return the response
      */

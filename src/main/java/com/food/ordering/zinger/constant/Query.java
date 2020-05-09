@@ -16,17 +16,17 @@ public class Query {
     public static final class AuditLogQuery {
 
         public static final String insertLog = INSERT_INTO + ApplicationLogColumn.tableName + LEFT_PARANTHESIS +
-                ApplicationLogColumn.request_type + COMMA +
-                ApplicationLogColumn.endpoint_url + COMMA +
-                ApplicationLogColumn.request_header + COMMA +
-                ApplicationLogColumn.request_object + COMMA +
-                ApplicationLogColumn.response_object +
+                ApplicationLogColumn.requestType + COMMA +
+                ApplicationLogColumn.endpointUrl + COMMA +
+                ApplicationLogColumn.requestHeader + COMMA +
+                ApplicationLogColumn.requestObject + COMMA +
+                ApplicationLogColumn.responseObject +
                 RIGHT_PARANTHESIS + VALUES + LEFT_PARANTHESIS +
-                COLON + ApplicationLogColumn.request_type +
-                COMMA_COLON + ApplicationLogColumn.endpoint_url +
-                COMMA_COLON + ApplicationLogColumn.request_header +
-                COMMA_COLON + ApplicationLogColumn.request_object +
-                COMMA_COLON + ApplicationLogColumn.response_object +
+                COLON + ApplicationLogColumn.requestType +
+                COMMA_COLON + ApplicationLogColumn.endpointUrl +
+                COMMA_COLON + ApplicationLogColumn.requestHeader +
+                COMMA_COLON + ApplicationLogColumn.requestObject +
+                COMMA_COLON + ApplicationLogColumn.responseObject +
                 RIGHT_PARANTHESIS;
     }
 
@@ -49,7 +49,7 @@ public class Query {
                 notDeleted +
                 ORDER_BY + PlaceColumn.name + ASC;
 
-        //TODO: Super Admin API
+        //TODO: Issue #4 Zinger Admin API for Place
         public static final String updatePlace = UPDATE + PlaceColumn.tableName + SET +
                 PlaceColumn.name + EQUAL_COLON + PlaceColumn.name + COMMA +
                 PlaceColumn.iconUrl + EQUAL_COLON + PlaceColumn.iconUrl + COMMA +

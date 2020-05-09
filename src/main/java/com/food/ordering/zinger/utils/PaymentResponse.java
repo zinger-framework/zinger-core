@@ -92,7 +92,7 @@ public class PaymentResponse {
 
         Integer orderId = orderModel.getId();
 
-        //TODO: Implement API to get Transaction Token From Payment Gateway using OrderId & merchantId
+        //TODO: Make a request to Payment Gateway to get Transaction Token using OrderId & merchantId
         //String transactionToken = getTransactionToken(orderId, merchantId);
 
         String transactionToken = "12Abdsfds";
@@ -112,7 +112,7 @@ public class PaymentResponse {
     public Response<TransactionModel> getTransactionStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
-        //TODO: GET Transaction Status from Payment Gateway
+        //TODO: Make a request to Payment Gateway to verify Transaction Status using orderId
         TransactionModel transactionModel = new TransactionModel();
 
         //Populating Dummy Values Here
@@ -143,7 +143,7 @@ public class PaymentResponse {
     public Response<TransactionModel> getRefundStatus(Integer orderId) {
         Response<TransactionModel> transactionModelResponse = new Response<>();
 
-        //TODO: GET Transaction Status from Payment Gateway
+        //TODO: Make a request to Payment Gateway to verify Refund Status using orderId
         TransactionModel transactionModel = new TransactionModel();
 
         //Populating Dummy Values Here
@@ -169,7 +169,7 @@ public class PaymentResponse {
      * This method is used to initiate refund of payment
      */
     public void initiateRefund() {
-        //TODO: Initiate the refund using payment gateway
+        //TODO: Make a request to initiate the refund using payment gateway
     }
 
     public String getCode() {

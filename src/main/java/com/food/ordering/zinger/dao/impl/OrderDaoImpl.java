@@ -8,7 +8,6 @@ import com.food.ordering.zinger.constant.Enums.OrderStatus;
 import com.food.ordering.zinger.constant.Enums.Priority;
 import com.food.ordering.zinger.constant.ErrorLog;
 import com.food.ordering.zinger.constant.Query.OrderQuery;
-import com.food.ordering.zinger.dao.interfaces.NotifyDao;
 import com.food.ordering.zinger.dao.interfaces.OrderDao;
 import com.food.ordering.zinger.dao.interfaces.TransactionDao;
 import com.food.ordering.zinger.exception.GenericException;
@@ -260,10 +259,10 @@ public class OrderDaoImpl implements OrderDao {
      * This method is responsible for searching orders received by a given shop based on a customer name,mobile or order id in a paginated manner.
      * The pageCount determines number of rows to be returned and pageNum determines the offset.
      *
-     * @param shopId    Integer
+     * @param shopId     Integer
      * @param searchItem String
-     * @param pageNum   Integer
-     * @param pageCount Integer
+     * @param pageNum    Integer
+     * @param pageCount  Integer
      * @return Returns all the orders along with transaction details and orderItem details
      */
     @Override
@@ -623,7 +622,7 @@ public class OrderDaoImpl implements OrderDao {
 
             if (transactionModelResponse.getCode().equals(ErrorLog.CodeSuccess) &&
                     orderModelResponse.getCode().equals(ErrorLog.CodeSuccess)
-                //TODO: Uncomment After PAYMENT GATEWAY INTEGRATION
+                //TODO: UNCOMMENT AFTER PAYMENT GATEWAY INTEGRATION
                 //&& orderModelResponse.getData().getPrice().equals(transactionModelResponse.getData().transactionAmountGet())
             ) {
                 transactionModel = transactionModelResponse.getData();
