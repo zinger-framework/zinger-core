@@ -62,12 +62,12 @@ public class LoggingFilter extends OncePerRequestFilter {
         }
 
         String responseFromServer = " ";
-        try{
+        try {
             String responseBody = IOUtils.toString(responseWrapper.getContentInputStream(), UTF_8);
             JsonNode responseJson = objectMapper.readTree(responseBody);
             ResponseEntity<JsonNode> responseEntity = new ResponseEntity<>(responseJson, responseHeaders, responseStatus);
             responseFromServer = responseEntity.getBody().toString();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
 

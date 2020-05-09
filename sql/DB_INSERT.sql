@@ -1,4 +1,4 @@
-insert into users(mobile, oauth_id, notif_token, role) values('sfdbgffed','sfdbgffed','["token_sfdbgffed"]','SUPER_ADMIN');
+insert into users(mobile, oauth_id, role) values('9798099763','r2PoBWesLMaQevHdyXGKIKTC0Ma2','SUPER_ADMIN');
 
 insert into place values(1,'SSN College of Engineering','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Kelambakkam',0);
 insert into place values(2,'VIT University','https://www.foodiesfeed.com/wp-content/uploads/2019/04/mae-mu-oranges-ice-349x436.jpg','Vandaloor',0);
