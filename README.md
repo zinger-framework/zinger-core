@@ -63,7 +63,7 @@ Check out the [database schema](https://drawsql.app/zinger-technologies/diagrams
 
 #### Setup Firebase Admin SDK
 * Create a new [Firebase](https://console.firebase.google.com/) project 
-* Navigate to `Project setting -> Service accounts -> Generate new private key`
+* Navigate to `Project setting -> Service accounts -> Generate service account -> Generate new private key`
 * Set your credentials file path in [application.properties](https://github.com/ddlogesh/zinger-framework/blob/master/src/main/resources/application.properties)
 
 ## Build & Deploy
