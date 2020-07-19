@@ -1,13 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <style>
-      /* Email styles need to be inline */
-    </style>
-  </head>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <style>
+    /* Email styles need to be inline */
+  </style>
+</head>
 
-  <body>
-    <%= yield %>
-  </body>
+<body>
+<div style="background: #f2f2f4; padding: 2% 7%">
+  <div> <%= image_tag attachments['logo.png'].url, style: "vertical-align: middle; width: 100px;" %> </div>
+  <div style="background: #fff;border-top-color: #0857ab;border-top-style: solid;border-top-width: 4px;margin: 25px auto;">
+    <div style="padding: 25px">
+      <%= yield %>
+    </div>
+  </div>
+</div>
+</body>
 </html>

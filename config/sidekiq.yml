@@ -1,0 +1,6 @@
+verbose: false
+concurrency: 10
+timeout: 180
+subdomain: admin
+username: root
+password: password

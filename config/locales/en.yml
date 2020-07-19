@@ -30,4 +30,15 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: "Hello world"
+  hello: Hello world
+  user:
+    not_found: Unable to find the user
+    validation:
+      required: "%{param} cannot be empty"
+      invalid: "Invalid %{param}"
+      already_taken: "%{param} is already taken"
+      password:
+        invalid: Password should contain atleast 6 characters
+    trigger_success: "%{param} is sent successfully"
+    link_expired: "%{param} is expired or invalid"
+    create_success: Account creation is successful

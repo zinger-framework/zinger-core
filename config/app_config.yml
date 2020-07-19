@@ -1,0 +1,6 @@
+api_subdomain: api
+admin_subdomain: admin
+
+endpoint: http://api.zinger.pw
+
+api_auth: lMkjDvjgc8r5dt2fY2gu13iX0kdjSXiBt6GfHihj
