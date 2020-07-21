@@ -28,6 +28,9 @@
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 
+# Ignore database file
+/docker/db_data
+/docker/redis_data
 /public/packs
 /public/packs-test
 /node_modules

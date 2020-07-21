@@ -1,0 +1,33 @@
+version: '3'
+services:
+  db:
+    image: postgres:12.1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=zinger
+      - TZ=Asia/Kolkata
+
+  redis:
+    image: redis:5.0.7
+    volumes:
+      - ./docker/redis_data:/data
+    ports:
+      - "6379:6379"
+  
+  zinger:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: ./docker/run.sh
+    volumes:
+      - .:/zinger
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+      - redis
