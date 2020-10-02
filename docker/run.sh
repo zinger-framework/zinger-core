@@ -5,6 +5,8 @@ set -vx
 bundle install
 
 bundle exec rake db:migrate
+bundle exec rails assets:precompile
+bundle exec rails webpacker:compile
 
 rm -f tmp/pids/server.pid
 
