@@ -1,6 +1,35 @@
 module Core
   class Redis
-    VERIFICATION = 'VERIFICATION:%{token}'
+    OTP_VERIFICATION = 'OTP_VERIFICATION:%{token}'
+
+    def self.marshal type, value
+      if String == type
+        return value
+      elsif [Hash, Array].include?(type)
+        return value.to_s
+      else
+        return Zlib::Deflate.deflate(Marshal.dump(value))
+      end
+    end
+
+    def self.unmarshal type, value
+      if type == String
+        return value
+      elsif [Hash, Array].include?(type)
+        return eval(value)
+      else
+        return Marshal.load(Zlib::Inflate.inflate(value))
+      end
+    end
+
+    def self.fetch key, options = {}, &block
+      cache_data = get(key)
+      if cache_data.nil?
+        cache_data = marshal(options.fetch(:type, String), block.call)
+        setex(key, cache_data, options.fetch(:expiry, 1.months.to_i))
+      end
+      unmarshal(options.fetch(:type, String), cache_data)
+    end
 
     def self.get key
       $redis.get(key)
@@ -12,6 +41,10 @@ module Core
 
     def self.delete key
       $redis.del(key)
+    end
+
+    def self.exists key
+      $redis.exists(key)
     end
   end
 end

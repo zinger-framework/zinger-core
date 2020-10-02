@@ -30,15 +30,22 @@
 # available at https://guides.rubyonrails.org/i18n.html.
 
 en:
-  hello: Hello world
+  validation:
+    required: "%{param} cannot be empty"
+    invalid: "Invalid %{param}"
+    unconfigured: "Unconfigured %{param}"
+    already_taken: "%{param} is already taken"
   user:
-    not_found: Unable to find the user
-    validation:
-      required: "%{param} cannot be empty"
-      invalid: "Invalid %{param}"
-      already_taken: "%{param} is already taken"
-      password:
-        invalid: Password should contain atleast 6 characters
+    not_found: Unable to find the user. Please check the credentials
+    create_failed: Unable to create account
+    otp_failed: Unable to send OTP
+    login_failed: Unable to login
+    password:
+      invalid: "Password should contain atleast %{length} characters"
     trigger_success: "%{param} is sent successfully"
-    link_expired: "%{param} is expired or invalid"
+    param_expired: "%{param} is expired or invalid"
     create_success: Account creation is successful
+    login_success: Login is successful
+    otp_success: Sending OTP is successful
+  auth:
+    required: Please provide any one of the params - %{param}

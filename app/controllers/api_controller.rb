@@ -1,7 +1,6 @@
 class ApiController < ApplicationController
   protect_from_forgery
-  before_action :check_origin, :authenticate_request, :verify_partner
-  before_action :check_limit
+  before_action :check_origin, :authenticate_request, :verify_user, :check_limit
 
   LIMIT = 20
 
@@ -10,7 +9,7 @@ class ApiController < ApplicationController
   def authenticate_request
   end
 
-  def verify_partner
+  def verify_user
   end
 
   def check_limit

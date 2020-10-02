@@ -16,9 +16,9 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
   enable_extension "plpgsql"
 
   create_table "user_sessions", primary_key: "token", id: :string, force: :cascade do |t|
+    t.jsonb "meta", default: {}
     t.string "login_ip"
-    t.string "device_os"
-    t.string "device_app"
+    t.string "user_agent"
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -32,11 +32,13 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
     t.string "mobile"
     t.string "otp_secret_key"
     t.boolean "two_factor_enabled"
+    t.boolean "verified"
+    t.integer "status", limit: 2, default: 1
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["mobile"], name: "index_users_on_mobile", unique: true
-    t.index ["user_name"], name: "index_users_on_user_name", unique: true
+    t.index ["email"], name: "index_users_on_email"
+    t.index ["mobile"], name: "index_users_on_mobile"
+    t.index ["user_name"], name: "index_users_on_user_name"
   end
 
 end
