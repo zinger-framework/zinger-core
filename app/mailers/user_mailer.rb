@@ -1,16 +1,6 @@
 class UserMailer < ApplicationMailer
-  def verify_email options = {}
-    @link = options['link']
-    mail(to: options['to'], subject: 'Zinger - Email Verification')
-  end
-
-  def verify_otp options = {}
+  def send_otp options = {}
     @code = options['code']
-    mail(to: options['to'], subject: 'Zinger - OTP Verification')
-  end
-
-  def reset_password options = {}
-    @link = options['link']
-    mail(to: options['to'], subject: 'Zinger - Reset Password')
+    mail(to: options['value'], subject: 'Zinger - OTP Verification')
   end
 end

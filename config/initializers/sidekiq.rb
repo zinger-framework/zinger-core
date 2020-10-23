@@ -2,8 +2,13 @@ SidekiqConfig = YAML.load_file(File.join(Rails.root, 'config', 'sidekiq_config.y
 sidekiq_url = "redis://#{SidekiqConfig['host']}:#{SidekiqConfig['port']}"
 
 Sidekiq.configure_server do |config|
-  ActiveRecord::Base.logger = Logger.new("#{Rails.root}/log/#{ENV['SIDEKIQ_LOG']}.log") if ENV.key? 'SIDEKIQ_LOG'
+  ActiveRecord::Base.logger = Logger.new("#{Rails.root}/log/sidekiq.log")
+
   config.redis = { :url => sidekiq_url, :namespace => SidekiqConfig['namespace'] }
+  config.logger.level = ::Logger::DEBUG
+
+  Rails.logger = Sidekiq.logger
+  ActiveRecord::Base.logger = Sidekiq.logger
 end
 
 Sidekiq.configure_client do |config|

@@ -10,12 +10,20 @@ class ApiController < ApplicationController
     if user.nil?
       render status: 401, json: { success: false, message: 'Invalid Authorization', reason: 'UNAUTHORIZED' }
       return
+    elsif user.is_blocked?
+      render status: 400, json: { success: false, message: I18n.t('user.account_blocked') }
+      return
     end
 
     user.make_current
   end
 
   def check_limit
+    resp = Core::Ratelimit.reached?(request)
+    if resp
+      render status: 429, json: { success: false, message: resp }
+      return
+    end
   end
 
   def check_origin

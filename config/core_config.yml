@@ -1,14 +1,1 @@
----
-auth:
-  text: Authentication
-  methods:
-    text: Authentication Methods
-    allowed: 
-    - LOGIN_WITH_PASSWORD
-    - LOGIN_WITH_OTP
-    - LOGIN_WITH_GOOGLE
-    default: LOGIN_WITH_PASSWORD
-    selected:
-    - LOGIN_WITH_PASSWORD
-    - LOGIN_WITH_OTP
-    - LOGIN_WITH_GOOGLE
+

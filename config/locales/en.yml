@@ -33,28 +33,27 @@ en:
   validation:
     required: "%{param} cannot be empty"
     invalid: "Invalid %{param}"
-    unconfigured: "Unconfigured %{param}"
     already_taken: "%{param} is already taken"
   user:
     not_found: Unable to find the user. Please check the credentials
     create_failed: Unable to create account
     otp_failed: Unable to send OTP
     login_failed: Unable to login
+    account_blocked: Your account has been deactivated. Please contact Zinger team
     password:
       invalid: "Password should contain atleast %{length} characters"
     param_expired: "%{param} is expired or invalid"
     create_success: Account creation is successful
     login_success: Login is successful
     otp_success: Sending OTP is successful
-    already_verified: User has been already verified
   auth:
     required: Please provide any one of the params - %{param}
     logout_success: Logout is successful
-    logout_failed: Logout failed
     reset_password:
       trigger_failed: Request to reset password failed
-      trigger_success: Please check your email for reset password instructions
       reset_success: Password reset is successful
-    verify_email:
-      trigger_success: Please check your email for email verification
-      verify_success: Email verification is successful
+  ratelimit:
+    exceeded: You have exceeded the number of attempts. Please try again after sometime
+    login: You have exceeded the number of login attempts. Please try again after sometime
+    reset_password: You have exceeded the number of reset password attempts. Please try again after sometime
+    registration: You have exceeded the number of registration attempts. Please try again after sometime

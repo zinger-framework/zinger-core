@@ -26,19 +26,17 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "user_name"
-    t.string "password_digest"
     t.string "email"
     t.string "mobile"
+    t.string "password_digest"
     t.string "otp_secret_key"
     t.boolean "two_factor_enabled"
-    t.boolean "verified"
+    t.boolean "deleted", default: false
     t.integer "status", limit: 2, default: 1
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_users_on_email"
     t.index ["mobile"], name: "index_users_on_mobile"
-    t.index ["user_name"], name: "index_users_on_user_name"
   end
 
 end
