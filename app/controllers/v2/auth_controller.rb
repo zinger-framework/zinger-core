@@ -54,7 +54,7 @@ class V2::AuthController < ApiController
 
     validator = GoogleIDToken::Validator.new
     begin
-      @payload = validator.check(params['id_token'], AppConfig['google_client_id'], AppConfig['google_client_id'])
+      @payload = validator.check(params['id_token'], AppConfig['google_client_id'])
     rescue GoogleIDToken::ValidationError => e
       render status: 400, json: { success: false, message: I18n.t('user.create_failed'), reason: e }
       return
