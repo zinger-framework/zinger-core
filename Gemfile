@@ -18,7 +18,6 @@ gem 'redis', '4.1.4'
 gem 'redis-namespace', '1.7.0'
 gem 'sidekiq', '6.0.7'
 # Use Active Model has_secure_password
-gem 'active_model_otp', '2.0.1'
 gem 'bcrypt', '3.1.13'
 gem 'jwt', '2.2.1'
 gem 'bootstrap-sass', '3.4.1'

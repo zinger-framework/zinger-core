@@ -15,28 +15,27 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
-  create_table "user_sessions", primary_key: "token", id: :string, force: :cascade do |t|
+  create_table "customer_sessions", primary_key: "token", id: :string, force: :cascade do |t|
     t.jsonb "meta", default: {}
     t.string "login_ip"
     t.string "user_agent"
-    t.bigint "user_id"
+    t.bigint "customer_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_user_sessions_on_user_id"
+    t.index ["customer_id"], name: "index_customer_sessions_on_customer_id"
   end
 
-  create_table "users", force: :cascade do |t|
+  create_table "customers", force: :cascade do |t|
+    t.string "name"
     t.string "email"
     t.string "mobile"
     t.string "password_digest"
-    t.string "otp_secret_key"
-    t.boolean "two_factor_enabled"
-    t.boolean "deleted", default: false
     t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["email"], name: "index_users_on_email"
-    t.index ["mobile"], name: "index_users_on_mobile"
+    t.index ["email"], name: "index_customers_on_email"
+    t.index ["mobile"], name: "index_customers_on_mobile"
   end
 
 end

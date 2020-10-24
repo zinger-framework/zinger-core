@@ -32,7 +32,7 @@ class Core::Ratelimit
     key = "RT_LMT:#{request.method}:#{request.path}"
 
     key = "#{key}:#{request.ip}" if config['per_ip']
-    key = "#{key}:#{User.current.id}" if config['per_user'] && User.current.present?
+    key = "#{key}:#{Customer.current.id}" if config['per_customer'] && Customer.current.present?
     config['params'].each { |param| key = "#{key}:#{request.params[param]}" } if config['params'].present?
 
     return key
