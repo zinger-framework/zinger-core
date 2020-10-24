@@ -1,5 +1,20 @@
 version: '3'
 services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    environment:
+      - cluster.name=zinger-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/elastic_search_data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
   db:
     image: postgres:12.1
     ports:
@@ -24,6 +39,8 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: ./docker/run.sh
+    environment:
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
       - .:/zinger
     ports:
@@ -31,3 +48,4 @@ services:
     depends_on:
       - db
       - redis
+      - elasticsearch

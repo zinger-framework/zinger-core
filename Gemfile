@@ -22,6 +22,7 @@ gem 'active_model_otp', '2.0.1'
 gem 'bcrypt', '3.1.13'
 gem 'jwt', '2.2.1'
 gem 'bootstrap-sass', '3.4.1'
+gem 'searchkick', '4.4.1'
 gem 'google-id-token', '1.4.2'
 
 # Reduces boot times through caching; required in config/boot.rb
