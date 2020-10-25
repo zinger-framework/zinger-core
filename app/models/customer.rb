@@ -37,16 +37,16 @@ class Customer < ApplicationRecord
   def self.send_otp options
     case options[:action]
     when 'signup'
-      return I18n.t('validation.already_taken', param: options[:value]) if self.exists?(options[:param] => options[:value])
+      return I18n.t('validation.already_taken', param: options[:value]) if Customer.exists?(options[:param] => options[:value])
     when 'login'
     when 'reset_password'
-      customer = self.where(options[:param] => options[:value]).first
+      customer = Customer.where(options[:param] => options[:value]).first
       return I18n.t('customer.not_found') if customer.blank?
       return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
     end
 
     token = Base64.encode64("#{options[:value]}-#{Time.now.to_i}-#{rand(1000..9999)}").strip.gsub('=', '')
-    options.merge!({ code: self.otp, token: token }).except!(:action)
+    options.merge!({ code: Customer.otp, token: token }).except!(:action)
     MailerWorker.perform_async(options.to_json)
 
     return { token: token }
@@ -57,13 +57,13 @@ class Customer < ApplicationRecord
   def validate_email action = nil
     self.email = self.email.to_s.strip.downcase
     return errors.add(:email, I18n.t('validation.invalid', param: 'Email address')) unless self.email.match(EMAIL_REGEX)
-    return errors.add(:email, I18n.t('validation.already_taken', param: self.email)) if self.exists?(email: self.email)
+    return errors.add(:email, I18n.t('validation.already_taken', param: self.email)) if Customer.exists?(email: self.email)
   end
 
   def validate_mobile action = nil
     self.mobile = self.mobile.to_s.strip
     return errors.add(:mobile, I18n.t('validation.invalid', param: 'Mobile number')) unless self.mobile.match(MOBILE_REGEX)
-    return errors.add(:mobile, I18n.t('validation.already_taken', param: self.mobile)) if self.exists?(mobile: self.mobile)
+    return errors.add(:mobile, I18n.t('validation.already_taken', param: self.mobile)) if Customer.exists?(mobile: self.mobile)
   end
 
   def create_validations

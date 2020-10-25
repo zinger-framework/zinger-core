@@ -30,7 +30,7 @@ class CustomerSession < ApplicationRecord
     return nil if payload.blank?
 
     sessions = Core::Redis.fetch(CustomerSession.cache_key(payload['customer_id']), { type: Array }) do
-      self.where(customer_id: payload['customer_id']).map(&:token)
+      CustomerSession.where(customer_id: payload['customer_id']).map(&:token)
     end
     
     return sessions.include?(payload['token']) ? Customer.fetch_by_id(payload['customer_id']) : nil
