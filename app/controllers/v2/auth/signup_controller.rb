@@ -1,4 +1,5 @@
 class V2::Auth::SignupController < V2::AuthController
+  before_action :validate_user_agent
   before_action :validate_params, except: :google
   before_action :validate_password, only: :password
   before_action :signup, except: :google
@@ -10,17 +11,25 @@ class V2::Auth::SignupController < V2::AuthController
   end
 
   def google
-    customer = Customer.create(email: @payload['email'])
+    customer = Customer.create(email: @payload['email'], auth_mode: Customer::AUTH_MODE['GOOGLE_AUTH'])
     if customer.errors.any?
       render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: customer.errors.messages }
       return
     end
 
-    session = customer.customer_sessions.create!(login_ip: request.ip, user_agent: params['user_agent'])
+    session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE['GOOGLE_AUTH'] }, login_ip: request.ip, 
+      user_agent: request.headers['User-Agent'])
     render status: 200, json: { success: true, message: I18n.t('customer.create_success'), data: { token: session.get_jwt_token } }
   end
 
   private
+
+  def validate_user_agent
+    if request.headers['User-Agent'].blank?
+      render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'User-Agent') }
+      return
+    end
+  end
 
   def validate_params
     if params['auth_token'].blank?
@@ -54,7 +63,7 @@ class V2::Auth::SignupController < V2::AuthController
       return
     end
 
-    customer = Customer.new(token['param'] => token['value'])
+    customer = Customer.new(token['param'] => token['value'], auth_mode: Customer::AUTH_MODE["#{params['action'].upcase}_AUTH"])
     customer.password = params['password'] if params['action'] == 'password'
     customer.save
     if customer.errors.any?
@@ -62,7 +71,8 @@ class V2::Auth::SignupController < V2::AuthController
       return
     end
 
-    session = customer.customer_sessions.create!(login_ip: request.ip, user_agent: params['user_agent'])
+    session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE["#{params['action'].upcase}_AUTH"] }, 
+      login_ip: request.ip, user_agent: request.headers['User-Agent'])
     Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
     render status: 200, json: { success: true, message: I18n.t('customer.create_success'), data: { token: session.get_jwt_token } }
   end

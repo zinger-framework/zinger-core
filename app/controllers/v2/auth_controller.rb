@@ -35,7 +35,7 @@ class V2::AuthController < ApiController
     end
     
     customer = Customer.where(token['param'] => token['value']).first
-    if customer.nil?
+    if customer.nil? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
       render status: 404, json: { success: false, message: I18n.t('customer.not_found') }
       return
     elsif customer.is_blocked?
@@ -50,6 +50,11 @@ class V2::AuthController < ApiController
 
   private
   def verify_auth_token
+    if params['id_token'].blank?
+      render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'id_token') }
+      return
+    end
+
     if Core::Redis.fetch(Core::Redis::ID_TOKEN_VERIFICATION % { id_token: params['id_token'] }) { false }
       render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), 
         reason: I18n.t('customer.param_expired', param: 'Token') }

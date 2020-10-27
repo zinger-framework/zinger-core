@@ -1,4 +1,6 @@
 class V2::Auth::LoginController < V2::AuthController
+  before_action :validate_user_agent
+
   def password
     params_present = AUTH_PARAMS.select { |key| params[key].present? }
     if params_present.length != 1
@@ -19,7 +21,7 @@ class V2::Auth::LoginController < V2::AuthController
     
     key = params_present.first
     customer = Customer.where(key => params[key]).first
-    if customer.nil? || customer.password_digest.blank?
+    if customer.nil? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
       render status: 404, json: { success: false, message: I18n.t('customer.login_failed'), 
         reason: { key => [ I18n.t('customer.not_found') ] } }
       return
@@ -33,7 +35,8 @@ class V2::Auth::LoginController < V2::AuthController
       return
     end
 
-    session = customer.customer_sessions.create!(login_ip: request.ip, user_agent: params['user_agent'])
+    session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE['PASSWORD_AUTH'] }, login_ip: request.ip, 
+      user_agent: request.headers['User-Agent'])
     render status: 200, json: { success: true, message: I18n.t('customer.login_success'), data: { token: session.get_jwt_token } }
   end
 
@@ -55,7 +58,7 @@ class V2::Auth::LoginController < V2::AuthController
     end
 
     customer = Customer.where(token['param'] => token['value']).first
-    if customer.nil?
+    if customer.nil? || (!PlatformConfig['flexible_auth'] && customer.auth_mode != Customer::AUTH_MODE['OTP_AUTH'])
       render status: 404, json: { success: false, message: I18n.t('customer.login_failed'), 
         reason: { key => [ I18n.t('customer.not_found') ] } }
       return
@@ -65,14 +68,15 @@ class V2::Auth::LoginController < V2::AuthController
       return
     end
 
-    session = customer.customer_sessions.create!(login_ip: request.ip, user_agent: params['user_agent'])
+    session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE['OTP_AUTH'] }, login_ip: request.ip, 
+      user_agent: request.headers['User-Agent'])
     Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
     render status: 200, json: { success: true, message: I18n.t('customer.login_success'), data: { token: session.get_jwt_token } }
   end
 
   def google
     customer = Customer.where(email: @payload['email']).first
-    if customer.nil?
+    if customer.nil? || (!PlatformConfig['flexible_auth'] && customer.auth_mode != Customer::AUTH_MODE['GOOGLE_AUTH'])
       render status: 404, json: { success: false, message: I18n.t('customer.login_failed'), 
         reason: { email: [ I18n.t('customer.not_found') ] } }
       return
@@ -82,7 +86,17 @@ class V2::Auth::LoginController < V2::AuthController
       return
     end
 
-    session = customer.customer_sessions.create!(login_ip: request.ip, user_agent: params['user_agent'])
+    session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE['GOOGLE_AUTH'] }, login_ip: request.ip, 
+      user_agent: request.headers['User-Agent'])
     render status: 200, json: { success: true, message: I18n.t('customer.login_success'), data: { token: session.get_jwt_token } }
+  end
+
+  private
+
+  def validate_user_agent
+    if request.headers['User-Agent'].blank?
+      render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'User-Agent') }
+      return
+    end
   end
 end

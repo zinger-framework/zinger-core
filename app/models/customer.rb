@@ -4,6 +4,7 @@ class Customer < ApplicationRecord
   EMAIL_REGEX = /\S+@\S+\.[a-z]+/i
   MOBILE_REGEX = /^[0-9]{10}$/
   STATUSES = { 'ACTIVE' => 1, 'BLOCKED' => 2 }
+  AUTH_MODE = { 'PASSWORD_AUTH' => 1, 'OTP_AUTH' => 2, 'GOOGLE_AUTH' => 3 }
 
   has_secure_password(validations: false)
   default_scope { where(deleted: false) }
@@ -37,11 +38,15 @@ class Customer < ApplicationRecord
   def self.send_otp options
     case options[:action]
     when 'signup'
-      return I18n.t('validation.already_taken', param: options[:value]) if Customer.exists?(options[:param] => options[:value])
+      return I18n.t('auth.already_exist', key: options[:param], value: options[:value]) if Customer.exists?(options[:param] => options[:value])
     when 'login'
+      customer = Customer.where(options[:param] => options[:value]).first
+      return I18n.t('customer.not_found') if customer.blank? || (!PlatformConfig['flexible_auth'] && 
+        customer.auth_mode != Customer::AUTH_MODE['OTP_AUTH'])
+      return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
     when 'reset_password'
       customer = Customer.where(options[:param] => options[:value]).first
-      return I18n.t('customer.not_found') if customer.blank?
+      return I18n.t('customer.not_found') if customer.blank? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
       return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
     end
 
@@ -57,13 +62,13 @@ class Customer < ApplicationRecord
   def validate_email action = nil
     self.email = self.email.to_s.strip.downcase
     return errors.add(:email, I18n.t('validation.invalid', param: 'Email address')) unless self.email.match(EMAIL_REGEX)
-    return errors.add(:email, I18n.t('validation.already_taken', param: self.email)) if Customer.exists?(email: self.email)
+    return errors.add(:email, I18n.t('auth.already_exist', key: 'email', value: self.email)) if Customer.exists?(email: self.email)
   end
 
   def validate_mobile action = nil
     self.mobile = self.mobile.to_s.strip
     return errors.add(:mobile, I18n.t('validation.invalid', param: 'Mobile number')) unless self.mobile.match(MOBILE_REGEX)
-    return errors.add(:mobile, I18n.t('validation.already_taken', param: self.mobile)) if Customer.exists?(mobile: self.mobile)
+    return errors.add(:mobile, I18n.t('auth.already_exist', key: 'mobile', value: self.mobile)) if Customer.exists?(mobile: self.mobile)
   end
 
   def create_validations

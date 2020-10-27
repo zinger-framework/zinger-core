@@ -1,4 +1,5 @@
 class CustomerSession < ApplicationRecord
+  AUTH_MODE = { 'PASSWORD_AUTH' => 1, 'OTP_AUTH' => 2, 'GOOGLE_AUTH' => 3 }
   belongs_to :customer
 
   before_create :set_token

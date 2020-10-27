@@ -33,7 +33,6 @@ en:
   validation:
     required: "%{param} cannot be empty"
     invalid: "Invalid %{param}"
-    already_taken: "%{param} is already taken"
   customer:
     not_found: Unable to find the user. Please check the credentials
     create_failed: Unable to create account
@@ -49,6 +48,7 @@ en:
   auth:
     required: Please provide any one of the params - %{param}
     logout_success: Logout is successful
+    already_exist: "Account with %{key} - %{value} already exist"
     reset_password:
       trigger_failed: Request to reset password failed
       reset_success: Password reset is successful

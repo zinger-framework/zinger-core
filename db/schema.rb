@@ -30,6 +30,7 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
     t.string "email"
     t.string "mobile"
     t.string "password_digest"
+    t.integer "auth_mode", limit: 2
     t.integer "status", limit: 2, default: 1
     t.boolean "deleted", default: false
     t.datetime "created_at", precision: 6, null: false
