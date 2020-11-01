@@ -10,10 +10,21 @@ class Customer < ApplicationRecord
   default_scope { where(deleted: false) }
   
   validate :create_validations, on: :create
+  validate :update_validations, on: :update
   after_commit :clear_cache
   after_update :clear_sessions
 
   has_many :customer_sessions
+
+  def as_json purpose = nil
+    case purpose
+    when 'ui_profile'
+      return { name: self.name, email: self.email, mobile: self.mobile }
+    when 'admin_profile'
+      return { id: self.id, name: self.name, email: self.email, mobile: self.mobile, status: self.status, deleted: self.deleted,
+      updated_at: self.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%d-%m-%Y %H:%M') }
+    end
+  end
 
   def self.fetch_by_id id
     Core::Redis.fetch(Core::Redis::CUSTOMER_BY_ID % { id: id }, { type: Customer }) { Customer.find_by_id(id) }
@@ -36,6 +47,9 @@ class Customer < ApplicationRecord
   end
 
   def self.send_otp options
+    return I18n.t('validation.invalid', param: 'email address') if options[:param] == 'email' && !options[:value].match(EMAIL_REGEX)
+    return I18n.t('validation.invalid', param: 'mobile number') if options[:param] == 'mobile' && !options[:value].match(MOBILE_REGEX)
+
     case options[:action]
     when 'signup'
       return I18n.t('auth.already_exist', key: options[:param], value: options[:value]) if Customer.exists?(options[:param] => options[:value])
@@ -48,6 +62,9 @@ class Customer < ApplicationRecord
       customer = Customer.where(options[:param] => options[:value]).first
       return I18n.t('customer.not_found') if customer.blank? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
       return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
+    when 'reset_profile'
+      return I18n.t('auth.already_exist', key: options[:param], value: options[:value]) if Customer.exists?(options[:param] => options[:value])
+      options[:customer_id] = Customer.current.id
     end
 
     token = Base64.encode64("#{options[:value]}-#{Time.now.to_i}-#{rand(1000..9999)}").strip.gsub('=', '')
@@ -59,21 +76,43 @@ class Customer < ApplicationRecord
 
   private
 
-  def validate_email action = nil
-    self.email = self.email.to_s.strip.downcase
-    return errors.add(:email, I18n.t('validation.invalid', param: 'Email address')) unless self.email.match(EMAIL_REGEX)
-    return errors.add(:email, I18n.t('auth.already_exist', key: 'email', value: self.email)) if Customer.exists?(email: self.email)
-  end
-
-  def validate_mobile action = nil
-    self.mobile = self.mobile.to_s.strip
-    return errors.add(:mobile, I18n.t('validation.invalid', param: 'Mobile number')) unless self.mobile.match(MOBILE_REGEX)
-    return errors.add(:mobile, I18n.t('auth.already_exist', key: 'mobile', value: self.mobile)) if Customer.exists?(mobile: self.mobile)
-  end
-
   def create_validations
-    validate_email('create') if self.email.present?
-    validate_mobile('create') if self.mobile.present?
+    if self.email.present?
+      self.email = self.email.to_s.strip.downcase
+      return errors.add(:email, I18n.t('validation.invalid', param: 'email address')) unless self.email.match(EMAIL_REGEX)
+      return errors.add(:email, I18n.t('auth.already_exist', key: :email, value: self.email)) if Customer.exists?(email: self.email)
+    end
+
+    if self.mobile.present?
+      self.mobile = self.mobile.to_s.strip
+      return errors.add(:mobile, I18n.t('validation.invalid', param: 'mobile number')) unless self.mobile.match(MOBILE_REGEX)
+      return errors.add(:mobile, I18n.t('auth.already_exist', key: :mobile, value: self.mobile)) if Customer.exists?(mobile: self.mobile)
+    end
+
+    return errors.add(:password, I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.auth_mode == AUTH_MODE['PASSWORD_AUTH'] && 
+      self.password.to_s.length < PASSWORD_MIN_LENGTH
+  end
+
+  def update_validations
+    if self.name_changed?
+      self.name = self.name.to_s.strip
+      return errors.add(:name, I18n.t('validation.required', param: 'Name')) if self.name.blank?
+    end
+
+    if self.email_changed?
+      self.email = self.email.to_s.strip.downcase
+      return errors.add(:email, I18n.t('validation.invalid', param: 'email address')) unless self.email.match(EMAIL_REGEX)
+      return errors.add(:email, I18n.t('auth.already_exist', key: :email, value: self.email)) if Customer.exists?(email: self.email)
+    end
+
+    if self.mobile_changed?
+      self.mobile = self.mobile.to_s.strip
+      return errors.add(:mobile, I18n.t('validation.invalid', param: 'mobile number')) unless self.mobile.match(MOBILE_REGEX)
+      return errors.add(:mobile, I18n.t('auth.already_exist', key: :mobile, value: self.mobile)) if Customer.exists?(mobile: self.mobile)
+    end
+
+    return errors.add(:password, I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.password_digest_changed? && 
+      self.password.to_s.length < PASSWORD_MIN_LENGTH
   end
 
   def self.otp

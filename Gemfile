@@ -20,9 +20,10 @@ gem 'sidekiq', '6.0.7'
 # Use Active Model has_secure_password
 gem 'bcrypt', '3.1.13'
 gem 'jwt', '2.2.1'
-gem 'bootstrap-sass', '3.4.1'
+gem 'jquery-rails', '4.4.0'
 gem 'searchkick', '4.4.1'
 gem 'google-id-token', '1.4.2'
+gem 'browser', '5.1.0'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

@@ -7,6 +7,7 @@ class ApplicationController < ActionController::Base
   end
 
   private
+  
   def reset_thread
     Customer.reset_current
   end

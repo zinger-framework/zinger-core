@@ -1,7 +1,6 @@
-class V2::Auth::SignupController < V2::AuthController
+class V2::Api::Auth::SignupController < V2::Api::AuthController
   before_action :validate_user_agent
   before_action :validate_params, except: :google
-  before_action :validate_password, only: :password
   before_action :signup, except: :google
 
   def password
@@ -42,19 +41,6 @@ class V2::Auth::SignupController < V2::AuthController
     end
   end
 
-  def validate_password
-    error_msg = if params['password'].blank?
-      I18n.t('validation.required', param: 'Password')
-    elsif params['password'].to_s.length < Customer::PASSWORD_MIN_LENGTH
-      I18n.t('customer.password.invalid', length: Customer::PASSWORD_MIN_LENGTH)
-    end
-
-    if error_msg.present?
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: { password: [error_msg] } }
-      return
-    end
-  end
-
   def signup
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['code'] != params['otp']
@@ -64,7 +50,7 @@ class V2::Auth::SignupController < V2::AuthController
     end
 
     customer = Customer.new(token['param'] => token['value'], auth_mode: Customer::AUTH_MODE["#{params['action'].upcase}_AUTH"])
-    customer.password = params['password'] if params['action'] == 'password'
+    customer.password = params['password'] if customer.auth_mode == Customer::AUTH_MODE['PASSWORD_AUTH']
     customer.save
     if customer.errors.any?
       render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: customer.errors.messages }

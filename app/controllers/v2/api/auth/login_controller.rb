@@ -1,4 +1,4 @@
-class V2::Auth::LoginController < V2::AuthController
+class V2::Api::Auth::LoginController < V2::Api::AuthController
   before_action :validate_user_agent
 
   def password
@@ -8,14 +8,9 @@ class V2::Auth::LoginController < V2::AuthController
       return
     end
 
-    error_msg = if params['password'].blank?
-      I18n.t('validation.required', param: 'Password')
-    elsif params['password'].to_s.length < Customer::PASSWORD_MIN_LENGTH
-      I18n.t('customer.password.invalid', length: Customer::PASSWORD_MIN_LENGTH)
-    end
-
-    if error_msg.present?
-      render status: 400, json: { success: false, message: I18n.t('customer.login_failed'), reason: { password: [error_msg] } }
+    if params['password'].to_s.length < Customer::PASSWORD_MIN_LENGTH
+      render status: 400, json: { success: false, message: I18n.t('customer.login_failed'), 
+        reason: { password: [ I18n.t('customer.password.invalid', length: Customer::PASSWORD_MIN_LENGTH) ] } }
       return
     end
     
@@ -31,7 +26,7 @@ class V2::Auth::LoginController < V2::AuthController
       return
     elsif customer.authenticate(params['password']) == false
       render status: 401, json: { success: false, message: I18n.t('customer.login_failed'), 
-        reason: { password: [ I18n.t('validation.invalid', param: 'Password') ] } }
+        reason: { password: [ I18n.t('validation.invalid', param: 'password') ] } }
       return
     end
 

@@ -1,4 +1,4 @@
-class V2::Auth::OtpController < V2::AuthController
+class V2::Api::Auth::OtpController < V2::Api::AuthController
   before_action :send_otp
 
   def signup
@@ -10,8 +10,11 @@ class V2::Auth::OtpController < V2::AuthController
   def reset_password
   end
 
-  private
+  def reset_profile
+  end
 
+  private
+  
   def send_otp
     params_present = AUTH_PARAMS.select { |key| params[key].present? }
     if params_present.length != 1
@@ -20,7 +23,7 @@ class V2::Auth::OtpController < V2::AuthController
     end
 
     key = params_present.first
-    resp = Customer.send_otp({param: key, value: params[key], action: params['action']})
+    resp = Customer.send_otp({ param: key, value: params[key], action: params['action'] })
     if resp.class == String
       render status: 400, json: { success: false, message: I18n.t('customer.otp_failed'), reason: { key => [resp] } }
       return

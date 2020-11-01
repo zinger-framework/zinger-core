@@ -3,20 +3,23 @@
   <head>
     <title>Zinger</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <%= favicon_link_tag asset_path('zinger-logo.png') %>
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= favicon_link_tag asset_path('zinger-logo.png') %>
+    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+    <%= javascript_include_tag 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js' %>
   </head>
 
   <body>
-    <div class="container">
-      <% flash.each do |type, message| %>
-        <div class="alert alert-<%= type %>"><%= message %></div>
-      <% end %>
-      <%= yield %>
-    </div>
-    
+    <%= render 'layouts/header' %>
+    <% flash.each do |type, message| %>
+      <div class="alert alert-<%= type %>">
+        <%= message %>
+        <a href="" class="close-alert" data-dismiss="alert">&times;</a>
+      </div>
+    <% end %>
+    <%= yield %>
   </body>
 </html>

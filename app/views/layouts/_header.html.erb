@@ -1,0 +1,42 @@
+<div class="component">
+  <%= link_to 'Zinger', dashboard_path, :class => 'left red-title-700 large left-50' %>
+  <div class="right pad-10"><%= link_to 'Logout', dashboard_path, :class => 'nav-item nav-link' %></div>
+  <div class="medium center-text pad-10 title-600"><%= @title %></div>
+</div>
+
+<style type="text/css">
+  .nav-item {
+    color: var(--grey);
+    font-weight: var(--font-400);
+    font-size: var(--small);
+    margin: 10px;
+    cursor: pointer;
+    position: relative;
+    text-decoration: none;
+  }
+
+  .nav-item::before {
+    transition: 300ms;
+    height: 5px;
+    content: "";
+    position: absolute;
+    background-color: var(--red);
+  }
+
+  .nav-item + .active:before {
+    width: 100%;
+  }
+
+  .nav-link::before {
+    width: 0;
+    top: 30px;
+  }
+
+  .nav-link:not(.active):not(.inactive):hover:before {
+    width: 100%;
+  }
+
+  .nav-item i:hover {
+    color: var(--red);
+  }
+</style>

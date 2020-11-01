@@ -9,7 +9,7 @@ class ApiController < ApplicationController
     customer = CustomerSession.fetch_customer(request.headers['Authorization'])
 
     error_msg = if customer.nil?
-      I18n.t('validation.invalid', param: 'Authorization')
+      I18n.t('validation.invalid', param: 'authorization')
     elsif customer.is_blocked?
       I18n.t('customer.account_blocked', platform: PlatformConfig['name'])
     end

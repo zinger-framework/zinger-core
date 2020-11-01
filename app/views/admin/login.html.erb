@@ -1,0 +1,23 @@
+<div class="component intro">
+  <div class="top-50 large center-text width-60">
+    <span class="title-600">Welcome to <span class="red-title-600">Zinger-Admin</span> Console</span>
+  </div>
+  <div class="top-10 very-small center-text width-60">
+    <span class="title-100">An Open Source Framework for building Hyperlocal Delivery Mobile and Web applications</span>
+  </div>
+  <div class="top-50 mid-small center">
+    <%= form_tag '' do %>
+      <%= label_tag :email, 'Email' %><br>
+      <%= email_field_tag :email, nil, placeholder: 'hello@example.com' %><br><br>
+      <%= label_tag :password, 'Password' %><br>
+      <%= password_field_tag :password, nil, placeholder: 'Abc123' %><br><br>
+      <%= submit_tag 'Login', class: 'chip mid-small active weight-600' %>
+    <% end %>
+  </div>
+</div>
+
+<style type="text/css">
+  .intro {
+    padding-top: 30px;
+  }
+</style>

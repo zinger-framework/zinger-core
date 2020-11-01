@@ -1,0 +1,75 @@
+<div class="component top-30 center">
+  <%= form_tag customer_index_path, method: :get do %>
+    <%= text_field_tag :q, params['q'], placeholder: 'Search by id, email or mobile', required: true, pattern: '(\S+@\S+\.[a-z]+)|([0-9]+)', title: 'Please provide a valid id, email or mobile' %>
+    <br><br>
+    <%= submit_tag 'Search', class: 'chip mid-small active weight-600' %>
+  <% end %>
+</div>
+
+<% if params['q'].present? %>
+  <% if @customers.blank? %>
+    <p class="top-50 center-text red-title-600">No records found!</p>
+  <% else %>
+    <table class="center top-50">
+      <tr>
+        <th>Id</th> <th>Name</th> <th>Email</th> <th>Mobile</th> <th>Status</th> <th>Last Updated</th>
+        <th></th> <th></th>
+      </tr>
+      <% @customers.each do |customer| %>
+        <% if customer.deleted %>
+        <tr style="color: var(--grey)">
+        <% else %>
+        <tr>
+        <% end %>
+          <td><%= customer.id %></td>
+          <td><%= customer.name || '-' %></td>
+          <td><%= customer.email || '-' %></td>
+          <td><%= customer.mobile || '-' %></td>
+          <td><%= Customer::STATUSES.key(customer.status) %></td>
+          <td><%= customer.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%d-%m-%Y %H:%M') %></td>
+          <% if customer.deleted %>
+            <td></td>
+            <td></td>
+          <% else %>
+            <td onclick="edit(<%= customer.as_json('admin_profile').to_json %>)" class="pointer">✏️</td>
+            <td><%= button_to '❌', customer_path(customer), method: :delete, :class => 'bt_icon pointer' %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+    <div id="modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="hide_modal()">&times;</span><br>
+        <%= form_tag '', :id => 'update', method: :put do %>
+          <div class="left-40 right-50">
+            <%= label_tag :name, 'Name' %><br>
+            <%= text_field_tag :name %><br><br>
+            <%= label_tag :email, 'Email' %><br>
+            <%= email_field_tag :email, nil, disabled: true %><br><br>
+            <%= label_tag :mobile, 'Mobile' %><br>
+            <%= phone_field_tag :mobile, nil, disabled: true %><br><br>
+            <%= label_tag :status, 'Status' %><br>
+            <%= select_tag :status, options_for_select(Customer::STATUSES.to_a) %><br><br>
+            <%= submit_tag 'Update', class: 'chip mid-small active weight-600' %>
+            <br><br>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<%= javascript_tag do %>
+  function edit(customer) {
+    document.getElementById("update").action = "<%= customer_index_path %>/" + customer.id;
+    document.getElementById("name").value = customer.name;
+    document.getElementById("email").value = customer.email;
+    document.getElementById("mobile").value = customer.mobile;
+    document.getElementById("status").value = customer.status;
+    document.getElementById("modal").style.display = "block";
+  }
+
+  function hide_modal() {
+    document.getElementById("modal").style.display = "none";
+  }
+<% end %>

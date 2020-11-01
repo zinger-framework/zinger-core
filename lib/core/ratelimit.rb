@@ -1,5 +1,7 @@
 class Core::Ratelimit
   CONFIGS = [
+    { 'path' => '/v[0-9]+/auth/otp/reset_profile', 'methods' => %w(POST), 'per_customer' => true,
+      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
     { 'path' => '/v[0-9]+/auth/otp/.*', 'methods' => %w(POST), 'per_ip' => true,
       'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
     { 'path' => '/v[0-9]+/auth/signup/.*', 'methods' => %w(POST), 'per_ip' => true,
@@ -7,7 +9,9 @@ class Core::Ratelimit
     { 'path' => '/v[0-9]+/auth/login/.*', 'methods' => %w(POST), 'params' => %w(email mobile),
       'limit' => 5, 'window' => 600, 'message' => 'login' },
     { 'path' => '/v[0-9]+/auth/reset_password', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 600, 'message' => 'reset_password' }
+      'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
+    { 'path' => '/v[0-9]+/customer/reset_profile', 'methods' => %w(PUT), 'per_customer' => true,
+      'limit' => 5, 'window' => 600, 'message' => 'reset_profile' }
   ]
   
   def self.reached? request

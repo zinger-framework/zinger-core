@@ -45,6 +45,14 @@ en:
     create_success: Account creation is successful
     login_success: Login is successful
     otp_success: Sending OTP is successful
+  profile:
+    update_success: Profile update is successful
+    update_failed: Profile update failed
+    reset_success: Profile reset is successful
+    reset_failed: Profile reset failed
+  session:
+    delete_success: Session delete is successful
+    delete_failed: Your current session cannot be deleted
   auth:
     required: Please provide any one of the params - %{param}
     logout_success: Logout is successful
@@ -55,5 +63,6 @@ en:
   ratelimit:
     exceeded: You have exceeded the number of attempts. Please try again after sometime
     login: You have exceeded the number of login attempts. Please try again after sometime
-    reset_password: You have exceeded the number of reset password attempts. Please try again after sometime
+    reset_password: You have exceeded the number of password reset attempts. Please try again after sometime
+    reset_profile: You have exceeded the number of email or mobile reset attempts. Please try again after sometime
     registration: You have exceeded the number of registration attempts. Please try again after sometime

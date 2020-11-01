@@ -1,0 +1,22 @@
+<div class="component">
+  <div class="bubbles">
+    <%= link_to 'Customers', customer_index_path, :class => 'chip mid-small right-20 top-20' %>
+  </div>
+</div>
+
+<style type="text/css">
+  .bubbles {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: left;
+    margin: 20px 15% 0;
+  }
+  .chip{
+    padding: 6px 36px;
+    border-radius: 20px;
+    border-color: var(--grey);
+    width: inherit;
+    color: black;
+  }
+</style>

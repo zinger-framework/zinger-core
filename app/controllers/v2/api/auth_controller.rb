@@ -1,7 +1,7 @@
-class V2::AuthController < ApiController
+class V2::Api::AuthController < ApiController
   AUTH_PARAMS = %w(email mobile)
 
-  skip_before_action :authenticate_request, except: :logout
+  skip_before_action :authenticate_request, except: [:logout, :reset_profile]
   before_action :verify_auth_token, only: :google
 
   def logout
@@ -16,14 +16,6 @@ class V2::AuthController < ApiController
     elsif params['otp'].blank?
       render status: 400, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), 
         reason: { otp: [ I18n.t('validation.required', param: 'OTP') ] } }
-      return
-    elsif params['password'].blank?
-      render status: 400, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), 
-        reason: { password: [ I18n.t('validation.required', param: 'Password') ] } }
-      return
-    elsif params['password'].to_s.length < Customer::PASSWORD_MIN_LENGTH
-      render status: 400, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), 
-        reason: { password: [ I18n.t('customer.password.invalid', length: Customer::PASSWORD_MIN_LENGTH) ] } }
       return
     end
 
@@ -43,12 +35,18 @@ class V2::AuthController < ApiController
       return
     end
 
-    customer.update!(password: params['password'])
+    customer.update(password: params['password'])
+    if customer.errors.any?
+      render status: 400, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), reason: customer.errors.messages }
+      return
+    end
+
     Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
     render status: 200, json: { success: true, message: I18n.t('auth.reset_password.reset_success') }
   end
 
   private
+  
   def verify_auth_token
     if params['id_token'].blank?
       render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'id_token') }
