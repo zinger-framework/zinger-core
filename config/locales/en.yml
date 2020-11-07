@@ -32,6 +32,7 @@
 en:
   validation:
     required: "%{param} cannot be empty"
+    too_many_params: Please provide any one of the params - %{param}
     invalid: "Invalid %{param}"
   customer:
     not_found: Unable to find the user. Please check the credentials
@@ -60,6 +61,8 @@ en:
     reset_password:
       trigger_failed: Request to reset password failed
       reset_success: Password reset is successful
+  shop:
+    not_found: Unable to find the shop
   ratelimit:
     exceeded: You have exceeded the number of attempts. Please try again after sometime
     login: You have exceeded the number of login attempts. Please try again after sometime

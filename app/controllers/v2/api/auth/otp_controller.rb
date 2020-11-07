@@ -18,7 +18,7 @@ class V2::Api::Auth::OtpController < V2::Api::AuthController
   def send_otp
     params_present = AUTH_PARAMS.select { |key| params[key].present? }
     if params_present.length != 1
-      render status: 400, json: { success: false, message: I18n.t('auth.required', param: AUTH_PARAMS.join(', ')) }
+      render status: 400, json: { success: false, message: I18n.t('validation.too_many_params', param: AUTH_PARAMS.join(', ')) }
       return
     end
 

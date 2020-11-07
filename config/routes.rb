@@ -43,6 +43,8 @@ Rails.application.routes.draw do
           resources :session, only: [:index, :destroy]
         end
       end
+
+      resources :shop, only: [:index, :show]
     end
   end
 

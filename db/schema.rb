@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_04_13_092244) do
+ActiveRecord::Schema.define(version: 2020_11_05_184303) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -37,6 +37,31 @@ ActiveRecord::Schema.define(version: 2020_04_13_092244) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_customers_on_email"
     t.index ["mobile"], name: "index_customers_on_mobile"
+  end
+
+  create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|
+    t.json "address", default: {}
+    t.string "landline"
+    t.string "mobile"
+    t.time "opening_time"
+    t.time "closing_time"
+    t.string "cover_photos", array: true
+    t.jsonb "payment", default: {}
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "shops", force: :cascade do |t|
+    t.string "name"
+    t.decimal "lat", precision: 10, scale: 8
+    t.decimal "lng", precision: 11, scale: 8
+    t.string "icon"
+    t.string "tags"
+    t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end
