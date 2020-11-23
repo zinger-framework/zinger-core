@@ -41,7 +41,7 @@ ActiveRecord::Schema.define(version: 2020_11_05_184303) do
 
   create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|
     t.json "address", default: {}
-    t.string "landline"
+    t.string "telephone"
     t.string "mobile"
     t.time "opening_time"
     t.time "closing_time"

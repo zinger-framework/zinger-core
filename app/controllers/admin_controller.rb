@@ -1,5 +1,5 @@
 class AdminController < ApplicationController
-  before_action :authenticate_request, :check_limit
+  before_action :set_title, :authenticate_request, :check_limit
 
   LIMIT = 20
 
@@ -18,5 +18,9 @@ class AdminController < ApplicationController
       render status: 429, json: { success: false, message: resp }
       return
     end
+  end
+
+  def set_title
+    @header = { links: [] }
   end
 end

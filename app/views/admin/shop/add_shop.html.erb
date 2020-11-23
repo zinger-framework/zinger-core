@@ -1,0 +1,66 @@
+<div class="component top-30 center">
+  <%= form_tag shop_index_path, multipart: true do %>
+    <div>
+      <div class="left">
+        <%= label_tag :name, 'Name*' %><br>
+        <%= text_field_tag :name, nil, required: true, placeholder: 'Hotel Zinger' %><br><br>
+
+        <div class="left">
+          <%= label_tag :number, 'No.*' %><br>
+          <%= text_field_tag :number, nil, style: 'width: 50px', required: true, placeholder: '23' %><br><br>
+        </div>
+        <div class="right">
+          <%= label_tag :street, 'Street*' %><br>
+          <%= text_field_tag :street, nil, style: 'width: 170px', required: true, placeholder: 'Anbu Street' %><br><br>
+        </div>
+        <br><br><br>
+
+        <div class="left">
+          <%= label_tag :city, 'City*' %><br>
+          <%= text_field_tag :city, nil, style: 'width: 120px', required: true, placeholder: 'Chennai' %><br><br>
+        </div>
+        <div class="right">
+          <%= label_tag :pincode, 'Pincode*' %><br>
+          <%= text_field_tag :pincode, nil, style: 'width: 100px', required: true, placeholder: '600077' %><br><br>
+        </div>
+        <br><br><br>
+
+        <%= label_tag :telephone, 'Telephone' %><br>
+        <%= phone_field_tag :telephone, nil, placeholder: '04425545880' %><br><br>
+      </div>
+      <div class="right left-40">
+        <%= label_tag :mobile, 'Mobile*' %><br>
+        <%= phone_field_tag :mobile, nil, required: true, placeholder: '9884098840' %><br><br>
+
+        <%= label_tag :area, 'Area*' %><br>
+        <%= text_field_tag :area, nil, required: true, placeholder: 'Nungambakkam' %><br><br>
+
+        <div class="left">
+          <%= label_tag :lat, 'Latitude*' %><br>
+          <%= text_field_tag :lat, nil, style: 'width: 110px', required: true, placeholder: '27.5330' %><br><br>
+        </div>
+        <div class="right">
+          <%= label_tag :lng, 'Longitude*' %><br>
+          <%= text_field_tag :lng, nil, style: 'width: 110px', required: true, placeholder: '88.5122' %><br><br>
+        </div>
+        <br><br><br>
+        <%= label_tag :file, 'Icon*' %><br>
+        <%= file_field_tag :file, required: true, accept: 'image/png,image/jpg,image/jpeg' %><br><br>
+
+        <div class="left">
+          <%= label_tag :opening_time, 'Opens at*' %><br>
+          <%= text_field_tag :opening_time, nil, style: 'width: 110px', required: true, placeholder: '09:30', pattern: '[0-9]{2}:[0-9]{2}', title: 'Please provide a valid time format' %><br><br>
+        </div>
+        <div class="right">
+          <%= label_tag :closing_time, 'Closes at*' %><br>
+          <%= text_field_tag :closing_time, nil, style: 'width: 110px', required: true, placeholder: '22:30', pattern: '[0-9]{2}:[0-9]{2}', title: 'Please provide a valid time format' %><br><br>
+        </div>
+        <br><br><br>
+      </div>
+    </div>
+    <%= label_tag :tags, 'Tags*' %><br>
+    <%= text_field_tag :tags, nil, required: true, placeholder: 'CHINESE SOUTH_INDIAN ARABIAN' %><br><br>
+
+    <%= submit_tag 'Add Shop', class: 'chip mid-small active weight-600' %>
+  <% end %>
+</div>

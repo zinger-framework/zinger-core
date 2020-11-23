@@ -1,10 +1,12 @@
 class Admin::CustomerController < AdminController
+  before_action :set_title
+
   def index
     @title = 'Customers'
     if params['q'].present?
-      @customers = if params['q'].match(Customer::EMAIL_REGEX)
+      @customers = if params['q'].match(EMAIL_REGEX)
         Customer.unscoped.where(email: params['q'])
-      elsif params['q'].match(Customer::MOBILE_REGEX)
+      elsif params['q'].match(MOBILE_REGEX)
         Customer.unscoped.where(mobile: params['q'])
       else
         Customer.unscoped.where(id: params['q'])
@@ -34,5 +36,9 @@ class Admin::CustomerController < AdminController
     end
     
     redirect_to customer_index_path(q: params['id'])
+  end
+
+  def set_title
+    @header = { links: [] }
   end
 end

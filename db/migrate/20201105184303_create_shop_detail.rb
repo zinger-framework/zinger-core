@@ -3,7 +3,7 @@ class CreateShopDetail < ActiveRecord::Migration[6.0]
     create_table :shop_details, id: false do |t|
       t.column :shop_id, 'BIGINT', primary_key: true
       t.json :address, default: {}
-      t.string :landline
+      t.string :telephone
       t.string :mobile
       t.time :opening_time
       t.time :closing_time

@@ -8,9 +8,9 @@ class V2::Api::Auth::LoginController < V2::Api::AuthController
       return
     end
 
-    if params['password'].to_s.length < Customer::PASSWORD_MIN_LENGTH
+    if params['password'].to_s.length < PASSWORD_MIN_LENGTH
       render status: 400, json: { success: false, message: I18n.t('customer.login_failed'), 
-        reason: { password: [ I18n.t('customer.password.invalid', length: Customer::PASSWORD_MIN_LENGTH) ] } }
+        reason: { password: [ I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH) ] } }
       return
     end
     

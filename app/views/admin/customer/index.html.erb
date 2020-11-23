@@ -32,7 +32,7 @@
             <td></td>
           <% else %>
             <td onclick="edit(<%= customer.as_json('admin_profile').to_json %>)" class="pointer">✏️</td>
-            <td><%= button_to '❌', customer_path(customer), method: :delete, :class => 'bt_icon pointer' %></td>
+            <td><%= button_to '❌', customer_path(customer), method: :delete, class: 'bt_icon pointer' %></td>
           <% end %>
         </tr>
       <% end %>
@@ -40,7 +40,7 @@
     <div id="modal" class="modal">
       <div class="modal-content">
         <span class="close" onclick="hide_modal()">&times;</span><br>
-        <%= form_tag '', :id => 'update', method: :put do %>
+        <%= form_tag '', id: 'update', method: :put do %>
           <div class="left-40 right-50">
             <%= label_tag :name, 'Name' %><br>
             <%= text_field_tag :name %><br><br>

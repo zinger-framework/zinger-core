@@ -24,6 +24,7 @@ gem 'jquery-rails', '4.4.0'
 gem 'searchkick', '4.4.1'
 gem 'google-id-token', '1.4.2'
 gem 'browser', '5.1.0'
+gem 'aws-sdk-s3', '1.83.2'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

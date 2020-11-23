@@ -1,7 +1,12 @@
 <div class="component">
-  <%= link_to 'Zinger', dashboard_path, :class => 'left red-title-700 large left-50' %>
-  <div class="right pad-10"><%= link_to 'Logout', dashboard_path, :class => 'nav-item nav-link' %></div>
-  <div class="medium center-text pad-10 title-600"><%= @title %></div>
+  <%= link_to 'Zinger', dashboard_path, class: 'left red-title-700 large left-50' %>
+  <div class="right pad-10">
+    <% @header[:links].each do |link| %>
+      <%= link_to link[:title], link[:path], class: "nav-item nav-link #{link[:active] ? 'active' : '' }" %>
+    <% end %>
+    <%= link_to 'Logout', dashboard_path, class: 'nav-item nav-link' %>
+  </div>
+  <div class="medium center pad-10 title-600"><%= @header[:title] %></div>
 </div>
 
 <style type="text/css">
@@ -13,6 +18,7 @@
     cursor: pointer;
     position: relative;
     text-decoration: none;
+    background: none;
   }
 
   .nav-item::before {
@@ -23,7 +29,7 @@
     background-color: var(--red);
   }
 
-  .nav-item + .active:before {
+  .nav-item.active:before {
     width: 100%;
   }
 

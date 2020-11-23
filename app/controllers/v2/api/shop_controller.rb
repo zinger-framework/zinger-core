@@ -21,7 +21,7 @@ class V2::Api::ShopController < ApiController
   end
 
   def show
-    shop = Shop.find_by_id(params['id'])
+    shop = Shop.fetch_by_id(params['id'])
     if shop.nil?
       render status: 200, json: { success: false, message: I18n.t('shop.not_found') }
       return
