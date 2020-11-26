@@ -3,7 +3,7 @@
   <div class="top-50 mid-small center">
     <%= form_tag otp_auth_index_path do %>
       <%= label_tag :otp, 'OTP' %><br>
-      <%= password_field_tag :otp, nil, placeholder: '123456', maxlength: 6 %><br><br>
+      <%= password_field_tag :otp, nil, placeholder: '123456', maxlength: OTP_LENGTH %><br><br>
       <%= submit_tag 'Verify OTP', class: 'chip mid-small active weight-600' %>
     <% end %>
   </div>

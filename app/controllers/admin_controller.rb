@@ -1,5 +1,5 @@
 class AdminController < ApplicationController
-  before_action :set_title, :authenticate_request, :check_limit
+  before_action :reset_thread, :set_title, :authenticate_request, :check_limit
   AUTHORIZED_2FA_STATUSES = [Employee::TWO_FA_STATUSES['NOT_APPLICABLE'], Employee::TWO_FA_STATUSES['VERIFIED']]
 
   def dashboard
@@ -20,7 +20,8 @@ class AdminController < ApplicationController
       return redirect_to auth_index_path
     end
 
-    if employee.two_fa_enabled && payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['VERIFIED']
+    if employee.two_fa_enabled && payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['VERIFIED'] &&
+        "#{params['controller']}##{params['action']}" != 'admin/auth#logout'
       flash[:warn] = 'Please verify OTP to continue'
       return redirect_to otp_auth_index_path
     end
@@ -34,5 +35,9 @@ class AdminController < ApplicationController
       flash[:error] = resp
       return redirect_to request.referrer
     end
+  end
+
+  def reset_thread
+    Employee.reset_current
   end
 end

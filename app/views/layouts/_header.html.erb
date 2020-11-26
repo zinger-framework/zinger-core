@@ -4,7 +4,9 @@
     <% @header[:links].each do |link| %>
       <%= link_to link[:title], link[:path], class: "nav-item nav-link #{link[:active] ? 'active' : '' }" %>
     <% end %>
-    <%= link_to 'Logout', dashboard_path, class: 'nav-item nav-link' %>
+    <% if session[:authorization].present? %>
+      <%= link_to 'Logout', logout_auth_index_path, method: :delete, class: 'nav-item nav-link' %>
+    <% end %>
   </div>
   <div class="medium center pad-10 title-600"><%= @header[:title] %></div>
 </div>

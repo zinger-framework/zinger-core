@@ -1,7 +1,5 @@
 class ApiController < ApplicationController
-  before_action :authenticate_request, :check_limit, :check_origin
-
-  LIMIT = 20
+  before_action :reset_thread, :authenticate_request, :check_limit, :check_origin
 
   private
 
@@ -35,5 +33,9 @@ class ApiController < ApplicationController
       render status: 403, json: { success: false, message: 'Unauthorized Origin', reason: 'UNAUTHORIZED' }
       return
     end
+  end
+
+  def reset_thread
+    Customer.reset_current
   end
 end

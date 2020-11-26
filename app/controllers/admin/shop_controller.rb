@@ -11,20 +11,21 @@ class Admin::ShopController < AdminController
   end
 
   def create
-    shop, shop_detail = nil, nil
-    ActiveRecord::Base.transaction do
-      shop = Shop.new(name: params['name'], lat: params['lat'], lng: params['lng'], tags: params['tags'],
-        icon: "shop-icon-#{Time.now.to_i}#{File.extname(params['file'].path)}")
-      shop_detail = shop.build_shop_detail(address: { number: params['number'], street: params['street'], area: params['area'],
-        city: params['city'], pincode: params['pincode'] }, telephone: params['telephone'], mobile: params['mobile'],
-        opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc, 
-        closing_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['closing_time'], '%H:%M').utc)
-      shop_detail.validate
-      shop.save unless shop_detail.errors.any?
-    end
+    shop = nil
+    begin
+      ActiveRecord::Base.transaction do
+        shop = Shop.create(name: params['name'], lat: params['lat'], lng: params['lng'], tags: params['tags'],
+          icon: "shop-icon-#{Time.now.to_i}#{File.extname(params['file'].path)}")
+        raise shop.errors.messages.values.flatten.first if shop.errors.any?
 
-    if shop.errors.any? || shop_detail.errors.any?
-      flash[:error] = shop.errors.messages.values.flatten.first || shop_detail.errors.messages.values.flatten.first
+        shop_detail = shop.create_shop_detail(address: { number: params['number'], street: params['street'], area: params['area'],
+          city: params['city'], pincode: params['pincode'] }, telephone: params['telephone'], mobile: params['mobile'],
+          opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc, 
+          closing_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['closing_time'], '%H:%M').utc)
+        raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
+      end
+    rescue => e
+      flash[:error] = e
       return redirect_to add_shop_shop_index_path
     end
 
@@ -40,13 +41,18 @@ class Admin::ShopController < AdminController
   end
 
   def update
-    @shop.update(name: params['name'], status: params['status'], tags: params['tags'], updated_at: Time.now.utc)
-    shop_detail = @shop.shop_detail
-    shop_detail.update(mobile: params['mobile'], opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc, 
-      closing_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['closing_time'], '%H:%M').utc)
+    begin
+      ActiveRecord::Base.transaction do
+        @shop.update(name: params['name'], status: params['status'], tags: params['tags'], updated_at: Time.now.utc)
+        raise @shop.errors.messages.values.flatten.first if @shop.errors.any?
 
-    if @shop.errors.any? || shop_detail.errors.any?
-      flash[:error] = @shop.errors.messages.values.flatten.first || shop_detail.errors.messages.values.flatten.first
+        shop_detail = @shop.shop_detail
+        shop_detail.update(mobile: params['mobile'], opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc, 
+          closing_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['closing_time'], '%H:%M').utc)
+        raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
+      end
+    rescue => e
+      flash[:error] = e
       return redirect_to shop_index_path(q: params['id'])
     end
 
@@ -55,13 +61,18 @@ class Admin::ShopController < AdminController
   end
 
   def location
-    @shop.update(lat: params['lat'], lng: params['lng'], updated_at: Time.now.utc)
-    shop_detail = @shop.shop_detail
-    shop_detail.update(address: { number: params['number'], street: params['street'], area: params['area'],
-      city: params['city'], pincode: params['pincode'] }, telephone: params['telephone'])
+    begin
+      ActiveRecord::Base.transaction do
+        @shop.update(lat: params['lat'], lng: params['lng'], updated_at: Time.now.utc)
+        raise @shop.errors.messages.values.flatten.first if @shop.errors.any?
 
-    if @shop.errors.any? || shop_detail.errors.any?
-      flash[:error] = @shop.errors.messages.values.flatten.first || shop_detail.errors.messages.values.flatten.first
+        shop_detail = @shop.shop_detail
+        shop_detail.update(address: { number: params['number'], street: params['street'], area: params['area'],
+          city: params['city'], pincode: params['pincode'] }, telephone: params['telephone'])
+        raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
+      end
+    rescue => e
+      flash[:error] = e
       return redirect_to shop_index_path(q: params['id'])
     end
 

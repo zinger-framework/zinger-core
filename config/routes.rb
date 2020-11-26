@@ -57,6 +57,7 @@ Rails.application.routes.draw do
         get :otp
         post :otp, to: 'auth#otp_login'
         post :resend_otp
+        delete :logout
       end
     end
 
