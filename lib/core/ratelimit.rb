@@ -11,7 +11,13 @@ class Core::Ratelimit
     { 'path' => '/v[0-9]+/auth/reset_password', 'methods' => %w(POST), 'per_ip' => true,
       'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
     { 'path' => '/v[0-9]+/customer/reset_profile', 'methods' => %w(PUT), 'per_customer' => true,
-      'limit' => 5, 'window' => 600, 'message' => 'reset_profile' }
+      'limit' => 5, 'window' => 600, 'message' => 'reset_profile' },
+    { 'path' => '/auth/login', 'methods' => %w(POST), 'params' => %w(email),
+      'limit' => 5, 'window' => 600, 'message' => 'login' },
+    { 'path' => '/auth/otp', 'methods' => %w(POST), 'per_ip' => true,
+      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'path' => '/auth/resend_otp', 'methods' => %w(POST), 'per_ip' => true,
+      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' }
   ]
   
   def self.reached? request

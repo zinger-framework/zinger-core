@@ -34,18 +34,23 @@ en:
     required: "%{param} cannot be empty"
     too_many_params: Please provide any one of the params - %{param}
     invalid: "Invalid %{param}"
+    param_expired: "%{param} is expired or invalid"
+    password:
+      invalid: "Password should contain atleast %{length} characters"
   customer:
     not_found: Unable to find the user. Please check the credentials
     create_failed: Unable to create account
     otp_failed: Unable to send OTP
     login_failed: Unable to login
     account_blocked: "Your account has been deactivated. Please contact %{platform} team"
-    password:
-      invalid: "Password should contain atleast %{length} characters"
-    param_expired: "%{param} is expired or invalid"
     create_success: Account creation is successful
     login_success: Login is successful
     otp_success: Sending OTP is successful
+  employee:
+    not_found: Unable to find the user. Please check the credentials
+    account_blocked: "Your account has been deactivated. Please contact %{platform} team"
+    otp_success: OTP is sent successfully to your registered mobile number
+    login_success: Login is successful
   profile:
     update_success: Profile update is successful
     update_failed: Profile update failed

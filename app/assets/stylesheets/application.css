@@ -325,11 +325,17 @@ table tr:hover {
   border-color: #d6e9c6;
 }
 
+.alert-warn {
+  color: #ab6100;
+  background-color: #ffe5c3;
+  border-color: #d6e9c6;
+}
+
 .close-alert {
   float: right;
   font-size: 24px;
   opacity: .2;
-  line-height: 1;
+  line-height: 0.6;
   text-decoration: none;
 }
 

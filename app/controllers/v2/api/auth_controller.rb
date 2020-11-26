@@ -22,7 +22,7 @@ class V2::Api::AuthController < ApiController
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['code'] != params['otp']
       render status: 401, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), 
-        reason: { otp: [ I18n.t('customer.param_expired', param: 'OTP') ] } }
+        reason: { otp: [ I18n.t('validation.param_expired', param: 'OTP') ] } }
       return
     end
     
@@ -55,7 +55,7 @@ class V2::Api::AuthController < ApiController
 
     if Core::Redis.fetch(Core::Redis::ID_TOKEN_VERIFICATION % { id_token: params['id_token'] }) { false }
       render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), 
-        reason: I18n.t('customer.param_expired', param: 'Token') }
+        reason: I18n.t('validation.param_expired', param: 'Token') }
       return
     end
     Core::Redis.setex(Core::Redis::ID_TOKEN_VERIFICATION % { id_token: params['id_token'] }, true, 1.hour.to_i)

@@ -10,7 +10,7 @@ class V2::Api::Auth::LoginController < V2::Api::AuthController
 
     if params['password'].to_s.length < PASSWORD_MIN_LENGTH
       render status: 400, json: { success: false, message: I18n.t('customer.login_failed'), 
-        reason: { password: [ I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH) ] } }
+        reason: { password: [ I18n.t('validation.password.invalid', length: PASSWORD_MIN_LENGTH) ] } }
       return
     end
     
@@ -48,7 +48,7 @@ class V2::Api::Auth::LoginController < V2::Api::AuthController
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['code'] != params['otp']
       render status: 401, json: { success: false, message: I18n.t('customer.login_failed'), 
-        reason: { otp: [ I18n.t('customer.param_expired', param: 'OTP') ] } }
+        reason: { otp: [ I18n.t('validation.param_expired', param: 'OTP') ] } }
       return
     end
 

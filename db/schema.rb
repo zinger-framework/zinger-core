@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_05_184303) do
+ActiveRecord::Schema.define(version: 2020_11_07_083221) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -39,6 +39,37 @@ ActiveRecord::Schema.define(version: 2020_11_05_184303) do
     t.index ["mobile"], name: "index_customers_on_mobile"
   end
 
+  create_table "employee_details", id: false, force: :cascade do |t|
+    t.bigint "employee_id"
+    t.bigint "shop_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["employee_id", "shop_id"], name: "index_employee_details_on_employee_id_and_shop_id"
+  end
+
+  create_table "employee_sessions", primary_key: "token", id: :string, force: :cascade do |t|
+    t.jsonb "meta", default: {}
+    t.string "login_ip"
+    t.string "user_agent"
+    t.bigint "employee_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["employee_id"], name: "index_employee_sessions_on_employee_id"
+  end
+
+  create_table "employees", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "mobile"
+    t.string "password_digest"
+    t.boolean "two_fa_enabled", default: false
+    t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email"], name: "index_employees_on_email"
+  end
+  
   create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|
     t.json "address", default: {}
     t.string "telephone"

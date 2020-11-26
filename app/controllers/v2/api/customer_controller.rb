@@ -25,7 +25,7 @@ class V2::Api::CustomerController < ApiController
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['customer_id'] != Customer.current.id || token['code'] != params['otp']
       render status: 401, json: { success: false, message: I18n.t('profile.reset_failed'),
-        reason: { otp: [ I18n.t('customer.param_expired', param: 'OTP') ] } }
+        reason: { otp: [ I18n.t('validation.param_expired', param: 'OTP') ] } }
       return
     end
 

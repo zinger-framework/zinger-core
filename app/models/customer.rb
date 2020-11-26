@@ -85,7 +85,7 @@ class Customer < ApplicationRecord
       return errors.add(:mobile, I18n.t('auth.already_exist', key: :mobile, value: self.mobile)) if Customer.exists?(mobile: self.mobile)
     end
 
-    return errors.add(:password, I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.auth_mode == AUTH_MODE['PASSWORD_AUTH'] && 
+    return errors.add(:password, I18n.t('validation.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.auth_mode == AUTH_MODE['PASSWORD_AUTH'] && 
       self.password.to_s.length < PASSWORD_MIN_LENGTH
   end
 
@@ -107,7 +107,7 @@ class Customer < ApplicationRecord
       return errors.add(:mobile, I18n.t('auth.already_exist', key: :mobile, value: self.mobile)) if Customer.exists?(mobile: self.mobile)
     end
 
-    return errors.add(:password, I18n.t('customer.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.password_digest_changed? && 
+    return errors.add(:password, I18n.t('validation.password.invalid', length: PASSWORD_MIN_LENGTH)) if self.password_digest_changed? && 
       self.password.to_s.length < PASSWORD_MIN_LENGTH
   end
 
