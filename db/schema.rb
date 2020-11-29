@@ -39,14 +39,6 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.index ["mobile"], name: "index_customers_on_mobile"
   end
 
-  create_table "employee_details", id: false, force: :cascade do |t|
-    t.bigint "employee_id"
-    t.bigint "shop_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["employee_id", "shop_id"], name: "index_employee_details_on_employee_id_and_shop_id"
-  end
-
   create_table "employee_sessions", primary_key: "token", id: :string, force: :cascade do |t|
     t.jsonb "meta", default: {}
     t.string "login_ip"
@@ -69,7 +61,16 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_employees_on_email"
   end
-  
+
+  create_table "employees_shops", id: false, force: :cascade do |t|
+    t.bigint "employee_id"
+    t.bigint "shop_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["employee_id"], name: "index_employees_shops_on_employee_id"
+    t.index ["shop_id"], name: "index_employees_shops_on_shop_id"
+  end
+
   create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|
     t.json "address", default: {}
     t.string "telephone"

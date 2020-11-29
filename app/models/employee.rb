@@ -9,6 +9,7 @@ class Employee < ApplicationRecord
   after_update :clear_sessions
 
   has_many :employee_sessions
+  has_and_belongs_to_many :shops
 
   def self.send_otp options
     token = Base64.encode64("#{options[:value]}-#{Time.now.to_i}-#{rand(1000..9999)}").strip.gsub('=', '')

@@ -5,6 +5,8 @@ class Shop < ApplicationRecord
   searchkick word_start: ['name'], locations: ['location'], default_fields: ['status', 'deleted']
 
   has_one :shop_detail
+  has_and_belongs_to_many :employees
+
   validate :validations
   after_commit :clear_cache
 
