@@ -15,8 +15,6 @@ class Core::Ratelimit
     { 'path' => '/auth/login', 'methods' => %w(POST), 'params' => %w(email),
       'limit' => 5, 'window' => 600, 'message' => 'login' },
     { 'path' => '/auth/otp', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
-    { 'path' => '/auth/resend_otp', 'methods' => %w(POST), 'per_ip' => true,
       'limit' => 5, 'window' => 1800, 'message' => 'exceeded' }
   ]
   

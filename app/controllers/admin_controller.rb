@@ -1,39 +1,50 @@
 class AdminController < ApplicationController
-  before_action :reset_thread, :set_title, :authenticate_request, :check_limit
-  AUTHORIZED_2FA_STATUSES = [Employee::TWO_FA_STATUSES['NOT_APPLICABLE'], Employee::TWO_FA_STATUSES['VERIFIED']]
-
-  def dashboard
-    @title = 'Dashboard'
-  end
+  before_action :reset_thread, :authenticate_request, :check_limit, :check_origin
+  TWO_FACTOR_SCREENS = ['v1/admin/auth#verify_otp', 'v1/admin/auth/otp#login']
 
   private
 
-  def set_title
-    @header = { links: [] }
-  end
-
   def authenticate_request
-    employee, payload = session[:authorization].present? ? EmployeeSession.fetch_employee(session[:authorization]) : nil
-    if employee.nil?
-      session.delete(:authorization)
-      flash[:warn] = 'Please login to continue'
-      return redirect_to auth_index_path
-    end
-
-    if employee.two_fa_enabled && payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['VERIFIED'] &&
-        "#{params['controller']}##{params['action']}" != 'admin/auth#logout'
-      flash[:warn] = 'Please verify OTP to continue'
-      return redirect_to otp_auth_index_path
+    employee, @payload = EmployeeSession.fetch_employee(request.headers['Authorization'])
+    error_msg = if employee.nil?
+      I18n.t('validation.invalid', param: 'authorization')
+    elsif employee.is_blocked?
+      I18n.t('employee.account_blocked', platform: PlatformConfig['name'])
     end
     
+    if error_msg.present?
+      render status: 401, json: { success: false, message: error_msg, reason: 'UNAUTHORIZED' }
+      return
+    end
+
     employee.make_current
+
+    if TWO_FACTOR_SCREENS.include?("#{params['controller']}##{params['action']}")
+      if !employee.two_fa_enabled
+        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('employee.two_factor.already_disabled') }
+        return
+      elsif @payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['UNVERIFIED']
+        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('validation.otp.already_verified') }
+        return
+      end
+    elsif params['action'] != 'logout' && employee.two_fa_enabled && @payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['VERIFIED']
+      render status: 401, json: { success: false, message: I18n.t('validation.otp.unverified'), reason: 'OTP_UNVERIFIED' }
+      return
+    end
   end
 
   def check_limit
     resp = Core::Ratelimit.reached?(request)
     if resp
-      flash[:error] = resp
-      return redirect_to request.referrer
+      render status: 429, json: { success: false, message: resp }
+      return
+    end
+  end
+
+  def check_origin
+    if PlatformConfig['check_origin'] && request.headers['Origin'] != request.base_url
+      render status: 403, json: { success: false, message: 'Unauthorized Origin', reason: 'UNAUTHORIZED' }
+      return
     end
   end
 

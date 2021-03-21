@@ -48,31 +48,47 @@ Rails.application.routes.draw do
     end
   end
 
-  scope module: 'admin', constraints: { subdomain: AppConfig['admin_subdomain'] } do
-    get :dashboard
-    resources :customer, only: [:index, :update, :destroy]
-    resources :auth, only: :index do
-      collection do
-        post :login
-        get :otp
-        post :otp, to: 'auth#otp_login'
-        post :resend_otp
-        delete :logout
+  namespace :v1 do
+    scope module: 'admin', constraints: { subdomain: AppConfig['admin_subdomain'] } do
+      namespace :auth do
+        resources :otp, only: :none do
+          collection do 
+            post :login
+            post :forgot_password
+          end
+        end
       end
-    end
 
-    resources :shop, only: [:index, :create, :update, :destroy] do
-      collection do 
-        get :add_shop
+      resources :auth, only: :none do
+        collection do
+          post :login
+          post :verify_otp
+          post :reset_password
+          delete :logout
+        end
       end
-      member do
-        put :location
-        put :icon
-        put :cover_photo
-        put :payment
-        put :meta
-        delete :icon, to: 'shop#delete_icon'
-        delete :cover_photo, to: 'shop#delete_cover_photo'
+
+      resources :user_profile, only: :index do
+        collection do
+          post :reset_password
+          post :enable_two_factor
+          post :disable_two_factor
+        end
+      end
+
+      resources :shop, only: [:index, :create, :update, :destroy] do
+        collection do 
+          get :add_shop
+        end
+        member do
+          put :location
+          put :icon
+          put :cover_photo
+          put :payment
+          put :meta
+          delete :icon, to: 'shop#delete_icon'
+          delete :cover_photo, to: 'shop#delete_cover_photo'
+        end
       end
     end
   end

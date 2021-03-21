@@ -1,4 +1,4 @@
-class Admin::ShopController < AdminController
+class V1::Admin::ShopController < AdminController
   before_action :set_title
   before_action :load_shop, except: [:index, :create, :add_shop]
 
@@ -20,12 +20,12 @@ class Admin::ShopController < AdminController
 
         shop_detail = shop.create_shop_detail(address: { number: params['number'], street: params['street'], area: params['area'],
           city: params['city'], pincode: params['pincode'] }, telephone: params['telephone'], mobile: params['mobile'],
-          opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc, 
+          opening_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['opening_time'], '%H:%M').utc,
           closing_time: Time.find_zone(PlatformConfig['time_zone']).strptime(params['closing_time'], '%H:%M').utc)
         raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
       end
     rescue => e
-      flash[:error] = e
+      flash[:danger] = e
       return redirect_to add_shop_shop_index_path
     end
 
@@ -52,7 +52,7 @@ class Admin::ShopController < AdminController
         raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
       end
     rescue => e
-      flash[:error] = e
+      flash[:danger] = e
       return redirect_to shop_index_path(q: params['id'])
     end
 
@@ -72,7 +72,7 @@ class Admin::ShopController < AdminController
         raise shop_detail.errors.messages.values.flatten.first if shop_detail.errors.any?
       end
     rescue => e
-      flash[:error] = e
+      flash[:danger] = e
       return redirect_to shop_index_path(q: params['id'])
     end
 
@@ -123,7 +123,7 @@ class Admin::ShopController < AdminController
 
   def delete_cover_photo
     if @shop.shop_detail.cover_photos.blank?
-      flash[:error] = 'Cover photo is already empty'
+      flash[:danger] = 'Cover photo is already empty'
       return redirect_to shop_index_path(q: params['id'])
     end
     
@@ -143,7 +143,7 @@ class Admin::ShopController < AdminController
   def load_shop
     @shop = Shop.fetch_by_id(params['id'])
     if @shop.nil?
-      flash[:error] = 'Shop is not found'
+      flash[:danger] = 'Shop is not found'
       return redirect_to shop_index_path(q: params['id'])
     end
   end

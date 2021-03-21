@@ -37,6 +37,10 @@ en:
     param_expired: "%{param} is expired or invalid"
     password:
       invalid: "Password should contain atleast %{length} characters"
+      mismatch: "Confirm Password doesn't match"
+    otp:
+      unverified: Please verify OTP to continue
+      already_verified: OTP has been already verified 
   customer:
     not_found: Unable to find the user. Please check the credentials
     create_failed: Unable to create account
@@ -47,10 +51,20 @@ en:
     login_success: Login is successful
     otp_success: Sending OTP is successful
   employee:
-    not_found: Unable to find the user. Please check the credentials
+    not_found: Unable to find the user
     account_blocked: "Your account has been deactivated. Please contact %{platform} team"
+    otp_failed: Unable to send OTP
     otp_success: OTP is sent successfully to your registered mobile number
+    otp_verify_failed: Unable to verify OTP
+    login_failed: Unable to login
     login_success: Login is successful
+    two_factor:
+      enabled_successfully: Two-factor authentication is enabled successfully
+      disabled_successfully: Two-factor authentication is disabled successfully
+      already_enabled: Two-factor authentication is already enabled
+      already_disabled: Two-factor authentication is already disabled
+    password:
+      update_failed: Unable to update password
   profile:
     update_success: Profile update is successful
     update_failed: Profile update failed

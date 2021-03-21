@@ -1,4 +1,4 @@
-class Admin::CustomerController < AdminController
+class V1::Admin::CustomerController < AdminController
   before_action :set_title
 
   def index
@@ -18,7 +18,7 @@ class Admin::CustomerController < AdminController
     customer = Customer.fetch_by_id(params['id'])
     customer.update(name: params['name'], status: params['status'])
     if customer.errors.any?
-      flash[:error] = customer.errors.messages.values.flatten.first
+      flash[:danger] = customer.errors.messages.values.flatten.first
     else
       flash[:success] = 'Update is successful'
     end
@@ -32,7 +32,7 @@ class Admin::CustomerController < AdminController
       customer.update!(deleted: true)
       flash[:success] = 'Deletion is successful'
     else
-      flash[:error] = 'Deletion failed'
+      flash[:danger] = 'Deletion failed'
     end
     
     redirect_to customer_index_path(q: params['id'])

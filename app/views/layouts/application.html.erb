@@ -1,25 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Zinger</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <%= favicon_link_tag asset_path('zinger-logo.png') %>
-    <%= csrf_meta_tags %>
-    <%= csp_meta_tag %>
+<head>
+  <meta charset="utf-8">
+  <title>Zinger</title>
 
-    <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-    <%= javascript_include_tag 'https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js' %>
-  </head>
+  <link rel="icon" type="image/png" href="/images/zinger-logo-32x32.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-  <body>
-    <%= render 'layouts/header' %>
-    <% flash.each do |type, message| %>
-      <div class="alert alert-<%= type %>">
-        <%= message %>
-        <a href="" class="close-alert" data-dismiss="alert">&times;</a>
-      </div>
-    <% end %>
-    <%= yield %>
-  </body>
+  <!-- Scripts -->
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+</head>
+
+<body>
+  <%= yield %>
+</body>
 </html>
