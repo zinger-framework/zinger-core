@@ -1,5 +1,5 @@
 class V1::Admin::Auth::OtpController < V1::Admin::AuthController
-  before_action :authenticate_request, only: :login
+  before_action :authenticate_request, only: [:login, :verify_mobile]
 
   def login
     @payload['two_fa']['auth_token'] = Employee.send_otp({ param: 'mobile', value: Employee.current.mobile })
@@ -25,6 +25,20 @@ class V1::Admin::Auth::OtpController < V1::Admin::AuthController
 
     render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
       data: { auth_token: Employee.send_otp({ param: 'email', value: params['email'] }) } }
+    return
+  end
+
+  def verify_mobile
+    begin
+      raise I18n.t('validation.required', param: 'Mobile number') if params['mobile'].blank?
+      raise I18n.t('validation.invalid', param: 'mobile number') if params['mobile'].match(MOBILE_REGEX).nil?
+    rescue => e
+      render status: 400, json: { success: false, message: I18n.t('employee.otp_failed'), reason: { mobile: [e.message] } }
+      return
+    end
+
+    render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
+      data: { auth_token: Employee.send_otp({ param: 'mobile', value: params['mobile'], employee_id: Employee.current.id }) } }
     return
   end
 end

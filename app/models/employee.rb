@@ -68,12 +68,56 @@ class Employee < ApplicationRecord
     self.new_record? || self.password_digest_changed?
   end
 
+  def create_validations
+    if self.email.blank?
+      errors.add(:name, I18n.t('validation.required', param: 'Email address'))
+    else
+      self.email = self.email.to_s.strip.downcase
+      errors.add(:email, I18n.t('validation.invalid', param: 'email address')) unless self.email.match(EMAIL_REGEX)
+      errors.add(:email, I18n.t('auth.already_exist', key: :email, value: self.email)) if Employee.exists?(email: self.email)
+    end
+
+    if self.mobile.blank?
+      errors.add(:mobile, I18n.t('validation.required', param: 'Mobile number'))
+    else
+      self.mobile = self.mobile.to_s.strip
+      errors.add(:mobile, I18n.t('validation.invalid', param: 'mobile number')) unless self.mobile.match(MOBILE_REGEX)
+    end
+
+    if self.name.blank?
+      errors.add(:name, I18n.t('validation.required', param: 'Name'))
+    else
+      errors.add(:name, I18n.t('validation.name_long')) if self.name.length > 100
+      errors.add(:name, I18n.t('validation.invalid', param: 'name')) unless self.name.match(NAME_REGEX)
+    end
+  end
+
+  def update_validations
+    if self.mobile_changed?
+      if self.mobile.blank?
+        errors.add(:mobile, I18n.t('validation.required', param: 'Mobile number'))
+      else
+        self.mobile = self.mobile.to_s.strip
+        errors.add(:mobile, I18n.t('validation.invalid', param: 'mobile number')) unless self.mobile.match(MOBILE_REGEX)
+      end
+    end
+
+    if self.name_changed?
+      if self.name.blank?
+        errors.add(:name, I18n.t('validation.required', param: 'Name'))
+      else
+        errors.add(:name, I18n.t('validation.name_long')) if self.name.length > 100
+        errors.add(:name, I18n.t('validation.invalid', param: 'name')) unless self.name.match(NAME_REGEX)
+      end
+    end
+  end
+
   def clear_cache
     Core::Redis.delete(Core::Redis::EMPLOYEE_BY_ID % { id: self.id })
   end
 
   def clear_sessions
-    if self.saved_change_to_password_digest?
+    if self.saved_change_to_password_digest? || (self.saved_change_to_two_fa_enabled? && self.two_fa_enabled)
       EmployeeSession.where(employee_id: self.id).delete_all
       Core::Redis.delete(EmployeeSession.cache_key(self.id))
     end

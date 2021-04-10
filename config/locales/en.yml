@@ -40,7 +40,8 @@ en:
       mismatch: "Confirm Password doesn't match"
     otp:
       unverified: Please verify OTP to continue
-      already_verified: OTP has been already verified 
+      already_verified: OTP has been already verified
+    name_long: Name should have maximum of 100 characters
   customer:
     not_found: Unable to find the user. Please check the credentials
     create_failed: Unable to create account
@@ -58,11 +59,6 @@ en:
     otp_verify_failed: Unable to verify OTP
     login_failed: Unable to login
     login_success: Login is successful
-    two_factor:
-      enabled_successfully: Two-factor authentication is enabled successfully
-      disabled_successfully: Two-factor authentication is disabled successfully
-      already_enabled: Two-factor authentication is already enabled
-      already_disabled: Two-factor authentication is already disabled
     password:
       update_failed: Unable to update password
   profile:
