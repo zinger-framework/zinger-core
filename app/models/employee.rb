@@ -1,5 +1,5 @@
 class Employee < ApplicationRecord
-  STATUSES = { 'ACTIVE' => 1, 'BLOCKED' => 2, 'PENDING' => 3 }
+  STATUSES = { 'PENDING' => 1, 'ACTIVE' => 2, 'BLOCKED' => 3 }
   TWO_FA_STATUSES = { 'NOT_APPLICABLE' => 1, 'UNVERIFIED' => 2, 'VERIFIED' => 3 }
 
   has_secure_password(validations: false)
@@ -14,6 +14,8 @@ class Employee < ApplicationRecord
     presence: { message: I18n.t('validation.required', param: 'Confirm password') }, 
     if: :validate_password?
 
+  validate :create_validations, on: :create
+  validate :update_validations, on: :update
   after_commit :clear_cache
   after_update :clear_sessions
 
@@ -75,13 +77,6 @@ class Employee < ApplicationRecord
       self.email = self.email.to_s.strip.downcase
       errors.add(:email, I18n.t('validation.invalid', param: 'email address')) unless self.email.match(EMAIL_REGEX)
       errors.add(:email, I18n.t('auth.already_exist', key: :email, value: self.email)) if Employee.exists?(email: self.email)
-    end
-
-    if self.mobile.blank?
-      errors.add(:mobile, I18n.t('validation.required', param: 'Mobile number'))
-    else
-      self.mobile = self.mobile.to_s.strip
-      errors.add(:mobile, I18n.t('validation.invalid', param: 'mobile number')) unless self.mobile.match(MOBILE_REGEX)
     end
 
     if self.name.blank?

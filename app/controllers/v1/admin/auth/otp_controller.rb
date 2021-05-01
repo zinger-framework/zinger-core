@@ -3,7 +3,7 @@ class V1::Admin::Auth::OtpController < V1::Admin::AuthController
 
   def login
     @payload['two_fa']['auth_token'] = Employee.send_otp({ param: 'mobile', value: Employee.current.mobile })
-    render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
+    render status: 200, json: { success: true, message: I18n.t('employee.mobile_otp_success'), 
       data: { token: Employee.current.employee_sessions.find_by_token(@payload['token']).get_jwt_token(@payload['two_fa']) } }
   end
 
@@ -25,7 +25,6 @@ class V1::Admin::Auth::OtpController < V1::Admin::AuthController
 
     render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
       data: { auth_token: Employee.send_otp({ param: 'email', value: params['email'] }) } }
-    return
   end
 
   def verify_mobile
@@ -39,6 +38,21 @@ class V1::Admin::Auth::OtpController < V1::Admin::AuthController
 
     render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
       data: { auth_token: Employee.send_otp({ param: 'mobile', value: params['mobile'], employee_id: Employee.current.id }) } }
-    return
+  end
+
+  def signup
+    begin
+      raise I18n.t('validation.required', param: 'Email address') if params['email'].blank?
+      raise I18n.t('validation.invalid', param: 'email address') if params['email'].match(EMAIL_REGEX).nil?
+
+      employee = Employee.find_by_email(params['email'])
+      raise I18n.t('auth.already_exist', key: 'email', value: params['email']) if employee.present?
+    rescue => e
+      render status: 400, json: { success: false, message: I18n.t('employee.otp_failed'), reason: { email: [e.message] } }
+      return
+    end
+
+    render status: 200, json: { success: true, message: I18n.t('employee.otp_success'), 
+      data: { auth_token: Employee.send_otp({ param: 'email', value: params['email'] }) } }
   end
 end

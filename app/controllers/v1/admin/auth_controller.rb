@@ -48,7 +48,7 @@ class V1::Admin::AuthController < AdminController
     if employee.two_fa_enabled
       data = { token: emp_session.get_jwt_token({ 'status' => Employee::TWO_FA_STATUSES['UNVERIFIED'],
         'auth_token' => Employee.send_otp({ param: 'mobile', value: employee.mobile }) }), redirect_to: 'OTP' }
-      message = I18n.t('employee.otp_success')
+      message = I18n.t('employee.mobile_otp_success')
     else
       data = { token: emp_session.get_jwt_token({ 'status' => Employee::TWO_FA_STATUSES['NOT_APPLICABLE'] }), redirect_to: 'DASHBOARD' }
       message = I18n.t('employee.login_success')
@@ -108,5 +108,32 @@ class V1::Admin::AuthController < AdminController
   def logout
     Employee.current.employee_sessions.find_by_token(EmployeeSession.extract_token(request.headers['Authorization'])).destroy!
     render status: 200, json: { success: true, message: I18n.t('auth.logout_success') }
+  end
+
+  def signup
+    token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
+    if token.blank? || token['token'] != params['auth_token'] || token['code'] != params['otp']
+      render status: 400, json: { success: false, message: I18n.t('employee.otp_verify_failed'), 
+        reason: { otp: [I18n.t('validation.param_expired', param: 'OTP')] } }
+      return
+    end
+
+    if Employee.find_by_email(token['value']).present?
+      render status: 400, json: { success: false, message: I18n.t('employee.signup_failed'), 
+        reason: I18n.t('auth.already_exist', key: 'email', value: token['value']) }
+      return
+    end
+      
+    employee = Employee.create({ email: token['value'], name: params['name'], password: params['password'], 
+      password_confirmation: params['password_confirmation'] })
+    if employee.errors.any?
+      render status: 400, json: { success: false, message: I18n.t('employee.signup_failed'), reason: employee.errors.messages }
+      return
+    end
+    
+    emp_session = employee.employee_sessions.create!(login_ip: request.ip, user_agent: request.headers['User-Agent'])
+    Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
+    render status: 200, json: { success: true, message: I18n.t('employee.signup_success'), data: { token: emp_session.get_jwt_token({ 
+      'status' => Employee::TWO_FA_STATUSES['NOT_APPLICABLE'] }), redirect_to: 'DASHBOARD' } }
   end
 end

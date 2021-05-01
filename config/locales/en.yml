@@ -55,10 +55,13 @@ en:
     not_found: Unable to find the user
     account_blocked: "Your account has been deactivated. Please contact %{platform} team"
     otp_failed: Unable to send OTP
-    otp_success: OTP is sent successfully to your registered mobile number
+    otp_success: OTP is sent successfully
+    mobile_otp_success: OTP is sent successfully to your registered mobile number
     otp_verify_failed: Unable to verify OTP
     login_failed: Unable to login
     login_success: Login is successful
+    signup_failed: Unable to signup
+    signup_success: Signup is successful
     password:
       update_failed: Unable to update password
   profile:

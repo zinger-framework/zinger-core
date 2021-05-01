@@ -56,6 +56,7 @@ Rails.application.routes.draw do
             post :login
             post :forgot_password
             post :verify_mobile
+            post :signup
           end
         end
       end
@@ -66,6 +67,7 @@ Rails.application.routes.draw do
           post :verify_otp
           post :reset_password
           delete :logout
+          post :signup
         end
       end
 
