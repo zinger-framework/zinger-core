@@ -1,5 +1,5 @@
 class ApiController < ApplicationController
-  before_action :reset_thread, :authenticate_request, :check_limit, :check_origin
+  before_action :reset_thread, :authenticate_request, :check_limit, :check_version
 
   private
 
@@ -28,14 +28,11 @@ class ApiController < ApplicationController
     end
   end
 
-  def check_origin
-    if request.headers['Origin'] != request.base_url
-      render status: 403, json: { success: false, message: 'Unauthorized Origin', reason: 'UNAUTHORIZED' }
-      return
-    end
-  end
-
   def reset_thread
     Customer.reset_current
+  end
+
+  def check_version
+    raise VersionCake::ObsoleteVersionError.new '' if request_version.to_i != 2
   end
 end

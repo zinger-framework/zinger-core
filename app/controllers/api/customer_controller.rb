@@ -1,4 +1,4 @@
-class V2::Api::CustomerController < ApiController
+class Api::CustomerController < ApiController
   def profile
     render status: 200, json: { success: true, message: 'success', data: Customer.current.as_json('ui_profile') }
   end

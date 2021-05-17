@@ -1,8 +1,8 @@
 Rails.application.routes.draw do
   root to: 'application#home'
 
-  namespace :v2 do
-    scope module: 'api', constraints: { subdomain: AppConfig['api_subdomain'] } do
+  scope module: 'api', constraints: { subdomain: AppConfig['api_subdomain'] } do
+    scope 'v:api_version' do
       # Modify CONFIGS in ratelimit.rb when any action is added/changed
       namespace :auth do
         resources :otp, only: :none do
@@ -48,8 +48,8 @@ Rails.application.routes.draw do
     end
   end
 
-  namespace :v1 do
-    scope module: 'admin', constraints: { subdomain: AppConfig['admin_subdomain'] } do
+  scope module: 'admin', constraints: { subdomain: AppConfig['admin_subdomain'] } do
+    scope 'v:api_version' do
       namespace :auth do
         resources :otp, only: :none do
           collection do 
@@ -96,6 +96,5 @@ Rails.application.routes.draw do
   end
 
   mount Sidekiq::Web => '/sidekiq', subdomain: SidekiqSettings['subdomain']
-  get '/*path', to: 'admin#dashboard', constraints: { subdomain: AppConfig['admin_subdomain'] }
-  get '/*path', to: 'application#home', constraints: { subdomain: AppConfig['api_subdomain'] }
+  get '/*path', to: 'application#home'
 end

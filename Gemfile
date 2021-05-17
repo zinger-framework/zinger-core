@@ -26,6 +26,7 @@ gem 'google-id-token', '1.4.2'
 gem 'browser', '5.1.0'
 gem 'aws-sdk-s3', '1.83.2'
 gem 'rack-cors','1.1.1'
+gem 'versioncake', '4.0.2'
 
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.4.2', require: false

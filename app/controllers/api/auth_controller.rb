@@ -1,4 +1,4 @@
-class V2::Api::AuthController < ApiController
+class Api::AuthController < ApiController
   AUTH_PARAMS = %w(email mobile)
 
   skip_before_action :authenticate_request, except: [:logout, :reset_profile]

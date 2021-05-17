@@ -1,4 +1,4 @@
-class V2::Api::Auth::SignupController < V2::Api::AuthController
+class Api::Auth::SignupController < Api::AuthController
   before_action :validate_user_agent
   before_action :validate_params, except: :google
   before_action :signup, except: :google

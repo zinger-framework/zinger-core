@@ -1,4 +1,4 @@
-class V1::Admin::AuthController < AdminController
+class Admin::AuthController < AdminController
   skip_before_action :authenticate_request, except: [:logout, :verify_otp]
 
   def login

@@ -1,4 +1,4 @@
-class V2::Api::SessionController < ApiController
+class Api::SessionController < ApiController
   def index
     current_session = { 'token' => CustomerSession.extract_token(request.headers['Authorization']) }
     sessions = Customer.current.customer_sessions.sort_by { |session| session['token'] == current_session['token'] ? 0 : 1 }

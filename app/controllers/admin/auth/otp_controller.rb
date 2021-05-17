@@ -1,4 +1,4 @@
-class V1::Admin::Auth::OtpController < V1::Admin::AuthController
+class Admin::Auth::OtpController < Admin::AuthController
   before_action :authenticate_request, only: [:login, :verify_mobile]
 
   def login

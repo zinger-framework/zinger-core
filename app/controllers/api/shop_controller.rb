@@ -1,4 +1,4 @@
-class V2::Api::ShopController < ApiController
+class Api::ShopController < ApiController
   LIMIT = 5
   DISTANCE = 5
 

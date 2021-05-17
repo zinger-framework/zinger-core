@@ -1,4 +1,4 @@
-class V1::Admin::UserProfileController < AdminController
+class Admin::UserProfileController < AdminController
   def index
     render status: 200, json: { success: true, message: 'success', data: Employee.current.as_json('ui_profile') }
   end

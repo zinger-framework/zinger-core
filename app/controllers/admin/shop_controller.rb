@@ -1,4 +1,4 @@
-class V1::Admin::ShopController < AdminController
+class Admin::ShopController < AdminController
   before_action :set_title
   before_action :load_shop, except: [:index, :create, :add_shop]
 
