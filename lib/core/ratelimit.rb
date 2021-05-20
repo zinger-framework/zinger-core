@@ -1,28 +1,31 @@
 class Core::Ratelimit
   CONFIGS = [
-    { 'path' => '/v[0-9]+/auth/otp/reset_profile', 'methods' => %w(POST), 'per_customer' => true,
-      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
-    { 'path' => '/v[0-9]+/auth/otp/.*', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
-    { 'path' => '/v[0-9]+/auth/signup/.*', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 600, 'message' => 'registration' },
-    { 'path' => '/v[0-9]+/auth/login/.*', 'methods' => %w(POST), 'params' => %w(email mobile),
-      'limit' => 5, 'window' => 600, 'message' => 'login' },
-    { 'path' => '/v[0-9]+/auth/reset_password', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
-    { 'path' => '/v[0-9]+/customer/reset_profile', 'methods' => %w(PUT), 'per_customer' => true,
-      'limit' => 5, 'window' => 600, 'message' => 'reset_profile' },
-    { 'path' => '/auth/login', 'methods' => %w(POST), 'params' => %w(email),
-      'limit' => 5, 'window' => 600, 'message' => 'login' },
-    { 'path' => '/auth/otp', 'methods' => %w(POST), 'per_ip' => true,
-      'limit' => 5, 'window' => 1800, 'message' => 'exceeded' }
+    { 'pattern' => 'api/auth/otp#signup', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'api/auth/otp#login', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'api/auth/otp#reset_password', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'api/auth/otp#reset_profile', 'per_customer' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'api/auth/signup#password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'registration' },
+    { 'pattern' => 'api/auth/signup#otp', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'registration' },
+    { 'pattern' => 'api/auth/signup#google', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'registration' },
+    { 'pattern' => 'api/auth/login#password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'login' },
+    { 'pattern' => 'api/auth/login#otp', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'login' },
+    { 'pattern' => 'api/auth/login#google', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'login' },
+    { 'pattern' => 'api/auth#reset_password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
+    { 'pattern' => 'api/customer#reset_profile', 'per_customer' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_profile' },
+    { 'pattern' => 'api/customer#password', 'per_customer' => true, 'limit' => 5, 'window' => 600, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#login', 'per_employee' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#forgot_password', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#verify_mobile', 'per_employee' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#signup', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth#login', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'login' },
+    { 'pattern' => 'admin/auth#verify_otp', 'per_employee' => true, 'limit' => 5, 'window' => 600, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth#reset_password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
+    { 'pattern' => 'admin/auth#signup', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'registration' },
+    { 'pattern' => 'admin/user_profile#reset_password', 'per_employee' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' }
   ]
   
   def self.reached? request
-    config = Core::Ratelimit::CONFIGS.select do |config|
-      config['methods'].include?(request.method) && request.path.match("^#{config['path']}$").present?
-    end.first
-
+    config = CONFIGS.find { |config| "#{request.params['controller']}##{request.params['action']}" == config['pattern'] }
     return false if config.blank?
 
     key = Core::Ratelimit.key(request, config)
@@ -32,17 +35,15 @@ class Core::Ratelimit
     count += 1
 
     Core::Redis.setex(key, "#{count}:#{expiry}:#{limit}", expiry - time_now)
-
     return (count > limit) ? I18n.t("ratelimit.#{config['message']}") : false
   end
 
   def self.key request, config
-    key = "RT_LMT:#{request.method}:#{request.path}"
-
+    key = "RT_LMT:#{request.params['controller']}##{request.params['action']}"
     key = "#{key}:#{request.ip}" if config['per_ip']
     key = "#{key}:#{Customer.current.id}" if config['per_customer'] && Customer.current.present?
+    key = "#{key}:#{Employee.current.id}" if config['per_employee'] && Employee.current.present?
     config['params'].each { |param| key = "#{key}:#{request.params[param]}" } if config['params'].present?
-
     return key
   end
 end
