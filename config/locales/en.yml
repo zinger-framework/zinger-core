@@ -81,6 +81,26 @@ en:
       reset_success: Password reset is successful
   shop:
     not_found: Unable to find the shop
+    update_success: Shop update is successful
+    update_failed: Shop update failed
+    delete_success: Shop delete is successful
+    description_long: Description should contain maximum of 250 characters
+    icon:
+      invalid_file: Please upload a valid image file of 512 x 512 dimension
+      file_size_exceeded: Please upload an image file of less than 1 MB
+      already_exist: Icon is already uploaded
+      upload_failed: Unable to upload Icon
+      upload_success: Icon upload is successful
+      delete_success: Icon is removed successfully
+      not_found: Unable to find Icon
+    cover_photo:
+      invalid_file: Please upload a valid image file of 1024 x 500 dimension
+      file_size_exceeded: Please upload a image file of less than 1 MB
+      limit_exceeded: "You have already uploaded %{limit} images. Please contact %{platform} team to increase limit"
+      upload_failed: Unable to upload Cover photo
+      upload_success: Cover photo upload is successful
+      delete_success: Cover photo is removed successfully
+      not_found: Unable to find Cover photo
   ratelimit:
     exceeded: You have exceeded the number of attempts. Please try again after sometime
     login: You have exceeded the number of login attempts. Please try again after sometime

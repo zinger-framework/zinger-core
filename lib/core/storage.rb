@@ -1,5 +1,6 @@
 class Core::Storage
   def self.upload_file key, file, options = {}
+    Rails.logger.debug "==== Core::Storage.upload_file :: #{key} - #{options.inspect} ===="
     $s3_client.put_object(bucket: options[:bucket] || AwsConfig['asset_bucket'], key: key, body: file) if Rails.env.production?
   end
 
@@ -9,6 +10,7 @@ class Core::Storage
   end
 
   def self.delete_file key, options = {}
+    Rails.logger.debug "==== Core::Storage.delete_file :: #{key} - #{options.inspect} ===="
     $s3_client.delete_object(bucket: options[:bucket] || AwsConfig['asset_bucket'], key: key) if Rails.env.production?
   end
 end

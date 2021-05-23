@@ -77,6 +77,7 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.string "mobile"
     t.time "opening_time"
     t.time "closing_time"
+    t.string "description"
     t.string "cover_photos", array: true
     t.jsonb "payment", default: {}
     t.jsonb "meta", default: {}
@@ -90,6 +91,8 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.decimal "lng", precision: 11, scale: 8
     t.string "icon"
     t.string "tags"
+    t.integer "category", limit: 2
+    t.string "email"
     t.integer "status", limit: 2, default: 1
     t.boolean "deleted", default: false
     t.datetime "created_at", precision: 6, null: false

@@ -1,6 +1,6 @@
 class AdminController < ApplicationController
   before_action :reset_thread, :authenticate_request, :check_limit, :check_version
-  TWO_FACTOR_SCREENS = ['v1/admin/auth#verify_otp', 'v1/admin/auth/otp#login']
+  TWO_FACTOR_SCREENS = ['admin/auth#verify_otp', 'admin/auth/otp#login']
 
   private
 

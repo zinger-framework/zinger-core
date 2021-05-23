@@ -1,13 +1,17 @@
 class Shop < ApplicationRecord
-  STATUSES = { 'ACTIVE' => 1, 'BLOCKED' => 2 }
+  STATUSES = { 'DRAFT' => 1, 'PENDING' => 2, 'ACTIVE' => 3, 'BLOCKED' => 4, 'REJECTED' => 5, 'INACTIVE' => 6 }
+  CATEGORIES = { 'GROCERY' => 1, 'PHARMACY' => 2, 'RESTAURANT' => 3, 'OTHERS' => 4 }
+  PENDING_STATUSES = [STATUSES['DRAFT'], STATUSES['PENDING'], STATUSES['REJECTED']]
 
   default_scope { where(deleted: false) }
-  searchkick word_start: ['name'], locations: ['location'], default_fields: ['status', 'deleted']
+  # searchkick word_start: ['name'], locations: ['location'], default_fields: ['status', 'deleted']
+  # TODO: Uncomment when elastic search is integrated - Logesh
 
   has_one :shop_detail
   has_and_belongs_to_many :employees
 
   validate :validations
+  after_create :add_shop_detail
   after_commit :clear_cache
 
   def search_data
@@ -17,11 +21,15 @@ class Shop < ApplicationRecord
   def as_json purpose = nil
     case purpose
     when 'ui_shop'
-      return { id: self.id, name: self.name, icon: Core::Storage.fetch_url(aws_key_path), tags: self.tags.split(' '), area: self.shop_detail.address['area'] }
+      return { 'id' => self.id, 'name' => self.name, 'icon' => Core::Storage.fetch_url(self.icon_key_path), 'tags' => self.tags.to_s.split(' ').map(&:titlecase), 
+        'area' => self.shop_detail.address['area'] }
     when 'ui_shop_detail'
-      return { id: self.id, name: self.name, icon: Core::Storage.fetch_url(aws_key_path), tags: self.tags.split(' ') }.merge(self.shop_detail.as_json('ui_shop_detail'))
+      return { 'id' => self.id, 'name' => self.name, 'icon' => Core::Storage.fetch_url(self.icon_key_path), 'tags' => self.tags.to_s.split(' ').map(&:titlecase) }
+        .merge(self.shop_detail.as_json('ui_shop_detail'))
     when 'admin_shop'
-      return { id: self.id, name: self.name, tags: self.tags, status: self.status }.merge(self.shop_detail.as_json('admin_shop_detail'))
+      return { 'id' => self.id, 'name' => self.name, 'icon' => self.icon.present? ? Core::Storage.fetch_url(self.icon_key_path) : nil, 
+        'tags' => self.tags.to_s.split(' ').map(&:titlecase), 'category' => CATEGORIES.key(self.category), 'email' => self.email, 'status' => STATUSES.key(self.status) }
+        .merge(self.shop_detail.as_json('admin_shop_detail', { 'lat' => self.lat.to_f, 'lng' => self.lng.to_f }))
     end
   end
 
@@ -29,23 +37,19 @@ class Shop < ApplicationRecord
     Core::Redis.fetch(Core::Redis::SHOP_BY_ID % { id: id }, { type: Shop }) { Shop.find_by_id(id) }
   end
 
-  def aws_key_path
-    "shop/#{self.id}/#{self.icon}"
+  def icon_key_path
+    "shop/icon/#{self.id}/#{self.icon}"
   end
 
   private
 
   def validations
-    self.name = self.name.to_s.strip
-    return errors.add(:name, I18n.t('validation.required', param: 'Name')) if self.name.blank?
+    errors.add(:category, I18n.t('validation.invalid', param: 'category')) if self.category.nil?
+    errors.add(:email, I18n.t('validation.invalid', param: 'email')) if self.email.present? && !self.email.match(EMAIL_REGEX)
+  end
 
-    self.lat = self.lat.to_f
-    return errors.add(:lat, I18n.t('validation.required', param: 'Latitude')) if self.lat.to_i == 0
-    self.lng = self.lng.to_f
-    return errors.add(:lng, I18n.t('validation.required', param: 'Longitude')) if self.lng.to_i == 0
-
-    self.tags = self.tags.strip.upcase
-    return errors.add(:tags, I18n.t('validation.required', param: 'Tags')) if self.tags.blank?
+  def add_shop_detail
+    self.create_shop_detail
   end
 
   def clear_cache
