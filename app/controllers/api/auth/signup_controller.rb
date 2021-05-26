@@ -12,13 +12,13 @@ class Api::Auth::SignupController < Api::AuthController
   def google
     customer = Customer.create(email: @payload['email'], auth_mode: Customer::AUTH_MODE['GOOGLE_AUTH'])
     if customer.errors.any?
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: customer.errors.messages }
+      render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), reason: customer.errors.messages }
       return
     end
 
     session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE['GOOGLE_AUTH'] }, login_ip: request.ip, 
       user_agent: request.headers['User-Agent'])
-    render status: 200, json: { success: true, message: I18n.t('customer.create_success'), data: { token: session.get_jwt_token } }
+    render status: 200, json: { success: true, message: I18n.t('auth.signup_success'), data: { token: session.get_jwt_token } }
   end
 
   private
@@ -35,7 +35,7 @@ class Api::Auth::SignupController < Api::AuthController
       render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'Authentication token') }
       return
     elsif params['otp'].blank?
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), 
+      render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), 
         reason: { otp: [ I18n.t('validation.required', param: 'OTP') ] } }
       return
     end
@@ -44,7 +44,7 @@ class Api::Auth::SignupController < Api::AuthController
   def signup
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['code'] != params['otp']
-      render status: 401, json: { success: false, message: I18n.t('customer.create_failed'), 
+      render status: 401, json: { success: false, message: I18n.t('auth.signup_failed'), 
         reason: { otp: [ I18n.t('validation.param_expired', param: 'OTP') ] } }
       return
     end
@@ -53,13 +53,13 @@ class Api::Auth::SignupController < Api::AuthController
     customer.password = params['password'] if customer.auth_mode == Customer::AUTH_MODE['PASSWORD_AUTH']
     customer.save
     if customer.errors.any?
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: customer.errors.messages }
+      render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), reason: customer.errors.messages }
       return
     end
 
     session = customer.customer_sessions.create!(meta: { auth_mode: CustomerSession::AUTH_MODE["#{params['action'].upcase}_AUTH"] }, 
       login_ip: request.ip, user_agent: request.headers['User-Agent'])
     Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
-    render status: 200, json: { success: true, message: I18n.t('customer.create_success'), data: { token: session.get_jwt_token } }
+    render status: 200, json: { success: true, message: I18n.t('auth.signup_success'), data: { token: session.get_jwt_token } }
   end
 end

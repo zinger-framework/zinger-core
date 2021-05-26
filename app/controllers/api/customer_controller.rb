@@ -17,26 +17,26 @@ class Api::CustomerController < ApiController
       render status: 400, json: { success: false, message: I18n.t('validation.required', param: 'Authentication token') }
       return
     elsif params['otp'].blank?
-      render status: 400, json: { success: false, message: I18n.t('profile.reset_failed'),
+      render status: 400, json: { success: false, message: I18n.t('profile.mobile_update_failed'),
         reason: { otp: [ I18n.t('validation.required', param: 'OTP') ] } }
       return
     end
 
     token = Core::Redis.fetch(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] }, { type: Hash }) { nil }
     if token.blank? || params['auth_token'] != token['token'] || token['customer_id'] != Customer.current.id || token['code'] != params['otp']
-      render status: 401, json: { success: false, message: I18n.t('profile.reset_failed'),
+      render status: 401, json: { success: false, message: I18n.t('profile.mobile_update_failed'),
         reason: { otp: [ I18n.t('validation.param_expired', param: 'OTP') ] } }
       return
     end
 
     Customer.current.update(token['param'] => token['value'])
     if Customer.current.errors.any?
-      render status: 400, json: { success: false, message: I18n.t('profile.reset_failed'), reason: Customer.current.errors.messages }
+      render status: 400, json: { success: false, message: I18n.t('profile.mobile_update_failed'), reason: Customer.current.errors.messages }
       return
     end
 
     Core::Redis.delete(Core::Redis::OTP_VERIFICATION % { token: params['auth_token'] })
-    render status: 200, json: { success: true, message: I18n.t('profile.reset_success'), data: Customer.current.as_json('ui_profile') }
+    render status: 200, json: { success: true, message: I18n.t('profile.mobile_update_success'), data: Customer.current.as_json('ui_profile') }
   end
 
   def password

@@ -28,10 +28,10 @@ class Api::AuthController < ApiController
     
     customer = Customer.where(token['param'] => token['value']).first
     if customer.nil? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
-      render status: 404, json: { success: false, message: I18n.t('customer.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('auth.user.not_found') }
       return
     elsif customer.is_blocked?
-      render status: 400, json: { success: false, message: I18n.t('customer.account_blocked', platform: PlatformConfig['name']) }
+      render status: 400, json: { success: false, message: I18n.t('auth.account_blocked', platform: PlatformConfig['name']) }
       return
     end
 
@@ -54,7 +54,7 @@ class Api::AuthController < ApiController
     end
 
     if Core::Redis.fetch(Core::Redis::ID_TOKEN_VERIFICATION % { id_token: params['id_token'] }) { false }
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), 
+      render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), 
         reason: I18n.t('validation.param_expired', param: 'Token') }
       return
     end
@@ -64,7 +64,7 @@ class Api::AuthController < ApiController
     begin
       @payload = validator.check(params['id_token'], AppConfig['google_client_id'])
     rescue GoogleIDToken::ValidationError => e
-      render status: 400, json: { success: false, message: I18n.t('customer.create_failed'), reason: e }
+      render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), reason: e }
       return
     end
   end

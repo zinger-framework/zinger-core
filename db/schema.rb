@@ -15,6 +15,38 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
+  create_table "admin_user_sessions", primary_key: "token", id: :string, force: :cascade do |t|
+    t.jsonb "meta", default: {}
+    t.string "login_ip"
+    t.string "user_agent"
+    t.bigint "admin_user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["admin_user_id"], name: "index_admin_user_sessions_on_admin_user_id"
+  end
+
+  create_table "admin_users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "mobile"
+    t.string "password_digest"
+    t.boolean "two_fa_enabled", default: false
+    t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email"], name: "index_admin_users_on_email"
+  end
+
+  create_table "admin_users_shops", id: false, force: :cascade do |t|
+    t.bigint "admin_user_id"
+    t.bigint "shop_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["admin_user_id"], name: "index_admin_users_shops_on_admin_user_id"
+    t.index ["shop_id"], name: "index_admin_users_shops_on_shop_id"
+  end
+
   create_table "customer_sessions", primary_key: "token", id: :string, force: :cascade do |t|
     t.jsonb "meta", default: {}
     t.string "login_ip"
@@ -37,38 +69,6 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_customers_on_email"
     t.index ["mobile"], name: "index_customers_on_mobile"
-  end
-
-  create_table "employee_sessions", primary_key: "token", id: :string, force: :cascade do |t|
-    t.jsonb "meta", default: {}
-    t.string "login_ip"
-    t.string "user_agent"
-    t.bigint "employee_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["employee_id"], name: "index_employee_sessions_on_employee_id"
-  end
-
-  create_table "employees", force: :cascade do |t|
-    t.string "name"
-    t.string "email"
-    t.string "mobile"
-    t.string "password_digest"
-    t.boolean "two_fa_enabled", default: false
-    t.integer "status", limit: 2, default: 1
-    t.boolean "deleted", default: false
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["email"], name: "index_employees_on_email"
-  end
-
-  create_table "employees_shops", id: false, force: :cascade do |t|
-    t.bigint "employee_id"
-    t.bigint "shop_id"
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.index ["employee_id"], name: "index_employees_shops_on_employee_id"
-    t.index ["shop_id"], name: "index_employees_shops_on_shop_id"
   end
 
   create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|

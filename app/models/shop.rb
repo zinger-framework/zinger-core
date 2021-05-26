@@ -8,7 +8,7 @@ class Shop < ApplicationRecord
   # TODO: Uncomment when elastic search is integrated - Logesh
 
   has_one :shop_detail
-  has_and_belongs_to_many :employees
+  has_and_belongs_to_many :admin_users
 
   validate :validations
   after_create :add_shop_detail

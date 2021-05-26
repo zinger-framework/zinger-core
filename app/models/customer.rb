@@ -51,13 +51,13 @@ class Customer < ApplicationRecord
       return I18n.t('auth.already_exist', key: options[:param], value: options[:value]) if Customer.exists?(options[:param] => options[:value])
     when 'login'
       customer = Customer.where(options[:param] => options[:value]).first
-      return I18n.t('customer.not_found') if customer.blank? || (!PlatformConfig['flexible_auth'] && 
+      return I18n.t('auth.user.not_found') if customer.blank? || (!PlatformConfig['flexible_auth'] && 
         customer.auth_mode != Customer::AUTH_MODE['OTP_AUTH'])
-      return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
+      return I18n.t('auth.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
     when 'reset_password'
       customer = Customer.where(options[:param] => options[:value]).first
-      return I18n.t('customer.not_found') if customer.blank? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
-      return I18n.t('customer.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
+      return I18n.t('auth.user.not_found') if customer.blank? || customer.auth_mode != Customer::AUTH_MODE['PASSWORD_AUTH']
+      return I18n.t('auth.account_blocked', platform: PlatformConfig['name']) if customer.is_blocked?
     when 'reset_profile'
       return I18n.t('auth.already_exist', key: options[:param], value: options[:value]) if Customer.exists?(options[:param] => options[:value])
       options[:customer_id] = Customer.current.id

@@ -9,7 +9,7 @@ class ApiController < ApplicationController
     error_msg = if customer.nil?
       I18n.t('validation.invalid', param: 'authorization')
     elsif customer.is_blocked?
-      I18n.t('customer.account_blocked', platform: PlatformConfig['name'])
+      I18n.t('auth.account_blocked', platform: PlatformConfig['name'])
     end
 
     if error_msg.present?

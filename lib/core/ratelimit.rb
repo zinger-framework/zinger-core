@@ -13,15 +13,15 @@ class Core::Ratelimit
     { 'pattern' => 'api/auth#reset_password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
     { 'pattern' => 'api/customer#reset_profile', 'per_customer' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_profile' },
     { 'pattern' => 'api/customer#password', 'per_customer' => true, 'limit' => 5, 'window' => 600, 'message' => 'exceeded' },
-    { 'pattern' => 'admin/auth/otp#login', 'per_employee' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#login', 'per_admin_user' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
     { 'pattern' => 'admin/auth/otp#forgot_password', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
-    { 'pattern' => 'admin/auth/otp#verify_mobile', 'per_employee' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth/otp#verify_mobile', 'per_admin_user' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
     { 'pattern' => 'admin/auth/otp#signup', 'per_ip' => true, 'limit' => 5, 'window' => 1800, 'message' => 'exceeded' },
     { 'pattern' => 'admin/auth#login', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'login' },
-    { 'pattern' => 'admin/auth#verify_otp', 'per_employee' => true, 'limit' => 5, 'window' => 600, 'message' => 'exceeded' },
+    { 'pattern' => 'admin/auth#verify_otp', 'per_admin_user' => true, 'limit' => 5, 'window' => 600, 'message' => 'exceeded' },
     { 'pattern' => 'admin/auth#reset_password', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' },
     { 'pattern' => 'admin/auth#signup', 'per_ip' => true, 'limit' => 5, 'window' => 600, 'message' => 'registration' },
-    { 'pattern' => 'admin/user_profile#reset_password', 'per_employee' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' }
+    { 'pattern' => 'admin/user_profile#reset_password', 'per_admin_user' => true, 'limit' => 5, 'window' => 600, 'message' => 'reset_password' }
   ]
   
   def self.reached? request
@@ -42,7 +42,7 @@ class Core::Ratelimit
     key = "RT_LMT:#{request.params['controller']}##{request.params['action']}"
     key = "#{key}:#{request.ip}" if config['per_ip']
     key = "#{key}:#{Customer.current.id}" if config['per_customer'] && Customer.current.present?
-    key = "#{key}:#{Employee.current.id}" if config['per_employee'] && Employee.current.present?
+    key = "#{key}:#{AdminUser.current.id}" if config['per_admin_user'] && AdminUser.current.present?
     config['params'].each { |param| key = "#{key}:#{request.params[param]}" } if config['params'].present?
     return key
   end

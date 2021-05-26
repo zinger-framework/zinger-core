@@ -5,11 +5,11 @@ class AdminController < ApplicationController
   private
 
   def authenticate_request
-    employee, @payload = EmployeeSession.fetch_employee(request.headers['Authorization'])
-    error_msg = if employee.nil?
+    admin_user, @payload = AdminUserSession.fetch_admin_user(request.headers['Authorization'])
+    error_msg = if admin_user.nil?
       I18n.t('validation.invalid', param: 'authorization')
-    elsif employee.is_blocked?
-      I18n.t('employee.account_blocked', platform: PlatformConfig['name'])
+    elsif admin_user.is_blocked?
+      I18n.t('auth.account_blocked', platform: PlatformConfig['name'])
     end
     
     if error_msg.present?
@@ -17,18 +17,18 @@ class AdminController < ApplicationController
       return
     end
 
-    employee.make_current
+    admin_user.make_current
 
     if TWO_FACTOR_SCREENS.include?("#{params['controller']}##{params['action']}")
-      if !employee.two_fa_enabled
-        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('employee.two_factor.already_disabled') }
+      if !admin_user.two_fa_enabled
+        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('admin_user.two_factor.already_disabled') }
         return
-      elsif @payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['UNVERIFIED']
-        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('validation.otp.already_verified') }
+      elsif @payload['two_fa']['status'] != AdminUser::TWO_FA_STATUSES['UNVERIFIED']
+        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('auth.otp.already_verified') }
         return
       end
-    elsif params['action'] != 'logout' && employee.two_fa_enabled && @payload['two_fa']['status'] != Employee::TWO_FA_STATUSES['VERIFIED']
-      render status: 401, json: { success: false, message: I18n.t('validation.otp.unverified'), reason: 'OTP_UNVERIFIED' }
+    elsif params['action'] != 'logout' && admin_user.two_fa_enabled && @payload['two_fa']['status'] != AdminUser::TWO_FA_STATUSES['VERIFIED']
+      render status: 401, json: { success: false, message: I18n.t('auth.otp.unverified'), reason: 'OTP_UNVERIFIED' }
       return
     end
   end
@@ -46,6 +46,6 @@ class AdminController < ApplicationController
   end
 
   def reset_thread
-    Employee.reset_current
+    AdminUser.reset_current
   end
 end

@@ -2,8 +2,8 @@ class Admin::ShopController < AdminController
   before_action :load_shop, except: :new
 
   def new
-    shop = Employee.current.shops.where(status: Shop::PENDING_STATUSES).first
-    shop = Employee.current.shops.create(category: Shop::CATEGORIES['OTHERS']) if shop.nil?
+    shop = AdminUser.current.shops.where(status: Shop::PENDING_STATUSES).first
+    shop = AdminUser.current.shops.create(category: Shop::CATEGORIES['OTHERS']) if shop.nil?
     render status: 200, json: { success: true, message: 'success', data: { shop: shop.as_json('admin_shop') } }
   end
 
