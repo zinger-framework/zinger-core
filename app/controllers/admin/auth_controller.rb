@@ -2,17 +2,6 @@ class Admin::AuthController < AdminController
   skip_before_action :authenticate_request, except: [:logout, :verify_otp]
 
   def login
-    error = if params['user_type'].blank?
-      I18n.t('validation.required', param: 'User type')
-    elsif !%w(Platform Admin).include? params['user_type']
-      I18n.t('validation.invalid', param: 'user type')
-    end
-
-    if error.present?
-      render status: 400, json: { success: false, message: I18n.t('auth.login_failed'), reason: { user_type: [error] } }
-      return
-    end
-
     begin
       raise I18n.t('validation.required', param: 'Email') if params['email'].blank?
 
@@ -22,34 +11,29 @@ class Admin::AuthController < AdminController
         return
       end
 
-      user = case params['user_type']
-      when 'Admin'
-        AdminUser.find_by_email(params['email'])
-      end
-
-      user_type = "#{params['user_type'].to_s.underscore}_user"
-      if user.nil?
-        render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: I18n.t("#{user_type}.not_found") }
+      admin_user = AdminUser.find_by_email(params['email'])
+      if admin_user.nil?
+        render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: I18n.t('admin_user.not_found') }
         return
       end
 
-      raise I18n.t("#{user_type}.account_blocked", platform: PlatformConfig['name']) if user.is_blocked?
+      raise I18n.t('admin_user.account_blocked', platform: PlatformConfig['name']) if admin_user.is_blocked?
     rescue => e
       render status: 400, json: { success: false, message: I18n.t('auth.login_failed'), reason: { email: [e.message] } }
       return
     end
 
-    unless user.authenticate(params['password'])
+    unless admin_user.authenticate(params['password'])
       render status: 401, json: { success: false, message: I18n.t('auth.login_failed'), reason: { 
         password: [I18n.t('validation.invalid', param: 'password') ] } }
       return
     end
 
-    session = user.send("#{user_type}_sessions").create!(login_ip: request.ip, user_agent: request.headers['User-Agent'])
-    if user.two_fa_enabled
+    session = admin_user.admin_user_sessions.create!(login_ip: request.ip, user_agent: request.headers['User-Agent'])
+    if admin_user.two_fa_enabled
       data = { token: session.get_jwt_token({ 'status' => AdminUser::TWO_FA_STATUSES['UNVERIFIED'],
-        'auth_token' => AdminUser.send_otp({ param: 'mobile', value: user.mobile }) }), redirect_to: 'OTP' }
-      message = I18n.t("#{user_type}.mobile_otp_success")
+        'auth_token' => AdminUser.send_otp({ param: 'mobile', value: admin_user.mobile }) }), redirect_to: 'OTP' }
+      message = I18n.t('admin_user.mobile_otp_success')
     else
       data = { token: session.get_jwt_token({ 'status' => AdminUser::TWO_FA_STATUSES['NOT_APPLICABLE'] }), redirect_to: 'DASHBOARD' }
       message = I18n.t('auth.login_success')
