@@ -7,12 +7,12 @@ class AdminUserSession < ApplicationRecord
 
   def get_jwt_token two_fa
     return JWT.encode({ 'admin_user_id' => self.admin_user_id, 'expiry_time' => Time.now.next_day.to_i, 'token' => self.token, 
-      'two_fa' => two_fa }, AppConfig['api_auth'])
+      'two_fa' => two_fa }, AppConfig['admin_auth'])
   end
 
   def self.decode_jwt_token jwt_token
     begin
-      return JWT.decode(jwt_token, AppConfig['api_auth'])[0].to_h
+      return JWT.decode(jwt_token, AppConfig['admin_auth'])[0].to_h
     rescue => e
       return {}
     end

@@ -13,13 +13,18 @@ class ShopDetail < ApplicationRecord
           'url' => Core::Storage.fetch_url(self.cover_photo_key_path(cover_photo)) } },
         'opening_time' => opening_time.strftime('%H:%M'), 'closing_time' => closing_time.strftime('%H:%M'),
         'open_now' => opening_time.strftime('%H:%M') <= time && time < closing_time.strftime('%H:%M') }
-    when 'admin_shop_detail'
-      return { 'address' => self.address.merge(options.slice(*%w(lat lng))), 'telephone' => self.telephone, 'mobile' => self.mobile, 
+    when 'admin_shop_detail', 'platform_shop_detail'
+      resp = { 'address' => self.address.merge(options.slice(*%w(lat lng))), 'telephone' => self.telephone, 'mobile' => self.mobile, 
         'opening_time' => self.opening_time.present? ? self.opening_time.in_time_zone(PlatformConfig['time_zone']).strftime('%H:%M') : nil, 
         'closing_time' => self.closing_time.present? ? self.closing_time.in_time_zone(PlatformConfig['time_zone']).strftime('%H:%M') : nil,
         'payment' => self.payment, 'description' => self.description,
         'cover_photos' => self.cover_photos.to_a.map { |cover_photo| { 'id' => cover_photo.split('-')[0].to_i, 
           'url' => Core::Storage.fetch_url(self.cover_photo_key_path(cover_photo)) } } }
+      if [Shop::STATUSES['PENDING'], Shop::STATUSES['REJECTED']].include?(self.shop.status)
+        resp['approval_comments'] = self.meta['approval_comments'].to_a.reverse.map { |comment| comment.merge({ 
+          'time' => Time.strptime(comment['time'], '%Y-%m-%d %H:%M:%S').in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }) }
+      end
+      return resp
     end
   end
 

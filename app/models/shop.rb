@@ -12,7 +12,7 @@ class Shop < ApplicationRecord
 
   validate :validations
   after_create :add_shop_detail
-  after_commit :clear_cache
+  after_commit :commit_callbacks
 
   def search_data
     { name: self.name, location: { lat: self.lat, lon: self.lng }, tags: self.tags, status: self.status, deleted: self.deleted }
@@ -26,10 +26,13 @@ class Shop < ApplicationRecord
     when 'ui_shop_detail'
       return { 'id' => self.id, 'name' => self.name, 'icon' => Core::Storage.fetch_url(self.icon_key_path), 'tags' => self.tags.to_s.split(' ').map(&:titlecase) }
         .merge(self.shop_detail.as_json('ui_shop_detail'))
-    when 'admin_shop'
-      return { 'id' => self.id, 'name' => self.name, 'icon' => self.icon.present? ? Core::Storage.fetch_url(self.icon_key_path) : nil, 
-        'tags' => self.tags.to_s.split(' ').map(&:titlecase), 'category' => CATEGORIES.key(self.category), 'email' => self.email, 'status' => STATUSES.key(self.status) }
-        .merge(self.shop_detail.as_json('admin_shop_detail', { 'lat' => self.lat.to_f, 'lng' => self.lng.to_f }))
+    when 'admin_shop', 'platform_shop'
+      resp = { 'id' => self.id, 'name' => self.name, 'icon' => self.icon.present? ? Core::Storage.fetch_url(self.icon_key_path) : nil, 
+        'tags' => self.tags.to_s.split(' ').map(&:titlecase), 'category' => CATEGORIES.key(self.category), 'email' => self.email, 
+        'status' => STATUSES.key(self.status), 'updated_at' => self.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }
+        .merge(self.shop_detail.as_json("#{purpose}_detail", { 'lat' => self.lat.to_f, 'lng' => self.lng.to_f }))
+      resp = resp.merge({ 'deleted' => self.deleted }) if purpose == 'platform_shop'
+      return resp
     end
   end
 
@@ -41,15 +44,42 @@ class Shop < ApplicationRecord
     "shop/icon/#{self.id}/#{self.icon}"
   end
 
+  def is_blocked?
+    self.status == STATUSES['BLOCKED']
+  end
+
   private
 
   def validations
+    if self.status_changed?
+      invalid_status = case self.status
+      when STATUSES['ACTIVE']
+        true unless [STATUSES['PENDING'], STATUSES['BLOCKED'], STATUSES['INACTIVE'], STATUSES['REJECTED']].include? self.status_was
+      when STATUSES['BLOCKED']
+        true unless [STATUSES['ACTIVE'], STATUSES['INACTIVE']].include? self.status_was
+      when STATUSES['REJECTED']
+        true if self.status_was != STATUSES['PENDING']
+      when STATUSES['INACTIVE']
+        true if self.status_was != STATUSES['ACTIVE']
+      else
+        true
+      end
+      errors.add(:status, I18n.t('validation.invalid', param: 'status')) if invalid_status.present?
+    end
     errors.add(:category, I18n.t('validation.invalid', param: 'category')) if self.category.nil?
     errors.add(:email, I18n.t('validation.invalid', param: 'email')) if self.email.present? && !self.email.match(EMAIL_REGEX)
   end
 
   def add_shop_detail
     self.create_shop_detail
+  end
+
+  def commit_callbacks
+    if self.saved_change_to_status? && self.status == STATUSES['PENDING']
+      MailerWorker.perform_async('platform', { 'subject' => 'Shop Approval is PENDING', 'id' => self.id, 'name' => self.name, 
+        'link' => Rails.application.routes.url_helpers.pl_shop_detail_url(host: AppConfig['platform_ui_endpoint'], id: self.id) }.to_json)
+    end
+    self.clear_cache
   end
 
   def clear_cache

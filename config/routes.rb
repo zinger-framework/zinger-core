@@ -48,7 +48,7 @@ Rails.application.routes.draw do
     end
   end
 
-  scope module: 'admin', constraints: { subdomain: AppConfig['admin_subdomain'] } do
+  namespace 'admin', constraints: { subdomain: AppConfig['api_subdomain'] } do
     scope 'v:api_version' do
       namespace :auth do
         resources :otp, only: :none do
@@ -78,7 +78,7 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :shop, only: [:new, :update, :destroy, :show] do
+      resources :shop, only: [:index, :new, :update, :show] do
         member do
           post :icon
           post :cover_photo
@@ -89,6 +89,40 @@ Rails.application.routes.draw do
     end
   end
 
+  namespace 'platform', constraints: { subdomain: AppConfig['api_subdomain'] } do
+    scope 'v:api_version' do
+      namespace :auth do
+        resources :otp, only: :none do
+          collection do 
+            post :login
+            post :forgot_password
+            post :verify_mobile
+          end
+        end
+      end
+
+      resources :auth, only: :none do
+        collection do
+          post :login
+          post :verify_otp
+          post :reset_password
+          delete :logout
+        end
+      end
+
+      resources :user_profile, only: :index do
+        collection do
+          post :reset_password
+          post :modify
+        end
+      end
+
+      resources :shop, only: [:index, :show, :update, :destroy]
+    end
+  end
+
   mount Sidekiq::Web => '/sidekiq', subdomain: SidekiqSettings['subdomain']
+
+  get '/shop/:id' => 'application#home', :as => :pl_shop_detail, subdomain: AppConfig['platform_subdomain']
   get '/*path', to: 'application#home'
 end

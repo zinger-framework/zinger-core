@@ -5,15 +5,11 @@ class ApiController < ApplicationController
 
   def authenticate_request
     customer = CustomerSession.fetch_customer(request.headers['Authorization'])
-
-    error_msg = if customer.nil?
-      I18n.t('validation.invalid', param: 'authorization')
+    if customer.nil?
+      render status: 401, json: { success: false, message: I18n.t('validation.invalid', param: 'authorization'), reason: 'UNAUTHORIZED' }
+      return
     elsif customer.is_blocked?
-      I18n.t('auth.account_blocked', platform: PlatformConfig['name'])
-    end
-
-    if error_msg.present?
-      render status: 401, json: { success: false, message: error_msg, reason: 'UNAUTHORIZED' }
+      render status: 403, json: { success: false, message: I18n.t('auth.account_blocked', platform: PlatformConfig['name']), reason: 'UNAUTHORIZED' }
       return
     end
 

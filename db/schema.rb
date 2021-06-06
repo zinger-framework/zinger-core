@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2020_11_07_083221) do
+ActiveRecord::Schema.define(version: 2021_05_29_054505) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -69,6 +69,29 @@ ActiveRecord::Schema.define(version: 2020_11_07_083221) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_customers_on_email"
     t.index ["mobile"], name: "index_customers_on_mobile"
+  end
+
+  create_table "platform_user_sessions", primary_key: "token", id: :string, force: :cascade do |t|
+    t.jsonb "meta", default: {}
+    t.string "login_ip"
+    t.string "user_agent"
+    t.bigint "platform_user_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["platform_user_id"], name: "index_platform_user_sessions_on_platform_user_id"
+  end
+
+  create_table "platform_users", force: :cascade do |t|
+    t.string "name"
+    t.string "email"
+    t.string "mobile"
+    t.string "password_digest"
+    t.boolean "two_fa_enabled", default: false
+    t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["email"], name: "index_platform_users_on_email"
   end
 
   create_table "shop_details", primary_key: "shop_id", id: :bigint, default: nil, force: :cascade do |t|

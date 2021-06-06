@@ -6,6 +6,8 @@ class Core::Redis
   CUSTOMER_BY_ID = 'v1/CUSTOMER_BY_ID:%{id}'
   ADMIN_USER_BY_ID = 'v1/ADMIN_USER_BY_ID:%{id}'
   SHOP_BY_ID = 'v1/SHOP_BY_ID:%{id}'
+  PLATFORM_USER_BY_ID = 'v1/PLATFORM_USER_BY_ID:%{id}'
+  PLATFORM_USER_SESSIONS_BY_ID = 'PLATFORM_USER_SESSIONS_BY_ID:%{id}'
 
   def self.marshal type, value
     if String == type

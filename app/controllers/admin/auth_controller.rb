@@ -13,11 +13,11 @@ class Admin::AuthController < AdminController
 
       admin_user = AdminUser.find_by_email(params['email'])
       if admin_user.nil?
-        render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: I18n.t('admin_user.not_found') }
+        render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: I18n.t('auth.user.not_found') }
         return
       end
 
-      raise I18n.t('admin_user.account_blocked', platform: PlatformConfig['name']) if admin_user.is_blocked?
+      raise I18n.t('auth.account_blocked', platform: PlatformConfig['name']) if admin_user.is_blocked?
     rescue => e
       render status: 400, json: { success: false, message: I18n.t('auth.login_failed'), reason: { email: [e.message] } }
       return

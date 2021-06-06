@@ -35,11 +35,18 @@ en:
     too_many_params: Please provide any one of the params - %{param}
     invalid: "Invalid %{param}"
     param_expired: "%{param} is expired or invalid"
+    invalid_time_format: Invalid time format. Please use YYYY-MM-DD HH:MM:SS
+    invalid_time_range: Start time cannot be greater than end time
     password:
       invalid: "Password should contain atleast %{length} characters"
       mismatch: "Confirm Password doesn't match"
     name_long: Name should have maximum of 100 characters
+    invalid_request: Unable to process your request
   admin_user:
+    mobile_otp_success: OTP is sent successfully to your registered mobile number
+    password:
+      update_failed: Unable to update password
+  platform_user:
     mobile_otp_success: OTP is sent successfully to your registered mobile number
     password:
       update_failed: Unable to update password
@@ -59,6 +66,8 @@ en:
     login_success: Logged in successfully
     signup_failed: Unable to create account
     signup_success: Account is created successfully
+    two_factor:
+      already_disabled: 2FA has been already disabled
     user:
       not_found: Unable to find the user
     otp:
@@ -73,10 +82,15 @@ en:
       reset_success: Password is changed successfully
   shop:
     not_found: Unable to find the shop
+    create_success: Shop is registered successfully
+    create_failed: Unable to register shop
     update_success: Shop is updated successfully
     update_failed: Unable to update shop
+    delete_failed: Shop is already deleted
     delete_success: Shop is deleted successfully
     description_long: Description should contain maximum of 250 characters
+    fetch_failed: Unable to fetch shops
+    blocked: "Your shop has been blocked. Please contact %{platform} team"
     icon:
       invalid_file: Please upload a valid image file of 512 x 512 dimension
       file_size_exceeded: Please upload an image file of less than 1 MB

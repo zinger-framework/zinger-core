@@ -18,7 +18,7 @@ class Customer < ApplicationRecord
       return { name: self.name, email: self.email, mobile: self.mobile }
     when 'admin_profile'
       return { id: self.id, name: self.name, email: self.email, mobile: self.mobile, status: self.status, deleted: self.deleted,
-      updated_at: self.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%d-%m-%Y %H:%M') }
+      updated_at: self.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }
     end
   end
 
@@ -65,7 +65,7 @@ class Customer < ApplicationRecord
 
     token = Base64.encode64("#{options[:value]}-#{Time.now.to_i}-#{rand(1000..9999)}").strip.gsub('=', '')
     options.merge!({ code: Customer.otp, token: token }).except!(:action)
-    MailerWorker.perform_async(options.to_json)
+    MailerWorker.perform_async('send_otp', options.to_json)
 
     return { token: token }
   end
