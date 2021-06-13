@@ -13,7 +13,7 @@ class Admin::ShopController < AdminController
     shops = query.offset(params['offset'].to_i).limit(LIMIT).order("id #{params['sort_order'].to_s.upcase == 'DESC' ? 'DESC' : 'ASC'}")
       .map { |shop| shop.as_json('admin_shop') } if total > 0
 
-    render status: 200, json: { success: true, message: 'success', data: { shops: shops, total: total, page_size: LIMIT } }
+    render status: 200, json: { success: true, message: 'success', data: { shops: shops, total: total, per_page: LIMIT } }
   end
 
   def new
@@ -111,13 +111,14 @@ class Admin::ShopController < AdminController
     shop_detail.update!(cover_photos: cover_photos)
     File.open(params['cover_file'].path, 'rb') { |file| Core::Storage.upload_file(shop_detail.cover_photo_key_path(cover_photo), file) }
     render status: 200, json: { success: true, message: I18n.t('shop.cover_photo.upload_success'), 
-      data: { cover_photos: cover_photos.map { |cover_photo| { 'id' => cover_photo.split('-')[0].to_i, 
-        'url' => Core::Storage.fetch_url(shop_detail.cover_photo_key_path(cover_photo)) } } } }
+      data: { cover_photos: cover_photos.map { |cover_photo| { id: cover_photo.split('-')[0].to_i, 
+        url: Core::Storage.fetch_url(shop_detail.cover_photo_key_path(cover_photo)) } } } }
   end
 
   def delete_icon
     if @shop.icon.blank?
-      render status: 404, json: { success: false, message: I18n.t('shop.icon.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('shop.icon.delete_failed'), reason: { 
+        icon: [I18n.t('shop.icon.not_found')] } }
       return
     end
 
@@ -131,7 +132,8 @@ class Admin::ShopController < AdminController
     cover_photos = shop_detail.cover_photos.to_a
     cover_photo = cover_photos.find { |cover_photo| cover_photo.split('-')[0] == params['cover_photo_id'].to_s }
     if cover_photo.nil?
-      render status: 404, json: { success: false, message: I18n.t('shop.cover_photo.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('shop.cover_photo.delete_failed'), reason: {
+        cover_photos: [I18n.t('shop.cover_photo.not_found')] } }
       return
     end
     
@@ -148,11 +150,11 @@ class Admin::ShopController < AdminController
   def load_shop
     @shop = Shop.fetch_by_id(params['id'])
     if @shop.nil?
-      render status: 404, json: { success: false, message: I18n.t('shop.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('validation.invalid_request'), reason: I18n.t('shop.not_found') }
       return
     elsif params['action'] != 'show' && @shop.is_blocked?
-      render status: 403, json: { success: false, message: I18n.t('validation.invalid_request'), reason: I18n.t('shop.blocked', 
-        platform: PlatformConfig['name']) }
+      render status: 403, json: { success: false, message: I18n.t('validation.invalid_request'), 
+        reason: I18n.t('shop.blocked', platform: PlatformConfig['name']) }
       return
     end
   end

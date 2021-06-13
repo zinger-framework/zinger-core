@@ -19,7 +19,7 @@ class ApiController < ApplicationController
   def check_limit
     resp = Core::Ratelimit.reached?(request)
     if resp
-      render status: 429, json: { success: false, message: resp }
+      render status: 429, json: { success: false, message: I18n.t('validation.invalid_request'), reason: resp }
       return
     end
   end

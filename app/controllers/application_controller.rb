@@ -10,12 +10,14 @@ class ApplicationController < ActionController::Base
   private
 
   def render_unsupported_version
-    render status: 422, json: { success: false, message: "You have requested an unsupported version (#{request_version})" }
+    render status: 422, json: { success: false, message: I18n.t('validation.invalid_request'), 
+      reason: "You have requested an unsupported version (#{request_version})" }
     return
   end
 
   def render_obsolete_version
-    render status: 422, json: { success: false, message: "You have requested an outdated version (#{request_version})" }
+    render status: 422, json: { success: false, message: I18n.t('validation.invalid_request'), 
+      reason: "You have requested an outdated version (#{request_version})" }
     return
   end
 end

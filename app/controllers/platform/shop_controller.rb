@@ -14,7 +14,7 @@ class Platform::ShopController < PlatformController
     shops = query.offset(params['offset'].to_i).limit(LIMIT).order("id #{params['sort_order'].to_s.upcase == 'DESC' ? 'DESC' : 'ASC'}")
       .map { |shop| shop.as_json('platform_shop') } if total > 0
 
-    render status: 200, json: { success: true, message: 'success', data: { shops: shops, total: total, page_size: LIMIT } }
+    render status: 200, json: { success: true, message: 'success', data: { shops: shops, total: total, per_page: LIMIT } }
   end
 
   def show
@@ -63,7 +63,7 @@ class Platform::ShopController < PlatformController
   def load_shop
     @shop = Shop.unscoped.find_by_id(params['id'])
     if @shop.nil?
-      render status: 404, json: { success: false, message: I18n.t('shop.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('validation.invalid_request'), reason: I18n.t('shop.not_found') }
       return
     end
   end

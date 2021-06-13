@@ -23,10 +23,10 @@ class Api::ShopController < ApiController
   def show
     shop = Shop.fetch_by_id(params['id'])
     if shop.nil?
-      render status: 404, json: { success: false, message: I18n.t('shop.not_found') }
+      render status: 404, json: { success: false, message: I18n.t('validation.invalid_request'), reason: I18n.t('shop.not_found') }
       return
     end
 
-    render status: 200, json: { success: true, message: 'success', data: shop.as_json('ui_shop_detail') }
+    render status: 200, json: { success: true, message: 'success', data: { shop: shop.as_json('ui_shop_detail') } }
   end
 end

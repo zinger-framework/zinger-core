@@ -1,6 +1,5 @@
 class PlatformController < ApplicationController
   before_action :reset_thread, :authenticate_request, :check_limit, :check_version
-  TWO_FACTOR_SCREENS = ['platform/auth#verify_otp', 'platform/auth/otp#login']
   LIMIT = 25
 
   private
@@ -17,12 +16,13 @@ class PlatformController < ApplicationController
 
     platform_user.make_current
 
-    if TWO_FACTOR_SCREENS.include?("#{params['controller']}##{params['action']}")
+    request_pattern = "#{params['controller']}##{params['action']}"
+    if request_pattern == 'platform/auth#verify_otp' || (request_pattern == 'platform/auth#otp' && params['purpose'] == 'TWO_FA')
       if !platform_user.two_fa_enabled
-        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('auth.two_factor.already_disabled') }
+        render status: 200, json: { success: false, message: I18n.t('auth.two_factor.already_disabled'), reason: 'ALREADY_LOGGED_IN' }
         return
       elsif @payload['two_fa']['status'] != PlatformUser::TWO_FA_STATUSES['UNVERIFIED']
-        render status: 200, json: { success: false, reason: 'ALREADY_LOGGED_IN', message: I18n.t('auth.otp.already_verified') }
+        render status: 200, json: { success: false, message: I18n.t('auth.otp.already_verified'), reason: 'ALREADY_LOGGED_IN' }
         return
       end
     elsif params['action'] != 'logout' && platform_user.two_fa_enabled && @payload['two_fa']['status'] != PlatformUser::TWO_FA_STATUSES['VERIFIED']
@@ -34,7 +34,7 @@ class PlatformController < ApplicationController
   def check_limit
     resp = Core::Ratelimit.reached?(request)
     if resp
-      render status: 429, json: { success: false, message: resp }
+      render status: 429, json: { success: false, message: I18n.t('validation.invalid_request'), reason: resp }
       return
     end
   end
