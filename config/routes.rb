@@ -77,7 +77,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :shop, only: [:index, :show, :update, :destroy]
+      resources :shop, only: [:index, :show, :update] do
+        collection { post :delete }
+      end
     end
   end
 

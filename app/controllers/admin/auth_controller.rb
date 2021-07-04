@@ -31,7 +31,7 @@ class Admin::AuthController < AdminController
       return
     end
 
-    admin_user = AdminUser.find_by_email(params['email'])
+    admin_user = AdminUser.undeleted.find_by_email(params['email'])
     if admin_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: { 
         email: [ I18n.t('auth.user.not_found') ] } }
@@ -92,7 +92,7 @@ class Admin::AuthController < AdminController
       return
     end
 
-    admin_user = AdminUser.where(token['param'] => token['value']).first
+    admin_user = AdminUser.undeleted.where(token['param'] => token['value']).first
     if admin_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), reason: { 
         token['param'] => [I18n.t('auth.user.not_found')] } }
@@ -126,7 +126,7 @@ class Admin::AuthController < AdminController
       return
     end
 
-    if AdminUser.find_by_email(token['value']).present?
+    if AdminUser.undeleted.find_by_email(token['value']).present?
       render status: 400, json: { success: false, message: I18n.t('auth.signup_failed'), reason: {
         email: [I18n.t('auth.already_exist', key: 'email', value: token['value'])] } }
       return
@@ -162,7 +162,7 @@ class Admin::AuthController < AdminController
       return
     end
 
-    admin_user = AdminUser.find_by_email(params['email'])
+    admin_user = AdminUser.undeleted.find_by_email(params['email'])
     if admin_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.otp.failed'), reason: { email: [ I18n.t('auth.user.not_found') ] } }
       return
@@ -207,7 +207,7 @@ class Admin::AuthController < AdminController
       raise I18n.t('validation.required', param: 'Email address') if params['email'].blank?
       raise I18n.t('validation.invalid', param: 'email address') if params['email'].match(EMAIL_REGEX).nil?
 
-      admin_user = AdminUser.find_by_email(params['email'])
+      admin_user = AdminUser.undeleted.find_by_email(params['email'])
       raise I18n.t('auth.already_exist', key: 'email', value: params['email']) if admin_user.present?
     rescue => e
       render status: 400, json: { success: false, message: I18n.t('auth.otp.failed'), reason: { email: [e.message] } }

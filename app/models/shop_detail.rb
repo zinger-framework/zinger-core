@@ -20,10 +20,6 @@ class ShopDetail < ApplicationRecord
         'payment' => self.payment, 'description' => self.description,
         'cover_photos' => self.cover_photos.to_a.map { |cover_photo| { 'id' => cover_photo.split('-')[0].to_i, 
           'url' => Core::Storage.fetch_url(self.cover_photo_key_path(cover_photo)) } } }
-      if [Shop::STATUSES['PENDING'], Shop::STATUSES['REJECTED']].include?(self.shop.status)
-        resp['approval_comments'] = self.meta['approval_comments'].to_a.reverse.map { |comment| comment.merge({ 
-          'time' => Time.strptime(comment['time'], '%Y-%m-%d %H:%M:%S').in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }) }
-      end
       return resp
     end
   end

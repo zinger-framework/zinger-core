@@ -29,7 +29,7 @@ class Platform::AuthController < PlatformController
       return
     end
 
-    platform_user = PlatformUser.find_by_email(params['email'])
+    platform_user = PlatformUser.undeleted.find_by_email(params['email'])
     if platform_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.login_failed'), reason: { 
         email: [I18n.t('auth.user.not_found')] } }
@@ -90,7 +90,7 @@ class Platform::AuthController < PlatformController
       return
     end
 
-    platform_user = PlatformUser.where(token['param'] => token['value']).first
+    platform_user = PlatformUser.undeleted.where(token['param'] => token['value']).first
     if platform_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.reset_password.trigger_failed'), reason: { 
         token['param'] => [I18n.t('auth.user.not_found')] } }
@@ -133,7 +133,7 @@ class Platform::AuthController < PlatformController
       return
     end
 
-    platform_user = PlatformUser.find_by_email(params['email'])
+    platform_user = PlatformUser.undeleted.find_by_email(params['email'])
     if platform_user.nil?
       render status: 404, json: { success: false, message: I18n.t('auth.otp.failed'), reason: { email: [ I18n.t('auth.user.not_found') ] } }
       return

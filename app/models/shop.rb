@@ -3,12 +3,15 @@ class Shop < ApplicationRecord
   CATEGORIES = { 'GROCERY' => 1, 'PHARMACY' => 2, 'RESTAURANT' => 3, 'OTHERS' => 4 }
   PENDING_STATUSES = [STATUSES['DRAFT'], STATUSES['PENDING'], STATUSES['REJECTED']]
 
-  default_scope { where(deleted: false) }
+  scope :undeleted, -> { where(deleted: false) }
   # searchkick word_start: ['name'], locations: ['location'], default_fields: ['status', 'deleted']
   # TODO: Uncomment when elastic search is integrated - Logesh
 
   has_one :shop_detail
   has_and_belongs_to_many :admin_users
+  has_many :rejected_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_REJECT']) }, class_name: 'Conversation', as: :receiver
+  has_many :blocked_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_BLOCK']) }, class_name: 'Conversation', as: :receiver
+  has_many :deleted_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_DELETE']) }, class_name: 'Conversation', as: :receiver
 
   validate :validations
   after_create :add_shop_detail
@@ -31,13 +34,22 @@ class Shop < ApplicationRecord
         'tags' => self.tags.to_s.split(' ').map(&:titlecase), 'category' => CATEGORIES.key(self.category), 'email' => self.email, 
         'status' => STATUSES.key(self.status), 'updated_at' => self.updated_at.in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }
         .merge(self.shop_detail.as_json("#{purpose}_detail", { 'lat' => self.lat.to_f, 'lng' => self.lng.to_f }))
-      resp = resp.merge({ 'deleted' => self.deleted }) if purpose == 'platform_shop'
+      if purpose == 'platform_shop'
+        resp = resp.merge({ 'deleted' => self.deleted })
+        resp['deleted_conversations'] = self.deleted_conversations.map { |conv| conv.as_json('shop_delete') } if self.deleted
+      end
+      case self.status
+      when STATUSES['PENDING'], STATUSES['REJECTED']
+        resp['rejected_conversations'] = self.rejected_conversations.map { |conv| conv.as_json('shop_reject') }
+      when STATUSES['BLOCKED']
+        resp['blocked_conversations'] = self.blocked_conversations.map { |conv| conv.as_json('shop_block') }
+      end
       return resp
     end
   end
 
   def self.fetch_by_id id
-    Core::Redis.fetch(Core::Redis::SHOP_BY_ID % { id: id }, { type: Shop }) { Shop.find_by_id(id) }
+    Core::Redis.fetch(Core::Redis::SHOP_BY_ID % { id: id }, { type: Shop }) { Shop.undeleted.find_by_id(id) }
   end
 
   def icon_key_path

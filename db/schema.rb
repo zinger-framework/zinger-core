@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_05_29_054505) do
+ActiveRecord::Schema.define(version: 2021_07_04_095819) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -45,6 +45,19 @@ ActiveRecord::Schema.define(version: 2021_05_29_054505) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["admin_user_id"], name: "index_admin_users_shops_on_admin_user_id"
     t.index ["shop_id"], name: "index_admin_users_shops_on_shop_id"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.bigint "sender_id"
+    t.string "sender_type"
+    t.bigint "receiver_id"
+    t.string "receiver_type"
+    t.string "message"
+    t.integer "purpose", limit: 2
+    t.boolean "deleted", default: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["purpose", "receiver_id", "receiver_type"], name: "index_conversations_on_receiver_id_receiver_type"
   end
 
   create_table "customer_sessions", primary_key: "token", id: :string, force: :cascade do |t|

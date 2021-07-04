@@ -3,7 +3,7 @@ class PlatformUser < ApplicationRecord
   TWO_FA_STATUSES = { 'NOT_APPLICABLE' => 1, 'UNVERIFIED' => 2, 'VERIFIED' => 3 }
 
   has_secure_password(validations: false)
-  default_scope { where(deleted: false) }
+  scope :undeleted, -> { where(deleted: false) }
 
   validates :password, 
     presence: { message: I18n.t('validation.required', param: 'Password') }, 
@@ -25,6 +25,8 @@ class PlatformUser < ApplicationRecord
     case purpose
     when 'ui_profile'
       return { 'name' => self.name, 'email' => self.email, 'mobile' => self.mobile, 'two_fa_enabled' => self.two_fa_enabled }
+    when 'conversation'
+      return { 'id' => self.id, 'name' => self.name, 'profile_url' => "https://www.gravatar.com/avatar/#{Digest::MD5.hexdigest(self.email.downcase)}.png" }
     end
   end
 
@@ -36,7 +38,7 @@ class PlatformUser < ApplicationRecord
   end
 
   def self.fetch_by_id id
-    Core::Redis.fetch(Core::Redis::PLATFORM_USER_BY_ID % { id: id }, { type: PlatformUser }) { PlatformUser.find_by_id(id) }
+    Core::Redis.fetch(Core::Redis::PLATFORM_USER_BY_ID % { id: id }, { type: PlatformUser }) { PlatformUser.undeleted.find_by_id(id) }
   end
 
   def is_blocked?

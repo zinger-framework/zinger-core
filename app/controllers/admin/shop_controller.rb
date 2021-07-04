@@ -17,7 +17,7 @@ class Admin::ShopController < AdminController
   end
 
   def new
-    shop = AdminUser.current.shops.where(status: Shop::PENDING_STATUSES).first
+    shop = AdminUser.current.shops.undeleted.where(status: Shop::PENDING_STATUSES).first
     shop = AdminUser.current.shops.create(category: Shop::CATEGORIES['OTHERS']) if shop.nil?
     render status: 200, json: { success: true, message: 'success', data: { shop: shop.as_json('admin_shop') } }
   end
