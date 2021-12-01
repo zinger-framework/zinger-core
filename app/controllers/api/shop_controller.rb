@@ -3,7 +3,9 @@ class Api::ShopController < ApiController
   DISTANCE = 5
 
   def index
-    options = { where: { status: Shop::STATUSES['ACTIVE'], deleted: false }, limit: LIMIT, offset: params['offset'].to_i }
+    params['page_size'] ||= LIMIT
+    options = { where: { status: Shop::STATUSES['ACTIVE'], deleted: false }, limit: params['page_size'].to_i, offset: params['offset'].to_i,
+      order: { id: params['sort_order'].to_s.upcase == 'DESC' ? 'DESC' : 'ASC' }, includes: :shop_detail }
     options[:where].merge!({ location: { near: { lat: params['lat'].to_f, lon: params['lng'].to_f }, 
       within: "#{params['distance'].to_i > 0 ? params['distance'].to_i : DISTANCE}km" } }) if params['lat'].present? &&
       params['lng'].present?
@@ -17,7 +19,7 @@ class Api::ShopController < ApiController
     end
 
     render status: 200, json: { success: true, message: 'success', data: { shops: shops.map { |shop| shop.as_json('ui_shop') },
-      total: shops.total_count, per_page: LIMIT } }
+      total: shops.total_count } }
   end
 
   def show

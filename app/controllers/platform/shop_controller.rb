@@ -3,18 +3,28 @@ class Platform::ShopController < PlatformController
   before_action :is_shop_deleted?, only: [:update, :delete]
 
   def index
-    conditions = ValidateParam::Shop.load_conditions(params)
-    if conditions.class == String
-      render status: 400, json: { success: false, message: I18n.t('shop.fetch_failed'), reason: conditions }
+    params['page_size'] ||= LIMIT
+    filter_params = params['next_page_token'].present? ? JSON.parse(Base64.decode64(params['next_page_token'])) : params
+    filter_params = filter_params.slice(*%w(start_date end_date statuses id include_deleted sort_order page_size next_id))
+
+    query = ValidateParam::Shop.load_conditions(filter_params)
+    if query.class == Hash
+      render status: 400, json: { success: false, message: I18n.t('shop.fetch_failed'), reason: query }
       return
     end
 
-    query, shops = Shop.all.preload(:shop_detail).where(conditions), []
-    total = query.count
-    shops = query.offset(params['offset'].to_i).limit(LIMIT).order("id #{params['sort_order'].to_s.upcase == 'DESC' ? 'DESC' : 'ASC'}")
-      .map { |shop| shop.as_json('platform_shop') } if total > 0
+    query, data = query.preload(:shop_detail), { shops: [] }
+    data = data.merge({ total: query.count, page_size: params['page_size'].to_i }) if params['next_page_token'].blank?
+    
+    if params['next_page_token'].present? || data[:total] > 0
+      data[:shops] = query.limit(filter_params['page_size'].to_i + 1).as_json('platform_shop_list')
+      if data[:shops].size > filter_params['page_size'].to_i
+        filter_params['next_id'] = data[:shops].pop['id']
+        data[:next_page_token] = Base64.encode64(filter_params.to_json).gsub(/[^0-9a-z]/i, '')
+      end
+    end
 
-    render status: 200, json: { success: true, message: 'success', data: { shops: shops, total: total, per_page: LIMIT } }
+    render status: 200, json: { success: true, message: 'success', data: data }
   end
 
   def show

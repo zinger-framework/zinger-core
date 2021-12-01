@@ -37,6 +37,8 @@ en:
     param_expired: "%{param} is expired or invalid"
     invalid_time_format: Invalid time format. Please use YYYY-MM-DD HH:MM:SS
     invalid_time_range: Start time cannot be greater than end time
+    invalid_date_format: Invalid date format. Please use YYYY-MM-DD
+    invalid_date_range: Start date cannot be greater than end date
     password:
       invalid: "Password should contain atleast %{length} characters"
       mismatch: "Confirm Password doesn't match"

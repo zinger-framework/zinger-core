@@ -13,6 +13,8 @@ class ShopDetail < ApplicationRecord
           'url' => Core::Storage.fetch_url(self.cover_photo_key_path(cover_photo)) } },
         'opening_time' => opening_time.strftime('%H:%M'), 'closing_time' => closing_time.strftime('%H:%M'),
         'open_now' => opening_time.strftime('%H:%M') <= time && time < closing_time.strftime('%H:%M') }
+    when 'admin_shop_list_detail', 'platform_shop_list_detail'
+      return { 'area' => self.address.to_h['area'] }
     when 'admin_shop_detail', 'platform_shop_detail'
       resp = { 'address' => self.address.merge(options.slice(*%w(lat lng))), 'telephone' => self.telephone, 'mobile' => self.mobile, 
         'opening_time' => self.opening_time.present? ? self.opening_time.in_time_zone(PlatformConfig['time_zone']).strftime('%H:%M') : nil, 

@@ -1,43 +1,46 @@
 class ValidateParam::Shop
-  DEFAULT_START_TIME = Time.find_zone(PlatformConfig['time_zone']).strptime('2020-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')
-
   def self.load_conditions params
-    conditions, start_time, end_time = {}, DEFAULT_START_TIME, Time.now.in_time_zone(PlatformConfig['time_zone'])
+    conditions, errors, start_date, end_date = [], {}, nil, nil
 
-    if params['start_time'].present?
+    if params['start_date'].present?
       begin
-        start_time = Time.find_zone(PlatformConfig['time_zone']).strptime(params['start_time'], '%Y-%m-%d %H:%M:%S')
+        start_date = Time.find_zone(PlatformConfig['time_zone']).strptime(params['start_date'], '%Y-%m-%d')
+        conditions << ActiveRecord::Base.sanitize_sql_array(["created_at >= ?", start_date])
       rescue ArgumentError => e
-        return I18n.t('validation.invalid_time_format')
+        (errors['start_date'] = []) << I18n.t('validation.invalid_date_format')
       end
     end
 
-    if params['end_time'].present?
+    if params['end_date'].present?
       begin
-        end_time = Time.find_zone(PlatformConfig['time_zone']).strptime("#{params['end_time']}.999999999", '%Y-%m-%d %H:%M:%S.%N')
+        end_date = Time.find_zone(PlatformConfig['time_zone']).strptime(params['end_date'], '%Y-%m-%d')
+        conditions << ActiveRecord::Base.sanitize_sql_array(["created_at <= ?", end_date.end_of_day])
       rescue ArgumentError => e
-        return I18n.t('validation.invalid_time_format')
+        (errors['end_date'] = []) << I18n.t('validation.invalid_date_format')
       end
     end
 
-    if params['start_time'].present? || params['end_time'].present?
-      return I18n.t('validation.invalid_time_range') if start_time > end_time
-      conditions['created_at'] = start_time.utc..end_time.utc
-    end
+    (errors['start_date'] = []) << I18n.t('validation.invalid_date_range') if start_date.present? && end_date.present? && start_date > end_date
+    (errors['page_size'] = []) << I18n.t('validation.invalid', param: 'page size') if params['page_size'].present? && 
+      (params['page_size'].to_i <= 0 || params['page_size'].to_i.to_s != params['page_size'].to_s)
 
     if params['statuses'].class == String
       status = ::Shop::STATUSES[params['statuses']]
-      conditions['status'] = status if status.present?
+      conditions << ActiveRecord::Base.sanitize_sql_array(["status = ?", status]) if status.present?
     elsif params['statuses'].class == Array
       statuses = params['statuses'].to_a.map { |status| ::Shop::STATUSES[status] }.compact
-      conditions['status'] = statuses if statuses.present?
+      conditions << ActiveRecord::Base.sanitize_sql_array(["status IN (%s)", statuses.join(', ')]) if statuses.present?
     end
 
-    if params['deleted'].present?
-      return 'Invalid param - deleted' unless %w(true false).include? params['deleted'].to_s
-      conditions['deleted'] = params['deleted'].to_s == 'true'
-    end
+    sort_order = params['sort_order'].to_s.upcase == 'DESC' ? 'DESC' : 'ASC'
+    conditions << ActiveRecord::Base.sanitize_sql_array(["id = ?", params['id']]) if params['id'].present?
+    conditions << ActiveRecord::Base.sanitize_sql_array(["id #{sort_order == 'DESC' ? '<' : '>'}= ?", params['next_id']]) if params['next_id'].present?
 
-    return conditions
+    return errors if errors.present?
+
+    query = ::Shop.all
+    query = query.undeleted if params['include_deleted'] != 'true'
+    query = query.where(conditions.join(' AND ')) if conditions.present?
+    return query.order("id #{sort_order}")
   end
 end

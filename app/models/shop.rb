@@ -4,8 +4,7 @@ class Shop < ApplicationRecord
   PENDING_STATUSES = [STATUSES['DRAFT'], STATUSES['PENDING'], STATUSES['REJECTED']]
 
   scope :undeleted, -> { where(deleted: false) }
-  # searchkick word_start: ['name'], locations: ['location'], default_fields: ['status', 'deleted']
-  # TODO: Uncomment when elastic search is integrated - Logesh
+  searchkick word_start: %w(name), locations: %w(location), default_fields: %w(status deleted)
 
   has_one :shop_detail
   has_and_belongs_to_many :admin_users
@@ -18,7 +17,7 @@ class Shop < ApplicationRecord
   after_commit :commit_callbacks
 
   def search_data
-    { name: self.name, location: { lat: self.lat, lon: self.lng }, tags: self.tags, status: self.status, deleted: self.deleted }
+    { id: self.id, name: self.name, location: { lat: self.lat, lon: self.lng }, tags: self.tags, status: self.status, deleted: self.deleted }
   end
 
   def as_json purpose = nil
@@ -29,6 +28,11 @@ class Shop < ApplicationRecord
     when 'ui_shop_detail'
       return { 'id' => self.id, 'name' => self.name, 'icon' => Core::Storage.fetch_url(self.icon_key_path), 'tags' => self.tags.to_s.split(' ').map(&:titlecase) }
         .merge(self.shop_detail.as_json('ui_shop_detail'))
+    when 'admin_shop_list', 'platform_shop_list'
+      resp = { 'id' => self.id, 'name' => self.name, 'category' => CATEGORIES.key(self.category), 'status' => STATUSES.key(self.status),
+        'created_at' => self.created_at.in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') }
+      resp = resp.merge({ 'deleted' => self.deleted }) if purpose == 'platform_shop_list'
+      return resp.merge(self.shop_detail.as_json("#{purpose}_detail"))
     when 'admin_shop', 'platform_shop'
       resp = { 'id' => self.id, 'name' => self.name, 'icon' => self.icon.present? ? Core::Storage.fetch_url(self.icon_key_path) : nil, 
         'tags' => self.tags.to_s.split(' ').map(&:titlecase), 'category' => CATEGORIES.key(self.category), 'email' => self.email, 
