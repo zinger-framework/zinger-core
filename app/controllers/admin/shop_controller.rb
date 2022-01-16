@@ -44,8 +44,8 @@ class Admin::ShopController < AdminController
       missing_keys = %w(name description tags category street area city state pincode lat lng mobile email opening_time 
         closing_time account_number account_ifsc account_holder pan) - params.keys.select { |key| params[key].present? }
       reason = missing_keys.inject({}) { |resp, key| resp[key] = [I18n.t('validation.required', param: key.humanize)]; resp }
-      reason['icon'] = [I18n.t('shop.icon.invalid_file')] if @shop.icon.blank?
-      reason['cover_photos'] = [I18n.t('shop.cover_photo.invalid_file')] if shop_detail.cover_photos.blank?
+      reason['icon'] = [I18n.t('validation.icon.invalid_file')] if @shop.icon.blank?
+      reason['cover_photos'] = [I18n.t('validation.cover_photo.invalid_file')] if shop_detail.cover_photos.blank?
       if reason.present?
         render status: 400, json: { success: false, message: I18n.t("shop.#{err_key}_failed"), reason: reason }
         return
@@ -89,17 +89,17 @@ class Admin::ShopController < AdminController
 
   def icon
     begin
-      raise I18n.t('shop.icon.already_exist') if @shop.icon.present?
+      raise I18n.t('validation.icon.already_exist') if @shop.icon.present?
       resp = validate_image_file 'icon', params['icon_file'], '512x512'
       raise resp if resp.class == String
     rescue => e
-      render status: 400, json: { success: false, message: I18n.t('shop.icon.upload_failed'), reason: { icon: [e.message] } }
+      render status: 400, json: { success: false, message: I18n.t('validation.icon.upload_failed'), reason: { icon: [e.message] } }
       return
     end
 
     @shop.update!(icon: "#{Time.now.to_i}-#{params['icon_file'].original_filename}")
     File.open(params['icon_file'].path, 'rb') { |file| Core::Storage.upload_file(@shop.icon_key_path, file) }
-    render status: 200, json: { success: true, message: I18n.t('shop.icon.upload_success'), data: { icon: Core::Storage.fetch_url(@shop.icon_key_path) } }
+    render status: 200, json: { success: true, message: I18n.t('validation.icon.upload_success'), data: { icon: Core::Storage.fetch_url(@shop.icon_key_path) } }
   end
 
   def cover_photo
@@ -108,11 +108,11 @@ class Admin::ShopController < AdminController
     
     begin
       # TODO: Move limit to shop-level config - Logesh
-      raise I18n.t('shop.cover_photo.limit_exceeded', limit: cover_photos.length, platform: PlatformConfig['name']) if cover_photos.length >= 10
+      raise I18n.t('validation.cover_photo.limit_exceeded', limit: cover_photos.length, platform: PlatformConfig['name']) if cover_photos.length >= 10
       resp = validate_image_file 'cover_photo', params['cover_file'], '1024x500'
       raise resp if resp.class == String
     rescue => e
-      render status: 400, json: { success: false, message: I18n.t('shop.cover_photo.upload_failed'), reason: { cover_photos: [e.message] } }
+      render status: 400, json: { success: false, message: I18n.t('validation.cover_photo.upload_failed'), reason: { cover_photos: [e.message] } }
       return
     end
 
@@ -120,21 +120,21 @@ class Admin::ShopController < AdminController
     cover_photos << cover_photo
     shop_detail.update!(cover_photos: cover_photos)
     File.open(params['cover_file'].path, 'rb') { |file| Core::Storage.upload_file(shop_detail.cover_photo_key_path(cover_photo), file) }
-    render status: 200, json: { success: true, message: I18n.t('shop.cover_photo.upload_success'), 
+    render status: 200, json: { success: true, message: I18n.t('validation.cover_photo.upload_success'), 
       data: { cover_photos: cover_photos.map { |cover_photo| { id: cover_photo.split('-')[0].to_i, 
         url: Core::Storage.fetch_url(shop_detail.cover_photo_key_path(cover_photo)) } } } }
   end
 
   def delete_icon
     if @shop.icon.blank?
-      render status: 404, json: { success: false, message: I18n.t('shop.icon.delete_failed'), reason: { 
-        icon: [I18n.t('shop.icon.not_found')] } }
+      render status: 404, json: { success: false, message: I18n.t('validation.icon.delete_failed'), reason: { 
+        icon: [I18n.t('validation.icon.not_found')] } }
       return
     end
 
     Core::Storage.delete_file(@shop.icon_key_path)
     @shop.update!(icon: nil)
-    render status: 200, json: { success: true, message: I18n.t('shop.icon.delete_success') }
+    render status: 200, json: { success: true, message: I18n.t('validation.icon.delete_success') }
   end
 
   def delete_cover_photo
@@ -142,15 +142,15 @@ class Admin::ShopController < AdminController
     cover_photos = shop_detail.cover_photos.to_a
     cover_photo = cover_photos.find { |cover_photo| cover_photo.split('-')[0] == params['cover_photo_id'].to_s }
     if cover_photo.nil?
-      render status: 404, json: { success: false, message: I18n.t('shop.cover_photo.delete_failed'), reason: {
-        cover_photos: [I18n.t('shop.cover_photo.not_found')] } }
+      render status: 404, json: { success: false, message: I18n.t('validation.cover_photo.delete_failed'), reason: {
+        cover_photos: [I18n.t('validation.cover_photo.not_found')] } }
       return
     end
     
     Core::Storage.delete_file(shop_detail.cover_photo_key_path(cover_photo))
     cover_photos.delete(cover_photo)
     shop_detail.update!(cover_photos: cover_photos)
-    render status: 200, json: { success: true, message: I18n.t('shop.cover_photo.delete_success'), 
+    render status: 200, json: { success: true, message: I18n.t('validation.cover_photo.delete_success'), 
       data: { cover_photos: cover_photos.map { |cover_photo| { 'id' => cover_photo.split('-')[0].to_i, 
         'url' => Core::Storage.fetch_url(shop_detail.cover_photo_key_path(cover_photo)) } } } }
   end
@@ -167,13 +167,5 @@ class Admin::ShopController < AdminController
         reason: I18n.t('shop.blocked', platform: PlatformConfig['name']) }
       return
     end
-  end
-
-  def validate_image_file purpose, image_file, dimension
-    return I18n.t("shop.#{purpose}.invalid_file") if image_file.class != ActionDispatch::Http::UploadedFile ||
-      !%w(jpg jpeg png).include?(File.extname(image_file.path)[1..-1]) || `identify -format '%wx%h' #{image_file.path}` != dimension
-    return I18n.t("shop.#{purpose}.file_size_exceeded") if (File.size(image_file.path).to_i / 1000) > 1024
-    return I18n.t('validation.invalid', param: 'file name') if image_file.original_filename.split('.')[0].match(/^[a-zA-Z0-9\-_]{1,100}$/).nil?
-    return true
   end
 end

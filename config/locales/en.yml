@@ -44,6 +44,24 @@ en:
       mismatch: "Confirm Password doesn't match"
     name_long: Name should have maximum of 100 characters
     invalid_request: Unable to process your request
+    icon:
+      invalid_file: Please upload a valid image file of 512 x 512 dimension
+      file_size_exceeded: Please upload an image file of less than 1 MB
+      already_exist: Icon is already uploaded
+      upload_failed: Unable to upload Icon
+      upload_success: Icon is uploaded successfully
+      delete_failed: Unable to remove Icon
+      delete_success: Icon is removed successfully
+      not_found: Unable to find Icon
+    cover_photo:
+      invalid_file: Please upload a valid image file of 1024 x 500 dimension
+      file_size_exceeded: Please upload a image file of less than 1 MB
+      limit_exceeded: "You have already uploaded %{limit} images. Please contact %{platform} team to increase limit"
+      upload_failed: Unable to upload Cover photo
+      upload_success: Cover photo is uploaded successfully
+      delete_failed: Unable to remove Cover photo
+      delete_success: Cover photo is removed successfully
+      not_found: Unable to find Cover photo
   profile:
     update_success: Profile is updated successfully
     update_failed: Unable to update profile
@@ -90,24 +108,29 @@ en:
     description_long: Description should contain maximum of 250 characters
     fetch_failed: Unable to fetch shops
     blocked: "Your shop has been blocked. Please contact %{platform} team"
-    icon:
-      invalid_file: Please upload a valid image file of 512 x 512 dimension
-      file_size_exceeded: Please upload an image file of less than 1 MB
-      already_exist: Icon is already uploaded
-      upload_failed: Unable to upload Icon
-      upload_success: Icon is uploaded successfully
-      delete_failed: Unable to remove Icon
-      delete_success: Icon is removed successfully
-      not_found: Unable to find Icon
-    cover_photo:
-      invalid_file: Please upload a valid image file of 1024 x 500 dimension
-      file_size_exceeded: Please upload a image file of less than 1 MB
-      limit_exceeded: "You have already uploaded %{limit} images. Please contact %{platform} team to increase limit"
-      upload_failed: Unable to upload Cover photo
-      upload_success: Cover photo is uploaded successfully
-      delete_failed: Unable to remove Cover photo
-      delete_success: Cover photo is removed successfully
-      not_found: Unable to find Cover photo
+  item:
+    create_failed: Unable to register item
+    update_failed: Unable to update item
+    update_success: Item is updated successfully
+    not_found: Unable to find the item
+    fetch_failed: Unable to fetch items
+    delete_success: Item is deleted successfully
+    description_long: Description should contain maximum of 250 characters
+    filter_not_allowed: "filterable_fields should contain only the valid fields - %{fields}"
+    config:
+      already_exist: "Record with %{key} - %{value} already exist"
+      create_failed: Unable to add item config
+      not_found: Unable to find the item config
+      delete_failed: Unable to delete item config
+      delete_success: Item config is removed successfully
+    variant:
+      create_failed: Unable to add item variant
+      create_success: Item variant is added successfully
+      not_found: Unable to find the item variant
+      delete_failed: Unable to delete item variant
+      delete_success: Item variant is removed successfully
+      name_not_allowed: "Item variant with %{variant_name} already exist"
+      already_exist: "Item variant with %{variant_name} - %{variant_value} already exist"
   ratelimit:
     exceeded: You have exceeded the number of attempts. Please try again after sometime
     login: You have exceeded the number of login attempts. Please try again after sometime

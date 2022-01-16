@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_04_095819) do
+ActiveRecord::Schema.define(version: 2021_12_26_083526) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -82,6 +82,42 @@ ActiveRecord::Schema.define(version: 2021_07_04_095819) do
     t.datetime "updated_at", precision: 6, null: false
     t.index ["email"], name: "index_customers_on_email"
     t.index ["mobile"], name: "index_customers_on_mobile"
+  end
+
+  create_table "item_configs", id: :uuid, default: nil, force: :cascade do |t|
+    t.string "item_type"
+    t.string "key"
+    t.string "value"
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "item_variants", id: :uuid, default: nil, force: :cascade do |t|
+    t.uuid "item_id"
+    t.string "item_type"
+    t.string "variant_name"
+    t.string "variant_value"
+    t.decimal "actual_price", precision: 10, scale: 2
+    t.integer "stock_availability"
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "items", id: :uuid, default: nil, force: :cascade do |t|
+    t.bigint "shop_id"
+    t.string "name"
+    t.string "description"
+    t.string "icon"
+    t.string "cover_photos", array: true
+    t.string "item_type"
+    t.string "category"
+    t.integer "status", limit: 2, default: 1
+    t.boolean "deleted", default: false
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
   create_table "platform_user_sessions", primary_key: "token", id: :string, force: :cascade do |t|

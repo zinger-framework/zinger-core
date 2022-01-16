@@ -54,6 +54,18 @@ Rails.application.routes.draw do
           delete :icon, to: 'shop#delete_icon'
           delete 'cover_photo/:cover_photo_id', to: 'shop#delete_cover_photo'
         end
+        
+        resources :item, only: [:index, :create, :update, :show] do
+          collection { post :delete }
+          member do
+            post :icon
+            post :cover_photo
+            post :variant
+            delete :icon, to: 'item#delete_icon'
+            delete 'cover_photo/:cover_photo_id', to: 'item#delete_cover_photo'
+            delete 'variant/:variant_id', to: 'item#delete_variant'
+          end
+        end
       end
     end
   end
@@ -79,12 +91,18 @@ Rails.application.routes.draw do
 
       resources :shop, only: [:index, :show, :update] do
         collection { post :delete }
+        
+        resources :item, only: [:index, :show]
       end
+
+      resources :item_config, only: [:index, :create, :destroy]
     end
   end
 
   mount Sidekiq::Web => '/sidekiq', subdomain: SidekiqSettings['subdomain']
 
+  get '/admin/v:api_version/item/meta' => 'admin/item#meta', subdomain: AppConfig['admin_subdomain']
+  get '/platform/v:api_version/item/meta' => 'platform/item#meta', subdomain: AppConfig['platform_subdomain']
   get '/shop/:id' => 'application#home', :as => :pl_shop_detail, subdomain: AppConfig['platform_subdomain']
   get '/*path', to: 'application#home'
 end

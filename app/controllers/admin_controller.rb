@@ -46,4 +46,12 @@ class AdminController < ApplicationController
   def reset_thread
     AdminUser.reset_current
   end
+
+  def validate_image_file purpose, image_file, dimension
+    return I18n.t("validation.#{purpose}.invalid_file") if image_file.class != ActionDispatch::Http::UploadedFile ||
+      !%w(jpg jpeg png).include?(File.extname(image_file.path)[1..-1]) || `identify -format '%wx%h' #{image_file.path}` != dimension
+    return I18n.t("validation.#{purpose}.file_size_exceeded") if (File.size(image_file.path).to_i / 1000) > 1024
+    return I18n.t('validation.invalid', param: 'file name') if image_file.original_filename.split('.')[0].match(/^[a-zA-Z0-9\-_]{1,100}$/).nil?
+    return true
+  end
 end

@@ -5,3 +5,6 @@ otp_length: 6
 password_min_length: 6
 flexible_auth: true
 response_limit: 20
+item_types:
+  - food
+  - fashion
