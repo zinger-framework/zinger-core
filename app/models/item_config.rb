@@ -2,16 +2,10 @@ class ItemConfig < ApplicationRecord
   KEYS = %w(category filter variant)
   validate :validations
 
-  def as_json purpose = nil, options = {}
-    resp = { 'reference_id' => self.value, 'title' => self.meta['title'] }
-    case purpose
-    when 'admin_item', 'platform_item'
-      return resp
-    when 'platform_list'
-      return resp.merge({ 'id' => ShortUUID.shorten(self.id) })
-    when 'platform_detail'
-      return resp.merge({ 'item_type' => self.item_type, 'key' => self.key })
-    end
+  def as_json
+    resp = { 'id' => ShortUUID.shorten(self.id), 'reference_id' => self.value, 'title' => self.meta['title'], 
+      'item_type' => self.item_type, 'item_config' => self.key }
+    return resp
   end
 
   def self.fetch_all_configs purpose, options = {}
@@ -21,14 +15,8 @@ class ItemConfig < ApplicationRecord
     
     query.group(:item_type, :key, :value, :id).each do |item_config|
       data[item_config.item_type] ||= {}
-
-      if options['export_to'] == 'array'
-        data[item_config.item_type][item_config.key] ||= []
-        data[item_config.item_type][item_config.key] << item_config.as_json(purpose)
-      else
-        data[item_config.item_type][item_config.key] ||= {}
-        data[item_config.item_type][item_config.key][item_config.value] = item_config.as_json(purpose)
-      end
+      data[item_config.item_type][item_config.key] ||= {}
+      data[item_config.item_type][item_config.key][item_config.value] = item_config.as_json
     end
 
     return data

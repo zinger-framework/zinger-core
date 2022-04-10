@@ -17,8 +17,7 @@ class Admin::ItemController < AdminController
     data = data.merge({ total: query.count, page_size: params['page_size'].to_i }) if params['next_page_token'].blank?
     
     if params['next_page_token'].present? || data[:total] > 0
-      options = fetch_options
-      data[:items] = query.limit(filter_params['page_size'].to_i + 1).map { |item| item.as_json('admin_item_list', options) }
+      data[:items] = query.limit(filter_params['page_size'].to_i + 1).map { |item| item.as_json('admin_item_list') }
       if data[:items].size > filter_params['page_size'].to_i
         filter_params['next_id'] = ShortUUID.expand(data[:items].pop['id'])
         data[:next_page_token] = Base64.encode64(filter_params.to_json).gsub(/[^0-9a-z]/i, '')
@@ -36,11 +35,11 @@ class Admin::ItemController < AdminController
       return
     end
 
-    render status: 200, json: { message: 'success', data: { item: item.as_json('admin_item', fetch_options({ 'item_type' => item.item_type })) } }
+    render status: 200, json: { message: 'success', data: { item: item.as_json('admin_item') } }
   end
 
   def show
-    render status: 200, json: { message: 'success', data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: 'success', data: { item: @item.as_json('admin_item') } }
   end
 
   def update
@@ -54,7 +53,7 @@ class Admin::ItemController < AdminController
     end
 
     @item.save!(validate: false)
-    render status: 200, json: { message: I18n.t('item.update_success'), data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: I18n.t('item.update_success'), data: { item: @item.as_json('admin_item') } }
   end
 
   def icon
@@ -69,7 +68,7 @@ class Admin::ItemController < AdminController
 
     @item.update!(icon: "#{Time.now.to_i}-#{params['icon_file'].original_filename}")
     File.open(params['icon_file'].path, 'rb') { |file| Core::Storage.upload_file(@item.icon_key_path, file) }
-    render status: 200, json: { message: I18n.t('validation.icon.upload_success'), data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: I18n.t('validation.icon.upload_success'), data: { item: @item.as_json('admin_item') } }
   end
 
   def cover_photo
@@ -89,7 +88,7 @@ class Admin::ItemController < AdminController
     @item.update!(cover_photos: cover_photos)
     File.open(params['cover_file'].path, 'rb') { |file| Core::Storage.upload_file(@item.cover_photo_key_path(cover_photo), file) }
     render status: 200, json: { message: I18n.t('validation.cover_photo.upload_success'), 
-      data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+      data: { item: @item.as_json('admin_item') } }
   end
 
   def variant
@@ -101,7 +100,7 @@ class Admin::ItemController < AdminController
       return
     end
 
-    render status: 200, json: { message: I18n.t('item.variant.create_success'), data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: I18n.t('item.variant.create_success'), data: { item: @item.as_json('admin_item') } }
   end
 
   def delete_icon
@@ -113,7 +112,7 @@ class Admin::ItemController < AdminController
 
     Core::Storage.delete_file(@item.icon_key_path)
     @item.update!(icon: nil)
-    render status: 200, json: { message: I18n.t('validation.icon.delete_success'), data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: I18n.t('validation.icon.delete_success'), data: { item: @item.as_json('admin_item') } }
   end
 
   def delete_cover_photo
@@ -129,7 +128,7 @@ class Admin::ItemController < AdminController
     cover_photos.delete(cover_photo)
     @item.update!(cover_photos: cover_photos)
     render status: 200, json: { message: I18n.t('validation.cover_photo.delete_success'), 
-      data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+      data: { item: @item.as_json('admin_item') } }
   end
 
   def delete_variant
@@ -140,7 +139,7 @@ class Admin::ItemController < AdminController
     end
     
     variant.destroy!
-    render status: 200, json: { message: I18n.t('item.variant.delete_success'), data: { item: @item.as_json('admin_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: I18n.t('item.variant.delete_success'), data: { item: @item.as_json('admin_item') } }
   end
 
   def delete
@@ -156,7 +155,7 @@ class Admin::ItemController < AdminController
   end
 
   def meta
-    render status: 200, json: { message: 'success', data: fetch_options({ 'export_to' => 'array' })['configs'] }
+    render status: 200, json: { message: 'success', data: ItemConfig.all.as_json }
   end
 
   private
@@ -178,9 +177,5 @@ class Admin::ItemController < AdminController
       render status: 404, json: { message: I18n.t('validation.invalid_request'), reason: I18n.t('item.not_found') }
       return
     end
-  end
-
-  def fetch_options options = {}
-    return { 'configs' => ItemConfig.fetch_all_configs('admin_item', options) }
   end
 end

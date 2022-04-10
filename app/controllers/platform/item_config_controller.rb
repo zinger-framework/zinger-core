@@ -1,6 +1,6 @@
 class Platform::ItemConfigController < PlatformController
   def index
-    render status: 200, json: { message: 'success', data: ItemConfig.fetch_all_configs('platform_list', { 'export_to' => 'array' }) }
+    render status: 200, json: { message: 'success', data: ItemConfig.all.order('item_type ASC, key ASC').as_json }
   end
 
   def create
@@ -12,7 +12,7 @@ class Platform::ItemConfigController < PlatformController
       return
     end
 
-    render status: 200, json: { message: 'success', data: { item_config: item_config.as_json('platform_detail') } }
+    render status: 200, json: { message: 'success', data: { item_config: item_config.as_json } }
   end
 
   def destroy

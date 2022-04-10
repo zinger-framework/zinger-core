@@ -4,9 +4,9 @@ class ItemVariant < ApplicationRecord
 
   def as_json purpose = nil, options = {}
     resp = { 'id' => ShortUUID.shorten(self.id), 'value' => self.variant_value, 'price' => self.actual_price.to_f, 
-      'availability' => self.stock_availability }
+      'reference_id' => self.variant_name, 'availability' => self.stock_availability }
     case purpose
-    when 'admin_item_variant'
+    when 'admin_item_variant', 'platform_item_variant'
       return resp
     end
 

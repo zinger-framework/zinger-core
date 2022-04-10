@@ -17,8 +17,7 @@ class Platform::ItemController < PlatformController
     data = data.merge({ total: query.count, page_size: params['page_size'].to_i }) if params['next_page_token'].blank?
     
     if params['next_page_token'].present? || data[:total] > 0
-      options = fetch_options
-      data[:items] = query.limit(filter_params['page_size'].to_i + 1).map { |item| item.as_json('platform_item_list', options) }
+      data[:items] = query.limit(filter_params['page_size'].to_i + 1).map { |item| item.as_json('platform_item_list') }
       if data[:items].size > filter_params['page_size'].to_i
         filter_params['next_id'] = ShortUUID.expand(data[:items].pop['id'])
         data[:next_page_token] = Base64.encode64(filter_params.to_json).gsub(/[^0-9a-z]/i, '')
@@ -29,11 +28,11 @@ class Platform::ItemController < PlatformController
   end
 
   def show
-    render status: 200, json: { message: 'success', data: { item: @item.as_json('platform_item', fetch_options({ 'item_type' => @item.item_type })) } }
+    render status: 200, json: { message: 'success', data: { item: @item.as_json('platform_item') } }
   end
 
   def meta
-    render status: 200, json: { message: 'success', data: fetch_options({ 'export_to' => 'array' })['configs'] }
+    render status: 200, json: { message: 'success', data: ItemConfig.all.as_json }
   end
 
   private
@@ -52,9 +51,5 @@ class Platform::ItemController < PlatformController
       render status: 404, json: { message: I18n.t('validation.invalid_request'), reason: I18n.t('item.not_found') }
       return
     end
-  end
-
-  def fetch_options options = {}
-    return { 'configs' => ItemConfig.fetch_all_configs('platform_item', options) }
   end
 end
