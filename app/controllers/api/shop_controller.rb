@@ -1,5 +1,4 @@
 class Api::ShopController < ApiController
-  LIMIT = 5
   DISTANCE = 5
 
   def index

@@ -42,8 +42,6 @@ services:
       context: .
       dockerfile: docker/Dockerfile
     command: ./docker/run.sh
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
     volumes:
       - .:/zinger
     ports:

@@ -23,7 +23,9 @@ Rails.application.routes.draw do
         end
       end
 
-      resources :shop, only: [:index, :show]
+      resources :shop, only: [:index, :show] do
+        resources :items, only: :index
+      end
     end
   end
 

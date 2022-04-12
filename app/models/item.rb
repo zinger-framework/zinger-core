@@ -4,9 +4,16 @@ class Item < ApplicationRecord
   # TODO: Move limit to shop-level config - Logesh
 
   default_scope { where(deleted: false) }
+  searchkick text_middle: %w(name), default_fields: %w(status deleted shop_id)
+
   belongs_to :shop, optional: true
   has_many :item_variants
   validate :validations
+
+  def search_data
+    { id: self.id, name: self.name, category: self.category, item_type: self.item_type, shop_id: self.shop_id, status: self.status, 
+      deleted: self.deleted, filters: self.meta['filterable_fields'].to_h }
+  end
 
   def as_json purpose = nil
     resp = { 'id' => ShortUUID.shorten(self.id), 'name' => self.name, 'item_type' => self.item_type, 'status' => self.status,
@@ -15,7 +22,7 @@ class Item < ApplicationRecord
     case purpose
     when 'admin_item_list', 'platform_item_list'
       return resp
-    when 'admin_item', 'platform_item'
+    when 'admin_item', 'platform_item', 'ui_item'
       resp = resp.merge({ 'description' => self.description, 'variants' => self.item_variants.as_json("#{purpose}_variant"),
         'cover_photos' => self.cover_photos.to_a.map { |cover_photo| { 'id' => cover_photo.split('-')[0].to_i, 
           'url' => Core::Storage.fetch_url(self.cover_photo_key_path(cover_photo)) } }, 

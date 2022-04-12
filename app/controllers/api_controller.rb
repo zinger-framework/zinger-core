@@ -1,4 +1,6 @@
 class ApiController < ApplicationController
+  LIMIT = 20
+
   before_action :reset_thread, :authenticate_request, :check_limit, :check_version
 
   private

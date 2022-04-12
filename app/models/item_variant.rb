@@ -6,7 +6,7 @@ class ItemVariant < ApplicationRecord
     resp = { 'id' => ShortUUID.shorten(self.id), 'value' => self.variant_value, 'price' => self.actual_price.to_f, 
       'reference_id' => self.variant_name, 'availability' => self.stock_availability }
     case purpose
-    when 'admin_item_variant', 'platform_item_variant'
+    when 'admin_item_variant', 'platform_item_variant', 'ui_item_variant'
       return resp
     end
 
