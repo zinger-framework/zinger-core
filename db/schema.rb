@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_26_083526) do
+ActiveRecord::Schema.define(version: 2022_04_15_133730) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -115,6 +115,50 @@ ActiveRecord::Schema.define(version: 2021_12_26_083526) do
     t.string "category"
     t.integer "status", limit: 2, default: 1
     t.boolean "deleted", default: false
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "order_items", id: :uuid, default: nil, force: :cascade do |t|
+    t.uuid "order_id"
+    t.uuid "item_id"
+    t.string "item_name"
+    t.uuid "item_variant_id"
+    t.string "item_variant_name"
+    t.string "item_variant_value"
+    t.integer "quantity"
+    t.decimal "actual_price", precision: 10, scale: 2
+    t.decimal "total_price", precision: 10, scale: 2
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "order_transactions", id: :uuid, default: nil, force: :cascade do |t|
+    t.uuid "order_id"
+    t.decimal "amount", precision: 10, scale: 2
+    t.integer "txn_status", limit: 2, default: 1
+    t.integer "txn_type", limit: 2
+    t.integer "payment_method", limit: 2
+    t.string "bank_ref_num"
+    t.datetime "txn_time"
+    t.jsonb "meta", default: {}
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "orders", id: :uuid, default: nil, force: :cascade do |t|
+    t.bigint "shop_id"
+    t.bigint "customer_id"
+    t.decimal "price", precision: 10, scale: 2
+    t.decimal "tax", precision: 10, scale: 2
+    t.integer "order_status", limit: 2, default: 1
+    t.integer "payment_status", limit: 2, default: 1
+    t.jsonb "shipping_addr", default: {}
+    t.jsonb "billing_addr", default: {}
+    t.datetime "order_placed_time"
+    t.decimal "rating", precision: 2, scale: 1
     t.jsonb "meta", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

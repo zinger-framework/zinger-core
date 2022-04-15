@@ -12,6 +12,7 @@ class Shop < ApplicationRecord
   has_many :blocked_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_BLOCK']) }, class_name: 'Conversation', as: :receiver
   has_many :deleted_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_DELETE']) }, class_name: 'Conversation', as: :receiver
   has_many :items
+  has_many :orders
 
   validate :validations
   after_create :add_shop_detail

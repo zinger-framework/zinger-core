@@ -8,6 +8,7 @@ class Item < ApplicationRecord
 
   belongs_to :shop, optional: true
   has_many :item_variants
+  has_many :order_items
   validate :validations
 
   def search_data

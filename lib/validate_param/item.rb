@@ -1,6 +1,7 @@
 class ValidateParam::Item < ValidateParam::Base
   def self.load_conditions params, options = {}
     conditions, sort_order, errors = super(params, options)
+    return errors if errors.present?
 
     if params['categories'].present?
       categories = Array.wrap(params['categories']).map { |category| category.underscore.parameterize.dasherize }.compact

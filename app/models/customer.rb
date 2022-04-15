@@ -20,6 +20,7 @@ class Customer < ApplicationRecord
   after_update :clear_sessions
 
   has_many :customer_sessions
+  has_many :orders
 
   def as_json purpose = nil
     case purpose

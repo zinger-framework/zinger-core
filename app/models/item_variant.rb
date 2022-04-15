@@ -1,5 +1,6 @@
 class ItemVariant < ApplicationRecord
   belongs_to :item, optional: true
+  has_many :order_items
   validate :validations
 
   def as_json purpose = nil, options = {}
