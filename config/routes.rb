@@ -26,6 +26,13 @@ Rails.application.routes.draw do
       resources :shop, only: [:index, :show] do
         resources :items, only: :index
       end
+
+      resources :order, only: [:create, :index, :show, :update, :destroy] do
+        member do
+          post :item
+          delete 'item/:item_id', to: 'order#delete_item'
+        end
+      end
     end
   end
 

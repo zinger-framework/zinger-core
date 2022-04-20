@@ -40,6 +40,10 @@ class Customer < ApplicationRecord
     self.status != STATUSES['ACTIVE']
   end
 
+  def is_active?
+    !self.deleted && self.status == STATUSES['ACTIVE']
+  end
+
   def make_current
     Thread.current[:customer] = self
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_04_15_133730) do
+ActiveRecord::Schema.define(version: 2022_04_20_165502) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -133,6 +133,7 @@ ActiveRecord::Schema.define(version: 2022_04_15_133730) do
     t.jsonb "meta", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "shop_id"
   end
 
   create_table "order_transactions", id: :uuid, default: nil, force: :cascade do |t|
@@ -162,6 +163,7 @@ ActiveRecord::Schema.define(version: 2022_04_15_133730) do
     t.jsonb "meta", default: {}
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.boolean "deleted", default: false
   end
 
   create_table "platform_user_sessions", primary_key: "token", id: :string, force: :cascade do |t|

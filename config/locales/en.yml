@@ -107,7 +107,7 @@ en:
     delete_success: Shop is deleted successfully
     description_long: Description should contain maximum of 250 characters
     fetch_failed: Unable to fetch shops
-    blocked: "Your shop has been blocked. Please contact %{platform} team"
+    blocked: "Your shop is not active. Please contact %{platform} team"
   item:
     create_failed: Unable to register item
     update_failed: Unable to update item
@@ -131,6 +131,15 @@ en:
       delete_success: Item variant is removed successfully
       name_not_allowed: "Item variant with %{variant_name} already exist"
       already_exist: "Item variant with %{variant_name} - %{variant_value} already exist"
+  order:
+    not_found: Unable to find the order
+    create_failed: Unable to create order
+    create_success: Order is created successfully
+    update_failed: Unable to update order
+    update_success: Order is updated successfully
+    fetch_failed: Unable to fetch orders
+    delete_success: Order is removed successfully
+    rating_not_allowed: Please wait for the order to be completed to apply rating
   ratelimit:
     exceeded: You have exceeded the number of attempts. Please try again after sometime
     login: You have exceeded the number of login attempts. Please try again after sometime

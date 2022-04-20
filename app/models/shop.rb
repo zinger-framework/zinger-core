@@ -13,6 +13,7 @@ class Shop < ApplicationRecord
   has_many :deleted_conversations, -> { preload(:sender).where(purpose: Conversation::PURPOSES['SHOP_DELETE']) }, class_name: 'Conversation', as: :receiver
   has_many :items
   has_many :orders
+  has_many :order_items
 
   validate :validations
   after_create :add_shop_detail
@@ -64,6 +65,10 @@ class Shop < ApplicationRecord
 
   def is_blocked?
     self.status == STATUSES['BLOCKED']
+  end
+
+  def is_active?
+    !self.deleted && self.status == STATUSES['ACTIVE']
   end
 
   private

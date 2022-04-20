@@ -48,6 +48,10 @@ class Item < ApplicationRecord
     self.meta['filterable_fields'].to_a.map { |reference_id, value| { 'reference_id' => reference_id, 'value' => value } }
   end
 
+  def is_active?
+    !self.deleted && self.status_active?
+  end
+
   private
 
   def validations
