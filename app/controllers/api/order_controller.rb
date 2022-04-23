@@ -33,8 +33,8 @@ class Api::OrderController < ApiController
   def index
     params['page_size'] ||= LIMIT
     filter_params = params['next_page_token'].present? ? JSON.parse(Base64.decode64(params['next_page_token'])) : params
-    filter_params = filter_params.slice(*%w(start_date end_date order_status payment_status sort_order page_size next_id))
-    filter_params['id'] = ShortUUID.expand(filter_params['id']) if filter_params['id'].present?
+    filter_params = filter_params.slice(*%w(start_date end_date order_status payment_status sort_order page_size id next_id))
+    filter_params['id'] = ShortUUID.expand(params['id']) if params['id'].present?
 
     query = ValidateParam::Order.load_conditions(filter_params, { 'parent' => Customer.current })
     if query.class == Hash

@@ -75,6 +75,8 @@ Rails.application.routes.draw do
             delete 'variant/:variant_id', to: 'item#delete_variant'
           end
         end
+
+        resources :order, only: [:index, :update, :show]
       end
     end
   end
