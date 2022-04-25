@@ -104,6 +104,7 @@ Rails.application.routes.draw do
         collection { post :delete }
         
         resources :item, only: [:index, :show]
+        resources :order, only: [:index, :update, :show]
       end
 
       resources :item_config, only: [:index, :create, :destroy]

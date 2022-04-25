@@ -38,7 +38,7 @@ class Platform::ItemController < PlatformController
   private
 
   def load_shop
-    @shop = AdminUser.current.shops.find_by_id(params['shop_id'])
+    @shop = Shop.find_by_id(params['shop_id'])
     if @shop.nil?
       render status: 404, json: { message: I18n.t('validation.invalid_request'), reason: I18n.t('shop.not_found') }
       return
