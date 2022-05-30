@@ -8,6 +8,7 @@ class OrderTransaction < ApplicationRecord
   def as_json
     resp = super
     resp = resp.except('order_id')
+    resp['id'] = ShortUUID.shorten(self.id)
     %w(amount).each { |key| resp[key] = resp[key].to_f }
     %w(txn_time created_at updated_at).each { |key| resp[key] = resp[key].in_time_zone(PlatformConfig['time_zone']).strftime('%Y-%m-%d %H:%M:%S') if resp[key].present? }
 
