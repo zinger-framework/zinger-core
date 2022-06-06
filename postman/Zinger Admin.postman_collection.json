@@ -1,0 +1,1169 @@
+{
+	"info": {
+		"_postman_id": "95597e15-6c1b-4d8d-b7b2-50c6dc13a25f",
+		"name": "Zinger Admin",
+		"description": "# Overview\nZinger is an open source framework for building hyperlocal delivery\nmobile and web applications.\n\nIt provides developers easy to handle backend for ordering & delivering foods, groceries, fruits, vegetables, medicines, etc.\n\nFor more info, visit: https://zinger.pw\n\n# Zinger Architecture\n![alt text](https://github.com/ddlogesh/zinger-framework-docs/blob/master/website/static/img/zinger/zinger-arch.png?raw=true \"Zinger Architecture\")",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6369926"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "OTP",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"purpose\": \"LOGIN\",\n    \"mobile\": \"9176786586\",\n    \"email\": \"ddlogesh@gmail.com\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/otp",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Signup",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"auth_token\": \"ZGRsb2dlc2grM0BnbWFpbC5jb20tMTYyMzQ5Mjc2NS0zODAw\",\n    \"otp\": \"769036\",\n    \"password\": \"12345678\",\n    \"password_confirmation\": \"12345678\",\n    \"name\": \"Logesh\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/signup",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"signup"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"protocolProfileBehavior": {
+								"disabledSystemHeaders": {
+									"user-agent": true
+								}
+							},
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "User-Agent",
+										"value": "{{user_agent}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"ddlogesh@gmail.com\",\n    \"password\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/login",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"otp\": \"525911\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/verify_otp",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"verify_otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"auth_token\": \"ZGRsb2dlc2hAZ21haWwuY29tLTE2MTQ1Mjc0NjgtMTQ0NQ\",\n    \"otp\": \"477325\",\n    \"password\": \"12345678\",\n    \"password_confirmation\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/reset_password",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"reset_password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/auth/logout",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User Profile",
+					"item": [
+						{
+							"name": "Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/user_profile",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Logesh\",\n    \"two_fa_enabled\": true,\n    \"auth_token\": \"OTE3Njc4NjU4Ni0xNjIzNDkyODMzLTY1OTA\",\n    \"otp\": \"281761\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/user_profile",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"current_password\": \"12345678\",\n    \"new_password\": \"12345678\",\n    \"confirm_password\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/user_profile/reset_password",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile",
+										"reset_password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Shop",
+					"item": [
+						{
+							"name": "Item",
+							"item": [
+								{
+									"name": "Add Item",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Margherita\",\n    \"description\": \"Nothing but cheese!\",\n    \"category\": \"north-indian\",\n    \"item_type\": \"food\",\n    \"filterable_fields\": {\n        \"diet_type\": \"Vegetarian\",\n        \"size\": \"Small\"\n    },\n    \"meta_data\": {}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Item",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhSAVqLWc4wJGGJTbHFn8",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhSAVqLWc4wJGGJTbHFn8"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "List Items",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "2yYMvY53A7cOVHJZuollNI",
+													"disabled": true
+												},
+												{
+													"key": "item_type",
+													"value": "fashion",
+													"disabled": true
+												},
+												{
+													"key": "categories[]",
+													"value": "north-indian",
+													"disabled": true
+												},
+												{
+													"key": "sort_order",
+													"value": "DESC",
+													"disabled": true
+												},
+												{
+													"key": "page_size",
+													"value": "3",
+													"disabled": true
+												},
+												{
+													"key": "include_inactive",
+													"value": "true",
+													"disabled": true
+												},
+												{
+													"key": "next_page_token",
+													"value": "eyJpbmNsdWRlX2luYWN0aXZlIjoidHJ1ZSIsInBhZ2Vfc2l6ZSI6IjMiLCJpZCI6bnVsbCwibmV4dF9pZCI6IjYxZGFmNjg5LTNiNTgtM2MxYy01MDk2LWZkNTVhOGVjYjU4MiJ9",
+													"disabled": true
+												},
+												{
+													"key": "categories[]",
+													"value": "jean",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Item",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"name\": \"Margherita\",\n    \"status\": \"active\",\n    \"category\": \"north-indian\",\n    \"description\": \"Nothing but cheese!\",\n    \"filterable_fields\": {\n        \"diet_type\": \"Vegetarian\"\n    },\n    \"meta_data\": {}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload Icon",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "icon_file",
+													"type": "file",
+													"src": "/Users/logesh/Downloads/icon.png"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/icon",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"icon"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Add Variant",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"variant_name\": \"size\",\n    \"variant_value\": \"Personal::Pan\",\n    \"variant_price\": 145.0\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/variant",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"variant"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Variant",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/variant/2yhyXZ9rZYqCvRHSUoTyep",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"variant",
+												"2yhyXZ9rZYqCvRHSUoTyep"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Icon",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/icon",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"icon"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload Cover Photo",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "formdata",
+											"formdata": [
+												{
+													"key": "cover_file",
+													"type": "file",
+													"src": "/Users/logesh/Downloads/cover_photo.jpg"
+												}
+											]
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/cover_photo",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"cover_photo"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Cover Photo",
+									"request": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme/cover_photo/1642264230",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme",
+												"cover_photo",
+												"1642264230"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete Item",
+									"request": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"id\": \"2yhvef5JCihUW7ARmAxZUB\",\n    \"reason\": \"Not used anymore\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/item/delete",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"delete"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Meta",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/item/meta",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"item",
+												"meta"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Order",
+							"item": [
+								{
+									"name": "List Orders",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/2/order",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"order"
+											],
+											"query": [
+												{
+													"key": "page_size",
+													"value": "4",
+													"disabled": true
+												},
+												{
+													"key": "payment_status[]",
+													"value": "pending",
+													"disabled": true
+												},
+												{
+													"key": "payment_status[]",
+													"value": "completed",
+													"disabled": true
+												},
+												{
+													"key": "order_status[]",
+													"value": "placed",
+													"disabled": true
+												},
+												{
+													"key": "order_status[]",
+													"value": "created",
+													"disabled": true
+												},
+												{
+													"key": "start_date",
+													"value": "2022-04-19",
+													"disabled": true
+												},
+												{
+													"key": "sort_order",
+													"value": "ASC",
+													"disabled": true
+												},
+												{
+													"key": "id",
+													"value": "2zeiEo7J4Do67ESu7jxbTv",
+													"disabled": true
+												},
+												{
+													"key": "next_page_token",
+													"value": "eyJwYWdlX3NpemUiOiIxIiwibmV4dF9pZCI6IjYyNjM4ZmQwLTMyMTctMThlNC05YTIyLWMzMTZjODc0OWJiYiJ9",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Get Order",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/1/order/2zekMvkd1KR86ktHXZtHp5",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"1",
+												"order",
+												"2zekMvkd1KR86ktHXZtHp5"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Order",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{admin_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    // \"order_status\": \"cancelled\"\n    // \"rating\": 3.4\n    \"shipping_addr\": {\n        \"name\": \"Logesh\",\n        \"street\": \"23, Natesanar street\",\n        \"area\": \"Thiruverkadu\",\n        \"state\": \"Tamil Nadu\",\n        \"pincode\": \"600077\"\n    }\n    // \"billing_addr\": {\n    //     \"name\": \"Logesh\",\n    //     \"street\": \"23, Anbu street\",\n    //     \"area\": \"Anna Nagar\",\n    //     \"state\": \"Tamil Nadu\",\n    //     \"pincode\": \"600077\"\n    // }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{admin_host}}/v1/shop/1/order/2zekMvkd1KR86ktHXZtHp5",
+											"host": [
+												"{{admin_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"1",
+												"order",
+												"2zekMvkd1KR86ktHXZtHp5"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "New Shop",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/new",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"new"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Shop",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/2",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Shops",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/shop?id=3&statuses[]=DRAFT&statuses[]=ACTIVE&start_date=2021-06-13&end_date=2021-07-05&sort_order=DESC&page_size=20&next_page_token=eyJzdGF0dXNlcyI6WyJEUkFGVCIsIkFDVElWRSJdLCJwYWdlX3NpemUiOiIxIiwibmV4dF9pZCI6NH0",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "3"
+										},
+										{
+											"key": "statuses[]",
+											"value": "DRAFT"
+										},
+										{
+											"key": "statuses[]",
+											"value": "ACTIVE"
+										},
+										{
+											"key": "start_date",
+											"value": "2021-06-13"
+										},
+										{
+											"key": "end_date",
+											"value": "2021-07-05"
+										},
+										{
+											"key": "sort_order",
+											"value": "DESC"
+										},
+										{
+											"key": "page_size",
+											"value": "20"
+										},
+										{
+											"key": "next_page_token",
+											"value": "eyJzdGF0dXNlcyI6WyJEUkFGVCIsIkFDVElWRSJdLCJwYWdlX3NpemUiOiIxIiwibmV4dF9pZCI6NH0"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Shop",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Sathyas Canteen\",\n    \"description\": \"Good Music Beautiful Ambiance, Courteous Staff and Service, Good and Nice to Enjoy, Service and Quality of Food\",\n    \"tags\": [\n        \"Chinese\",\n        \"South Indian\",\n        \"North Indian\"\n    ],\n    \"category\": \"GROCERY\",\n    \"street\": \"23/24, Anbu Street\",\n    \"area\": \"Thiruverkadu\",\n    \"city\": \"Chennai\",\n    \"state\": \"Tamil Nadu\",\n    \"pincode\": \"600077\",\n    \"lat\": -90.0,\n    \"lng\": 4.19,\n    \"telephone\": \"25545880\",\n    \"mobile\": \"9176786586\",\n    \"email\": \"ddlogesh@gmail.com\",\n    \"opening_time\": \"09:30\",\n    \"closing_time\": \"22:30\",\n    \"account_number\": \"1234567\",\n    \"account_ifsc\": \"HDFC0005322\",\n    \"account_holder\": \"Logesh D\",\n    \"pan\": \"AZXPL1001E\",\n    \"gst\": \"24AAACC1206D1ZM\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/2",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Icon",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "icon_file",
+											"type": "file",
+											"src": "/Users/logesh/Downloads/icon.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/2/icon",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"2",
+										"icon"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Icon",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/49/icon",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"49",
+										"icon"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Cover Photo",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "cover_file",
+											"type": "file",
+											"src": "/Users/logesh/Downloads/cover_image.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/51/cover_photo",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"51",
+										"cover_photo"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Cover Photo",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{admin_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{admin_host}}/v1/shop/51/cover_photo/1623493527",
+									"host": [
+										"{{admin_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"51",
+										"cover_photo",
+										"1623493527"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

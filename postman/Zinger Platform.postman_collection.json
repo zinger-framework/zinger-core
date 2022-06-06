@@ -1,0 +1,813 @@
+{
+	"info": {
+		"_postman_id": "9ddf986d-a37e-43db-b2e6-c6a970699387",
+		"name": "Zinger Platform",
+		"description": "# Overview\nZinger is an open source framework for building hyperlocal delivery\nmobile and web applications.\n\nIt provides developers easy to handle backend for ordering & delivering foods, groceries, fruits, vegetables, medicines, etc.\n\nFor more info, visit: https://zinger.pw\n\n# Zinger Architecture\n![alt text](https://github.com/ddlogesh/zinger-framework-docs/blob/master/website/static/img/zinger/zinger-arch.png?raw=true \"Zinger Architecture\")",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6369926"
+	},
+	"item": [
+		{
+			"name": "v1",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "OTP",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"purpose\": \"LOGIN\",\n    \"email\": \"admin@zinger.pw\",\n    \"mobile\": \"9176786586\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/auth/otp",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"admin@zinger.pw\",\n    \"password\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/auth/login",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"otp\": \"953377\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/auth/verify_otp",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"verify_otp"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"auth_token\": \"YWRtaW5AemluZ2VyLnB3LTE2MjIyOTExNDctNjQ0MQ\",\n    \"otp\": \"567168\",\n    \"password\": \"12345678\",\n    \"password_confirmation\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/auth/reset_password",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"reset_password"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/auth/logout",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"auth",
+										"logout"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User Profile",
+					"item": [
+						{
+							"name": "Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/user_profile",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"Logesh\",\n    \"two_fa_enabled\": false,\n    \"auth_token\": \"OTE3Njc4NjU4Ni0xNjIyMjkwNjU3LTc2MzM\",\n    \"otp\": \"375272\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/user_profile/modify",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile",
+										"modify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"current_password\": \"1234566\",\n    \"new_password\": \"12345678\",\n    \"confirm_password\": \"12345678\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/user_profile/reset_password",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"user_profile",
+										"reset_password"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Shop",
+					"item": [
+						{
+							"name": "Item",
+							"item": [
+								{
+									"name": "Get Item",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{platform_host}}/v1/shop/2/item/2yhwonRqC5i049rgb8UUme",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item",
+												"2yhwonRqC5i049rgb8UUme"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "List Items",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{platform_host}}/v1/shop/2/item",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"2",
+												"item"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "2yYMvY53A7cOVHJZuollNI",
+													"disabled": true
+												},
+												{
+													"key": "item_type",
+													"value": "fashion",
+													"disabled": true
+												},
+												{
+													"key": "categories[]",
+													"value": "north-indian",
+													"disabled": true
+												},
+												{
+													"key": "sort_order",
+													"value": "DESC",
+													"disabled": true
+												},
+												{
+													"key": "page_size",
+													"value": "3",
+													"disabled": true
+												},
+												{
+													"key": "include_inactive",
+													"value": "true",
+													"disabled": true
+												},
+												{
+													"key": "next_page_token",
+													"value": "eyJpbmNsdWRlX2luYWN0aXZlIjoidHJ1ZSIsInBhZ2Vfc2l6ZSI6IjMiLCJpZCI6bnVsbCwibmV4dF9pZCI6IjYxZGFmNjg5LTNiNTgtM2MxYy01MDk2LWZkNTVhOGVjYjU4MiJ9",
+													"disabled": true
+												},
+												{
+													"key": "categories[]",
+													"value": "jean",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Meta",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{platform_host}}/v1/item/meta",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"item",
+												"meta"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Order",
+							"item": [
+								{
+									"name": "Get Order",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{platform_host}}/v1/shop/1/order/2zeiEo7J4Do67ESu7jxbTv",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"1",
+												"order",
+												"2zeiEo7J4Do67ESu7jxbTv"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "List Orders",
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{platform_host}}/v1/shop/1/order?page_size=1",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"1",
+												"order"
+											],
+											"query": [
+												{
+													"key": "id",
+													"value": "eyJwYWdlX3NpemUiOiIxIiwibmV4dF9pZCI6IjYyNjM3YzhmLTM0NzctYWIwOC1kYWU2LTM2Mzk1NWMxZmZlYiJ9",
+													"disabled": true
+												},
+												{
+													"key": "page_size",
+													"value": "1"
+												},
+												{
+													"key": "payment_status[]",
+													"value": "pending",
+													"disabled": true
+												},
+												{
+													"key": "payment_status[]",
+													"value": "completed",
+													"disabled": true
+												},
+												{
+													"key": "order_status[]",
+													"value": "placed",
+													"disabled": true
+												},
+												{
+													"key": "order_status[]",
+													"value": "created",
+													"disabled": true
+												},
+												{
+													"key": "start_date",
+													"value": "2022-04-19",
+													"disabled": true
+												},
+												{
+													"key": "end_date",
+													"value": "2024-04-19",
+													"disabled": true
+												},
+												{
+													"key": "sort_order",
+													"value": "ASC",
+													"disabled": true
+												},
+												{
+													"key": "next_page_token",
+													"value": "eyJwYWdlX3NpemUiOiIxIiwibmV4dF9pZCI6IjYyNjM4ZmQwLTMyMTctMThlNC05YTIyLWMzMTZjODc0OWJiYiJ9",
+													"disabled": true
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Update Order",
+									"request": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "Authorization",
+												"value": "{{platform_jwt_token}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"order_status\": \"delivered\",\n    \"rating\": 3.4,\n    // \"shipping_addr\": {\n    //     \"name\": \"Harsha\",\n    //     \"street\": \"23, Natesanar street\",\n    //     \"area\": \"Thiruverkadu\",\n    //     \"state\": \"Tamil Nadu\",\n    //     \"pincode\": \"600077\"\n    // }\n    \"billing_addr\": {\n        \"name\": \"Logesh\",\n        \"street\": \"23, Anbu street\",\n        \"area\": \"Anna Nagar\",\n        \"state\": \"Tamil Nadu\",\n        \"pincode\": \"600077\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{platform_host}}/v1/shop/1/order/2zeiEo7J4Do67ESu7jxbTv",
+											"host": [
+												"{{platform_host}}"
+											],
+											"path": [
+												"v1",
+												"shop",
+												"1",
+												"order",
+												"2zeiEo7J4Do67ESu7jxbTv"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "Get Shop",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/shop/2",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Shops",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/shop",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"shop"
+									],
+									"query": [
+										{
+											"key": "id",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "statuses[]",
+											"value": "DRAFT",
+											"disabled": true
+										},
+										{
+											"key": "statuses[]",
+											"value": "ACTIVE",
+											"disabled": true
+										},
+										{
+											"key": "start_date",
+											"value": "2021-06-13",
+											"disabled": true
+										},
+										{
+											"key": "end_date",
+											"value": "2021-07-05",
+											"disabled": true
+										},
+										{
+											"key": "sort_order",
+											"value": "DESC",
+											"disabled": true
+										},
+										{
+											"key": "page_size",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "include_deleted",
+											"value": "true",
+											"disabled": true
+										},
+										{
+											"key": "next_page_token",
+											"value": "eyJpbmNsdWRlX2RlbGV0ZWQiOiJ0cnVlIiwic29ydF9vcmRlciI6IkRFU0MiLCJwYWdlX3NpemUiOiIyIiwibmV4dF9pZCI6Mn0",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Shop",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"status\": \"BLOCKED\",\n    \"reason\": \"Police case\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/shop/1",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Shop",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"id\": 1,\n    \"reason\": \"Police investigation\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/shop/delete_shop",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"shop",
+										"delete_shop"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Item Config",
+					"item": [
+						{
+							"name": "Create Config",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"item_type\": \"food\",\n    \"key\": \"category\",\n    \"reference_id\": \"south-indian\",\n    \"title\": \"South Indian\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{platform_host}}/v1/item_config",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"item_config"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "List Configs",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/item_config",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"item_config"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete Config",
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Authorization",
+										"value": "{{platform_jwt_token}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{platform_host}}/v1/item_config/2yhN4JmH4ew6mpaktOb0DS",
+									"host": [
+										"{{platform_host}}"
+									],
+									"path": [
+										"v1",
+										"item_config",
+										"2yhN4JmH4ew6mpaktOb0DS"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
