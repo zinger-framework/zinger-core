@@ -1,0 +1,11 @@
+PASSWORD_MIN_LENGTH = PlatformConfig['password_min_length']
+OTP_LENGTH = PlatformConfig['otp_length']
+EMAIL_REGEX = /\S+@\S+\.[a-z]+/i
+MOBILE_REGEX = /^[0-9]{10}$/
+TELEPHONE_REGEX = /^[0-9]{8}$/
+NAME_REGEX = /^[A-z ]+$/
+ACCOUNT_NUMBER_REGEX = /^[a-zA-Z0-9]{1,34}$/
+ACCOUNT_IFSC_REGEX = /^[A-Z]{4}[A-Z0-9]{7}$/
+PAN_REGEX = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/
+GST_REGEX = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[0-9]{1}[A-Z]{1}[0-9A-Z]{1}$/
+LIMIT = PlatformConfig['response_limit']

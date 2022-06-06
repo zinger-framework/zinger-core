@@ -1,0 +1,52 @@
+version: '3'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.2
+    environment:
+      - cluster.name=zinger-cluster
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./docker/elastic_search_data:/usr/share/elasticsearch/data
+    logging:
+      driver: none
+    ports:
+      - 9200:9200
+  
+  db:
+    image: postgres:12.1
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./docker/db_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=zinger
+      - TZ=Asia/Kolkata
+
+  redis:
+    image: redis:5.0.7
+    volumes:
+      - ./docker/redis_data:/data
+    ports:
+      - "6379:6379"
+  
+  zinger:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    command: ./docker/run.sh
+    volumes:
+      - .:/zinger
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+      - redis
+      - elasticsearch

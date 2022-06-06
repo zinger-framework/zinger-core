@@ -1,0 +1,17 @@
+development:
+  host: db
+  adapter: postgresql
+  encoding: unicode
+  database: zinger
+  pool: 10
+  username: root
+  password: password
+
+test:
+  host: db
+  adapter: postgresql
+  encoding: unicode
+  database: zinger
+  pool: 5
+  username: root
+  password: password

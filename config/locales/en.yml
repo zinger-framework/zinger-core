@@ -1,0 +1,148 @@
+# Files in the config/locales directory are used for internationalization
+# and are automatically loaded by Rails. If you want to use locales other
+# than English, add the necessary files in this directory.
+#
+# To use the locales, use `I18n.t`:
+#
+#     I18n.t 'hello'
+#
+# In views, this is aliased to just `t`:
+#
+#     <%= t('hello') %>
+#
+# To use a different locale, set it with `I18n.locale`:
+#
+#     I18n.locale = :es
+#
+# This would use the information in config/locales/es.yml.
+#
+# The following keys must be escaped otherwise they will not be retrieved by
+# the default I18n backend:
+#
+# true, false, on, off, yes, no
+#
+# Instead, surround them with single quotes.
+#
+# en:
+#   'true': 'foo'
+#
+# To learn more, please read the Rails Internationalization guide
+# available at https://guides.rubyonrails.org/i18n.html.
+
+en:
+  validation:
+    required: "%{param} cannot be empty"
+    too_many_params: Please provide any one of the params - %{param}
+    invalid: "Invalid %{param}"
+    param_expired: "%{param} is expired or invalid"
+    invalid_time_format: Invalid time format. Please use YYYY-MM-DD HH:MM:SS
+    invalid_time_range: Start time cannot be greater than end time
+    invalid_date_format: Invalid date format. Please use YYYY-MM-DD
+    invalid_date_range: Start date cannot be greater than end date
+    password:
+      invalid: "Password should contain atleast %{length} characters"
+      mismatch: "Confirm Password doesn't match"
+    name_long: Name should have maximum of 100 characters
+    invalid_request: Unable to process your request
+    icon:
+      invalid_file: Please upload a valid image file of 512 x 512 dimension
+      file_size_exceeded: Please upload an image file of less than 1 MB
+      already_exist: Icon is already uploaded
+      upload_failed: Unable to upload Icon
+      upload_success: Icon is uploaded successfully
+      delete_failed: Unable to remove Icon
+      delete_success: Icon is removed successfully
+      not_found: Unable to find Icon
+    cover_photo:
+      invalid_file: Please upload a valid image file of 1024 x 500 dimension
+      file_size_exceeded: Please upload a image file of less than 1 MB
+      limit_exceeded: "You have already uploaded %{limit} images. Please contact %{platform} team to increase limit"
+      upload_failed: Unable to upload Cover photo
+      upload_success: Cover photo is uploaded successfully
+      delete_failed: Unable to remove Cover photo
+      delete_success: Cover photo is removed successfully
+      not_found: Unable to find Cover photo
+  profile:
+    update_success: Profile is updated successfully
+    update_failed: Unable to update profile
+    mobile_update_success: Mobile number is updated successfully
+    mobile_update_failed: Unable to update mobile number
+  session:
+    not_found: Unable to find the session
+    delete_success: Session is deleted successfully
+    delete_failed: Unable to delete the session
+    current_delete_failed: Your current session cannot be deleted
+  auth:
+    required: Please provide any one of the params - %{param}
+    logout_success: Logged out successfully
+    already_exist: "Account with %{key} - %{value} already exist"
+    login_failed: Unable to login
+    login_success: Logged in successfully
+    signup_failed: Unable to create account
+    signup_success: Account is created successfully
+    two_factor:
+      otp_success: OTP is sent successfully to your registered mobile number
+      already_disabled: 2FA has been already disabled
+    user:
+      not_found: Unable to find the user
+    otp:
+      unverified: Please verify OTP to continue
+      already_verified: OTP has been already verified
+      verify_failed: Unable to verify OTP
+      failed: Unable to send OTP
+      success: OTP is sent successfully
+    password:
+      update_failed: Unable to update password
+    account_blocked: "Your account has been deactivated. Please contact %{platform} team"
+    reset_password:
+      trigger_failed: Request to reset password failed
+      reset_success: Password is changed successfully
+  shop:
+    not_found: Unable to find the shop
+    create_success: Shop is registered successfully
+    create_failed: Unable to register shop
+    update_success: Shop is updated successfully
+    update_failed: Unable to update shop
+    delete_failed: Shop is already deleted
+    delete_success: Shop is deleted successfully
+    description_long: Description should contain maximum of 250 characters
+    fetch_failed: Unable to fetch shops
+    blocked: "Your shop is not active. Please contact %{platform} team"
+  item:
+    create_failed: Unable to register item
+    update_failed: Unable to update item
+    update_success: Item is updated successfully
+    not_found: Unable to find the item
+    fetch_failed: Unable to fetch items
+    delete_success: Item is deleted successfully
+    description_long: Description should contain maximum of 250 characters
+    filter_not_allowed: "filterable_fields should contain only the valid fields - %{fields}"
+    config:
+      already_exist: "Record with %{key} - %{value} already exist"
+      create_failed: Unable to add item config
+      not_found: Unable to find the item config
+      delete_failed: Unable to delete item config
+      delete_success: Item config is removed successfully
+    variant:
+      create_failed: Unable to add item variant
+      create_success: Item variant is added successfully
+      not_found: Unable to find the item variant
+      delete_failed: Unable to delete item variant
+      delete_success: Item variant is removed successfully
+      name_not_allowed: "Item variant with %{variant_name} already exist"
+      already_exist: "Item variant with %{variant_name} - %{variant_value} already exist"
+  order:
+    not_found: Unable to find the order
+    create_failed: Unable to create order
+    create_success: Order is created successfully
+    update_failed: Unable to update order
+    update_success: Order is updated successfully
+    fetch_failed: Unable to fetch orders
+    delete_success: Order is removed successfully
+    rating_not_allowed: Please wait for the order to be completed to apply rating
+  ratelimit:
+    exceeded: You have exceeded the number of attempts. Please try again after sometime
+    login: You have exceeded the number of login attempts. Please try again after sometime
+    reset_password: You have exceeded the number of password reset attempts. Please try again after sometime
+    reset_profile: You have exceeded the number of email or mobile reset attempts. Please try again after sometime
+    registration: You have exceeded the number of registration attempts. Please try again after sometime

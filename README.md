@@ -1,6 +1,9 @@
 <h1 align="center">
-  Zinger - Hyperlocal Delivery Framework
+  Zinger Framework
 </h1>
+<h4 align="center">
+  Build your own Ecommerce Marketplace 🛍️
+</h4>
 
 <p align="center">
   <strong>
@@ -15,86 +18,47 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/zinger-framework/zinger-core"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/zinger-framework/zinger-rails"></a>
   <a href="https://zinger.pw/docs/api"><img alt="Documentation" src="https://img.shields.io/badge/code-documented-brightgreen.svg?style=flat-square"></a>
-  <a href="https://github.com/zinger-framework/zinger-core/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square"></a>
+  <a href="https://github.com/zinger-framework/zinger-rails/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square"></a>
 </p>
 
-An Open Source Framework for building Hyperlocal Delivery Mobile and Web applications.
-Zinger provides developers easy to handle backend for ordering & delivering foods, groceries, fruits, vegetables, medicines, etc.
+An Open Source Framework for building Ecommerce marketplace solutions, offering highly flexible backend system that enables the developers to manage shops, inventory, orders and discounts along with authentication, order fulfilment, webhook notifications and various payment integrations.
 
-## Architecture
-<img src="https://raw.githubusercontent.com/ddlogesh/zinger-framework-docs/master/website/static/img/zinger/zinger-arch.png" height=75% width=75%/>
+## Tech Stacks
+* Rails **6**
+* PostgreSQL **12.1**
+* Redis
 
-#### Zinger Core
-&emsp;&emsp;A backend server that exposes the REST API, written in spring boot using MySQL database.
+## Prerequisites
+#### Install Applications
+* Docker Desktop
 
-#### Zinger Client
-&emsp;&emsp;A customer side application to place and track your orders from multiple store partners near your location. It allows you to browse catalogs of all stores and provides you a seamless shopping experience from order acceptance to last mile delivery.
+#### Update Hosts
+Add the below lines to your hosts file to run the application in custom subdomain.
+```shell
+127.0.0.1	api.zinger.pw
+127.0.0.1	admin.zinger.pw 
+127.0.0.1	platform.zinger.pw
+```
+Host file location
+- Linux/Mac - `/etc/hosts`
+- Windows - `C:\Windows\System32\drivers\etc\hosts`
 
-#### Zinger Partner
-&emsp;&emsp;A one-stop solution for store owners to manage and track orders from their clients and it provides an effective order and inventory management solutions.
-
-#### Zinger Admin
-&emsp;&emsp;A web console to monitor the zinger client and partner applications. It is a powerful tool to track application performance, manage outlet information and promotes new arrivals to increase brand engagement.
-
-## Database Schema 
-Check out the [database schema](https://drawsql.app/zinger-technologies/diagrams/zinger-framework)
-
-## Installation Setup
-
-#### Prerequisites
-* Java **8** or newer
-* MySQL **8.0.19**
-* Spring Boot **2.2.4**
-
+## Setup instructions
 #### Fork Project
+- Fork the main repository
+- Clone the forked repository locally `git clone forked_repo_url`
 
-* [Fork](https://github.com/zinger-framework/zinger-core/fork) the Main Repository
-* Clone the forked repository locally `git clone forked_repo_url`
-
-#### Setup DB
-
-* Open MySQL Workbench
-* Run the [DB_INIT.sql](https://github.com/zinger-framework/zinger-core/blob/master/sql/DB_INIT.sql) script to create the tables, indexes and triggers.
-* Run the [DB_PROC.sql](https://github.com/zinger-framework/zinger-core/blob/master/sql/DB_PROC.sql) script to create the procedures.
-* Run the [DB_INSERT.sql](https://github.com/zinger-framework/zinger-core/blob/master/sql/DB_INSERT.sql) script to populate the database.
-* Set your MySQL username and password in [application.properties](https://github.com/zinger-framework/zinger-core/blob/master/src/main/resources/application.properties)
-
-#### Setup Firebase Admin SDK
-* Create a new [Firebase](https://console.firebase.google.com/) project 
-* Navigate to `Project setting -> Service accounts -> Generate service account -> Generate new private key`
-* Set your credentials file path in [application.properties](https://github.com/zinger-framework/zinger-core/blob/master/src/main/resources/application.properties)
-
-## Build & Deploy
-
-#### Eclipse IDE
-
-* Choose `File -> Import -> Maven -> Existing Maven projects`
-* Right-click [MainApplication.java](https://github.com/zinger-framework/zinger-core/blob/master/src/main/java/com/food/ordering/zinger/MainApplication.java) and choose `Run As -> Java Application`  
-
-#### IntelliJ IDEA
-
-* Choose `File -> Open` and choose the project location
-* Right-click [MainApplication.java](https://github.com/zinger-framework/zinger-core/blob/master/src/main/java/com/food/ordering/zinger/MainApplication.java) and choose `Run MainApplication.main()` 
-
-#### Test
-
-* Visit [localhost:8080](http://localhost:8080) in the browser to check if the setup is successful.
-* Test the endpoints in Postman by importing the [API collection](https://github.com/zinger-framework/zinger-core/blob/master/Zinger%20framework%20(Release).json)
-* For detailed API documentation, please refer [API Docs](https://documenter.getpostman.com/view/6369926/TVRoZ6jW)
-
-#### Deploy
-
-If you would like to integrate with any mobile or web application, use [Ngrok](https://ngrok.com/download) to get a public URL of 
-your localhost. Also, you can host in any of the online cloud service providers like [Heruko](https://www.heroku.com/), [Azure](https://azure.microsoft.com/), [AWS](https://aws.amazon.com/), etc.
+#### Run Project
+- Navigate to root directory & run `docker-compose up`
+- The angular application will be running in the following endpoints:
+    - Customer APIs - http://api.zinger.pw
+    - Admin APIs - http://admin.zinger.pw
+    - Platform APIs - http://platform.zinger.pw
 
 ## Community
 
 Zinger framework is completely free and made open-source. Our team is really happy to support contributors from all around the world. Fork our project and send us your pull request: maybe sample mobile apps using our framework, minor extensions or major improvements.
 
 **Every contribution is awesome and welcome!**
-
-## Contributors
-* <a href="https://github.com/ddlogesh" target="_blank"><b>Logesh Dinakaran</b></a>
-* <a href="https://github.com/harshavardhan98" target="_blank"><b>Harshavardhan P</b></a>
