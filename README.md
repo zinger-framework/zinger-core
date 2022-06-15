@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/zinger-framework/zinger-rails"></a>
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/zinger-framework/zinger-core"></a>
   <a href="https://zinger.pw/docs/api"><img alt="Documentation" src="https://img.shields.io/badge/code-documented-brightgreen.svg?style=flat-square"></a>
   <a href="https://github.com/zinger-framework/zinger-rails/pulls"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square"></a>
 </p>
